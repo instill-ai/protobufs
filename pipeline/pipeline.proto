@@ -1,0 +1,134 @@
+syntax = "proto3";
+package instill.pipeline;
+
+option go_package = "github.com/instill-ai/protobufs/pipeline";
+
+// Protobuf standard
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+// Google api
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+service Pipeline {
+  rpc CreatePipeline (CreatePipelineRequest) returns (PipelineInfo) {
+    option (google.api.http) = {
+      post: "/pipelines"
+      body: "*"
+    };
+  }
+  rpc ListPipelines (ListPipelinesRequest) returns (ListPipelinesResponse) {
+    option (google.api.http) = {
+      get: "/pipelines"
+    };
+  }
+  rpc GetPipeline (GetPipelineRequest) returns (PipelineInfo) {
+    option (google.api.http) = {
+      get: "/pipelines/{id}"
+    };
+  }
+  rpc UpdatePipeline (UpdatePipelineRequest) returns (PipelineInfo) {
+    option (google.api.http) = {
+      patch: "/pipelines/{pipeline.id=*}"
+      body: "*"
+    };
+  }
+  rpc DeletePipeline (DeletePipelineRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/pipelines/{id}"
+    };
+  }
+  rpc TriggerPipeline (TriggerPipelineRequest) returns (google.protobuf.Struct) {
+    option (google.api.http) = {
+      post: "/pipelines/{id}/outputs"
+      body: "*"
+    };
+  }
+}
+
+message Timestamp {
+  google.protobuf.Timestamp timestamp = 1;
+}
+
+message PipelineInfo {
+  string id = 1 [(google.api.field_behavior) = OPTIONAL];
+  string name = 2;
+  optional string description = 3;
+  bool active = 4;
+  instill.pipeline.Timestamp created_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  instill.pipeline.Timestamp updated_at = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  instill.pipeline.Recipe recipe = 7;
+  optional string creator_id = 8;
+}
+
+message CreatePipelineRequest {
+  string name = 1;
+  optional string description = 2;
+  bool active = 3;
+  instill.pipeline.Recipe recipe = 4;
+}
+
+message ListPipelinesRequest {
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  bool with_recipe = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  bool query = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListPipelinesResponse {
+  repeated PipelineInfo pipelines = 1;
+  string next_page_token = 2;
+}
+
+message GetPipelineRequest {
+  string id = 1;
+}
+
+message UpdatePipelineRequest {
+  PipelineInfo pipeline = 1 [(google.api.field_behavior) = REQUIRED];
+
+  optional google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeletePipelineRequest {
+  string id = 1;
+}
+
+message TriggerPipelineContent {
+  string url = 1 [(google.api.field_behavior) = OPTIONAL];
+  string base64 = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message TriggerPipelineRequest {
+  string id = 1;
+  repeated TriggerPipelineContent contents = 2;
+}
+
+message DataSource {
+  string type = 1;
+}
+
+message DataDestination {
+  string type = 1;
+}
+
+message VisualDataOperator {
+  string model_id = 1;
+  int32 version = 2;
+}
+
+message LogicOperator {
+}
+
+message Recipe {
+  DataSource data_source = 1;
+  DataDestination data_destination = 2;
+  repeated VisualDataOperator visual_data_operator = 3;
+  repeated LogicOperator logic_operator = 4;
+}
