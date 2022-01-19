@@ -27,23 +27,23 @@ service Pipeline {
   }
   rpc GetPipeline (GetPipelineRequest) returns (PipelineInfo) {
     option (google.api.http) = {
-      get: "/pipelines/{id}"
+      get: "/pipelines/{name}"
     };
   }
   rpc UpdatePipeline (UpdatePipelineRequest) returns (PipelineInfo) {
     option (google.api.http) = {
-      patch: "/pipelines/{id}"
+      patch: "/pipelines/{name}"
       body: "*"
     };
   }
   rpc DeletePipeline (DeletePipelineRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/pipelines/{id}"
+      delete: "/pipelines/{name}"
     };
   }
   rpc TriggerPipeline (TriggerPipelineRequest) returns (google.protobuf.Struct) {
     option (google.api.http) = {
-      post: "/pipelines/{id}/outputs"
+      post: "/pipelines/{name}/outputs"
       body: "*"
     };
   }
@@ -87,21 +87,20 @@ message ListPipelinesResponse {
 }
 
 message GetPipelineRequest {
-  string id = 1;
+  string name = 1;
 }
 
 message UpdatePipelineRequest {
-  string id = 1 [(google.api.field_behavior) = REQUIRED];
-  string name = 2 [(google.api.field_behavior) = OPTIONAL];
-  string description = 3 [(google.api.field_behavior) = OPTIONAL];
-  bool active = 4 [(google.api.field_behavior) = OPTIONAL];
-  instill.pipeline.Recipe recipe = 5 [(google.api.field_behavior) = OPTIONAL];
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
+  bool active = 3 [(google.api.field_behavior) = OPTIONAL];
+  instill.pipeline.Recipe recipe = 4 [(google.api.field_behavior) = OPTIONAL];
 
-  google.protobuf.FieldMask update_mask = 6 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 5 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeletePipelineRequest {
-  string id = 1;
+  string name = 1;
 }
 
 message TriggerPipelineContent {
@@ -110,7 +109,7 @@ message TriggerPipelineContent {
 }
 
 message TriggerPipelineRequest {
-  string id = 1;
+  string name = 1;
   repeated TriggerPipelineContent contents = 2;
 }
 
