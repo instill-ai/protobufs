@@ -32,7 +32,7 @@ service Pipeline {
   }
   rpc UpdatePipeline (UpdatePipelineRequest) returns (PipelineInfo) {
     option (google.api.http) = {
-      patch: "/pipelines/{pipeline.id=*}"
+      patch: "/pipelines/{id}"
       body: "*"
     };
   }
@@ -56,17 +56,17 @@ message Timestamp {
 message PipelineInfo {
   string id = 1 [(google.api.field_behavior) = OPTIONAL];
   string name = 2;
-  optional string description = 3;
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
   bool active = 4;
   instill.pipeline.Timestamp created_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   instill.pipeline.Timestamp updated_at = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   instill.pipeline.Recipe recipe = 7;
-  optional string creator_id = 8;
+  string fullName = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreatePipelineRequest {
   string name = 1;
-  optional string description = 2;
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
   bool active = 3;
   instill.pipeline.Recipe recipe = 4;
 }
@@ -91,9 +91,13 @@ message GetPipelineRequest {
 }
 
 message UpdatePipelineRequest {
-  PipelineInfo pipeline = 1 [(google.api.field_behavior) = REQUIRED];
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2 [(google.api.field_behavior) = OPTIONAL];
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+  bool active = 4 [(google.api.field_behavior) = OPTIONAL];
+  instill.pipeline.Recipe recipe = 5 [(google.api.field_behavior) = OPTIONAL];
 
-  optional google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 6 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeletePipelineRequest {
