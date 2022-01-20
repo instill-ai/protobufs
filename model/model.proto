@@ -1,0 +1,101 @@
+syntax = "proto3";
+package instill.model;
+
+option go_package = "github.com/instill-ai/protobufs/model";
+
+// Protobuf standard
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+// Google api
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+service Model {
+  rpc createModel (stream CreateModelRequest) returns (CreateModelResponse) {
+    option (google.api.http) = {
+      post: "/models"
+      body: "*"
+    };
+  }
+
+  rpc loadModel (LoadModelRequest) returns (LoadModelResponse) {}
+
+  rpc unloadModel (UnloadModelRequest) returns (UnloadModelResponse) {}
+
+  rpc predictModel (PredictModelRequest) returns (PredictModelResponse) {}
+
+  rpc listModels (ListModelRequest) returns (ListModelResponse) {}
+}
+
+message LoadModelRequest {
+    string modelId = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message LoadModelResponse {
+    // OPTIONAL - If nontrivial cost is involved in
+    // determining the size, return 0 here and
+    // do the sizing in the modelSize function
+    uint64 sizeInBytes = 1;
+
+    // EXPERIMENTAL - Applies only if limitModelConcurrency = true
+    // was returned from runtimeStatus rpc.
+    // See RuntimeStatusResponse.limitModelConcurrency for more detail
+    uint32 maxConcurrency = 2;
+}
+
+message UnloadModelRequest {
+    string modelId = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message UnloadModelResponse {}
+
+message PredictModelRequest {
+    string modelId      = 1 [(google.api.field_behavior) = REQUIRED];
+    string modelVersion = 2 [(google.api.field_behavior) = REQUIRED];
+}
+message PredictModelResponse {}
+
+message ListModelRequest {}
+message ListModelResponse {}
+
+message Timestamp {
+  google.protobuf.Timestamp timestamp = 1;
+}
+
+message CreateModelRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
+  string type = 3 [(google.api.field_behavior) = REQUIRED];
+  string framework = 4 [(google.api.field_behavior) = REQUIRED];
+  bool optimized = 5 [(google.api.field_behavior) = OPTIONAL];
+  string visibility = 6 [(google.api.field_behavior) = OPTIONAL];
+  string filename = 7 [(google.api.field_behavior) = REQUIRED];
+  bytes content = 8 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ModelVersion {
+  int32 version = 1;
+  int32 modelId = 2;
+  string description = 3;
+  Timestamp created_at = 4;
+  Timestamp updated_at = 5;
+  string status = 6;
+}
+
+message CreateModelResponse {
+  string id = 1;
+  string name = 2;
+  bool optimized = 3;
+  string description = 4;
+  string type = 5;
+  string framework = 6;
+  Timestamp created_at = 7;
+  Timestamp updated_at = 8;
+  string organization = 9;
+  string visibility = 10;
+  repeated ModelVersion versions = 11;
+  string icon = 12;
+  string Author = 13;
+  double duration = 14;
+}
