@@ -25,7 +25,7 @@ service Model {
 
   rpc unloadModel (UnloadModelRequest) returns (UnloadModelResponse) {}
 
-  rpc predictModel (PredictModelRequest) returns (PredictModelResponse) {}
+  rpc predictModel (stream PredictModelRequest) returns (PredictModelResponse) {}
 
   rpc listModels (ListModelRequest) returns (ListModelResponse) {}
 }
@@ -51,8 +51,9 @@ message UnloadModelRequest {
 message UnloadModelResponse {}
 
 message PredictModelRequest {
-    string modelId      = 1 [(google.api.field_behavior) = REQUIRED];
-    string modelVersion = 2 [(google.api.field_behavior) = REQUIRED];
+        string modelId      = 1 [(google.api.field_behavior) = REQUIRED];
+    int32 modelVersion  = 2 [(google.api.field_behavior) = REQUIRED];
+    bytes content       = 3 [(google.api.field_behavior) = REQUIRED];
 }
 message PredictModelResponse {}
 
@@ -76,7 +77,7 @@ message CreateModelRequest {
 
 message ModelVersion {
   int32 version = 1;
-  int32 modelId = 2;
+  string modelId = 2;
   string description = 3;
   Timestamp created_at = 4;
   Timestamp updated_at = 5;
