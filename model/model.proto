@@ -4,6 +4,7 @@ package instill.model;
 option go_package = "github.com/instill-ai/protobufs/model";
 
 // Protobuf standard
+import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/field_mask.proto";
@@ -51,13 +52,13 @@ message UnloadModelRequest {
 message UnloadModelResponse {}
 
 message PredictModelRequest {
-    string modelId      = 1 [(google.api.field_behavior) = REQUIRED];
-    int32 modelVersion  = 2 [(google.api.field_behavior) = REQUIRED];
-    bytes content       = 3 [(google.api.field_behavior) = REQUIRED];
-    string modelType    = 4 [(google.api.field_behavior) = REQUIRED];
+    string name      = 1 [(google.api.field_behavior) = REQUIRED];
+    int32 version    = 2 [(google.api.field_behavior) = REQUIRED];
+    bytes content    = 3 [(google.api.field_behavior) = REQUIRED];
+    int32 type       = 4 [(google.api.field_behavior) = REQUIRED];
 }
 message PredictModelResponse {
-    repeated string data    = 1 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.Any data  = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListModelRequest {}
@@ -85,9 +86,9 @@ message CreateModelRequest {
 }
 
 message ModelVersion {
-  int32 version = 1;
-  string modelId = 2;
-  string description = 3;
+  int32 version        = 1;
+  string model_id      = 2;
+  string description   = 3;
   Timestamp created_at = 4;
   Timestamp updated_at = 5;
   string status = 6;
@@ -108,4 +109,34 @@ message CreateModelResponse {
   string icon = 12;
   string Author = 13;
   double duration = 14;
+}
+
+message ClassificationOutput {
+    string category = 1;
+    float score     = 2;
+}
+
+message ClassificationOutputs {
+    repeated ClassificationOutput contents = 1;
+}
+
+message Box {
+    float top = 1;
+    float left = 2;
+    float width = 3;
+    float height = 4;
+}
+
+message BoundingBoxPrediction {
+    string category = 1;
+    float score     = 2;
+    Box box         = 3;
+}
+
+message DetectionOutput {
+    repeated BoundingBoxPrediction contents = 1;
+}
+
+message DetectionOutputs {
+    repeated DetectionOutput contents = 1;
 }
