@@ -18,11 +18,9 @@ service Model {
   rpc Liveness(google.protobuf.Empty) returns (HealthCheckResponse) {
     option (google.api.http) = {
       get: "/__liveness"
-      additional_bindings: [
-        {
+      additional_bindings {
           get: "/health/pipeline"
         }
-      ]
     };
   }
 
@@ -32,7 +30,9 @@ service Model {
     };
   }
 
-  rpc CreateModel (stream CreateModelRequest) returns (CreateModelsResponse) {
+  rpc CreateModelByUpload (stream CreateModelRequest) returns (CreateModelsResponse) {}
+
+  rpc CreateModel (CreateModelRequest) returns (CreateModelsResponse) {
     option (google.api.http) = {
       post: "/models"
       body: "*"
@@ -130,7 +130,7 @@ message CreateModelRequest {
 
 message ModelVersion {
   int32 version        = 1;
-  string model_id      = 2;
+  int32 model_id       = 2;
   string description   = 3;
   Timestamp created_at = 4;
   Timestamp updated_at = 5;
@@ -138,7 +138,7 @@ message ModelVersion {
 }
 
 message CreateModelResponse {
-  string id                      = 1;
+  int32 id                       = 1;
   string name                    = 2;
   bool optimized                 = 3;
   string description             = 4;
