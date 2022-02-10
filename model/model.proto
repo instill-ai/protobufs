@@ -15,25 +15,66 @@ import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 
 service Model {
-  rpc createModel (stream CreateModelRequest) returns (CreateModelsResponse) {
+  rpc Liveness(google.protobuf.Empty) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/__liveness"
+      additional_bindings: [
+        {
+          get: "/health/pipeline"
+        }
+      ]
+    };
+  }
+
+  rpc Readiness(google.protobuf.Empty) returns (HealthCheckResponse){
+    option (google.api.http) = {
+      get: "/__readiness"
+    };
+  }
+
+  rpc CreateModel (stream CreateModelRequest) returns (CreateModelsResponse) {
     option (google.api.http) = {
       post: "/models"
       body: "*"
     };
   }
 
-  rpc loadModel (LoadModelRequest) returns (LoadModelResponse) {}
+  rpc LoadModel (LoadModelRequest) returns (LoadModelResponse) {
+    option (google.api.http) = {
+      post: "/models/{name}/load"
+      body: "*"
+    };
+  }
 
-  rpc unloadModel (UnloadModelRequest) returns (UnloadModelResponse) {}
+  rpc UnloadModel (UnloadModelRequest) returns (UnloadModelResponse) {
+    option (google.api.http) = {
+      post: "/models/{name}/unload"
+      body: "*"
+    };
+  }
 
-  rpc predictModel (stream PredictModelRequest) returns (PredictModelResponse) {}
+  // This method handle upload file request
+  rpc PredictModelByUpload (stream PredictModelRequest) returns (PredictModelResponse) {}
 
-  rpc listModels (ListModelRequest) returns (ListModelResponse) {}
+  // This method handle request with file in body such as url/base64 encode
+  rpc PredictModel (PredictModelRequest) returns (PredictModelResponse) {
+    option (google.api.http) = {
+      post: "/models/{name}/outputs"
+      body: "*"
+    };
+  }
+
+  rpc ListModels (ListModelRequest) returns (ListModelResponse) {
+    option (google.api.http) = {
+      get: "/models"
+    };
+  }
 }
 
 message LoadModelRequest {
-    string modelId = 1 [(google.api.field_behavior) = REQUIRED];
+    string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
+
 message LoadModelResponse {
     // OPTIONAL - If nontrivial cost is involved in
     // determining the size, return 0 here and
@@ -47,8 +88,9 @@ message LoadModelResponse {
 }
 
 message UnloadModelRequest {
-    string modelId = 1 [(google.api.field_behavior) = REQUIRED];
+    string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
+
 message UnloadModelResponse {}
 
 message PredictModelRequest {
@@ -62,6 +104,7 @@ message PredictModelResponse {
 }
 
 message ListModelRequest {}
+
 message ListModelResponse {
     repeated CreateModelResponse models = 1;
 }
@@ -75,14 +118,14 @@ message Timestamp {
 }
 
 message CreateModelRequest {
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name        = 1 [(google.api.field_behavior) = REQUIRED];
   string description = 2 [(google.api.field_behavior) = OPTIONAL];
-  string type = 3 [(google.api.field_behavior) = REQUIRED];
-  string framework = 4 [(google.api.field_behavior) = REQUIRED];
-  bool optimized = 5 [(google.api.field_behavior) = OPTIONAL];
-  string visibility = 6 [(google.api.field_behavior) = OPTIONAL];
-  string filename = 7 [(google.api.field_behavior) = REQUIRED];
-  bytes content = 8 [(google.api.field_behavior) = REQUIRED];
+  string type        = 3 [(google.api.field_behavior) = REQUIRED];
+  string framework   = 4 [(google.api.field_behavior) = REQUIRED];
+  bool optimized     = 5 [(google.api.field_behavior) = OPTIONAL];
+  string visibility  = 6 [(google.api.field_behavior) = OPTIONAL];
+  string filename    = 7 [(google.api.field_behavior) = REQUIRED];
+  bytes content      = 8 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ModelVersion {
@@ -91,24 +134,24 @@ message ModelVersion {
   string description   = 3;
   Timestamp created_at = 4;
   Timestamp updated_at = 5;
-  string status = 6;
+  string status        = 6;
 }
 
 message CreateModelResponse {
-  string id = 1;
-  string name = 2;
-  bool optimized = 3;
-  string description = 4;
-  string type = 5;
-  string framework = 6;
-  Timestamp created_at = 7;
-  Timestamp updated_at = 8;
-  string organization = 9;
-  string visibility = 10;
+  string id                      = 1;
+  string name                    = 2;
+  bool optimized                 = 3;
+  string description             = 4;
+  string type                    = 5;
+  string framework               = 6;
+  Timestamp created_at           = 7;
+  Timestamp updated_at           = 8;
+  string organization            = 9;
+  string visibility              = 10;
   repeated ModelVersion versions = 11;
-  string icon = 12;
-  string Author = 13;
-  double duration = 14;
+  string icon                    = 12;
+  string Author                  = 13;
+  double duration                = 14;
 }
 
 message ClassificationOutput {
@@ -121,10 +164,10 @@ message ClassificationOutputs {
 }
 
 message Box {
-    float top = 1;
-    float left = 2;
-    float width = 3;
-    float height = 4;
+    float top     = 1;
+    float left    = 2;
+    float width   = 3;
+    float height  = 4;
 }
 
 message BoundingBoxPrediction {
@@ -139,4 +182,8 @@ message DetectionOutput {
 
 message DetectionOutputs {
     repeated DetectionOutput contents = 1;
+}
+
+message HealthCheckResponse {
+    int32 status = 1;
 }
