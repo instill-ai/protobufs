@@ -69,7 +69,23 @@ service Model {
       get: "/models"
     };
   }
+
+  rpc GetModel (GetModelRequest) returns (GetModelResponse) {
+    option (google.api.http) = {
+      get: "/models/{name}/{version}"
+    };
+  }
 }
+
+message GetModelRequest {
+    string name    = 1 [(google.api.field_behavior) = REQUIRED];
+    string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetModelResponse {
+    ModelInfo models = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
 
 message LoadModelRequest {
     string name = 1 [(google.api.field_behavior) = REQUIRED];
@@ -106,11 +122,11 @@ message PredictModelResponse {
 message ListModelRequest {}
 
 message ListModelResponse {
-    repeated CreateModelResponse models = 1;
+    repeated ModelInfo models = 1;
 }
 
 message CreateModelsResponse {
-    repeated CreateModelResponse models = 1;
+    repeated ModelInfo models = 1;
 }
 
 message CreateModelRequest {
@@ -131,7 +147,7 @@ message ModelVersion {
   string status        = 6;
 }
 
-message CreateModelResponse {
+message ModelInfo {
   int32 id                       = 1;
   string name                    = 2;
   bool optimized                 = 3;
@@ -146,6 +162,7 @@ message CreateModelResponse {
   string icon                    = 12;
   string Author                  = 13;
   string fullName                = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated ModelVersion versions = 15;
 }
 
 message ClassificationOutput {
