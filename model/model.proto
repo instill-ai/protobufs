@@ -18,9 +18,9 @@ service Model {
   rpc Liveness(google.protobuf.Empty) returns (HealthCheckResponse) {
     option (google.api.http) = {
       get: "/__liveness"
-      additional_bindings {
+      additional_bindings: {
           get: "/health/pipeline"
-        }
+      }
     };
   }
 
@@ -113,27 +113,21 @@ message CreateModelsResponse {
     repeated CreateModelResponse models = 1;
 }
 
-message Timestamp {
-  google.protobuf.Timestamp timestamp = 1;
-}
-
 message CreateModelRequest {
-  string name        = 1 [(google.api.field_behavior) = REQUIRED];
-  string description = 2 [(google.api.field_behavior) = OPTIONAL];
-  string type        = 3 [(google.api.field_behavior) = REQUIRED];
-  string framework   = 4 [(google.api.field_behavior) = REQUIRED];
+  bytes content      = 1 [(google.api.field_behavior) = REQUIRED];
+  string type        = 2 [(google.api.field_behavior) = OPTIONAL];
+  string framework   = 3 [(google.api.field_behavior) = OPTIONAL];
+  string description = 4 [(google.api.field_behavior) = OPTIONAL];
   bool optimized     = 5 [(google.api.field_behavior) = OPTIONAL];
   string visibility  = 6 [(google.api.field_behavior) = OPTIONAL];
-  string filename    = 7 [(google.api.field_behavior) = REQUIRED];
-  bytes content      = 8 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ModelVersion {
   int32 version        = 1;
   int32 model_id       = 2;
   string description   = 3;
-  Timestamp created_at = 4;
-  Timestamp updated_at = 5;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
   string status        = 6;
 }
 
@@ -144,14 +138,14 @@ message CreateModelResponse {
   string description             = 4;
   string type                    = 5;
   string framework               = 6;
-  Timestamp created_at           = 7;
-  Timestamp updated_at           = 8;
+  google.protobuf.Timestamp created_at           = 7;
+  google.protobuf.Timestamp updated_at           = 8;
   string organization            = 9;
   string visibility              = 10;
   repeated ModelVersion versions = 11;
   string icon                    = 12;
   string Author                  = 13;
-  double duration                = 14;
+  string fullName                = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message ClassificationOutput {
