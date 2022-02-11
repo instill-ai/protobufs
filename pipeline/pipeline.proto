@@ -14,6 +14,23 @@ import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 
 service Pipeline {
+  rpc Liveness(google.protobuf.Empty) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/__liveness"
+      additional_bindings: [
+        {
+          get: "/health/pipeline"
+        }
+      ]
+    };
+  }
+
+  rpc Readiness(google.protobuf.Empty) returns (HealthCheckResponse){
+    option (google.api.http) = {
+      get: "/__readiness"
+    };
+  }
+
   rpc CreatePipeline (CreatePipelineRequest) returns (PipelineInfo) {
     option (google.api.http) = {
       post: "/pipelines"
@@ -32,8 +49,8 @@ service Pipeline {
   }
   rpc UpdatePipeline (UpdatePipelineRequest) returns (PipelineInfo) {
     option (google.api.http) = {
-      patch: "/pipelines/{name}"
-      body: "*"
+      patch: "/pipelines/{pipeline.name}"
+      body: "pipeline"
     };
   }
   rpc DeletePipeline (DeletePipelineRequest) returns (google.protobuf.Empty) {
@@ -47,91 +64,107 @@ service Pipeline {
       body: "*"
     };
   }
-}
-
-message Timestamp {
-  google.protobuf.Timestamp timestamp = 1;
+  rpc TriggerPipelineByUpload (stream TriggerPipelineRequest) returns (google.protobuf.Struct) {
+  }
 }
 
 message PipelineInfo {
-  string id = 1 [(google.api.field_behavior) = OPTIONAL];
+  uint64 id = 1 [(google.api.field_behavior) = OPTIONAL];
   string name = 2;
   string description = 3 [(google.api.field_behavior) = OPTIONAL];
   bool active = 4;
-  instill.pipeline.Timestamp created_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  instill.pipeline.Timestamp updated_at = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp created_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp updated_at = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   instill.pipeline.Recipe recipe = 7;
   string fullName = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreatePipelineRequest {
-  string name = 1;
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
   string description = 2 [(google.api.field_behavior) = OPTIONAL];
-  bool active = 3;
-  instill.pipeline.Recipe recipe = 4;
+  bool active = 3 [(google.api.field_behavior) = REQUIRED];
+  instill.pipeline.Recipe recipe = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListPipelinesRequest {
   int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-
   string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  View view = 3 [(google.api.field_behavior) = OPTIONAL];
 
-  bool with_recipe = 3 [(google.api.field_behavior) = OPTIONAL];
-
-  bool query = 4 [(google.api.field_behavior) = OPTIONAL];
+  enum View {
+    VIEW_UNSPECIFIED = 0;
+    BASIC = 1;
+    WITH_RECIPE = 2;
+  }
 }
 
 message ListPipelinesResponse {
-  repeated PipelineInfo pipelines = 1;
+  repeated PipelineInfo contents = 1;
   string next_page_token = 2;
 }
 
 message GetPipelineRequest {
-  string name = 1;
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message UpdatePipelineRequest {
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
-  string description = 2 [(google.api.field_behavior) = OPTIONAL];
-  bool active = 3 [(google.api.field_behavior) = OPTIONAL];
-  instill.pipeline.Recipe recipe = 4 [(google.api.field_behavior) = OPTIONAL];
+  PipelineInfo pipeline = 1 [(google.api.field_behavior) = REQUIRED];
 
-  google.protobuf.FieldMask update_mask = 5 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeletePipelineRequest {
-  string name = 1;
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message TriggerPipelineContent {
   string url = 1 [(google.api.field_behavior) = OPTIONAL];
   string base64 = 2 [(google.api.field_behavior) = OPTIONAL];
+  bytes chunk = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message TriggerPipelineRequest {
-  string name = 1;
-  repeated TriggerPipelineContent contents = 2;
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated TriggerPipelineContent contents = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-message DataSource {
-  string type = 1;
+message Scheduler {
+  string crontab = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-message DataDestination {
-  string type = 1;
+message Source {
+  string type = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  Scheduler scheduler = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-message VisualDataOperator {
-  string model_id = 1;
-  int32 version = 2;
+message Destination {
+  string type = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message Model {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  int32 version = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message LogicOperator {
 }
 
 message Recipe {
-  DataSource data_source = 1;
-  DataDestination data_destination = 2;
-  repeated VisualDataOperator visual_data_operator = 3;
-  repeated LogicOperator logic_operator = 4;
+  Source source = 1 [(google.api.field_behavior) = REQUIRED];
+  Destination destination = 2 [(google.api.field_behavior) = REQUIRED];
+  repeated Model model = 3 [(google.api.field_behavior) = REQUIRED];
+  repeated LogicOperator logic_operator = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+message HealthCheckResponse {
+  enum ServingStatusCode {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;  // Used only by the Watch method.
+  }
+  ServingStatusCode code = 1;
+  string status = 2;
 }
