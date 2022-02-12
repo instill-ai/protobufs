@@ -39,25 +39,18 @@ service Model {
     };
   }
 
-  rpc LoadModel (LoadModelRequest) returns (LoadModelResponse) {
+  rpc UpdateModel (UpdateModelRequest) returns (ModelInfo) {
     option (google.api.http) = {
-      post: "/models/{name}/load"
-      body: "*"
-    };
-  }
-
-  rpc UnloadModel (UnloadModelRequest) returns (UnloadModelResponse) {
-    option (google.api.http) = {
-      post: "/models/{name}/unload"
+      patch: "/models/{name}"
       body: "*"
     };
   }
 
   // This method handle upload file request
-  rpc PredictModelByUpload (stream PredictModelRequest) returns (PredictModelResponse) {}
+  rpc PredictModelByUpload (stream PredictModelRequest) returns (google.protobuf.Any) {}
 
   // This method handle request with file in body such as url/base64 encode
-  rpc PredictModel (PredictModelRequest) returns (PredictModelResponse) {
+  rpc PredictModel (PredictModelRequest) returns (google.protobuf.Any) {
     option (google.api.http) = {
       post: "/models/{name}/outputs"
       body: "*"
@@ -76,6 +69,13 @@ service Model {
     };
   }
 }
+
+message UpdateModelRequest {
+  string name        = 1 [(google.api.field_behavior) = REQUIRED];
+  string description = 2;
+  string status      = 3;
+}
+
 
 message GetModelRequest {
     string name    = 1 [(google.api.field_behavior) = REQUIRED];
@@ -108,9 +108,6 @@ message PredictModelRequest {
     int32 version    = 2 [(google.api.field_behavior) = REQUIRED];
     bytes content    = 3 [(google.api.field_behavior) = REQUIRED];
     int32 type       = 4 [(google.api.field_behavior) = REQUIRED];
-}
-message PredictModelResponse {
-    google.protobuf.Any data  = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListModelRequest {}
