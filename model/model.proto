@@ -4,7 +4,6 @@ package instill.model;
 option go_package = "github.com/instill-ai/protobufs/model";
 
 // Protobuf standard
-import "google/protobuf/any.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/field_mask.proto";
@@ -41,16 +40,16 @@ service Model {
 
   rpc UpdateModel (UpdateModelRequest) returns (ModelInfo) {
     option (google.api.http) = {
-      patch: "/models/{name}"
+      patch: "/models/{model.name}"
       body: "*"
     };
   }
 
   // This method handle upload file request
-  rpc PredictModelByUpload (stream PredictModelRequest) returns (google.protobuf.Any) {}
+  rpc PredictModelByUpload (stream PredictModelRequest) returns (google.protobuf.Struct) {}
 
   // This method handle request with file in body such as url/base64 encode
-  rpc PredictModel (PredictModelRequest) returns (google.protobuf.Any) {
+  rpc PredictModel (PredictModelRequest) returns (google.protobuf.Struct) {
     option (google.api.http) = {
       post: "/models/{name}/outputs"
       body: "*"
@@ -71,11 +70,20 @@ service Model {
 }
 
 message UpdateModelRequest {
-  string name        = 1 [(google.api.field_behavior) = REQUIRED];
-  string description = 2;
-  string status      = 3;
+  UpdateModelInfo model                 = 1 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
+message UpdateModelInfo {
+  enum Status {
+    OFFLINE            = 0;
+    ONLINE             = 1;
+    ERROR              = 2;
+  }
+  string name        = 1 [(google.api.field_behavior) = REQUIRED];
+  string description = 2;
+  Status status      = 3;
+}
 
 message GetModelRequest {
     string name    = 1 [(google.api.field_behavior) = REQUIRED];
