@@ -69,20 +69,21 @@ service Model {
   }
 }
 
+enum ModelStatus {
+    OFFLINE            = 0;
+    ONLINE             = 1;
+    ERROR              = 2;
+}
+
 message UpdateModelRequest {
   UpdateModelInfo model                 = 1 [(google.api.field_behavior) = REQUIRED];
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message UpdateModelInfo {
-  enum Status {
-    OFFLINE            = 0;
-    ONLINE             = 1;
-    ERROR              = 2;
-  }
-  string name        = 1 [(google.api.field_behavior) = REQUIRED];
-  string description = 2;
-  Status status      = 3;
+  string name                    = 1 [(google.api.field_behavior) = REQUIRED];
+  string description             = 2;
+  ModelStatus status             = 3;
 }
 
 message GetModelRequest {
@@ -146,12 +147,12 @@ message CreateModelRequest {
 }
 
 message ModelVersion {
-  int32 version        = 1;
-  int32 model_id       = 2;
-  string description   = 3;
+  int32 version                        = 1;
+  int32 model_id                       = 2;
+  string description                   = 3;
   google.protobuf.Timestamp created_at = 4;
   google.protobuf.Timestamp updated_at = 5;
-  string status        = 6;
+  ModelStatus status                   = 6;
 }
 
 message ModelInfo {
