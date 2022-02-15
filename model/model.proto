@@ -123,18 +123,12 @@ message UnloadModelRequest {
 message UnloadModelResponse {}
 
 message PredictModelRequest {
-    enum CVTask {
-        CLASSIFICATION = 0;
-        DETECTION      = 1;
-    }
     // model name
     string name      = 1 [(google.api.field_behavior) = REQUIRED];
     // model version
     int32 version    = 2 [(google.api.field_behavior) = REQUIRED];
     // byte array of image content
     bytes content    = 3 [(google.api.field_behavior) = REQUIRED];
-    // CV task type such as object detection, classification
-    CVTask type      = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListModelRequest {}
@@ -148,12 +142,19 @@ message CreateModelsResponse {
 }
 
 message CreateModelRequest {
+  enum CVTask {
+    UNDEFINED      = 0;
+    CLASSIFICATION = 1;
+    DETECTION      = 2;
+  }
   bytes content      = 1 [(google.api.field_behavior) = REQUIRED];
   string type        = 2 [(google.api.field_behavior) = OPTIONAL];
   string framework   = 3 [(google.api.field_behavior) = OPTIONAL];
   string description = 4 [(google.api.field_behavior) = OPTIONAL];
   bool optimized     = 5 [(google.api.field_behavior) = OPTIONAL];
   string visibility  = 6 [(google.api.field_behavior) = OPTIONAL];
+  // CV task type such as object detection, classification
+  CVTask cv_task     = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ModelVersion {
