@@ -29,9 +29,9 @@ service Model {
     };
   }
 
-  rpc CreateModelByUpload (stream CreateModelRequest) returns (CreateModelsResponse) {}
+  rpc CreateModelByUpload (stream CreateModelRequest) returns (ModelInfo) {}
 
-  rpc CreateModel (CreateModelRequest) returns (CreateModelsResponse) {
+  rpc CreateModel (CreateModelRequest) returns (ModelInfo) {
     option (google.api.http) = {
       post: "/models"
       body: "*"
@@ -92,8 +92,7 @@ message UpdateModelRequest {
 
 message UpdateModelInfo {
   string name                    = 1 [(google.api.field_behavior) = REQUIRED];
-  string description             = 2;
-  ModelStatus status             = 3;
+  ModelStatus status             = 2;
 }
 
 message GetModelRequest {
@@ -137,10 +136,6 @@ message ListModelResponse {
     repeated ModelInfo models = 1;
 }
 
-message CreateModelsResponse {
-    repeated ModelInfo models = 1;
-}
-
 enum CVTask {
   UNDEFINED      = 0;
   CLASSIFICATION = 1;
@@ -148,16 +143,16 @@ enum CVTask {
 }
 
 message CreateModelRequest {
-
-  bytes content      = 1 [(google.api.field_behavior) = REQUIRED];
-  string type        = 2 [(google.api.field_behavior) = OPTIONAL];
-  string framework   = 3 [(google.api.field_behavior) = OPTIONAL];
-  string description = 4 [(google.api.field_behavior) = OPTIONAL];
-  bool optimized     = 5 [(google.api.field_behavior) = OPTIONAL];
-  string visibility  = 6 [(google.api.field_behavior) = OPTIONAL];
+  string name        = 1 [(google.api.field_behavior) = REQUIRED];
+  int32 version      = 2 [(google.api.field_behavior) = REQUIRED];
+  bytes content      = 3 [(google.api.field_behavior) = REQUIRED];
+  string type        = 4 [(google.api.field_behavior) = OPTIONAL];
+  string framework   = 5 [(google.api.field_behavior) = OPTIONAL];
+  string description = 6 [(google.api.field_behavior) = OPTIONAL];
+  bool optimized     = 7 [(google.api.field_behavior) = OPTIONAL];
+  string visibility  = 8 [(google.api.field_behavior) = OPTIONAL];
   // CV task type such as object detection, classification
-  CVTask cv_task     = 7 [(google.api.field_behavior) = OPTIONAL];
-  int32 version      = 8 [(google.api.field_behavior) = REQUIRED];
+  CVTask cv_task     = 9 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ModelVersion {
@@ -173,17 +168,16 @@ message ModelInfo {
   int32 id                       = 1;
   string name                    = 2;
   bool optimized                 = 3;
-  string description             = 4;
-  string type                    = 5;
-  string framework               = 6;
-  google.protobuf.Timestamp created_at           = 7;
-  google.protobuf.Timestamp updated_at           = 8;
-  string organization            = 9;
-  string visibility              = 10;
-  repeated ModelVersion versions = 11;
-  string icon                    = 12;
-  string Author                  = 13;
-  string fullName                = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string type                    = 4;
+  string framework               = 5;
+  string organization            = 6;
+  string visibility              = 7;
+  repeated ModelVersion versions = 8;
+  string icon                    = 9;
+  string Author                  = 10;
+  string fullName                = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated string contents       = 12;
+  CVTask cv_task                 = 13;
 }
 
 message ClassificationOutput {
