@@ -1,0 +1,212 @@
+syntax = "proto3";
+package instill.model;
+
+option go_package = "github.com/instill-ai/protobufs/model";
+
+// Protobuf standard
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+// Google api
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+service Model {
+  rpc Liveness(google.protobuf.Empty) returns (HealthCheckResponse) {
+    option (google.api.http) = {
+      get: "/__liveness"
+      additional_bindings: {
+          get: "/health/model"
+      }
+    };
+  }
+
+  rpc Readiness(google.protobuf.Empty) returns (HealthCheckResponse){
+    option (google.api.http) = {
+      get: "/__readiness"
+    };
+  }
+
+  rpc CreateModelByUpload (stream CreateModelRequest) returns (ModelInfo) {}
+
+  rpc CreateModel (CreateModelRequest) returns (ModelInfo) {
+    option (google.api.http) = {
+      post: "/models"
+      body: "*"
+    };
+  }
+
+  rpc UpdateModel (UpdateModelRequest) returns (ModelInfo) {
+    option (google.api.http) = {
+      patch: "/models/{model.name}"
+      body: "*"
+    };
+  }
+
+  // This method handle upload file request
+  rpc PredictModelByUpload (stream PredictModelRequest) returns (google.protobuf.Struct) {}
+
+  // This method handle request with file in body such as url/base64 encode
+  rpc PredictModel (PredictModelRequest) returns (google.protobuf.Struct) {
+    option (google.api.http) = {
+      post: "/models/{name}/outputs"
+      body: "*"
+    };
+  }
+
+  rpc ListModels (ListModelRequest) returns (ListModelResponse) {
+    option (google.api.http) = {
+      get: "/models"
+    };
+  }
+
+  rpc GetModel (GetModelRequest) returns (ModelInfo) {
+    option (google.api.http) = {
+      get: "/models/{name}"
+    };
+  }
+
+  rpc DeleteModel (DeleteModelRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/models/{name}"
+    };
+  }
+}
+
+enum ModelStatus {
+    OFFLINE            = 0;
+    ONLINE             = 1;
+    ERROR              = 2;
+}
+
+message DeleteModelRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message UpdateModelRequest {
+  UpdateModelInfo model                 = 1 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message UpdateModelInfo {
+  string name                    = 1 [(google.api.field_behavior) = REQUIRED];
+  ModelStatus status             = 2;
+}
+
+message GetModelRequest {
+    string name    = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message LoadModelRequest {
+    string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message LoadModelResponse {
+    // OPTIONAL - If nontrivial cost is involved in
+    // determining the size, return 0 here and
+    // do the sizing in the modelSize function
+    uint64 sizeInBytes = 1;
+
+    // EXPERIMENTAL - Applies only if limitModelConcurrency = true
+    // was returned from runtimeStatus rpc.
+    // See RuntimeStatusResponse.limitModelConcurrency for more detail
+    uint32 maxConcurrency = 2;
+}
+
+message UnloadModelRequest {
+    string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message UnloadModelResponse {}
+
+message PredictModelRequest {
+    // model name
+    string name      = 1 [(google.api.field_behavior) = REQUIRED];
+    // model version
+    int32 version    = 2 [(google.api.field_behavior) = REQUIRED];
+    // byte array of image content
+    bytes content    = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListModelRequest {}
+
+message ListModelResponse {
+    repeated ModelInfo models = 1;
+}
+
+enum CVTask {
+  UNDEFINED      = 0;
+  CLASSIFICATION = 1;
+  DETECTION      = 2;
+}
+
+message CreateModelRequest {
+  string name        = 1 [(google.api.field_behavior) = REQUIRED];
+  int32 version      = 2 [(google.api.field_behavior) = REQUIRED];
+  bytes content      = 3 [(google.api.field_behavior) = REQUIRED];
+  string type        = 4 [(google.api.field_behavior) = OPTIONAL];
+  string framework   = 5 [(google.api.field_behavior) = OPTIONAL];
+  string description = 6 [(google.api.field_behavior) = OPTIONAL];
+  bool optimized     = 7 [(google.api.field_behavior) = OPTIONAL];
+  string visibility  = 8 [(google.api.field_behavior) = OPTIONAL];
+  // CV task type such as object detection, classification
+  CVTask cv_task     = 9 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ModelVersion {
+  int32 version                        = 1;
+  int32 model_id                       = 2;
+  string description                   = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+  ModelStatus status                   = 6;
+}
+
+message ModelInfo {
+  int32 id                       = 1;
+  string name                    = 2;
+  bool optimized                 = 3;
+  string type                    = 4;
+  string framework               = 5;
+  string visibility              = 6;
+  repeated ModelVersion versions = 7;
+  string fullName                = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated string contents       = 9;
+  CVTask cv_task                 = 10;
+}
+
+message ClassificationOutput {
+    string category = 1;
+    float score     = 2;
+}
+
+message ClassificationOutputs {
+    repeated ClassificationOutput contents = 1;
+}
+
+message Box {
+    float top     = 1;
+    float left    = 2;
+    float width   = 3;
+    float height  = 4;
+}
+
+message BoundingBoxPrediction {
+    string category = 1;
+    float score     = 2;
+    Box box         = 3;
+}
+
+message DetectionOutput {
+    repeated BoundingBoxPrediction contents = 1;
+}
+
+message DetectionOutputs {
+    repeated DetectionOutput contents = 1;
+}
+
+message HealthCheckResponse {
+    int32 status = 1;
+}
