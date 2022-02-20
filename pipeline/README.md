@@ -11,7 +11,6 @@
     - [HealthCheckResponse](#instill.pipeline.HealthCheckResponse)
     - [ListPipelinesRequest](#instill.pipeline.ListPipelinesRequest)
     - [ListPipelinesResponse](#instill.pipeline.ListPipelinesResponse)
-    - [LogicOperator](#instill.pipeline.LogicOperator)
     - [Model](#instill.pipeline.Model)
     - [PipelineInfo](#instill.pipeline.PipelineInfo)
     - [Recipe](#instill.pipeline.Recipe)
@@ -20,12 +19,12 @@
     - [TriggerPipelineContent](#instill.pipeline.TriggerPipelineContent)
     - [TriggerPipelineRequest](#instill.pipeline.TriggerPipelineRequest)
     - [UpdatePipelineRequest](#instill.pipeline.UpdatePipelineRequest)
-  
+
     - [HealthCheckResponse.ServingStatusCode](#instill.pipeline.HealthCheckResponse.ServingStatusCode)
     - [ListPipelinesRequest.View](#instill.pipeline.ListPipelinesRequest.View)
-  
+
     - [Pipeline](#instill.pipeline.Pipeline)
-  
+
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -150,16 +149,6 @@
 
 
 
-<a name="instill.pipeline.LogicOperator"></a>
-
-### LogicOperator
-
-
-
-
-
-
-
 <a name="instill.pipeline.Model"></a>
 
 ### Model
@@ -191,7 +180,7 @@
 | created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
 | updated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
 | recipe | [Recipe](#instill.pipeline.Recipe) |  |  |
-| fullName | [string](#string) |  |  |
+| full_name | [string](#string) |  |  |
 
 
 
@@ -209,7 +198,6 @@
 | source | [Source](#instill.pipeline.Source) |  |  |
 | destination | [Destination](#instill.pipeline.Destination) |  |  |
 | model | [Model](#instill.pipeline.Model) | repeated |  |
-| logic_operator | [LogicOperator](#instill.pipeline.LogicOperator) | repeated |  |
 
 
 
@@ -296,7 +284,7 @@
 
 
 
- 
+
 
 
 <a name="instill.pipeline.HealthCheckResponse.ServingStatusCode"></a>
@@ -325,9 +313,9 @@
 | WITH_RECIPE | 2 |  |
 
 
- 
 
- 
+
+
 
 
 <a name="instill.pipeline.Pipeline"></a>
@@ -344,10 +332,9 @@
 | GetPipeline | [GetPipelineRequest](#instill.pipeline.GetPipelineRequest) | [PipelineInfo](#instill.pipeline.PipelineInfo) |  |
 | UpdatePipeline | [UpdatePipelineRequest](#instill.pipeline.UpdatePipelineRequest) | [PipelineInfo](#instill.pipeline.PipelineInfo) |  |
 | DeletePipeline | [DeletePipelineRequest](#instill.pipeline.DeletePipelineRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| TriggerPipeline | [TriggerPipelineRequest](#instill.pipeline.TriggerPipelineRequest) | [.google.protobuf.Struct](#google.protobuf.Struct) |  |
 | TriggerPipelineByUpload | [TriggerPipelineRequest](#instill.pipeline.TriggerPipelineRequest) stream | [.google.protobuf.Struct](#google.protobuf.Struct) |  |
 
- 
+
 
 
 
@@ -370,4 +357,3 @@
 | <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
 | <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
 | <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
-

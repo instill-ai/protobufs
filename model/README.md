@@ -9,8 +9,8 @@
     - [ClassificationOutput](#instill.model.ClassificationOutput)
     - [ClassificationOutputs](#instill.model.ClassificationOutputs)
     - [CreateModelRequest](#instill.model.CreateModelRequest)
-    - [CreateModelsResponse](#instill.model.CreateModelsResponse)
     - [DeleteModelRequest](#instill.model.DeleteModelRequest)
+    - [DeleteModelVersionRequest](#instill.model.DeleteModelVersionRequest)
     - [DetectionOutput](#instill.model.DetectionOutput)
     - [DetectionOutputs](#instill.model.DetectionOutputs)
     - [GetModelRequest](#instill.model.GetModelRequest)
@@ -26,12 +26,12 @@
     - [UnloadModelResponse](#instill.model.UnloadModelResponse)
     - [UpdateModelInfo](#instill.model.UpdateModelInfo)
     - [UpdateModelRequest](#instill.model.UpdateModelRequest)
-  
-    - [CreateModelRequest.CVTask](#instill.model.CreateModelRequest.CVTask)
+
+    - [CVTask](#instill.model.CVTask)
     - [ModelStatus](#instill.model.ModelStatus)
-  
+
     - [Model](#instill.model.Model)
-  
+
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -117,28 +117,10 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
 | content | [bytes](#bytes) |  |  |
-| type | [string](#string) |  |  |
-| framework | [string](#string) |  |  |
 | description | [string](#string) |  |  |
-| optimized | [bool](#bool) |  |  |
-| visibility | [string](#string) |  |  |
-| cv_task | [CreateModelRequest.CVTask](#instill.model.CreateModelRequest.CVTask) |  | CV task type such as object detection, classification |
-
-
-
-
-
-
-<a name="instill.model.CreateModelsResponse"></a>
-
-### CreateModelsResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| models | [ModelInfo](#instill.model.ModelInfo) | repeated |  |
+| cv_task | [CVTask](#instill.model.CVTask) |  | CV task type such as object detection, classification |
 
 
 
@@ -154,6 +136,22 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="instill.model.DeleteModelVersionRequest"></a>
+
+### DeleteModelVersionRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| version | [int32](#int32) |  |  |
 
 
 
@@ -286,18 +284,9 @@
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
 | name | [string](#string) |  |  |
-| optimized | [bool](#bool) |  |  |
-| description | [string](#string) |  |  |
-| type | [string](#string) |  |  |
-| framework | [string](#string) |  |  |
-| created_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
-| updated_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  |  |
-| organization | [string](#string) |  |  |
-| visibility | [string](#string) |  |  |
+| full_Name | [string](#string) |  |  |
+| cv_task | [CVTask](#instill.model.CVTask) |  |  |
 | versions | [ModelVersion](#instill.model.ModelVersion) | repeated |  |
-| icon | [string](#string) |  |  |
-| Author | [string](#string) |  |  |
-| fullName | [string](#string) |  |  |
 
 
 
@@ -375,8 +364,9 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  |  |
-| description | [string](#string) |  |  |
+| version | [int32](#int32) |  |  |
 | status | [ModelStatus](#instill.model.ModelStatus) |  |  |
+| description | [string](#string) |  |  |
 
 
 
@@ -398,12 +388,12 @@
 
 
 
- 
 
 
-<a name="instill.model.CreateModelRequest.CVTask"></a>
 
-### CreateModelRequest.CVTask
+<a name="instill.model.CVTask"></a>
+
+### CVTask
 
 
 | Name | Number | Description |
@@ -426,9 +416,9 @@
 | ERROR | 2 |  |
 
 
- 
 
- 
+
+
 
 
 <a name="instill.model.Model"></a>
@@ -440,16 +430,17 @@
 | ----------- | ------------ | ------------- | ------------|
 | Liveness | [.google.protobuf.Empty](#google.protobuf.Empty) | [HealthCheckResponse](#instill.model.HealthCheckResponse) |  |
 | Readiness | [.google.protobuf.Empty](#google.protobuf.Empty) | [HealthCheckResponse](#instill.model.HealthCheckResponse) |  |
-| CreateModelByUpload | [CreateModelRequest](#instill.model.CreateModelRequest) stream | [CreateModelsResponse](#instill.model.CreateModelsResponse) |  |
-| CreateModel | [CreateModelRequest](#instill.model.CreateModelRequest) | [CreateModelsResponse](#instill.model.CreateModelsResponse) |  |
+| CreateModelByUpload | [CreateModelRequest](#instill.model.CreateModelRequest) stream | [ModelInfo](#instill.model.ModelInfo) |  |
+| CreateModel | [CreateModelRequest](#instill.model.CreateModelRequest) | [ModelInfo](#instill.model.ModelInfo) |  |
 | UpdateModel | [UpdateModelRequest](#instill.model.UpdateModelRequest) | [ModelInfo](#instill.model.ModelInfo) |  |
 | PredictModelByUpload | [PredictModelRequest](#instill.model.PredictModelRequest) stream | [.google.protobuf.Struct](#google.protobuf.Struct) | This method handle upload file request |
 | PredictModel | [PredictModelRequest](#instill.model.PredictModelRequest) | [.google.protobuf.Struct](#google.protobuf.Struct) | This method handle request with file in body such as url/base64 encode |
 | ListModels | [ListModelRequest](#instill.model.ListModelRequest) | [ListModelResponse](#instill.model.ListModelResponse) |  |
 | GetModel | [GetModelRequest](#instill.model.GetModelRequest) | [ModelInfo](#instill.model.ModelInfo) |  |
 | DeleteModel | [DeleteModelRequest](#instill.model.DeleteModelRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
+| DeleteModelVersion | [DeleteModelVersionRequest](#instill.model.DeleteModelVersionRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 
- 
+
 
 
 
@@ -472,4 +463,3 @@
 | <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
 | <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
 | <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
-
