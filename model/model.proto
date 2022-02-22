@@ -49,9 +49,9 @@ service Model {
   rpc PredictModelByUpload (stream PredictModelRequest) returns (google.protobuf.Struct) {}
 
   // This method handle request with file in body such as url/base64 encode
-  rpc PredictModel (PredictModelRequest) returns (google.protobuf.Struct) {
+  rpc PredictModel (PredictModelImageRequest) returns (google.protobuf.Struct) {
     option (google.api.http) = {
-      post: "/models/{name}/outputs"
+      post: "/models/{name}/versions/{version}/outputs"
       body: "*"
     };
   }
@@ -119,6 +119,22 @@ message PredictModelRequest {
     int32 version    = 2 [(google.api.field_behavior) = REQUIRED];
     // byte array of image content
     bytes content    = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ImageRequest {
+    // image url
+    string url       = 1;
+    // base 64 byte array of image content
+    string base64    = 2;
+}
+
+message PredictModelImageRequest {
+    // model name
+    string name                    = 1 [(google.api.field_behavior) = REQUIRED];
+    // model version
+    int32 version                  = 2 [(google.api.field_behavior) = REQUIRED];
+    // image content request
+    repeated ImageRequest contents = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListModelRequest {}
