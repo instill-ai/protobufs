@@ -58,7 +58,13 @@ service Pipeline {
       delete: "/pipelines/{name}"
     };
   }
-  rpc TriggerPipelineByUpload (stream TriggerPipelineRequest) returns (google.protobuf.Struct) {
+  rpc TriggerPipeline (TriggerPipelineRequest) returns (google.protobuf.Struct) {
+    option (google.api.http) = {
+      post: "/pipelines/{name}/outputs"
+      body: "*"
+    };
+  }
+  rpc TriggerPipelineByUpload (stream TriggerPipelineImageRequest) returns (google.protobuf.Struct) {
   }
 }
 
@@ -114,12 +120,20 @@ message DeletePipelineRequest {
 message TriggerPipelineContent {
   string url = 1 [(google.api.field_behavior) = OPTIONAL];
   string base64 = 2 [(google.api.field_behavior) = OPTIONAL];
-  bytes chunk = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message TriggerPipelineRequest {
   string name = 1 [(google.api.field_behavior) = REQUIRED];
   repeated TriggerPipelineContent contents = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message TriggerPipelineImageContent {
+  bytes chunk = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message TriggerPipelineImageRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated TriggerPipelineImageContent contents = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message Scheduler {
