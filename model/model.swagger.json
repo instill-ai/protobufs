@@ -134,51 +134,6 @@
         ]
       }
     },
-    "/models/{model.name}/versions/{model.version}": {
-      "patch": {
-        "operationId": "Model_UpdateModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/modelModelInfo"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "model.name",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "model.version",
-            "in": "path",
-            "required": true,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/modelUpdateModelRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Model"
-        ]
-      }
-    },
     "/models/{name}": {
       "get": {
         "operationId": "Model_GetModel",
@@ -237,68 +192,6 @@
         ]
       }
     },
-    "/models/{name}/outputs": {
-      "post": {
-        "summary": "This method handle request with file in body such as url/base64 encode",
-        "operationId": "Model_PredictModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "description": "model name",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "version": {
-                  "type": "integer",
-                  "format": "int32",
-                  "title": "model version",
-                  "required": [
-                    "version"
-                  ]
-                },
-                "content": {
-                  "type": "string",
-                  "format": "byte",
-                  "title": "byte array of image content",
-                  "required": [
-                    "content"
-                  ]
-                }
-              },
-              "required": [
-                "version",
-                "content"
-              ]
-            }
-          }
-        ],
-        "tags": [
-          "Model"
-        ]
-      }
-    },
     "/models/{name}/versions/{version}": {
       "delete": {
         "operationId": "Model_DeleteModelVersion",
@@ -329,6 +222,118 @@
             "required": true,
             "type": "integer",
             "format": "int32"
+          }
+        ],
+        "tags": [
+          "Model"
+        ]
+      },
+      "patch": {
+        "operationId": "Model_UpdateModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/modelModelInfo"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/modelUpdateModelInfo"
+            }
+          },
+          {
+            "name": "updateMask",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Model"
+        ]
+      }
+    },
+    "/models/{name}/versions/{version}/outputs": {
+      "post": {
+        "summary": "This method handle request with file in body such as url/base64 encode",
+        "operationId": "Model_PredictModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "model name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "version",
+            "description": "model version",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "contents": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/modelImageRequest"
+                  },
+                  "title": "image content request",
+                  "required": [
+                    "contents"
+                  ]
+                }
+              },
+              "required": [
+                "contents"
+              ]
+            }
           }
         ],
         "tags": [
@@ -384,6 +389,19 @@
         "name",
         "content"
       ]
+    },
+    "modelImageRequest": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "title": "image url"
+        },
+        "base64": {
+          "type": "string",
+          "title": "base 64 byte array of image content"
+        }
+      }
     },
     "modelListModelResponse": {
       "type": "object",
@@ -460,47 +478,13 @@
     "modelUpdateModelInfo": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string",
-          "required": [
-            "name"
-          ]
-        },
-        "version": {
-          "type": "integer",
-          "format": "int32",
-          "required": [
-            "version"
-          ]
-        },
         "status": {
           "$ref": "#/definitions/modelModelStatus"
         },
         "description": {
           "type": "string"
         }
-      },
-      "required": [
-        "name",
-        "version"
-      ]
-    },
-    "modelUpdateModelRequest": {
-      "type": "object",
-      "properties": {
-        "model": {
-          "$ref": "#/definitions/modelUpdateModelInfo"
-        },
-        "updateMask": {
-          "type": "string",
-          "required": [
-            "update_mask"
-          ]
-        }
-      },
-      "required": [
-        "updateMask"
-      ]
+      }
     },
     "protobufAny": {
       "type": "object",

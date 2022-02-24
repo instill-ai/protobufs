@@ -15,23 +15,21 @@
     - [DetectionOutputs](#instill.model.DetectionOutputs)
     - [GetModelRequest](#instill.model.GetModelRequest)
     - [HealthCheckResponse](#instill.model.HealthCheckResponse)
+    - [ImageRequest](#instill.model.ImageRequest)
     - [ListModelRequest](#instill.model.ListModelRequest)
     - [ListModelResponse](#instill.model.ListModelResponse)
-    - [LoadModelRequest](#instill.model.LoadModelRequest)
-    - [LoadModelResponse](#instill.model.LoadModelResponse)
     - [ModelInfo](#instill.model.ModelInfo)
     - [ModelVersion](#instill.model.ModelVersion)
+    - [PredictModelImageRequest](#instill.model.PredictModelImageRequest)
     - [PredictModelRequest](#instill.model.PredictModelRequest)
-    - [UnloadModelRequest](#instill.model.UnloadModelRequest)
-    - [UnloadModelResponse](#instill.model.UnloadModelResponse)
     - [UpdateModelInfo](#instill.model.UpdateModelInfo)
     - [UpdateModelRequest](#instill.model.UpdateModelRequest)
-
+  
     - [CVTask](#instill.model.CVTask)
     - [ModelStatus](#instill.model.ModelStatus)
-
+  
     - [Model](#instill.model.Model)
-
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -218,6 +216,22 @@
 
 
 
+<a name="instill.model.ImageRequest"></a>
+
+### ImageRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| url | [string](#string) |  | image url |
+| base64 | [string](#string) |  | base 64 byte array of image content |
+
+
+
+
+
+
 <a name="instill.model.ListModelRequest"></a>
 
 ### ListModelRequest
@@ -237,37 +251,6 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | models | [ModelInfo](#instill.model.ModelInfo) | repeated |  |
-
-
-
-
-
-
-<a name="instill.model.LoadModelRequest"></a>
-
-### LoadModelRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="instill.model.LoadModelResponse"></a>
-
-### LoadModelResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sizeInBytes | [uint64](#uint64) |  | OPTIONAL - If nontrivial cost is involved in determining the size, return 0 here and do the sizing in the modelSize function |
-| maxConcurrency | [uint32](#uint32) |  | EXPERIMENTAL - Applies only if limitModelConcurrency = true was returned from runtimeStatus rpc. See RuntimeStatusResponse.limitModelConcurrency for more detail |
 
 
 
@@ -313,6 +296,23 @@
 
 
 
+<a name="instill.model.PredictModelImageRequest"></a>
+
+### PredictModelImageRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | model name |
+| version | [int32](#int32) |  | model version |
+| contents | [ImageRequest](#instill.model.ImageRequest) | repeated | image content request |
+
+
+
+
+
+
 <a name="instill.model.PredictModelRequest"></a>
 
 ### PredictModelRequest
@@ -330,31 +330,6 @@
 
 
 
-<a name="instill.model.UnloadModelRequest"></a>
-
-### UnloadModelRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="instill.model.UnloadModelResponse"></a>
-
-### UnloadModelResponse
-
-
-
-
-
-
-
 <a name="instill.model.UpdateModelInfo"></a>
 
 ### UpdateModelInfo
@@ -363,8 +338,6 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
-| version | [int32](#int32) |  |  |
 | status | [ModelStatus](#instill.model.ModelStatus) |  |  |
 | description | [string](#string) |  |  |
 
@@ -381,6 +354,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| version | [int32](#int32) |  |  |
 | model | [UpdateModelInfo](#instill.model.UpdateModelInfo) |  |  |
 | update_mask | [google.protobuf.FieldMask](#google.protobuf.FieldMask) |  |  |
 
@@ -388,7 +363,7 @@
 
 
 
-
+ 
 
 
 <a name="instill.model.CVTask"></a>
@@ -416,9 +391,9 @@
 | ERROR | 2 |  |
 
 
+ 
 
-
-
+ 
 
 
 <a name="instill.model.Model"></a>
@@ -434,13 +409,13 @@
 | CreateModel | [CreateModelRequest](#instill.model.CreateModelRequest) | [ModelInfo](#instill.model.ModelInfo) |  |
 | UpdateModel | [UpdateModelRequest](#instill.model.UpdateModelRequest) | [ModelInfo](#instill.model.ModelInfo) |  |
 | PredictModelByUpload | [PredictModelRequest](#instill.model.PredictModelRequest) stream | [.google.protobuf.Struct](#google.protobuf.Struct) | This method handle upload file request |
-| PredictModel | [PredictModelRequest](#instill.model.PredictModelRequest) | [.google.protobuf.Struct](#google.protobuf.Struct) | This method handle request with file in body such as url/base64 encode |
+| PredictModel | [PredictModelImageRequest](#instill.model.PredictModelImageRequest) | [.google.protobuf.Struct](#google.protobuf.Struct) | This method handle request with file in body such as url/base64 encode |
 | ListModels | [ListModelRequest](#instill.model.ListModelRequest) | [ListModelResponse](#instill.model.ListModelResponse) |  |
 | GetModel | [GetModelRequest](#instill.model.GetModelRequest) | [ModelInfo](#instill.model.ModelInfo) |  |
 | DeleteModel | [DeleteModelRequest](#instill.model.DeleteModelRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 | DeleteModelVersion | [DeleteModelVersionRequest](#instill.model.DeleteModelVersionRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
 
-
+ 
 
 
 
@@ -463,3 +438,4 @@
 | <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
 | <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
 | <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
+

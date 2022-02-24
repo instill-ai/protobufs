@@ -17,14 +17,16 @@
     - [Scheduler](#instill.pipeline.Scheduler)
     - [Source](#instill.pipeline.Source)
     - [TriggerPipelineContent](#instill.pipeline.TriggerPipelineContent)
+    - [TriggerPipelineImageContent](#instill.pipeline.TriggerPipelineImageContent)
+    - [TriggerPipelineImageRequest](#instill.pipeline.TriggerPipelineImageRequest)
     - [TriggerPipelineRequest](#instill.pipeline.TriggerPipelineRequest)
     - [UpdatePipelineRequest](#instill.pipeline.UpdatePipelineRequest)
-
+  
     - [HealthCheckResponse.ServingStatusCode](#instill.pipeline.HealthCheckResponse.ServingStatusCode)
     - [ListPipelinesRequest.View](#instill.pipeline.ListPipelinesRequest.View)
-
+  
     - [Pipeline](#instill.pipeline.Pipeline)
-
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -246,7 +248,37 @@
 | ----- | ---- | ----- | ----------- |
 | url | [string](#string) |  |  |
 | base64 | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="instill.pipeline.TriggerPipelineImageContent"></a>
+
+### TriggerPipelineImageContent
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
 | chunk | [bytes](#bytes) |  |  |
+
+
+
+
+
+
+<a name="instill.pipeline.TriggerPipelineImageRequest"></a>
+
+### TriggerPipelineImageRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| contents | [TriggerPipelineImageContent](#instill.pipeline.TriggerPipelineImageContent) | repeated |  |
 
 
 
@@ -284,7 +316,7 @@
 
 
 
-
+ 
 
 
 <a name="instill.pipeline.HealthCheckResponse.ServingStatusCode"></a>
@@ -313,9 +345,9 @@
 | WITH_RECIPE | 2 |  |
 
 
+ 
 
-
-
+ 
 
 
 <a name="instill.pipeline.Pipeline"></a>
@@ -332,9 +364,10 @@
 | GetPipeline | [GetPipelineRequest](#instill.pipeline.GetPipelineRequest) | [PipelineInfo](#instill.pipeline.PipelineInfo) |  |
 | UpdatePipeline | [UpdatePipelineRequest](#instill.pipeline.UpdatePipelineRequest) | [PipelineInfo](#instill.pipeline.PipelineInfo) |  |
 | DeletePipeline | [DeletePipelineRequest](#instill.pipeline.DeletePipelineRequest) | [.google.protobuf.Empty](#google.protobuf.Empty) |  |
-| TriggerPipelineByUpload | [TriggerPipelineRequest](#instill.pipeline.TriggerPipelineRequest) stream | [.google.protobuf.Struct](#google.protobuf.Struct) |  |
+| TriggerPipeline | [TriggerPipelineRequest](#instill.pipeline.TriggerPipelineRequest) | [.google.protobuf.Struct](#google.protobuf.Struct) |  |
+| TriggerPipelineByUpload | [TriggerPipelineImageRequest](#instill.pipeline.TriggerPipelineImageRequest) stream | [.google.protobuf.Struct](#google.protobuf.Struct) |  |
 
-
+ 
 
 
 
@@ -357,3 +390,4 @@
 | <a name="bool" /> bool |  | bool | boolean | boolean | bool | bool | boolean | TrueClass/FalseClass |
 | <a name="string" /> string | A string must always contain UTF-8 encoded or 7-bit ASCII text. | string | String | str/unicode | string | string | string | String (UTF-8) |
 | <a name="bytes" /> bytes | May contain any arbitrary sequence of bytes. | string | ByteString | str | []byte | ByteString | string | String (ASCII-8BIT) |
+
