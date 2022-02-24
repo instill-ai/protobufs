@@ -1,5 +1,14 @@
 # Changelog
 
+### [0.1.1-alpha](https://github.com/instill-ai/protobufs/compare/v0.1.0-alpha...v0.1.1-alpha) (2022-02-24)
+
+
+### Bug Fixes
+
+* create TriggerPipeline rpc for new model-backend ([#27](https://github.com/instill-ai/protobufs/issues/27)) ([3c9f861](https://github.com/instill-ai/protobufs/commit/3c9f861fec699bb4ec08422409461bdfdb190e30))
+* **model:** move name and version out of updated model info message struct ([#29](https://github.com/instill-ai/protobufs/issues/29)) ([919a751](https://github.com/instill-ai/protobufs/commit/919a75102c38ff8f075732dde525e2acde336407))
+* udpate predict method for url/base64 ([#26](https://github.com/instill-ai/protobufs/issues/26)) ([9bd38a3](https://github.com/instill-ai/protobufs/commit/9bd38a31a0922c4fecd2759d0e40b56d60239ed2))
+
 ## [0.1.0-alpha](https://github.com/instill-ai/protobufs/compare/v0.0.0-alpha...v0.1.0-alpha) (2022-02-20)
 
 
