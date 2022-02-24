@@ -40,8 +40,8 @@ service Model {
 
   rpc UpdateModel (UpdateModelRequest) returns (ModelInfo) {
     option (google.api.http) = {
-      patch: "/models/{model.name}/versions/{model.version}"
-      body: "*"
+      patch: "/models/{name}/versions/{version}"
+      body: "model"
     };
   }
 
@@ -97,15 +97,15 @@ message DeleteModelVersionRequest {
 }
 
 message UpdateModelRequest {
-  UpdateModelInfo model                 = 1 [(google.api.field_behavior) = REQUIRED];
-  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+  string name                           = 1 [(google.api.field_behavior) = REQUIRED];
+  int32 version                         = 2 [(google.api.field_behavior) = REQUIRED];
+  UpdateModelInfo model                 = 3 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 message UpdateModelInfo {
-  string name                    = 1 [(google.api.field_behavior) = REQUIRED];
-  int32 version                  = 2 [(google.api.field_behavior) = REQUIRED];
-  ModelStatus status             = 3;
-  string description             = 4;
+  ModelStatus status             = 1;
+  string description             = 2;
 }
 
 message GetModelRequest {
