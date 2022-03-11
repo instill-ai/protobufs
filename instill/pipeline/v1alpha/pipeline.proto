@@ -1,0 +1,329 @@
+syntax = "proto3";
+
+package instill.pipeline.v1alpha;
+
+// Protocol Buffers Well-Known Types
+import "google/protobuf/struct.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+// Google API
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+
+// LivenessRequest represents a request to check a service liveness status
+message LivenessRequest {
+  // Service name to check for its liveness status
+  string service = 1;
+}
+
+// LivenessResponse represents a response for a service liveness status
+message LivenessResponse {
+  // ServingStatus enumerates the status of a queried service
+  enum ServingStatus {
+    // Serving status: UNSPECIFIED
+    SERVING_STATUS_UNSPECIFIED = 0;
+    // Serving status: SERVING
+    SERVING_STATUS_SERVING = 1;
+    // Serving status: NOT SERVING
+    SERVING_STATUS_NOT_SERVING = 2;
+  }
+
+  // Status is the instance of the enum type ServingStatus
+  ServingStatus status = 1;
+}
+
+// ReadinessRequest represents a request to check a service readiness status
+message ReadinessRequest {
+  // Service name to check for its readiness status
+  string service = 1;
+}
+
+// ReadinessResponse represents a response for a service readiness status
+message ReadinessResponse {
+  // ServingStatus enumerates the status of a queried service
+  enum ServingStatus {
+    // Serving status: UNSPECIFIED
+    SERVING_STATUS_UNSPECIFIED = 0;
+    // Serving status: SERVING
+    SERVING_STATUS_SERVING = 1;
+    // Serving status: NOT SERVING
+    SERVING_STATUS_NOT_SERVING = 2;
+  }
+
+  // Status is the value of ServingStatus enum type
+  ServingStatus status = 1;
+}
+
+// Scheduler represents the content of a scheduler
+message Scheduler {
+  // Crobtab (see https://crontab.guru)
+  string crontab = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// Source represents the content of a data source
+message Source {
+  // Source type
+  string type = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Source name
+  string name = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Scheduler for handling the source
+  Scheduler scheduler = 3 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// Destination represents the content of a data destination
+message Destination {
+  // Destination type
+  string type = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Destination name
+  string name = 2 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// Model represents the content of a model
+message Model {
+  // Model name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Model version
+  int32 version = 2 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// Model represents the content of a recipe
+message Recipe {
+  // A source instance
+  Source source = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // A destination instance
+  Destination destination = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // A model instance
+  repeated Model models = 3 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// Pipeline represents the content of a pipeline
+message Pipeline {
+  // Pipeline ID
+  uint64 id = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Pipeline name
+  string name = 2;
+  // Pipeline description
+  string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Pipeline activity status
+  bool active = 4;
+  // Pipeline creation time
+  google.protobuf.Timestamp created_at = 5
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Pipeline update time
+  google.protobuf.Timestamp updated_at = 6
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Pipeline recipe
+  Recipe recipe = 7;
+  // Pipeline full name (i.e., [user_name/org_name]/pipeline_name)
+  string full_name = 8 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// CreatePipelineRequest represents a request to create a pipeline
+message CreatePipelineRequest {
+  // Pipeline name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Pipeline description
+  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // Pipeline activity status
+  bool active = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Pipeline recipe
+  Recipe recipe = 4 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreatePipelineResponse represents a response for a pipeline instance
+message CreatePipelineResponse {
+  // A pipeline instance
+  Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// ListPipelineRequest represents a request to list pipelines
+message ListPipelineRequest {
+  // Page size
+  int32 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // View is the instance of enum type View
+  View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
+
+  // View enumerates the view type of a pipeline
+  enum View {
+    // View type: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View type: BASIC
+    VIEW_BASIC = 1;
+    // View type: RECIPE
+    VIEW_RECIPE = 2;
+  }
+}
+
+// ListPipelineResponse represents a response for a list of pipelines
+message ListPipelineResponse {
+  // A list of pipelines
+  repeated Pipeline pipelines = 1;
+  // Next page token
+  string next_page_token = 2;
+}
+
+// GetPipelineRequest represents a request to query a pipeline
+message GetPipelineRequest {
+  // Pipeline name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// GetPipelineResponse represents a response for a pipeline instance
+message GetPipelineResponse {
+  // A pipeline instance
+  Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// UpdatePipelineRequest represents a request to update a pipeline
+message UpdatePipelineRequest {
+  // A pipeline instance
+  Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Update mask for a pipeline instance
+  google.protobuf.FieldMask update_mask = 2
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// UpdatePipelineResponse represents a response for a pipeline instance
+message UpdatePipelineResponse {
+  // A pipeline instance
+  Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// DeletePipelineRequest represents a request to delete a pipeline
+message DeletePipelineRequest {
+  // Pipeline name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// DeletePipelineResponse represents an empty response
+message DeletePipelineResponse {}
+
+// Input represents the input to a pipeline
+message Input {
+  // Input type
+  oneof type {
+    // Image type URL
+    string image_url = 1;
+    // Image type base64
+    string image_base64 = 2;
+  }
+}
+
+// Output represents the output from a pipeline
+message Output {
+  // Struct output
+  google.protobuf.Struct output = 1;
+}
+
+// TriggerPipelineRequest represents a request to trigger a pipeline
+message TriggerPipelineRequest {
+  // Pipeline name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Input to the pipeline
+  repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// TriggerPipelineResponse represents a response for the output of a pipeline
+message TriggerPipelineResponse {
+  // Output from a pipeline
+  Output output = 1;
+}
+
+// TriggerPipelineBinaryFileUploadRequest represents a request to trigger a pipeline
+message TriggerPipelineBinaryFileUploadRequest {
+  // Pipeline name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Pipeline  content in byte chunk
+  bytes chunk = 2 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// TriggerPipelineBinaryFileUploadResponse represents a response for the output of a pipeline
+message TriggerPipelineBinaryFileUploadResponse {
+  // Output from a pipeline
+  Output output = 1;
+}
+
+// Pipeline service responds to incoming pipeline requests.
+service PipelineService {
+
+  // Liveness method receives a LivenessRequest message and returns a
+  // LivenessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get : "/__liveness"
+      additional_bindings : [ {get : "/health/pipeline"} ]
+    };
+  }
+
+  // Readiness method receives a ReadinessRequest message and returns a
+  // ReadinessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get : "/__readiness"
+    };
+  }
+
+  // CreatePipeline method receives a CreatePipelineRequest message and returns
+  // a CreatePipelineResponse message.
+  rpc CreatePipeline(CreatePipelineRequest) returns (CreatePipelineResponse) {
+    option (google.api.http) = {
+      post : "/pipelines"
+      body : "*"
+    };
+  }
+
+  // ListPipeline method receives a ListPipelineRequest message and returns a
+  // ListPipelineResponse message.
+  rpc ListPipeline(ListPipelineRequest) returns (ListPipelineResponse) {
+    option (google.api.http) = {
+      get : "/pipelines"
+    };
+  }
+
+  // GetPipeline method receives a GetPipelineRequest message and returns a
+  // GetPipelineResponse message.
+  rpc GetPipeline(GetPipelineRequest) returns (GetPipelineResponse) {
+    option (google.api.http) = {
+      get : "/pipelines/{name}"
+    };
+  }
+
+  // UpdatePipeline method receives a UpdatePipelineRequest message and returns
+  // a UpdatePipelineResponse message.
+  rpc UpdatePipeline(UpdatePipelineRequest) returns (UpdatePipelineResponse) {
+    option (google.api.http) = {
+      patch : "/pipelines/{pipeline.name}"
+      body : "pipeline"
+    };
+  }
+
+  // UpdatePipeline method receives a DeletePipelineRequest message and returns
+  // a DeletePipelineResponse message.
+  rpc DeletePipeline(DeletePipelineRequest) returns (DeletePipelineResponse) {
+    option (google.api.http) = {
+      delete : "/pipelines/{name}"
+    };
+  }
+
+  // TriggerPipeline method receives a TriggerPipelineRequest message and
+  // returns a TriggerPipelineResponse.
+  rpc TriggerPipeline(TriggerPipelineRequest)
+      returns (TriggerPipelineResponse) {
+    option (google.api.http) = {
+      post : "/pipelines/{name}/outputs"
+      body : "*"
+    };
+  }
+
+  // TriggerPipelineBinaryFileUpload method receives a
+  // TriggerPipelineBinaryFileUploadRequest message and returns a
+  // TriggerPipelineBinaryFileUploadResponse message.
+  rpc TriggerPipelineBinaryFileUpload(stream TriggerPipelineBinaryFileUploadRequest)
+      returns (TriggerPipelineBinaryFileUploadResponse) {}
+
+}
