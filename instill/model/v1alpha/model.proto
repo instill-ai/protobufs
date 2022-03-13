@@ -109,8 +109,8 @@ message Model {
   repeated ModelVersion model_versions = 5;
 }
 
-// CreateModelRequest represents a request to create a model
-message CreateModelRequest {
+// ModelInitData represents the required data for initialising a model instance
+message ModelInitData {
   // Model name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Model content in byte
@@ -121,8 +121,27 @@ message CreateModelRequest {
   Model.Task task = 4 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
+// CreateModelRequest represents a request to create a model
+message CreateModelRequest {
+  // Model initialising data
+  ModelInitData model_init_data = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
 // CreateModelResponse represents a response for a model instance
 message CreateModelResponse {
+  // A model instance
+  Model model = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreateModelBinaryFileUploadRequest represents a request to create a model
+message CreateModelBinaryFileUploadRequest {
+  // Model initialising data
+  ModelInitData model_init_data = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreateModelBinaryFileUploadResponse represents a response for a model
+// instance
+message CreateModelBinaryFileUploadResponse {
   // A model instance
   Model model = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
@@ -228,7 +247,8 @@ message TriggerModelBinaryFileUploadRequest {
   bytes chunk = 3 [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// TriggerModelBinaryFileUploadResponse represents a response for the output of a model
+// TriggerModelBinaryFileUploadResponse represents a response for the output of
+// a model
 message TriggerModelBinaryFileUploadResponse {
   // Output from a model
   Output output = 1;
@@ -312,6 +332,12 @@ service ModelService {
       body : "*"
     };
   }
+
+  // CreateModelBinaryFileUpload method receives a
+  // CreateModelBinaryFileUploadRequest message and returns a
+  // CreateModelBinaryFileUploadResponse message.
+  rpc CreateModelBinaryFileUpload(stream CreateModelBinaryFileUploadRequest)
+      returns (CreateModelBinaryFileUploadResponse) {}
 
   // CreateModel method receives a CreateModelRequest message and returns
   // a CreateModelResponse message.
