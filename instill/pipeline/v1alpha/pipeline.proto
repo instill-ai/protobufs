@@ -102,11 +102,11 @@ message Pipeline {
   // Pipeline ID
   uint64 id = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline name
-  string name = 2;
+  string name = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline description
   string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline activity status
-  bool active = 4;
+  bool active = 4 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline creation time
   google.protobuf.Timestamp created_at = 5
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
@@ -114,7 +114,7 @@ message Pipeline {
   google.protobuf.Timestamp updated_at = 6
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Pipeline recipe
-  Recipe recipe = 7;
+  Recipe recipe = 7 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline full name (i.e., [user_name/org_name]/pipeline_name)
   string full_name = 8 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
@@ -179,10 +179,16 @@ message GetPipelineResponse {
 
 // UpdatePipelineRequest represents a request to update a pipeline
 message UpdatePipelineRequest {
-  // A pipeline instance
-  Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Pipeline name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Pipeline description
+  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // Pipeline activity status
+  bool active = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Pipeline recipe
+  Recipe recipe = 4 [ (google.api.field_behavior) = OPTIONAL ];
   // Update mask for a pipeline instance
-  google.protobuf.FieldMask field_mask = 2
+  google.protobuf.FieldMask field_mask = 5
       [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -297,8 +303,8 @@ service PipelineService {
   // a UpdatePipelineResponse message.
   rpc UpdatePipeline(UpdatePipelineRequest) returns (UpdatePipelineResponse) {
     option (google.api.http) = {
-      patch : "/pipelines/{pipeline.name}"
-      body : "pipeline"
+      patch : "/pipelines/{name}"
+      body : "*"
     };
   }
 
