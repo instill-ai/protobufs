@@ -146,18 +146,24 @@ message CreateModelBinaryFileUploadResponse {
   Model model = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
+// UpdateModelVersionPatch represents a patch to update a model
+message UpdateModelVersionPatch {
+  // Model version description
+  string description = 1;
+  // Model version status
+  ModelVersion.Status status = 2;
+}
+
 // CreateModelRequest represents a request to update a model
 message UpdateModelVersionRequest {
   // Model name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Model version
   uint64 version = 2 [ (google.api.field_behavior) = REQUIRED ];
-  // Model version description
-  string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // Model version status
-  ModelVersion.Status status = 4 [ (google.api.field_behavior) = OPTIONAL ];
+  // Model version patch to update
+  UpdateModelVersionPatch version_patch = 3 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a model instance
-  google.protobuf.FieldMask field_mask = 5
+  google.protobuf.FieldMask field_mask = 4
       [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -219,12 +225,6 @@ message Input {
   }
 }
 
-// Output represents the output from a model
-message Output {
-  // Struct output
-  google.protobuf.Struct output = 1;
-}
-
 // TriggerModelRequest represents a request to trigger a model
 message TriggerModelRequest {
   // Model name
@@ -238,7 +238,7 @@ message TriggerModelRequest {
 // TriggerModelResponse represents a response for the output of a model
 message TriggerModelResponse {
   // Output from a model
-  Output output = 1;
+  google.protobuf.Struct output = 1;
 }
 
 // TriggerModelBinaryFileUploadRequest represents a request to trigger a model
@@ -255,7 +255,7 @@ message TriggerModelBinaryFileUploadRequest {
 // a model
 message TriggerModelBinaryFileUploadResponse {
   // Output from a model
-  Output output = 1;
+  google.protobuf.Struct output = 1;
 }
 
 // ClassificationOutput represents the output of classification task
@@ -365,7 +365,7 @@ service ModelService {
       returns (UpdateModelVersionResponse) {
     option (google.api.http) = {
       patch : "/models/{name}/versions/{version}"
-      body : "*"
+      body : "version_patch"
     };
   }
 
