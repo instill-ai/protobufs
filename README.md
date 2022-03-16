@@ -8,3 +8,9 @@ VDP APIs use Protocol Buffers version 3 (proto3) as the Interface Definition Lan
 
 - **JSON over HTTP**
 - **Protocol Buffers over gRPC**
+
+## CI/CD
+
+1. PR sent to the `main` branch will trigger `check-buf` job, in which the `buf lint` and `buf breaking` commands will conduct.
+2. Push to the `main` branch will trigger `push-buf` and `gen-buf-protogen-*` jobs, in which `push-buf` will push the buf module to the [BSR repository](https://buf.build/instill-ai/protobufs) and `gen-buf-protogen-*` will push the auto-gen codes to the corresponding `protogen-*` repository.
+3. Release in `main` branch will trigger `release-protogen-*` job, in which a specific release commit will be pushed to each `protogen-*` repository. This release process makes sure that all auto-gen code repositories will have the same release version as `protobufs`.
