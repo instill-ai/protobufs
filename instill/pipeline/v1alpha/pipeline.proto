@@ -177,18 +177,24 @@ message GetPipelineResponse {
   Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
+// UpdatePipelinePatch represents a patch to update a pipeline
+message UpdatePipelinePatch {
+  // Pipeline description
+  string description = 1;
+  // Pipeline activity status
+  bool active = 2;
+  // Pipeline recipe
+  Recipe recipe = 3;
+}
+
 // UpdatePipelineRequest represents a request to update a pipeline
 message UpdatePipelineRequest {
   // Pipeline name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Pipeline description
-  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // Pipeline activity status
-  bool active = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // Pipeline recipe
-  Recipe recipe = 4 [ (google.api.field_behavior) = OPTIONAL ];
+  // Pipeline patch to update
+  UpdatePipelinePatch pipeline_patch = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a pipeline instance
-  google.protobuf.FieldMask field_mask = 5
+  google.protobuf.FieldMask field_mask = 3
       [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -298,7 +304,7 @@ service PipelineService {
   rpc UpdatePipeline(UpdatePipelineRequest) returns (UpdatePipelineResponse) {
     option (google.api.http) = {
       patch : "/pipelines/{name}"
-      body : "*"
+      body : "pipeline_patch"
     };
   }
 

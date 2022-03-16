@@ -146,18 +146,24 @@ message CreateModelBinaryFileUploadResponse {
   Model model = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
+// UpdateModelVersionPatch represents a patch to update a model
+message UpdateModelVersionPatch {
+  // Model version description
+  string description = 1;
+  // Model version status
+  ModelVersion.Status status = 2;
+}
+
 // CreateModelRequest represents a request to update a model
 message UpdateModelVersionRequest {
   // Model name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Model version
   uint64 version = 2 [ (google.api.field_behavior) = REQUIRED ];
-  // Model version description
-  string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // Model version status
-  ModelVersion.Status status = 4 [ (google.api.field_behavior) = OPTIONAL ];
+  // Model version patch to update
+  UpdateModelVersionPatch version_patch = 3 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a model instance
-  google.protobuf.FieldMask field_mask = 5
+  google.protobuf.FieldMask field_mask = 4
       [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -359,7 +365,7 @@ service ModelService {
       returns (UpdateModelVersionResponse) {
     option (google.api.http) = {
       patch : "/models/{name}/versions/{version}"
-      body : "*"
+      body : "version_patch"
     };
   }
 
