@@ -109,34 +109,16 @@ message Model {
   repeated ModelVersion model_versions = 5;
 }
 
-// ModelInitData represents the required data for initialising a model instance
-message ModelInitData {
+// CreateModelBinaryFileUploadRequest represents a request to create a model
+message CreateModelBinaryFileUploadRequest {
   // Model name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Model content in byte
-  bytes byte = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Model content in bytes
+  bytes bytes = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Model description
   string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
   // Model task type
   Model.Task task = 4 [ (google.api.field_behavior) = OPTIONAL ];
-}
-
-// CreateModelRequest represents a request to create a model
-message CreateModelRequest {
-  // Model initialising data
-  ModelInitData model_init_data = 1 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// CreateModelResponse represents a response for a model instance
-message CreateModelResponse {
-  // A model instance
-  Model model = 1 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// CreateModelBinaryFileUploadRequest represents a request to create a model
-message CreateModelBinaryFileUploadRequest {
-  // Model initialising data
-  ModelInitData model_init_data = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // CreateModelBinaryFileUploadResponse represents a response for a model
@@ -161,7 +143,8 @@ message UpdateModelVersionRequest {
   // Model version
   uint64 version = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Model version patch to update
-  UpdateModelVersionPatch version_patch = 3 [ (google.api.field_behavior) = REQUIRED ];
+  UpdateModelVersionPatch version_patch = 3
+      [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a model instance
   google.protobuf.FieldMask field_mask = 4
       [ (google.api.field_behavior) = REQUIRED ];
@@ -247,8 +230,8 @@ message TriggerModelBinaryFileUploadRequest {
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Model version
   uint64 version = 2 [ (google.api.field_behavior) = REQUIRED ];
-  // Model content in byte chunk
-  bytes chunk = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Model content in bytes
+  bytes bytes = 3 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TriggerModelBinaryFileUploadResponse represents a response for the output of
@@ -325,15 +308,6 @@ service ModelService {
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
     option (google.api.http) = {
       get : "/__readiness"
-    };
-  }
-
-  // CreateModel method receives a CreateModelRequest message and returns
-  // a CreateModelResponse message.
-  rpc CreateModel(CreateModelRequest) returns (CreateModelResponse) {
-    option (google.api.http) = {
-      post : "/models"
-      body : "*"
     };
   }
 
