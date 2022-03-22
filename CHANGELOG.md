@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.5-alpha](https://github.com/instill-ai/protobufs/compare/v0.1.4-alpha...v0.1.5-alpha) (2022-03-22)
+
+
+### Bug Fixes
+
+* fix naming discrepancies ([ce8a0e1](https://github.com/instill-ai/protobufs/commit/ce8a0e1364d9dc343765a34a4f6c30d3a32296fe))
+
 ### [0.1.4-alpha](https://github.com/instill-ai/protobufs/compare/v0.1.3-alpha...v0.1.4-alpha) (2022-03-21)
 
 
