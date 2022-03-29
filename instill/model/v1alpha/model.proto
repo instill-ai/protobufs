@@ -11,6 +11,27 @@ import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 
+// GitRef represents the git reference
+message GitRef {
+  // git reference
+  oneof ref {
+    // git branch
+    string branch = 1;
+    // git tag
+    string tag = 2;
+    // git commit
+    string commit = 3;
+  }
+}
+
+// GitHub represents the GitHub source a model is created from
+message GitHub {
+  // GitHub repository URL
+  string repo_url = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // git reference
+  GitRef git_ref = 2 [ (google.api.field_behavior) = REQUIRED ];
+}
+
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
   // Service name to check for its liveness status
@@ -107,10 +128,8 @@ message Model {
   Task task = 4;
   // Model versions
   repeated ModelVersion model_versions = 5;
-  // Model GitHub URL
-  // have value when creating model by CreateModelByGitHub
-  // empty value when creating model by CreateModelBinaryFileUpload
-  string github_url = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Model GitHub source (has value when model created by CreateModelByGitHub and is empty when created by CreateModelBinaryFileUpload)
+  GitHub github = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // CreateModelBinaryFileUploadRequest represents a request to create a model
@@ -138,14 +157,8 @@ message CreateModelByGitHubRequest {
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Model description
   string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // GitHub URL repository
-  string repository = 3 [ (google.api.field_behavior) = REQUIRED ];
-  // GitHub branch
-  string branch = 4 [ (google.api.field_behavior) = OPTIONAL ];
-  // GitHub tag
-  string tag = 5 [ (google.api.field_behavior) = OPTIONAL ];
-  // GitHub commit
-  string commit = 6 [ (google.api.field_behavior) = OPTIONAL ];
+  // Model GitHub source
+  GitHub github = 3 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // CreateModelByGitHubResponse represents a response for a model
