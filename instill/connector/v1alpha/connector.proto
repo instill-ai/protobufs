@@ -1,0 +1,377 @@
+syntax = "proto3";
+
+package instill.connector.v1alpha;
+
+// Protocol Buffers Well-Known Types
+import "google/protobuf/struct.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+// Google API
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+
+// LivenessRequest represents a request to check a service liveness status
+message LivenessRequest {
+  // Service name to check for its liveness status
+  string service = 1 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// LivenessResponse represents a response for a service liveness status
+message LivenessResponse {
+  // ServingStatus enumerates the status of a queried service
+  enum ServingStatus {
+    // Serving status: UNSPECIFIED
+    SERVING_STATUS_UNSPECIFIED = 0;
+    // Serving status: SERVING
+    SERVING_STATUS_SERVING = 1;
+    // Serving status: NOT SERVING
+    SERVING_STATUS_NOT_SERVING = 2;
+  }
+
+  // Status is the instance of the enum type ServingStatus
+  ServingStatus status = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// ReadinessRequest represents a request to check a service readiness status
+message ReadinessRequest {
+  // Service name to check for its readiness status
+  string service = 1 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ReadinessResponse represents a response for a service readiness status
+message ReadinessResponse {
+  // ServingStatus enumerates the status of a queried service
+  enum ServingStatus {
+    // Serving status: UNSPECIFIED
+    SERVING_STATUS_UNSPECIFIED = 0;
+    // Serving status: SERVING
+    SERVING_STATUS_SERVING = 1;
+    // Serving status: NOT SERVING
+    SERVING_STATUS_NOT_SERVING = 2;
+  }
+
+  // Status is the value of ServingStatus enum type
+  ServingStatus status = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// Source represents the content of a source
+message Source {
+  // Source connector ID
+  uint64 id = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Source connector name
+  string name = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Source connector description
+  string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Source type
+  string type = 4 [ (google.api.field_behavior) = REQUIRED ];
+  // Source configuration
+  google.protobuf.Struct config = 5 [ (google.api.field_behavior) = REQUIRED ];
+  // Source connector creation time
+  google.protobuf.Timestamp created_at = 6
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Source connector update time
+  google.protobuf.Timestamp updated_at = 7
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// CreateSourceRequest represents a request to create a data source
+message CreateSourceRequest {
+  // Source name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Source description
+  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // Source type
+  string type = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Source configuration
+  google.protobuf.Struct config = 4 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreateSourceResponse represents a response for a data source instance
+message CreateSourceResponse {
+  // A source instance
+  Source source = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// Destination represents the content of a destination
+message Destination {
+  // Source connector ID
+  uint64 id = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Source connector name
+  string name = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Source connector description
+  string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Source type
+  string type = 4 [ (google.api.field_behavior) = REQUIRED ];
+  // Source configuration
+  google.protobuf.Struct config = 5 [ (google.api.field_behavior) = REQUIRED ];
+  // Source connector creation time
+  google.protobuf.Timestamp created_at = 6
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Source connector update time
+  google.protobuf.Timestamp updated_at = 7
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// CreateDestinationRequest represents a request to create a data destination
+message CreateDestinationRequest {
+  // Destination name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Destination description
+  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // Destination type
+  string type = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Destination configuration
+  google.protobuf.Struct config = 4 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreateDestinationResponse represents a response for a data destination
+// instance
+message CreateDestinationResponse {
+  // A destination instance
+  Destination destination = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// ListSourceRequest represents a request to list data sources
+message ListSourceRequest {
+  // Page size
+  uint64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListSourceResponse represents a response for a list of sources
+message ListSourceResponse {
+  // A list of sources
+  repeated Source sources = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Next page token
+  string next_page_token = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// ListDestinationRequest represents a request to list destinations
+message ListDestinationRequest {
+  // Page size
+  uint64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListSourceResponse represents a response for a list of destinations
+message ListDestinationResponse {
+  // A list of destinations
+  repeated Destination destinations = 1
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Next page token
+  string next_page_token = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// GetSourceRequest represents a request to query a source
+message GetSourceRequest {
+  // Source name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// GetSourceResponse represents a response for a source instance
+message GetSourceResponse {
+  // A source instance
+  Source source = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// GetDestinationRequest represents a request to query a destination
+message GetDestinationRequest {
+  // Destination name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// GetDestinationResponse represents a response for a destination instance
+message GetDestinationResponse {
+  // A destination instance
+  Destination destination = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// UpdateSourcePatch represents a patch to update a source
+message UpdateSourcePatch {
+  // Source connector name
+  string name = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Source connector description
+  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // Source type
+  string type = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Source configuration
+  google.protobuf.Struct config = 4 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// UpdateSourceRequest represents a request to update a source
+message UpdateSourceRequest {
+  // Source name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Source patch to update
+  UpdateSourcePatch source_patch = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Update mask for a source instance
+  google.protobuf.FieldMask field_mask = 3
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// UpdateSourceResponse represents a response for a source instance
+message UpdateSourceResponse {
+  // A source instance
+  Source source = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// UpdateDestinationPatch represents a patch to update a destination
+message UpdateDestinationPatch {
+  // Destination connector name
+  string name = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Destination connector description
+  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // Destination type
+  string type = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Destination configuration
+  google.protobuf.Struct config = 4 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// UpdateDestinationRequest represents a request to update a destination
+message UpdateDestinationRequest {
+  // Destination name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Destination patch to update
+  UpdateDestinationPatch source_patch = 2
+      [ (google.api.field_behavior) = REQUIRED ];
+  // Update mask for a source instance
+  google.protobuf.FieldMask field_mask = 3
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// UpdateDestinationResponse represents a response for a destination instance
+message UpdateDestinationResponse {
+  // A destination instance
+  Destination destination = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// DeleteSourceRequest represents a request to delete a source
+message DeleteSourceRequest {
+  // Destination name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// DeleteSourceResponse represents an empty response
+message DeleteSourceResponse {}
+
+// DeleteDestinationRequest represents a request to delete a destination
+message DeleteDestinationRequest {
+  // Destination name
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// DeleteDestinationResponse represents an empty response
+message DeleteDestinationResponse {}
+
+// Connector service responds to incoming connector requests.
+service ConnectorService {
+
+  // Liveness method receives a LivenessRequest message and returns a
+  // LivenessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get : "/__liveness"
+      additional_bindings : [ {get : "/health/connector"} ]
+    };
+  }
+
+  // Readiness method receives a ReadinessRequest message and returns a
+  // ReadinessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get : "/__readiness"
+    };
+  }
+
+  // CreateSource method receives a CreateSourceRequest message and returns
+  // a CreateSourceResponse message.
+  rpc CreateSource(CreateSourceRequest) returns (CreateSourceResponse) {
+    option (google.api.http) = {
+      post : "/sources"
+      body : "*"
+    };
+  }
+
+  // CreateDestination method receives a CreateDestinationRequest message and
+  // returns a CreateDestinationResponse message.
+  rpc CreateDestination(CreateDestinationRequest)
+      returns (CreateDestinationResponse) {
+    option (google.api.http) = {
+      post : "/sources"
+      body : "*"
+    };
+  }
+
+  // ListSource method receives a ListSourceRequest message and returns a
+  // ListSourceResponse message.
+  rpc ListSource(ListSourceRequest) returns (ListSourceResponse) {
+    option (google.api.http) = {
+      get : "/sources"
+    };
+  }
+
+  // ListDestination method receives a ListDestinationRequest message and
+  // returns a ListDestinationResponse message.
+  rpc ListDestination(ListDestinationRequest)
+      returns (ListDestinationResponse) {
+    option (google.api.http) = {
+      get : "/sources"
+    };
+  }
+
+  // GetSource method receives a GetSourceRequest message and returns a
+  // GetSourceResponse message.
+  rpc GetSource(GetSourceRequest) returns (GetSourceResponse) {
+    option (google.api.http) = {
+      get : "/sources/{name}"
+    };
+  }
+
+  // GetDestination method receives a GetDestinationRequest message and returns
+  // a GetDestinationResponse message.
+  rpc GetDestination(GetDestinationRequest) returns (GetDestinationResponse) {
+    option (google.api.http) = {
+      get : "/destinations/{name}"
+    };
+  }
+
+  // UpdateSource method receives a UpdateSourceRequest message and returns
+  // a UpdateSourceResponse message.
+  rpc UpdateSource(UpdateSourceRequest) returns (UpdateSourceResponse) {
+    option (google.api.http) = {
+      patch : "/sources/{name}"
+      body : "source_patch"
+    };
+  }
+
+  // UpdateDestinationResponse method receives a UpdateDestinationRequest
+  // message and returns a UpdateDestinationResponse message.
+  rpc UpdateDestination(UpdateDestinationRequest)
+      returns (UpdateDestinationResponse) {
+    option (google.api.http) = {
+      patch : "/destinations/{name}"
+      body : "destination_patch"
+    };
+  }
+
+  // DeleteSource method receives a DeleteSourceRequest message and returns
+  // a DeleteSourceResponse message.
+  rpc DeleteSource(DeleteSourceRequest) returns (DeleteSourceResponse) {
+    option (google.api.http) = {
+      delete : "/sources/{name}"
+    };
+  }
+
+  // DeleteDestination method receives a DeleteDestinationRequest message and returns
+  // a DeleteDestinationResponse message.
+  rpc DeleteDestination(DeleteDestinationRequest) returns (DeleteDestinationResponse) {
+    option (google.api.http) = {
+      delete : "/destinations/{name}"
+    };
+  }
+}
