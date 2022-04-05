@@ -57,7 +57,7 @@ message ReadinessResponse {
 
 // Scheduler represents the content of a scheduler
 message Scheduler {
-  // Crobtab (see https://crontab.guru)
+  // Crontab (see https://crontab.guru)
   string crontab = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -99,14 +99,27 @@ message Recipe {
 
 // Pipeline represents the content of a pipeline
 message Pipeline {
+
+  // Status enumerates the status of a model version
+  enum Status {
+    // Status: UNSPECIFIED
+    STATUS_UNSPECIFIED = 0;
+    // Status: ACTIVE
+    STATUS_ACTIVE = 1;
+    // Status: INACTIVE
+    STATUS_INACTIVE = 2;
+    // Status: ERROR
+    STATUS_ERROR = 3;
+  }
+
   // Pipeline ID
   uint64 id = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline name
   string name = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline description
   string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // Pipeline activity status
-  bool active = 4 [ (google.api.field_behavior) = OPTIONAL ];
+  // Pipeline status
+  Status status = 4 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline creation time
   google.protobuf.Timestamp created_at = 5
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
@@ -139,12 +152,6 @@ message CreatePipelineResponse {
 
 // ListPipelineRequest represents a request to list pipelines
 message ListPipelineRequest {
-  // Page size
-  uint64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
-  // Page token
-  string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // View is the instance of enum type View
-  View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 
   // View enumerates the view type of a pipeline
   enum View {
@@ -155,6 +162,13 @@ message ListPipelineRequest {
     // View type: RECIPE
     VIEW_RECIPE = 2;
   }
+
+  // Page size
+  uint64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // View is the instance of enum type View
+  View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // ListPipelineResponse represents a response for a list of pipelines
@@ -192,7 +206,8 @@ message UpdatePipelineRequest {
   // Pipeline name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline patch to update
-  UpdatePipelinePatch pipeline_patch = 2 [ (google.api.field_behavior) = REQUIRED ];
+  UpdatePipelinePatch pipeline_patch = 2
+      [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a pipeline instance
   google.protobuf.FieldMask field_mask = 3
       [ (google.api.field_behavior) = REQUIRED ];
@@ -238,7 +253,8 @@ message TriggerPipelineResponse {
   google.protobuf.Struct output = 1;
 }
 
-// TriggerPipelineBinaryFileUploadRequest represents a request to trigger a pipeline
+// TriggerPipelineBinaryFileUploadRequest represents a request to trigger a
+// pipeline
 message TriggerPipelineBinaryFileUploadRequest {
   // Pipeline name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
@@ -246,7 +262,8 @@ message TriggerPipelineBinaryFileUploadRequest {
   bytes bytes = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// TriggerPipelineBinaryFileUploadResponse represents a response for the output of a pipeline
+// TriggerPipelineBinaryFileUploadResponse represents a response for the output
+// of a pipeline
 message TriggerPipelineBinaryFileUploadResponse {
   // Output from a pipeline
   google.protobuf.Struct output = 1;
@@ -329,7 +346,7 @@ service PipelineService {
   // TriggerPipelineBinaryFileUpload method receives a
   // TriggerPipelineBinaryFileUploadRequest message and returns a
   // TriggerPipelineBinaryFileUploadResponse message.
-  rpc TriggerPipelineBinaryFileUpload(stream TriggerPipelineBinaryFileUploadRequest)
+  rpc TriggerPipelineBinaryFileUpload(
+      stream TriggerPipelineBinaryFileUploadRequest)
       returns (TriggerPipelineBinaryFileUploadResponse) {}
-
 }
