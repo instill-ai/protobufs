@@ -57,6 +57,17 @@ message ReadinessResponse {
 
 // Source represents the content of a source
 message Source {
+
+  // Type enumerates the type of a source
+  enum Type {
+    // View type: UNSPECIFIED
+    TYPE_UNSPECIFIED = 0;
+    // View type: HTTP
+    TYPE_HTTP = 1;
+    // View type: GRPC
+    TYPE_GRPC = 2;
+  }
+
   // Source connector ID
   uint64 id = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Source connector name
@@ -64,7 +75,7 @@ message Source {
   // Source connector description
   string description = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Source type
-  string type = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  Type type = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Source configuration
   google.protobuf.Struct config = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Source connector creation time
@@ -95,6 +106,17 @@ message CreateSourceResponse {
 
 // Destination represents the content of a destination
 message Destination {
+
+  // Type enumerates the type of a destination
+  enum Type {
+    // View type: UNSPECIFIED
+    TYPE_UNSPECIFIED = 0;
+    // View type: HTTP
+    TYPE_HTTP = 1;
+    // View type: GRPC
+    TYPE_GRPC = 2;
+  }
+
   // Source connector ID
   uint64 id = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Source connector name
@@ -235,7 +257,7 @@ message UpdateDestinationRequest {
   // Destination name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Destination patch to update
-  UpdateDestinationPatch source_patch = 2
+  UpdateDestinationPatch destination_patch = 2
       [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a source instance
   google.protobuf.FieldMask field_mask = 3
@@ -302,7 +324,7 @@ service ConnectorService {
   rpc CreateDestination(CreateDestinationRequest)
       returns (CreateDestinationResponse) {
     option (google.api.http) = {
-      post : "/sources"
+      post : "/destinations"
       body : "*"
     };
   }
@@ -320,7 +342,7 @@ service ConnectorService {
   rpc ListDestination(ListDestinationRequest)
       returns (ListDestinationResponse) {
     option (google.api.http) = {
-      get : "/sources"
+      get : "/destinations"
     };
   }
 
@@ -349,7 +371,7 @@ service ConnectorService {
     };
   }
 
-  // UpdateDestinationResponse method receives a UpdateDestinationRequest
+  // UpdateDestination method receives a UpdateDestinationRequest
   // message and returns a UpdateDestinationResponse message.
   rpc UpdateDestination(UpdateDestinationRequest)
       returns (UpdateDestinationResponse) {
