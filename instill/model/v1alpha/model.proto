@@ -110,14 +110,38 @@ message ModelVersion {
 
 // Model represents the content of a model
 message Model {
+  // Task enumerates the task type of a model
+  enum Task {
+    // Task: UNSPECIFIED
+    TASK_UNSPECIFIED = 0;
+    // Task: CLASSIFICATION
+    TASK_CLASSIFICATION = 1;
+    // Task: DETECTION
+    TASK_DETECTION = 2;
+  }
+  enum Visibility {
+    // Visibility: UNSPECIFIED
+    VISIBILITY_UNSPECIFIED = 0;
+    // Visibility: PUBLIC
+    VISIBILITY_PUBLIC = 1;
+    // Visibility: PRIVATE
+    VISIBILITY_PRIVATE = 2;
+  }
+
   // Model ID
   uint64 id = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model name
   string name = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model full name (i.e., [user_name/org_name]/full_name)
   string full_name = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Model task
+  Task task = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model versions
-  repeated ModelVersion model_versions = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  repeated ModelVersion model_versions = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Model visibility including public or private
+  Visibility visibility = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Source including 'local' or 'github' where model is imported
+  string source = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // CreateModelBinaryFileUploadRequest represents a request to create a model
@@ -128,6 +152,9 @@ message CreateModelBinaryFileUploadRequest {
   bytes bytes = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Model description
   string description = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Model visibility
+  // If does not specify visibility, then default will be VISIBILITY_PRIVATE
+  Model.Visibility visibility = 4 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // CreateModelBinaryFileUploadResponse represents a response for a model
@@ -141,10 +168,11 @@ message CreateModelBinaryFileUploadResponse {
 message CreateModelByGitHubRequest {
   // Model name
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Model description
-  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
   // Model GitHub source
-  GitHub github = 3 [ (google.api.field_behavior) = REQUIRED ];
+  GitHub github = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Model mode including public or private
+  // If does not specify visibility, then default will be the same as the visibility of GitHub repository
+  Model.Visibility visibility = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // CreateModelByGitHubResponse represents a response for a model
