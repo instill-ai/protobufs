@@ -57,9 +57,9 @@ message ReadinessResponse {
 // ListSourceDefinitionRequest represents a request to list source definitions
 message ListSourceDefinitionRequest {
   // Page size
-  uint64 page_size = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // Page token
-  string page_token = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  uint64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page cursor
+  string page_cursor = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // ListSourceDefinitionResponse represents a response for a list of source definitions
@@ -67,22 +67,49 @@ message ListSourceDefinitionResponse {
   // A list of SourceDefinition instances
   repeated SourceDefinition source_definitions = 1
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Next page token
-  string next_page_token = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Next page cursor
+  string next_page_cursor = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // GetSourceDefinitionRequest represents a request to query a source definition
 message GetSourceDefinitionRequest {
   // Connector ID
-  string id = 1 [ (google.api.field_behavior) = OPTIONAL ];
-  // Connector name
-  string name = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  string id = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // GetSourceDefinitionResponse represents a response for a source definition
 message GetSourceDefinitionResponse {
   // A SourceDefinition instance
-  SourceDefinition connector_definition = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  SourceDefinition source_definition = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// ListDestinationDefinitionRequest represents a request to list destination definitions
+message ListDestinationDefinitionRequest {
+  // Page size
+  uint64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page cursor
+  string page_cursor = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListDestinationDefinitionResponse represents a response for a list of destination definitions
+message ListDestinationDefinitionResponse {
+  // A list of SourceDefinition instances
+  repeated DestinationDefinition destination_definitions = 1
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Next page cursor
+  string next_page_cursor = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// GetDestinationDefinitionRequest represents a request to query a destination definition
+message GetDestinationDefinitionRequest {
+  // Connector ID
+  string id = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// GetDestinationDefinitionResponse represents a response for a destination definition
+message GetDestinationDefinitionResponse {
+  // A SourceDefinition instance
+  DestinationDefinition destination_definition = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,7 +147,24 @@ service ConnectorService {
   // a GetSourceDefinitionResponse message.
   rpc GetSourceDefinition(GetSourceDefinitionRequest) returns (GetSourceDefinitionResponse) {
     option (google.api.http) = {
-      get : "/connectors/source-definitions/{name}"
+      get : "/connectors/source-definitions/{id}"
     };
   }
+
+  // ListDestinationDefinition method receives a ListDestinationDefinitionRequest message and returns
+  // a ListDestinationDefinitionResponse message.
+  rpc ListDestinationDefinition(ListDestinationDefinitionRequest) returns (ListDestinationDefinitionResponse) {
+    option (google.api.http) = {
+      get : "/connectors/destination-definitions"
+    };
+  }
+
+  // GetDestinationDefinition method receives a GetDestinationDefinitionRequest message and returns
+  // a GetDestinationDefinitionResponse message.
+  rpc GetDestinationDefinition(GetDestinationDefinitionRequest) returns (GetDestinationDefinitionResponse) {
+    option (google.api.http) = {
+      get : "/connectors/destination-definitions/{id}"
+    };
+  }
+
 }
