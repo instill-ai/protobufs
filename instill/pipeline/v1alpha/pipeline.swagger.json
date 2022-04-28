@@ -375,6 +375,17 @@
     }
   },
   "definitions": {
+    "PipelineMode": {
+      "type": "string",
+      "enum": [
+        "MODE_UNSPECIFIED",
+        "MODE_SYNC",
+        "MODE_ASYNC"
+      ],
+      "default": "MODE_UNSPECIFIED",
+      "description": "- MODE_UNSPECIFIED: Mode: UNSPECIFIED\n - MODE_SYNC: Mode: SYNC\n - MODE_ASYNC: Mode: ASYNC",
+      "title": "Mode enumerates the pipeline modes"
+    },
     "googlerpcStatus": {
       "type": "object",
       "properties": {
@@ -594,21 +605,12 @@
           "required": [
             "instance_name"
           ]
-        },
-        "version": {
-          "type": "integer",
-          "format": "int32",
-          "title": "Model version (TO BE DEPRECATED)",
-          "required": [
-            "version"
-          ]
         }
       },
       "title": "Model represents the content of a model",
       "required": [
         "name",
-        "instance_name",
-        "version"
+        "instance_name"
       ]
     },
     "v1alphaPipeline": {
@@ -629,13 +631,17 @@
           "title": "Pipeline description",
           "readOnly": true
         },
-        "status": {
-          "$ref": "#/definitions/v1alphaPipelineStatus",
-          "title": "Pipeline status"
-        },
         "recipe": {
           "$ref": "#/definitions/v1alphaRecipe",
           "title": "Pipeline recipe"
+        },
+        "mode": {
+          "$ref": "#/definitions/PipelineMode",
+          "title": "Pipeline mode"
+        },
+        "status": {
+          "$ref": "#/definitions/v1alphaPipelineStatus",
+          "title": "Pipeline status"
         },
         "owner_id": {
           "type": "string",
@@ -672,7 +678,7 @@
       ],
       "default": "STATUS_UNSPECIFIED",
       "description": "- STATUS_UNSPECIFIED: Status: UNSPECIFIED\n - STATUS_INACTIVATED: Status: INACTIVATED\n - STATUS_ACTIVATED: Status: ACTIVATED\n - STATUS_ERROR: Status: ERROR",
-      "title": "Status enumerates the status of a model version"
+      "title": "Status enumerates the status of a pipeline"
     },
     "v1alphaPipelineView": {
       "type": "string",
@@ -717,7 +723,7 @@
           ]
         }
       },
-      "title": "Model represents the content of a recipe",
+      "title": "Recipe represents the content of a recipe",
       "required": [
         "models",
         "logics"
