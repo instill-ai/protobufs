@@ -56,6 +56,16 @@ message ReadinessResponse {
   HealthCheckResponse health_check_response = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// OwnerType enumerates the owner type of any resource
+enum OwnerType {
+  // OwnerType: UNSPECIFIED
+  OWNER_TYPE_UNSPECIFIED = 0;
+  // OwnerType: USER
+  OWNER_TYPE_USER = 1;
+  // OwnerType: ORGANIZATION
+  OWNER_TYPE_ORGANIZATION = 2;
+}
+
 // User represents the content of a user
 message User {
   // Resource name of the user. It must have the format of "users/*".
@@ -78,10 +88,13 @@ message User {
   bool usage_data_collection = 7 [ (google.api.field_behavior) = REQUIRED ];
   // User newsletter subscription
   bool newsletter_subscription = 8 [ (google.api.field_behavior) = REQUIRED ];
+
+  // Owner type: fixed to `OWNER_TYPE_USER`
+  OwnerType type = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // User creation time
-  google.protobuf.Timestamp create_time = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  google.protobuf.Timestamp create_time = 10 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // User update time
-  google.protobuf.Timestamp update_at = 10 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  google.protobuf.Timestamp update_time = 11 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // ListUserRequest represents a request to list all users
@@ -98,6 +111,23 @@ message ListUserResponse {
   repeated User users = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Next page token
   string next_page_token = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Total count of users
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// CreateUserRequest represents a request to create a user
+message CreateUserRequest {
+  // The user to be created
+  //
+  // The user's `name` field is used to identify the user to create.
+  // Format: users/{user}
+  User user = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreateUserResponse represents a response for a user response
+message CreateUserResponse {
+  // A user instance
+  User user = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // GetUserRequest represents a request to query a user
@@ -121,7 +151,7 @@ message UpdateUserRequest {
   // Format: users/{user}
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a user instance
-  google.protobuf.FieldMask field_mask = 2;
+  google.protobuf.FieldMask update_mask = 2;
 }
 
 // UpdateUserResponse represents a response for a user instance
@@ -129,6 +159,16 @@ message UpdateUserResponse {
   // A user instance
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
+
+// DeleteUserRequest represents a request to delete a user
+message DeleteUserRequest {
+  // The resource name of the user to be deleted,
+  // for example: "users/instill"
+  string name = 1;
+}
+
+// DeleteUserResponse represents an empty response
+message DeleteUserResponse {}
 
 
 // User service responds to incoming user requests.
@@ -161,6 +201,14 @@ service UserService {
     };
   }
 
+  // CreateUser receives a CreateUserRequest message and returns a aGetUserResponse
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/users"
+      body: "user"
+    };
+  }
+
   // GetUser method receives a GetUserRequest message and returns
   // a GetUserResponse message.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
@@ -175,6 +223,13 @@ service UserService {
     option (google.api.http) = {
       patch : "/{user.name=users/*}"
       body : "user"
+    };
+  }
+
+  // DeleteUser method receives a DeleteUserRequest message and returns a DeleteUserResponse
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {
+      delete: "/{name=users/*}"
     };
   }
 
