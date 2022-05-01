@@ -121,38 +121,36 @@ message Pipeline {
     STATUS_ERROR = 3;
   }
 
+  // Pipeline resource name. It must have the format of "pipelines/*"
+  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Pipeline UUID
-  string id = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Pipeline name
-  string name = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  string id = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Pipeline display name
+  string display_name = 3 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline description
-  string description = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  optional string description = 4 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline recipe
-  Recipe recipe = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  Recipe recipe = 5 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline mode
-  Mode mode = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  Mode mode = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Pipeline status
-  Status status = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  Status status = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Connector owner UUID
-  string owner_id = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  string owner_id = 8 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Connector full name (i.e., owner_name/pipeline_name)
-  string full_name = 8 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Pipeline created time
-  google.protobuf.Timestamp created_at = 9
+  string full_name = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Pipeline creation time
+  google.protobuf.Timestamp create_time = 10
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Pipeline updated time
-  google.protobuf.Timestamp updated_at = 10
+  // Pipeline update time
+  google.protobuf.Timestamp update_time = 11
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // CreatePipelineRequest represents a request to create a pipeline
 message CreatePipelineRequest {
-  // Pipeline name
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Pipeline description
-  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // Pipeline recipe
-  Recipe recipe = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Pipeline instance
+  Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // CreatePipelineResponse represents a response for a pipeline instance
@@ -175,8 +173,8 @@ enum PipelineView {
 message ListPipelineRequest {
   // Page size
   int32 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
-  // Page cursor
-  string page_cursor = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
   // PipelineView view (default is PIPELINE_VIEW_BASIC)
   PipelineView view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
@@ -185,13 +183,13 @@ message ListPipelineRequest {
 message ListPipelineResponse {
   // A list of pipeline instances
   repeated Pipeline pipelines = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Next page cursor
-  string next_page_cursor = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Next page token
+  string next_page_token = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // GetPipelineRequest represents a request to query a pipeline
 message GetPipelineRequest {
-  // Pipeline name
+  // Pipeline resource name. It must have the format of "pipelines/*"
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // PipelineView view (default is PIPELINE_VIEW_BASIC)
   PipelineView view = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -203,28 +201,12 @@ message GetPipelineResponse {
   Pipeline pipeline = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
-// UpdatePipelinePatch represents a patch to update a pipeline
-message UpdatePipelinePatch {
-  // Pipeline name
-  string name = 1 [ (google.api.field_behavior) = OPTIONAL ];
-  // Pipeline description
-  string description = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // Pipeline status
-  Pipeline.Status status = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // Pipeline recipe
-  Recipe recipe = 4 [ (google.api.field_behavior) = OPTIONAL ];
-}
-
 // UpdatePipelineRequest represents a request to update a pipeline
 message UpdatePipelineRequest {
-  // Pipeline name
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Pipeline patch to update
-  UpdatePipelinePatch pipeline_patch = 2
-      [ (google.api.field_behavior) = REQUIRED ];
+  // Pipeline instance to update
+  Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a pipeline instance
-  google.protobuf.FieldMask field_mask = 3
-      [ (google.api.field_behavior) = REQUIRED ];
+  google.protobuf.FieldMask update_mask = 2;
 }
 
 // UpdatePipelineResponse represents a response for a pipeline instance
@@ -235,7 +217,7 @@ message UpdatePipelineResponse {
 
 // DeletePipelineRequest represents a request to delete a pipeline
 message DeletePipelineRequest {
-  // Pipeline name
+  // Pipeline resource name. It must have the format of "pipelines/*"
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -255,7 +237,7 @@ message Input {
 
 // TriggerPipelineRequest represents a request to trigger a pipeline
 message TriggerPipelineRequest {
-  // Pipeline name
+  // Pipeline resource name. It must have the format of "pipelines/*"
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Input to the pipeline
   repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
@@ -270,7 +252,7 @@ message TriggerPipelineResponse {
 // TriggerPipelineBinaryFileUploadRequest represents a request to trigger a
 // pipeline
 message TriggerPipelineBinaryFileUploadRequest {
-  // Pipeline name
+  // Pipeline resource name. It must have the format of "pipelines/*"
   string name = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline content in bytes
   bytes bytes = 2 [ (google.api.field_behavior) = REQUIRED ];
@@ -310,7 +292,7 @@ service PipelineService {
   rpc CreatePipeline(CreatePipelineRequest) returns (CreatePipelineResponse) {
     option (google.api.http) = {
       post : "/pipelines"
-      body : "*"
+      body : "pipeline"
     };
   }
 
@@ -326,7 +308,7 @@ service PipelineService {
   // GetPipelineResponse message.
   rpc GetPipeline(GetPipelineRequest) returns (GetPipelineResponse) {
     option (google.api.http) = {
-      get : "/pipelines/{name}"
+      get : "/{name=pipelines/*}"
     };
   }
 
@@ -334,8 +316,8 @@ service PipelineService {
   // a UpdatePipelineResponse message.
   rpc UpdatePipeline(UpdatePipelineRequest) returns (UpdatePipelineResponse) {
     option (google.api.http) = {
-      patch : "/pipelines/{name}"
-      body : "pipeline_patch"
+      patch : "/{pipeline.name=pipelines/*}"
+      body : "pipeline"
     };
   }
 
@@ -343,7 +325,7 @@ service PipelineService {
   // a DeletePipelineResponse message.
   rpc DeletePipeline(DeletePipelineRequest) returns (DeletePipelineResponse) {
     option (google.api.http) = {
-      delete : "/pipelines/{name}"
+      delete : "/{name=pipelines/*}"
     };
   }
 
