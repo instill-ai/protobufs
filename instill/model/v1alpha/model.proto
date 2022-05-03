@@ -41,7 +41,7 @@ message Model {
   // Model description
   optional string description = 4 [ (google.api.field_behavior) = OPTIONAL ];
   // Model definition resource name
-  string model_definition = 5 [ (google.api.resource_reference).type = "api.instill.tech/ModelDefinition", (google.api.field_behavior) = IMMUTABLE ];
+  string model_definition = 5 [ (google.api.field_behavior) = IMMUTABLE, (google.api.resource_reference).type = "api.instill.tech/ModelDefinition" ];
   // Model definition configuration
   Spec configuration = 6 [ (google.api.field_behavior) = IMMUTABLE ];
   // Model visibility including public or private
@@ -97,9 +97,9 @@ message ModelInstance {
   // Model instance state
   State state = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model instance task
-  optional Task task = 5 [ (google.api.field_behavior) = OPTIONAL, (google.api.field_behavior) = OUTPUT_ONLY ];
+  Task task = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model definition resource name
-  string model_definition = 6 [ (google.api.resource_reference).type = "api.instill.tech/ModelDefinition", (google.api.field_behavior) = OUTPUT_ONLY ];
+  string model_definition = 6 [ (google.api.field_behavior) = OUTPUT_ONLY, (google.api.resource_reference).type = "api.instill.tech/ModelDefinition" ];
   // Model instance configuration
   Spec configuration = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model instance create time
@@ -122,7 +122,7 @@ message ModelInstanceCard {
   // Type of the resource. Fixed to "file".
   string type = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Contents of the README file in bytes and base64 format
-  bytes contents = 4 [ (google.api.field_behavior) = REQUIRED ];
+  bytes contents = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Encoding type of the contents. Fixed to "base64".
   string encoding = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
@@ -258,25 +258,6 @@ message ListModelInstanceResponse {
   int32 total_size = 3;
 }
 
-// CreateModelInstanceRequest represents a request to create a model instance
-message CreateModelInstanceRequest {
-  // The name of the model in which the instance is created.
-  // e.g., "models/yolov4"
-  string parent = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/Model"
-  ];
-
-  // The instance to create
-  ModelInstance instance = 2 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// CreateModelInstanceResponse represents a response for a model instance
-message CreateModelInstanceResponse {
-  // The created model instance
-  ModelInstance instance = 1;
-}
-
 // GetModelInstanceRequest represents a request to query a model instance
 message GetModelInstanceRequest {
   // Resource name of the model instance.
@@ -292,37 +273,6 @@ message GetModelInstanceResponse {
   // Retrieved model instance
   ModelInstance instance = 1;
 }
-
-// UpdateModelInstanceRequest represents a request to update a model instance
-message UpdateModelInstanceRequest {
-  // The model instance to update. The instance's `name` field
-  // is used to identify the instance to update.
-  // Format: "models/{model}/instances/{instance}"
-  ModelInstance instance = 1 [ (google.api.field_behavior) = REQUIRED ];
-
-  // Mask of fields to update.
-  google.protobuf.FieldMask update_mask = 2
-      [(google.api.field_behavior) = REQUIRED];
-}
-
-// UpdateModelInstanceResponse represents a response for a model instance
-message UpdateModelInstanceResponse {
-  // Updated model instance
-  ModelInstance instance = 1;
-}
-
-// DeleteModelInstanceRequest represents a request to delete a model instance
-message DeleteModelInstanceRequest {
-  // Resource name of the model instance.
-  // For example "models/{model}/instances/{instance}"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
-  ];
-}
-
-// DeleteModelInstanceResponse represents an empty response
-message DeleteModelInstanceResponse {}
 
 // DeployModelInstanceRequest represents a request to deploy a model instance to online state
 message DeployModelInstanceRequest {
@@ -371,22 +321,6 @@ message GetModelInstanceCardRequest {
 // GetModelInstanceCardResponse represents a response to fetch a model instance's README card
 message GetModelInstanceCardResponse {
   // Retrieved model instance card
-  ModelInstanceCard readme = 1;
-}
-// UpdateModelInstanceCardRequest represents a request to update a model instance's README card
-message UpdateModelInstanceCardRequest {
-  // The model instance to update. The instance's `name` field
-  // is used to identify the instance to update.
-  // Format: "models/{model}/instances/{instance}"
-  ModelInstanceCard readme = 1 [ (google.api.field_behavior) = REQUIRED ];
-
-  // Mask of fields to update.
-  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
-}
-
-// UpdateModelInstanceCardResponse represents a response for a model instance README card
-message UpdateModelInstanceCardResponse {
-  // Updated model instance card
   ModelInstanceCard readme = 1;
 }
 
