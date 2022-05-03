@@ -16,7 +16,71 @@
     "application/json"
   ],
   "paths": {
-    "/health/model": {
+    "/v1alpha/__liveness": {
+      "get": {
+        "summary": "Liveness method receives a LivenessRequest message and returns a\nLivenessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
+        "operationId": "ModelService_Liveness",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/instillmodelv1alphaLivenessResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "health_check_request.service",
+            "description": "Service name to check for its readiness status.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/__readiness": {
+      "get": {
+        "summary": "Readiness method receives a ReadinessRequest message and returns a\nReadinessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
+        "operationId": "ModelService_Readiness",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/instillmodelv1alphaReadinessResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "health_check_request.service",
+            "description": "Service name to check for its readiness status.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/health/model": {
       "get": {
         "summary": "Liveness method receives a LivenessRequest message and returns a\nLivenessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
         "operationId": "ModelService_Liveness2",
@@ -41,6 +105,418 @@
             "in": "query",
             "required": false,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/model-definitions": {
+      "get": {
+        "summary": "ListModelDefinition method receives a ListModelDefinitionRequest message\nand returns a ListModelDefinitionResponse",
+        "operationId": "ModelService_ListModelDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaListModelDefinitionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page_size",
+            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 users will be\nreturned. The maximum value is 100; values above 100 will be coereced to\n100.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page_token",
+            "description": "Page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "view",
+            "description": "Definition view (default is VIEW_BASIC).\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "VIEW_UNSPECIFIED",
+              "VIEW_BASIC",
+              "VIEW_FULL"
+            ],
+            "default": "VIEW_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/models": {
+      "get": {
+        "summary": "ListModel method receives a ListModelRequest message and returns a\nListModelResponse",
+        "operationId": "ModelService_ListModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaListModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page_size",
+            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 users will be\nreturned. The maximum value is 100; values above 100 will be coereced to\n100.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "page_token",
+            "description": "Page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "view",
+            "description": "Definition view (default is VIEW_BASIC).\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "VIEW_UNSPECIFIED",
+              "VIEW_BASIC",
+              "VIEW_FULL"
+            ],
+            "default": "VIEW_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      },
+      "post": {
+        "summary": "CreateModel method receives a CreateModelRequest message and returns a\nCreateModelResponse",
+        "operationId": "ModelService_CreateModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaCreateModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "The model to be created\n\nThe model `name` field is used to identify the model to create.\nFormat: models/{model}",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/instillmodelv1alphaModel"
+            }
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{model.name}": {
+      "patch": {
+        "summary": "UpdateModel method receives a UpdateModelRequest message and returns a\nUpdateModelResponse",
+        "operationId": "ModelService_UpdateModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaUpdateModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "model.name",
+            "description": "Resource name. It must have the format of \"models/{model}\".\nFor example: \"models/yolov4\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+"
+          },
+          {
+            "name": "body",
+            "description": "The model to update\n\nThe model `name` field is used to identify the model to update.\nFormat: models/{model}",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/instillmodelv1alphaModel"
+            }
+          },
+          {
+            "name": "update_mask",
+            "description": "Mask of fields to update.",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{name_1}": {
+      "get": {
+        "summary": "GetModel method receives a GetModelRequest message and returns a\nGetModelResponse",
+        "operationId": "ModelService_GetModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaGetModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name_1",
+            "description": "Resource name of the model.\nFor example \"models/{model}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{name_2}": {
+      "get": {
+        "summary": "GetModelInstance method receives a GetModelInstanceRequest message and\nreturns a GetModelInstanceResponse",
+        "operationId": "ModelService_GetModelInstance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaGetModelInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name_2",
+            "description": "Resource name of the model instance.\nFor example \"models/{model}/instances/{instance}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+/instances/[^/]+"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      },
+      "delete": {
+        "summary": "DeleteModel method receives a DeleteModelRequest message and returns a\nDeleteModelResponse",
+        "operationId": "ModelService_DeleteModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaDeleteModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name of the model.\nFor example \"models/{model}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{name_3}": {
+      "get": {
+        "summary": "GetModelInstanceCard method receives a GetModelInstanceCardRequest message\nand returns a GetModelInstanceCardResponse",
+        "operationId": "ModelService_GetModelInstanceCard",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaGetModelInstanceCardResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name_3",
+            "description": "Resource name of the model instance card.\nFor example \"models/{model}/instances/{instance}/readme\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+/instances/[^/]+/readme"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      },
+      "delete": {
+        "summary": "DeleteModel method receives a DeleteModelRequest message and returns a\nDeleteModelResponse",
+        "operationId": "ModelService_DeleteModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaDeleteModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name of the model.\nFor example \"models/{model}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{name}": {
+      "get": {
+        "summary": "GetModelDefinition method receives a GetModelDefinitionRequest message and\nreturns a GetModelDefinitionResponse",
+        "operationId": "ModelService_GetModelDefinition",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaGetModelDefinitionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name of the model definition.\nFor example \"model-definitions/{uuid}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "model-definitions/[^/]+"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      },
+      "delete": {
+        "summary": "DeleteModel method receives a DeleteModelRequest message and returns a\nDeleteModelResponse",
+        "operationId": "ModelService_DeleteModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaDeleteModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name of the model.\nFor example \"models/{model}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+"
           }
         ],
         "tags": [
@@ -81,7 +557,7 @@
             "required": true,
             "schema": {
               "type": "object",
-              "title": "DeployModelInstanceRequest represents a request to deploy a model instance to online state"
+              "title": "DeployModelInstanceRequest represents a request to deploy a model instance to\nonline state"
             }
           }
         ],
@@ -144,525 +620,7 @@
         ]
       }
     },
-    "/v1alpha/{name}:undeploy": {
-      "post": {
-        "summary": "UndeployModelInstance undeploy a model instance to offline state\nTODO: should use [Long-running operations](https://google.aip.dev/151)",
-        "operationId": "ModelService_UndeployModelInstance",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaUndeployModelInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "description": "Resource name for the model instance to be undeployed.\nFormat: models/{model}/instances/{instance}",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+/instances/[^/]+"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "title": "UndeployModelInstanceRequest represents a request to undeploy a model instance to offline state"
-            }
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/__liveness": {
-      "get": {
-        "summary": "Liveness method receives a LivenessRequest message and returns a\nLivenessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
-        "operationId": "ModelService_Liveness",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/instillmodelv1alphaLivenessResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "health_check_request.service",
-            "description": "Service name to check for its readiness status.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/__readiness": {
-      "get": {
-        "summary": "Readiness method receives a ReadinessRequest message and returns a\nReadinessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
-        "operationId": "ModelService_Readiness",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/instillmodelv1alphaReadinessResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "health_check_request.service",
-            "description": "Service name to check for its readiness status.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/model-definitions": {
-      "get": {
-        "summary": "ListModelDefinition method receives a ListModelDefinitionRequest message and returns a ListModelDefinitionResponse",
-        "operationId": "ModelService_ListModelDefinition",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaListModelDefinitionResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "page_size",
-            "description": "Page size: the maximum number of resources to return. The service may return fewer than this value.\nIf unspecified, at most 10 users will be returned.\nThe maximum value is 100; values above 100 will be coereced to 100.",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "page_token",
-            "description": "Page token.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "view",
-            "description": "Definition view (default is VIEW_BASIC).\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "VIEW_UNSPECIFIED",
-              "VIEW_BASIC",
-              "VIEW_FULL"
-            ],
-            "default": "VIEW_UNSPECIFIED"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/models": {
-      "get": {
-        "summary": "ListModel method receives a ListModelRequest message and returns a ListModelResponse",
-        "operationId": "ModelService_ListModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaListModelResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "page_size",
-            "description": "Page size: the maximum number of resources to return. The service may return fewer than this value.\nIf unspecified, at most 10 users will be returned.\nThe maximum value is 100; values above 100 will be coereced to 100.",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "page_token",
-            "description": "Page token.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "view",
-            "description": "Definition view (default is VIEW_BASIC).\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "VIEW_UNSPECIFIED",
-              "VIEW_BASIC",
-              "VIEW_FULL"
-            ],
-            "default": "VIEW_UNSPECIFIED"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      },
-      "post": {
-        "summary": "CreateModel method receives a CreateModelRequest message and returns a CreateModelResponse",
-        "operationId": "ModelService_CreateModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaCreateModelResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "description": "The model to be created\n\nThe model `name` field is used to identify the model to create.\nFormat: models/{model}",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/instillmodelv1alphaModel"
-            }
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/{model.name}": {
-      "patch": {
-        "summary": "UpdateModel method receives a UpdateModelRequest message and returns a UpdateModelResponse",
-        "operationId": "ModelService_UpdateModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaUpdateModelResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "model.name",
-            "description": "Resource name. It must have the format of \"models/{model}\".\nFor example: \"models/yolov4\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+"
-          },
-          {
-            "name": "body",
-            "description": "The model to update\n\nThe model `name` field is used to identify the model to update.\nFormat: models/{model}",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/instillmodelv1alphaModel"
-            }
-          },
-          {
-            "name": "update_mask",
-            "description": "Mask of fields to update.",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/{name_1}": {
-      "get": {
-        "summary": "GetModel method receives a GetModelRequest message and returns a GetModelResponse",
-        "operationId": "ModelService_GetModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaGetModelResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name_1",
-            "description": "Resource name of the model.\nFor example \"models/{model}\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/{name_2}": {
-      "get": {
-        "summary": "GetModelInstance method receives a GetModelInstanceRequest message and returns a GetModelInstanceResponse",
-        "operationId": "ModelService_GetModelInstance",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaGetModelInstanceResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name_2",
-            "description": "Resource name of the model instance.\nFor example \"models/{model}/instances/{instance}\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+/instances/[^/]+"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      },
-      "delete": {
-        "summary": "DeleteModel method receives a DeleteModelRequest message and returns a DeleteModelResponse",
-        "operationId": "ModelService_DeleteModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaDeleteModelResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "description": "Resource name of the model.\nFor example \"models/{model}\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/{name_3}": {
-      "get": {
-        "summary": "GetModelInstanceCard method receives a GetModelInstanceCardRequest message and returns a GetModelInstanceCardResponse",
-        "operationId": "ModelService_GetModelInstanceCard",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaGetModelInstanceCardResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name_3",
-            "description": "Resource name of the model instance card.\nFor example \"models/{model}/instances/{instance}/readme\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+/instances/[^/]+/readme"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      },
-      "delete": {
-        "summary": "DeleteModel method receives a DeleteModelRequest message and returns a DeleteModelResponse",
-        "operationId": "ModelService_DeleteModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaDeleteModelResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "description": "Resource name of the model.\nFor example \"models/{model}\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/{name}": {
-      "get": {
-        "summary": "GetModelDefinition method receives a GetModelDefinitionRequest message and returns a GetModelDefinitionResponse",
-        "operationId": "ModelService_GetModelDefinition",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaGetModelDefinitionResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "description": "Resource name of the model definition.\nFor example \"model-definitions/{uuid}\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "model-definitions/[^/]+"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      },
-      "delete": {
-        "summary": "DeleteModel method receives a DeleteModelRequest message and returns a DeleteModelResponse",
-        "operationId": "ModelService_DeleteModel",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1alphaDeleteModelResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "name",
-            "description": "Resource name of the model.\nFor example \"models/{model}\"",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "pattern": "models/[^/]+"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/v1aplha/{name}:trigger": {
+    "/v1alpha/{name}:trigger": {
       "post": {
         "summary": "/////////////////////////////////////////////////////",
         "description": "TriggerModel method receives a TriggerModelRequest message and\nreturns a TriggerModelResponse message.",
@@ -720,9 +678,51 @@
         ]
       }
     },
-    "/v1aplha/{parent}/instances": {
+    "/v1alpha/{name}:undeploy": {
+      "post": {
+        "summary": "UndeployModelInstance undeploy a model instance to offline state\nTODO: should use [Long-running operations](https://google.aip.dev/151)",
+        "operationId": "ModelService_UndeployModelInstance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaUndeployModelInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name for the model instance to be undeployed.\nFormat: models/{model}/instances/{instance}",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+/instances/[^/]+"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "title": "UndeployModelInstanceRequest represents a request to undeploy a model\ninstance to offline state"
+            }
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{parent}/instances": {
       "get": {
-        "summary": "ListModelInstance method receives a ListModelInstanceRequest message and returns a ListModelInstanceResponse",
+        "summary": "ListModelInstance method receives a ListModelInstanceRequest message and\nreturns a ListModelInstanceResponse",
         "operationId": "ModelService_ListModelInstance",
         "responses": {
           "200": {
@@ -749,7 +749,7 @@
           },
           {
             "name": "page_size",
-            "description": "Page size: the maximum number of resources to return. The service may return fewer than this value.\nIf unspecified, at most 10 users will be returned.\nThe maximum value is 100; values above 100 will be coereced to 100.",
+            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 users will be\nreturned. The maximum value is 100; values above 100 will be coereced to\n100.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -905,7 +905,7 @@
         },
         "id": {
           "type": "string",
-          "description": "Resource ID (the last segment of the resource name) used to construct the resource name.\nThis conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum."
+          "description": "Resource ID (the last segment of the resource name) used to construct the\nresource name. This conforms to RFC-1034, which restricts to letters,\nnumbers, and hyphen, with the first character a letter, the last a letter\nor a number, and a 63 character maximum."
         },
         "description": {
           "type": "string",
@@ -1018,7 +1018,7 @@
           "title": "Deployed model instance"
         }
       },
-      "title": "DeployModelInstanceResponse represents a response for a deployed model instance\nTODO: should use [Long-running operations](https://google.aip.dev/151)"
+      "title": "DeployModelInstanceResponse represents a response for a deployed model\ninstance\nTODO: should use [Long-running operations](https://google.aip.dev/151)"
     },
     "v1alphaGetModelDefinitionResponse": {
       "type": "object",
@@ -1038,7 +1038,7 @@
           "title": "Retrieved model instance card"
         }
       },
-      "title": "GetModelInstanceCardResponse represents a response to fetch a model instance's README card"
+      "title": "GetModelInstanceCardResponse represents a response to fetch a model\ninstance's README card"
     },
     "v1alphaGetModelInstanceResponse": {
       "type": "object",
@@ -1080,7 +1080,7 @@
           "title": "Total count of model definitions"
         }
       },
-      "title": "ListModelDefinitionResponse represents a response to list all supported model definitions"
+      "title": "ListModelDefinitionResponse represents a response to list all supported model\ndefinitions"
     },
     "v1alphaListModelInstanceResponse": {
       "type": "object",
@@ -1131,7 +1131,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "title": "ModelDefinition resource name. It must have the format of \"model-definitions/{uuid}\"",
+          "title": "ModelDefinition resource name. It must have the format of\n\"model-definitions/{uuid}\"",
           "readOnly": true
         },
         "uid": {
@@ -1160,12 +1160,12 @@
         },
         "public": {
           "type": "boolean",
-          "title": "ModelDefinition public flag, i.e., true if this definition is available to all workspaces",
+          "title": "ModelDefinition public flag, i.e., true if this definition is available to\nall workspaces",
           "readOnly": true
         },
         "custom": {
           "type": "boolean",
-          "title": "ModelDefinition custom flag, i.e., true if this is a custom model definition",
+          "title": "ModelDefinition custom flag, i.e., true if this is a custom model\ndefinition",
           "readOnly": true
         },
         "create_time": {
@@ -1188,7 +1188,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "title": "Resource name. It must have the format of \"models/{model}/instances/{instance}\"",
+          "title": "Resource name. It must have the format of\n\"models/{model}/instances/{instance}\"",
           "readOnly": true
         },
         "uid": {
@@ -1198,7 +1198,7 @@
         },
         "id": {
           "type": "string",
-          "description": "Model instance ID (the last segment of the resource name), used to construct the resource name.\nThis conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.",
+          "description": "Model instance ID (the last segment of the resource name), used to\nconstruct the resource name. This conforms to RFC-1034, which restricts to\nletters, numbers, and hyphen, with the first character a letter, the last a\nletter or a number, and a 63 character maximum.",
           "readOnly": true
         },
         "state": {
@@ -1238,7 +1238,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "title": "Resource name. It must have the format of \"models/{model}/instances/{instance}/readme\"",
+          "title": "Resource name. It must have the format of\n\"models/{model}/instances/{instance}/readme\"",
           "readOnly": true
         },
         "size": {
@@ -1264,7 +1264,7 @@
           "readOnly": true
         }
       },
-      "description": "ModelInstanceCard represents the README card for a model instance. There exists one one and exactly one README card per model instance."
+      "description": "ModelInstanceCard represents the README card for a model instance. There\nexists one one and exactly one README card per model instance."
     },
     "v1alphaRenameModelResponse": {
       "type": "object",
@@ -1284,7 +1284,7 @@
           "title": "Output from a model"
         }
       },
-      "title": "TriggerModelInstanceBinaryFileUploadResponse represents a response for the output for triggering a model instance"
+      "title": "TriggerModelInstanceBinaryFileUploadResponse represents a response for the\noutput for triggering a model instance"
     },
     "v1alphaTriggerModelInstanceResponse": {
       "type": "object",
@@ -1294,7 +1294,7 @@
           "title": "Output from a model"
         }
       },
-      "title": "TriggerModelInstanceResponse represents a response for the output for triggering a model instance"
+      "title": "TriggerModelInstanceResponse represents a response for the output for\ntriggering a model instance"
     },
     "v1alphaUndeployModelInstanceResponse": {
       "type": "object",
@@ -1304,7 +1304,7 @@
           "title": "Undeployed model instance"
         }
       },
-      "title": "UndeployModelInstanceResponse represents a response for a undeployed model instance\nTODO: should use [Long-running operations](https://google.aip.dev/151)"
+      "title": "UndeployModelInstanceResponse represents a response for a undeployed model\ninstance\nTODO: should use [Long-running operations](https://google.aip.dev/151)"
     },
     "v1alphaUpdateModelResponse": {
       "type": "object",
@@ -1324,7 +1324,7 @@
         "VIEW_FULL"
       ],
       "default": "VIEW_UNSPECIFIED",
-      "description": "View represents a view of any resource. The resource view is implemented by adding a parameter to the method request\nwhich allows the client to specify which view of the resource it wants to receive in the response.\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource"
+      "description": "View represents a view of any resource. The resource view is implemented by\nadding a parameter to the method request which allows the client to specify\nwhich view of the resource it wants to receive in the response.\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource"
     }
   }
 }
