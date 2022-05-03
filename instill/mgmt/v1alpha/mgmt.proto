@@ -14,7 +14,7 @@ import "google/api/field_behavior.proto";
 
 // HealthCheckRequest represents a request to health check a service
 message HealthCheckRequest {
-   // Service name to check for its readiness status
+  // Service name to check for its readiness status
   string service = 1;
 }
 
@@ -37,7 +37,8 @@ message HealthCheckResponse {
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
   // HealthCheckRequest message
-  HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
+  HealthCheckRequest health_check_request = 1
+      [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // LivenessResponse represents a response for a service liveness status
@@ -49,7 +50,8 @@ message LivenessResponse {
 // ReadinessRequest represents a request to check a service readiness status
 message ReadinessRequest {
   // HealthCheckRequest message
-  HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
+  HealthCheckRequest health_check_request = 1
+      [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // ReadinessResponse represents a response for a service readiness status
@@ -71,25 +73,28 @@ enum OwnerType {
 // User represents the content of a user
 message User {
   option (google.api.resource) = {
-    type: "api.instill.tech/User"
-    pattern: "users/{user}"
+    type : "api.instill.tech/User"
+    pattern : "users/{user}"
   };
 
   // Resource name. It must have the format of "users/*".
   // For example: "users/instill".
-  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ] ;
+  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // User ID in UUIDv4
   string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // User email
   optional string email = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // Resource ID (the last segment of the resource name), also the user login username.
-  // This conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.
+  // Resource ID (the last segment of the resource name), also the user login
+  // username. This conforms to RFC-1034, which restricts to letters, numbers,
+  // and hyphen, with the first character a letter, the last a letter or a
+  // number, and a 63 character maximum.
   string id = 4 [ (google.api.field_behavior) = IMMUTABLE ];
   // User company name
   optional string company_name = 5 [ (google.api.field_behavior) = OPTIONAL ];
   // User role
   // Allowed roles:
-  // [ "manager", "ai-researcher", "ai-engineer", "data-engineer", "data-scientist",
+  // [ "manager", "ai-researcher", "ai-engineer", "data-engineer",
+  // "data-scientist",
   //   "analytics-engineer", "hobbyist"]
   optional string role = 6 [ (google.api.field_behavior) = OPTIONAL ];
   // User usage data collection
@@ -100,16 +105,19 @@ message User {
   // Owner type: fixed to `OWNER_TYPE_USER`
   OwnerType type = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // User creation time
-  google.protobuf.Timestamp create_time = 10 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  google.protobuf.Timestamp create_time = 10
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // User update time
-  google.protobuf.Timestamp update_time = 11 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  google.protobuf.Timestamp update_time = 11
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // ListUserRequest represents a request to list all users
 message ListUserRequest {
-  // Page size: the maximum number of resources to return. The service may return fewer than this value.
-  // If unspecified, at most 10 users will be returned.
-  // The maximum value is 100; values above 100 will be coereced to 100.
+  // Page size: the maximum number of resources to return. The service may
+  // return fewer than this value. If unspecified, at most 10 users will be
+  // returned. The maximum value is 100; values above 100 will be coereced to
+  // 100.
   int32 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -161,7 +169,8 @@ message UpdateUserRequest {
   // Format: users/{user}
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a user instance
-  google.protobuf.FieldMask update_mask = 2 [ (google.api.field_behavior) = REQUIRED ];
+  google.protobuf.FieldMask update_mask = 2
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // UpdateUserResponse represents a response for a user instance
@@ -201,7 +210,6 @@ message RenameUserResponse {
   User user = 1;
 }
 
-
 // User service responds to incoming user requests.
 service UserService {
 
@@ -232,11 +240,12 @@ service UserService {
     };
   }
 
-  // CreateUser receives a CreateUserRequest message and returns a aGetUserResponse
+  // CreateUser receives a CreateUserRequest message and returns a
+  // aGetUserResponse
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
-      post: "/v1aplha/users"
-      body: "user"
+      post : "/v1aplha/users"
+      body : "user"
     };
   }
 
@@ -257,16 +266,16 @@ service UserService {
     };
   }
 
-  // DeleteUser method receives a DeleteUserRequest message and returns a DeleteUserResponse
+  // DeleteUser method receives a DeleteUserRequest message and returns a
+  // DeleteUserResponse
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
     option (google.api.http) = {
-      delete: "/v1aplha/{name=users/*}"
+      delete : "/v1aplha/{name=users/*}"
     };
   }
 
   // RenameModel method rename a user
-  rpc RenameUser(RenameUserRequest) returns
-  (RenameUserResponse) {
+  rpc RenameUser(RenameUserRequest) returns (RenameUserResponse) {
     option (google.api.http) = {
       post : "/v1alpha/{name=users/*}:rename"
       body : "*"
