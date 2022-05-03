@@ -7,6 +7,7 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 // Google API
+import "google/api/client.proto";
 import "google/api/resource.proto";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
@@ -78,11 +79,12 @@ message User {
   // For example: "users/instill".
   string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ] ;
   // User ID in UUIDv4
-  string id = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // User email
   optional string email = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // User login user name, which is also the resource ID (the last segment of the resource name)
-  string login = 4 [ (google.api.field_behavior) = REQUIRED ];
+  // Resource ID (the last segment of the resource name), also the user login username.
+  // This conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.
+  string id = 4 [ (google.api.field_behavior) = IMMUTABLE ];
   // User company name
   optional string company_name = 5 [ (google.api.field_behavior) = OPTIONAL ];
   // User role
@@ -105,7 +107,9 @@ message User {
 
 // ListUserRequest represents a request to list all users
 message ListUserRequest {
-  // Page size
+  // Page size: the maximum number of resources to return. The service may return fewer than this value.
+  // If unspecified, at most 10 users will be returned.
+  // The maximum value is 100; values above 100 will be coereced to 100.
   int32 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -179,6 +183,24 @@ message DeleteUserRequest {
 // DeleteUserResponse represents an empty response
 message DeleteUserResponse {}
 
+// RenameUserRequest represents a request to rename a user
+message RenameUserRequest {
+  // Resource name for the user to be renamed.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/User"
+  ];
+
+  // New ID of this user
+  string new_user_id = 2 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// RenameUserResponse represents a response for a user
+message RenameUserResponse {
+  // Renamed user
+  User user = 1;
+}
+
 
 // User service responds to incoming user requests.
 service UserService {
@@ -188,7 +210,7 @@ service UserService {
   // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
   rpc Liveness(LivenessRequest) returns (LivenessResponse) {
     option (google.api.http) = {
-      get : "/__liveness"
+      get : "/v1aplha/__liveness"
       additional_bindings : [ {get : "/health/mgmt"} ]
     };
   }
@@ -198,7 +220,7 @@ service UserService {
   // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
     option (google.api.http) = {
-      get : "/__readiness"
+      get : "/v1aplha/__readiness"
     };
   }
 
@@ -206,14 +228,14 @@ service UserService {
   // ListUserResponse message.
   rpc ListUser(ListUserRequest) returns (ListUserResponse) {
     option (google.api.http) = {
-      get : "/users"
+      get : "/v1aplha/users"
     };
   }
 
   // CreateUser receives a CreateUserRequest message and returns a aGetUserResponse
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
-      post: "/users"
+      post: "/v1aplha/users"
       body: "user"
     };
   }
@@ -222,7 +244,7 @@ service UserService {
   // a GetUserResponse message.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {
-      get : "/{name=users/*}"
+      get : "/v1aplha/{name=users/*}"
     };
   }
 
@@ -230,7 +252,7 @@ service UserService {
   // a UpdateUserResponse
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      patch : "/{user.name=users/*}"
+      patch : "/v1aplha/{user.name=users/*}"
       body : "user"
     };
   }
@@ -238,7 +260,17 @@ service UserService {
   // DeleteUser method receives a DeleteUserRequest message and returns a DeleteUserResponse
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
     option (google.api.http) = {
-      delete: "/{name=users/*}"
+      delete: "/v1aplha/{name=users/*}"
     };
+  }
+
+  // RenameModel method rename a user
+  rpc RenameUser(RenameUserRequest) returns
+  (RenameUserResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=users/*}:rename"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name,new_user_id";
   }
 }
