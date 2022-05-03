@@ -7,6 +7,7 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 // Google API
+import "google/api/resource.proto";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 
@@ -29,7 +30,7 @@ message HealthCheckResponse {
   }
 
   // Status is the instance of the enum type ServingStatus
-  ServingStatus status = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  ServingStatus status = 1;
 }
 
 // LivenessRequest represents a request to check a service liveness status
@@ -41,7 +42,7 @@ message LivenessRequest {
 // LivenessResponse represents a response for a service liveness status
 message LivenessResponse {
   // HealthCheckResponse message
-  HealthCheckResponse health_check_response = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  HealthCheckResponse health_check_response = 1;
 }
 
 // ReadinessRequest represents a request to check a service readiness status
@@ -53,7 +54,7 @@ message ReadinessRequest {
 // ReadinessResponse represents a response for a service readiness status
 message ReadinessResponse {
   // HealthCheckResponse message
-  HealthCheckResponse health_check_response = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  HealthCheckResponse health_check_response = 1;
 }
 
 // OwnerType enumerates the owner type of any resource
@@ -68,7 +69,12 @@ enum OwnerType {
 
 // User represents the content of a user
 message User {
-  // Resource name of the user. It must have the format of "users/*".
+  option (google.api.resource) = {
+    type: "api.instill.tech/User"
+    pattern: "users/{user}"
+  };
+
+  // Resource name. It must have the format of "users/*".
   // For example: "users/instill".
   string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ] ;
   // User ID in UUIDv4
@@ -105,14 +111,14 @@ message ListUserRequest {
   string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
-// ListUserResponse represents a response for a list of user roles
+// ListUserResponse represents a response for a list of users
 message ListUserResponse {
   // A list of users
-  repeated User users = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  repeated User users = 1;
   // Next page token
-  string next_page_token = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  string next_page_token = 2;
   // Total count of users
-  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY ];
+  int32 total_size = 3;
 }
 
 // CreateUserRequest represents a request to create a user
@@ -127,7 +133,7 @@ message CreateUserRequest {
 // CreateUserResponse represents a response for a user response
 message CreateUserResponse {
   // A user instance
-  User user = 1 [ (google.api.field_behavior) = REQUIRED ];
+  User user = 1;
 }
 
 // GetUserRequest represents a request to query a user
@@ -140,7 +146,7 @@ message GetUserRequest {
 // GetUserResponse represents a response for a user instance
 message GetUserResponse {
   // A user instance
-  User user = 1 [ (google.api.field_behavior) = REQUIRED ];
+  User user = 1;
 }
 
 // UpdateUserRequest represents a request to update a user
@@ -151,20 +157,23 @@ message UpdateUserRequest {
   // Format: users/{user}
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a user instance
-  google.protobuf.FieldMask update_mask = 2;
+  google.protobuf.FieldMask update_mask = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // UpdateUserResponse represents a response for a user instance
 message UpdateUserResponse {
   // A user instance
-  User user = 1 [ (google.api.field_behavior) = REQUIRED ];
+  User user = 1;
 }
 
 // DeleteUserRequest represents a request to delete a user
 message DeleteUserRequest {
   // The resource name of the user to be deleted,
   // for example: "users/instill"
-  string name = 1;
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/User"
+  ];
 }
 
 // DeleteUserResponse represents an empty response
@@ -232,5 +241,4 @@ service UserService {
       delete: "/{name=users/*}"
     };
   }
-
 }

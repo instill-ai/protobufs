@@ -140,11 +140,43 @@
             "format": "int32"
           },
           {
-            "name": "page_cursor",
-            "description": "Page cursor.",
+            "name": "page_token",
+            "description": "Page token.",
             "in": "query",
             "required": false,
             "type": "string"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
+      },
+      "post": {
+        "summary": "CreateUser receives a CreateUserRequest message and returns a aGetUserResponse",
+        "operationId": "UserService_CreateUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaCreateUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "The user to be created\n\nThe user's `name` field is used to identify the user to create.\nFormat: users/{user}",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1alphaUser"
+            }
           }
         ],
         "tags": [
@@ -183,6 +215,37 @@
         "tags": [
           "UserService"
         ]
+      },
+      "delete": {
+        "summary": "DeleteUser method receives a DeleteUserRequest message and returns a DeleteUserResponse",
+        "operationId": "UserService_DeleteUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaDeleteUserResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "The resource name of the user to be deleted,\nfor example: \"users/instill\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "users/[^/]+"
+          }
+        ],
+        "tags": [
+          "UserService"
+        ]
       }
     },
     "/{user.name}": {
@@ -206,7 +269,7 @@
         "parameters": [
           {
             "name": "user.name",
-            "description": "Resource name of the user. It must have the format of \"users/*\".\nFor example: \"users/instill\".",
+            "description": "Resource name. It must have the format of \"users/*\".\nFor example: \"users/instill\".",
             "in": "path",
             "required": true,
             "type": "string",
@@ -222,10 +285,10 @@
             }
           },
           {
-            "name": "field_mask",
+            "name": "update_mask",
             "description": "Update mask for a user instance.",
             "in": "query",
-            "required": false,
+            "required": true,
             "type": "string"
           }
         ],
@@ -314,6 +377,20 @@
       },
       "additionalProperties": {}
     },
+    "v1alphaCreateUserResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1alphaUser",
+          "title": "A user instance"
+        }
+      },
+      "title": "CreateUserResponse represents a response for a user response"
+    },
+    "v1alphaDeleteUserResponse": {
+      "type": "object",
+      "title": "DeleteUserResponse represents an empty response"
+    },
     "v1alphaGetUserResponse": {
       "type": "object",
       "properties": {
@@ -332,16 +409,30 @@
           "items": {
             "$ref": "#/definitions/v1alphaUser"
           },
-          "title": "A list of users",
-          "readOnly": true
+          "title": "A list of users"
         },
-        "next_page_cursor": {
+        "next_page_token": {
           "type": "string",
-          "title": "Next page cursor",
-          "readOnly": true
+          "title": "Next page token"
+        },
+        "total_size": {
+          "type": "integer",
+          "format": "int32",
+          "title": "Total count of users"
         }
       },
-      "title": "ListUserResponse represents a response for a list of user roles"
+      "title": "ListUserResponse represents a response for a list of users"
+    },
+    "v1alphaOwnerType": {
+      "type": "string",
+      "enum": [
+        "OWNER_TYPE_UNSPECIFIED",
+        "OWNER_TYPE_USER",
+        "OWNER_TYPE_ORGANIZATION"
+      ],
+      "default": "OWNER_TYPE_UNSPECIFIED",
+      "description": "- OWNER_TYPE_UNSPECIFIED: OwnerType: UNSPECIFIED\n - OWNER_TYPE_USER: OwnerType: USER\n - OWNER_TYPE_ORGANIZATION: OwnerType: ORGANIZATION",
+      "title": "OwnerType enumerates the owner type of any resource"
     },
     "v1alphaUpdateUserResponse": {
       "type": "object",
@@ -358,7 +449,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Resource name of the user. It must have the format of \"users/*\".\nFor example: \"users/instill\".",
+          "description": "Resource name. It must have the format of \"users/*\".\nFor example: \"users/instill\".",
           "readOnly": true
         },
         "id": {
@@ -399,13 +490,17 @@
             "newsletter_subscription"
           ]
         },
-        "created_at": {
+        "type": {
+          "$ref": "#/definitions/v1alphaOwnerType",
+          "title": "Owner type: fixed to `OWNER_TYPE_USER`"
+        },
+        "create_time": {
           "type": "string",
           "format": "date-time",
           "title": "User creation time",
           "readOnly": true
         },
-        "updated_at": {
+        "update_time": {
           "type": "string",
           "format": "date-time",
           "title": "User update time",
