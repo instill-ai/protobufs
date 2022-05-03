@@ -16,71 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/__liveness": {
-      "get": {
-        "summary": "Liveness method receives a LivenessRequest message and returns a\nLivenessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
-        "operationId": "ModelService_Liveness",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/instillmodelv1alphaLivenessResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "health_check_request.service",
-            "description": "Service name to check for its readiness status.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/__readiness": {
-      "get": {
-        "summary": "Readiness method receives a ReadinessRequest message and returns a\nReadinessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
-        "operationId": "ModelService_Readiness",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/instillmodelv1alphaReadinessResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "health_check_request.service",
-            "description": "Service name to check for its readiness status.",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "ModelService"
-        ]
-      }
-    },
-    "/health/mgmt": {
+    "/health/model": {
       "get": {
         "summary": "Liveness method receives a LivenessRequest message and returns a\nLivenessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
         "operationId": "ModelService_Liveness2",
@@ -112,7 +48,125 @@
         ]
       }
     },
-    "/model-definitions": {
+    "/v1alpha/{name}:rename": {
+      "post": {
+        "summary": "RenameModel method rename a model",
+        "operationId": "ModelService_RenameModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaRenameModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name for the model to be renamed.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "new_model_id": {
+                  "type": "string",
+                  "title": "New ID of this model",
+                  "required": [
+                    "new_model_id"
+                  ]
+                }
+              },
+              "title": "RenameModelRequest represents a request to rename a model",
+              "required": [
+                "new_model_id"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1aplha/__liveness": {
+      "get": {
+        "summary": "Liveness method receives a LivenessRequest message and returns a\nLivenessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
+        "operationId": "ModelService_Liveness",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/instillmodelv1alphaLivenessResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "health_check_request.service",
+            "description": "Service name to check for its readiness status.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1aplha/__readiness": {
+      "get": {
+        "summary": "Readiness method receives a ReadinessRequest message and returns a\nReadinessResponse message.\nSee https://github.com/grpc/grpc/blob/master/doc/health-checking.md",
+        "operationId": "ModelService_Readiness",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/instillmodelv1alphaReadinessResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "health_check_request.service",
+            "description": "Service name to check for its readiness status.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1aplha/model-definitions": {
       "get": {
         "summary": "ListModelDefinition method receives a ListModelDefinitionRequest message and returns a ListModelDefinitionResponse",
         "operationId": "ModelService_ListModelDefinition",
@@ -133,7 +187,7 @@
         "parameters": [
           {
             "name": "page_size",
-            "description": "Page size.",
+            "description": "Page size: the maximum number of resources to return. The service may return fewer than this value.\nIf unspecified, at most 10 users will be returned.\nThe maximum value is 100; values above 100 will be coereced to 100.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -165,7 +219,7 @@
         ]
       }
     },
-    "/models": {
+    "/v1aplha/models": {
       "get": {
         "summary": "ListModel method receives a ListModelRequest message and returns a ListModelResponse",
         "operationId": "ModelService_ListModel",
@@ -186,7 +240,7 @@
         "parameters": [
           {
             "name": "page_size",
-            "description": "Page size.",
+            "description": "Page size: the maximum number of resources to return. The service may return fewer than this value.\nIf unspecified, at most 10 users will be returned.\nThe maximum value is 100; values above 100 will be coereced to 100.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -250,7 +304,7 @@
         ]
       }
     },
-    "/{instance.name}": {
+    "/v1aplha/{instance.name}": {
       "patch": {
         "summary": "UpdateModelInstance method receives a UpdateModelInstanceRequest message and returns a UpdateModelInstanceResponse",
         "operationId": "ModelService_UpdateModelInstance",
@@ -299,7 +353,7 @@
         ]
       }
     },
-    "/{model.name}": {
+    "/v1aplha/{model.name}": {
       "patch": {
         "summary": "UpdateModel method receives a UpdateModelRequest message and returns a UpdateModelResponse",
         "operationId": "ModelService_UpdateModel",
@@ -348,7 +402,7 @@
         ]
       }
     },
-    "/{name_1}": {
+    "/v1aplha/{name_1}": {
       "get": {
         "summary": "GetModelDefinition method receives a GetModelDefinitionRequest message and returns a GetModelDefinitionResponse",
         "operationId": "ModelService_GetModelDefinition",
@@ -369,7 +423,7 @@
         "parameters": [
           {
             "name": "name",
-            "description": "Resource name of the model definition. \nFor example \"model-definitions/{uuid}\"",
+            "description": "Resource name of the model definition.\nFor example \"model-definitions/{uuid}\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -400,7 +454,7 @@
         "parameters": [
           {
             "name": "name_1",
-            "description": "Resource name of the model instance. \nFor example \"models/{model}/instances/{instance}\"",
+            "description": "Resource name of the model instance.\nFor example \"models/{model}/instances/{instance}\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -412,7 +466,7 @@
         ]
       }
     },
-    "/{name_2}": {
+    "/v1aplha/{name_2}": {
       "get": {
         "summary": "GetModelInstance method receives a GetModelInstanceRequest message and returns a GetModelInstanceResponse",
         "operationId": "ModelService_GetModelInstance",
@@ -433,7 +487,7 @@
         "parameters": [
           {
             "name": "name_2",
-            "description": "Resource name of the model instance. \nFor example \"models/{model}/instances/{instance}\"",
+            "description": "Resource name of the model instance.\nFor example \"models/{model}/instances/{instance}\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -464,7 +518,7 @@
         "parameters": [
           {
             "name": "name",
-            "description": "Resource name of the model. \nFor example \"models/{model}\"",
+            "description": "Resource name of the model.\nFor example \"models/{model}\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -476,7 +530,7 @@
         ]
       }
     },
-    "/{name_3}": {
+    "/v1aplha/{name_3}": {
       "get": {
         "summary": "GetModelInstanceCard method receives a GetModelInstanceCardRequest message and returns a GetModelInstanceCardResponse",
         "operationId": "ModelService_GetModelInstanceCard",
@@ -497,7 +551,7 @@
         "parameters": [
           {
             "name": "name_3",
-            "description": "Resource name of the model instance card. \nFor example \"models/{model}/instances/{instance}/readme\"",
+            "description": "Resource name of the model instance card.\nFor example \"models/{model}/instances/{instance}/readme\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -528,7 +582,7 @@
         "parameters": [
           {
             "name": "name",
-            "description": "Resource name of the model. \nFor example \"models/{model}\"",
+            "description": "Resource name of the model.\nFor example \"models/{model}\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -540,7 +594,7 @@
         ]
       }
     },
-    "/{name}": {
+    "/v1aplha/{name}": {
       "get": {
         "summary": "GetModelDefinition method receives a GetModelDefinitionRequest message and returns a GetModelDefinitionResponse",
         "operationId": "ModelService_GetModelDefinition",
@@ -561,7 +615,7 @@
         "parameters": [
           {
             "name": "name",
-            "description": "Resource name of the model definition. \nFor example \"model-definitions/{uuid}\"",
+            "description": "Resource name of the model definition.\nFor example \"model-definitions/{uuid}\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -592,7 +646,7 @@
         "parameters": [
           {
             "name": "name",
-            "description": "Resource name of the model. \nFor example \"models/{model}\"",
+            "description": "Resource name of the model.\nFor example \"models/{model}\"",
             "in": "path",
             "required": true,
             "type": "string",
@@ -604,7 +658,7 @@
         ]
       }
     },
-    "/{name}:trigger": {
+    "/v1aplha/{name}:trigger": {
       "post": {
         "summary": "/////////////////////////////////////////////////////",
         "description": "TriggerModel method receives a TriggerModelRequest message and\nreturns a TriggerModelResponse message.",
@@ -662,7 +716,7 @@
         ]
       }
     },
-    "/{parent}/instances": {
+    "/v1aplha/{parent}/instances": {
       "get": {
         "summary": "ListModelInstance method receives a ListModelInstanceRequest message and returns a ListModelInstanceResponse",
         "operationId": "ModelService_ListModelInstance",
@@ -691,7 +745,7 @@
           },
           {
             "name": "page_size",
-            "description": "Page size.",
+            "description": "Page size: the maximum number of resources to return. The service may return fewer than this value.\nIf unspecified, at most 10 users will be returned.\nThe maximum value is 100; values above 100 will be coereced to 100.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -763,7 +817,7 @@
         ]
       }
     },
-    "/{readme.name}": {
+    "/v1aplha/{readme.name}": {
       "patch": {
         "summary": "UpdateModelInstanceCard method receives a UpdateModelInstanceCardRequest message and returns a UpdateModelInstanceCardResponse",
         "operationId": "ModelService_UpdateModelInstanceCard",
@@ -917,15 +971,14 @@
           "title": "Resource name. It must have the format of \"models/{model}\".\nFor example: \"models/yolov4\"",
           "readOnly": true
         },
-        "id": {
+        "uid": {
           "type": "string",
           "title": "Model ID in UUIDv4",
           "readOnly": true
         },
-        "display_name": {
+        "id": {
           "type": "string",
-          "description": "Model display name, this is used to construct the resource name.",
-          "readOnly": true
+          "description": "Resource ID (the last segment of the resource name) used to construct the resource name.\nThis conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum."
         },
         "description": {
           "type": "string",
@@ -933,7 +986,7 @@
         },
         "model_definition": {
           "type": "string",
-          "title": "Model definition UUID"
+          "title": "Model definition resource name"
         },
         "configuration": {
           "$ref": "#/definitions/instillmodelv1alphaSpec",
@@ -942,11 +995,6 @@
         "visibility": {
           "$ref": "#/definitions/ModelVisibility",
           "title": "Model visibility including public or private"
-        },
-        "full_name": {
-          "type": "string",
-          "title": "Model full name (i.e., \"{user.login}/{model.display_name}\")",
-          "readOnly": true
         },
         "user": {
           "type": "string",
@@ -1163,12 +1211,12 @@
           "title": "ModelDefinition resource name. It must have the format of \"model-definitions/{uuid}\"",
           "readOnly": true
         },
-        "id": {
+        "uid": {
           "type": "string",
-          "title": "ModelDefinition UUID",
+          "title": "ModelDefinition id in UUIDv4",
           "readOnly": true
         },
-        "display_name": {
+        "title": {
           "type": "string",
           "title": "ModelDefinition name",
           "readOnly": true
@@ -1220,14 +1268,14 @@
           "title": "Resource name. It must have the format of \"models/{model}/instances/{instance}\"",
           "readOnly": true
         },
-        "id": {
+        "uid": {
           "type": "string",
-          "title": "Model instance UUID",
+          "title": "Model instance ID in UUIDv4",
           "readOnly": true
         },
-        "display_name": {
+        "id": {
           "type": "string",
-          "description": "Model instance display name, this is used to construct the resource name.",
+          "description": "Model instance ID (the last segment of the resource name), used to construct the resource name.\nThis conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.",
           "readOnly": true
         },
         "status": {
@@ -1240,17 +1288,12 @@
         },
         "model_definition": {
           "type": "string",
-          "title": "Model definition",
+          "title": "Model definition resource name",
           "readOnly": true
         },
         "configuration": {
           "$ref": "#/definitions/instillmodelv1alphaSpec",
           "title": "Model instance configuration"
-        },
-        "full_name": {
-          "type": "string",
-          "title": "Model instance full name (i.e., \"{user.login}/{model.display_name}/{instance.display_name}\")",
-          "readOnly": true
         },
         "create_time": {
           "type": "string",
@@ -1317,6 +1360,16 @@
       "description": "- STATUS_UNSPECIFIED: Status: UNSPECIFIED\n - STATUS_OFFLINE: Status: OFFLINE\n - STATUS_ONLINE: Status: ONLINE\n - STATUS_ERROR: Status: ERROR",
       "title": "Status enumerates the status of a model instance"
     },
+    "v1alphaRenameModelResponse": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "$ref": "#/definitions/instillmodelv1alphaModel",
+          "title": "Renamed model"
+        }
+      },
+      "title": "RenameModelResponse represents a response for a model"
+    },
     "v1alphaTriggerModelInstanceBinaryFileUploadResponse": {
       "type": "object",
       "properties": {
@@ -1375,7 +1428,7 @@
         "VIEW_FULL"
       ],
       "default": "VIEW_UNSPECIFIED",
-      "description": "View represents a view of any resource. The resource view is implemented by adding a parameter to the method request \nwhich allows the client to specify which view of the resource it wants to receive in the response.\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource"
+      "description": "View represents a view of any resource. The resource view is implemented by adding a parameter to the method request\nwhich allows the client to specify which view of the resource it wants to receive in the response.\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.\n - VIEW_BASIC: View: BASIC, server response only include basic information of the resource\n - VIEW_FULL: View: FULL, full representation of the resource"
     }
   }
 }
