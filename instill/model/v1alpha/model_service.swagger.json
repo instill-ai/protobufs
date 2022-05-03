@@ -48,6 +48,48 @@
         ]
       }
     },
+    "/v1alpha/{name}:deploy": {
+      "post": {
+        "summary": "DeployModelInstance deploy a model instance to online state\nTODO: should use [Long-running operations](https://google.aip.dev/151)",
+        "operationId": "ModelService_DeployModelInstance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaDeployModelInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name for the model instance to be deployed.\nFormat: models/{model}/instances/{instance}",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+/instances/[^/]+"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "title": "DeployModelInstanceRequest represents a request to deploy a model instance to online state"
+            }
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
     "/v1alpha/{name}:rename": {
       "post": {
         "summary": "RenameModel method rename a model",
@@ -94,6 +136,48 @@
               "required": [
                 "new_model_id"
               ]
+            }
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{name}:undeploy": {
+      "post": {
+        "summary": "UndeployModelInstance undeploy a model instance to offline state\nTODO: should use [Long-running operations](https://google.aip.dev/151)",
+        "operationId": "ModelService_UndeployModelInstance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaUndeployModelInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "Resource name for the model instance to be undeployed.\nFormat: models/{model}/instances/{instance}",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+/instances/[^/]+"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "title": "UndeployModelInstanceRequest represents a request to undeploy a model instance to offline state"
             }
           }
         ],
@@ -868,6 +952,18 @@
     }
   },
   "definitions": {
+    "ModelInstanceState": {
+      "type": "string",
+      "enum": [
+        "STATE_UNSPECIFIED",
+        "STATE_OFFLINE",
+        "STATE_ONLINE",
+        "STATE_ERROR"
+      ],
+      "default": "STATE_UNSPECIFIED",
+      "description": "- STATE_UNSPECIFIED: State: UNSPECIFIED\n - STATE_OFFLINE: State: OFFLINE\n - STATE_ONLINE: State: ONLINE\n - STATE_ERROR: State: ERROR",
+      "title": "State enumerates the lifecycling state of a model instance"
+    },
     "ModelInstanceTask": {
       "type": "string",
       "enum": [
@@ -1097,6 +1193,16 @@
       "type": "object",
       "title": "DeleteModelResponse represents an empty response"
     },
+    "v1alphaDeployModelInstanceResponse": {
+      "type": "object",
+      "properties": {
+        "instance": {
+          "$ref": "#/definitions/v1alphaModelInstance",
+          "title": "Deployed model instance"
+        }
+      },
+      "title": "DeployModelInstanceResponse represents a response for a deployed model instance\nTODO: should use [Long-running operations](https://google.aip.dev/151)"
+    },
     "v1alphaGetModelDefinitionResponse": {
       "type": "object",
       "properties": {
@@ -1278,9 +1384,9 @@
           "description": "Model instance ID (the last segment of the resource name), used to construct the resource name.\nThis conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.",
           "readOnly": true
         },
-        "status": {
-          "$ref": "#/definitions/v1alphaModelInstanceStatus",
-          "title": "Model instance status"
+        "state": {
+          "$ref": "#/definitions/ModelInstanceState",
+          "title": "Model instance state"
         },
         "task": {
           "$ref": "#/definitions/ModelInstanceTask",
@@ -1348,18 +1454,6 @@
         "contents"
       ]
     },
-    "v1alphaModelInstanceStatus": {
-      "type": "string",
-      "enum": [
-        "STATUS_UNSPECIFIED",
-        "STATUS_OFFLINE",
-        "STATUS_ONLINE",
-        "STATUS_ERROR"
-      ],
-      "default": "STATUS_UNSPECIFIED",
-      "description": "- STATUS_UNSPECIFIED: Status: UNSPECIFIED\n - STATUS_OFFLINE: Status: OFFLINE\n - STATUS_ONLINE: Status: ONLINE\n - STATUS_ERROR: Status: ERROR",
-      "title": "Status enumerates the status of a model instance"
-    },
     "v1alphaRenameModelResponse": {
       "type": "object",
       "properties": {
@@ -1389,6 +1483,16 @@
         }
       },
       "title": "TriggerModelInstanceResponse represents a response for the output for triggering a model instance"
+    },
+    "v1alphaUndeployModelInstanceResponse": {
+      "type": "object",
+      "properties": {
+        "instance": {
+          "$ref": "#/definitions/v1alphaModelInstance",
+          "title": "Undeployed model instance"
+        }
+      },
+      "title": "UndeployModelInstanceResponse represents a response for a undeployed model instance\nTODO: should use [Long-running operations](https://google.aip.dev/151)"
     },
     "v1alphaUpdateModelInstanceCardResponse": {
       "type": "object",

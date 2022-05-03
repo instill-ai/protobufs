@@ -47,7 +47,7 @@ message Model {
   // Model visibility including public or private
   Visibility visibility = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model owner
-  oneof oneof_owner {
+  oneof owner {
     // Resource name of an organization, e.g., "users/instill".
     string user = 8 [ (google.api.resource_reference).type = "api.instill.tech/User", (google.api.field_behavior) = OUTPUT_ONLY ];
     // Resource name of an organization
@@ -75,16 +75,16 @@ message ModelInstance {
     // Task: DETECTION
     TASK_DETECTION = 2;
   }
-  // Status enumerates the status of a model instance
-  enum Status {
-    // Status: UNSPECIFIED
-    STATUS_UNSPECIFIED = 0;
-    // Status: OFFLINE
-    STATUS_OFFLINE = 1;
-    // Status: ONLINE
-    STATUS_ONLINE = 2;
-    // Status: ERROR
-    STATUS_ERROR = 3;
+  // State enumerates the lifecycling state of a model instance
+  enum State {
+    // State: UNSPECIFIED
+    STATE_UNSPECIFIED = 0;
+    // State: OFFLINE
+    STATE_OFFLINE = 1;
+    // State: ONLINE
+    STATE_ONLINE = 2;
+    // State: ERROR
+    STATE_ERROR = 3;
   }
 
   // Resource name. It must have the format of "models/{model}/instances/{instance}"
@@ -94,8 +94,8 @@ message ModelInstance {
   // Model instance ID (the last segment of the resource name), used to construct the resource name.
   // This conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.
   string id = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Model instance status
-  Status status = 4 [ (google.api.field_behavior) = REQUIRED ];
+  // Model instance state
+  State state = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model instance task
   optional Task task = 5 [ (google.api.field_behavior) = OPTIONAL, (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model definition resource name
@@ -323,6 +323,40 @@ message DeleteModelInstanceRequest {
 
 // DeleteModelInstanceResponse represents an empty response
 message DeleteModelInstanceResponse {}
+
+// DeployModelInstanceRequest represents a request to deploy a model instance to online state
+message DeployModelInstanceRequest {
+  // Resource name for the model instance to be deployed.
+  // Format: models/{model}/instances/{instance}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
+  ];
+}
+
+// DeployModelInstanceResponse represents a response for a deployed model instance
+// TODO: should use [Long-running operations](https://google.aip.dev/151)
+message DeployModelInstanceResponse {
+  // Deployed model instance
+  ModelInstance instance = 1;
+}
+
+// UndeployModelInstanceRequest represents a request to undeploy a model instance to offline state
+message UndeployModelInstanceRequest {
+  // Resource name for the model instance to be undeployed.
+  // Format: models/{model}/instances/{instance}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
+  ];
+}
+
+// UndeployModelInstanceResponse represents a response for a undeployed model instance
+// TODO: should use [Long-running operations](https://google.aip.dev/151)
+message UndeployModelInstanceResponse {
+  // Undeployed model instance
+  ModelInstance instance = 1;
+}
 
 // GetModelInstanceCardRequest represents a request to query a model instance's README card
 message GetModelInstanceCardRequest {
