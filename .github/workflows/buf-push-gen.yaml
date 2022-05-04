@@ -18,7 +18,7 @@ jobs:
       - uses: bufbuild/buf-breaking-action@v1
         with:
           # The 'main' branch of the GitHub repository that defines the module.
-          against: 'https://github.com/${GITHUB_REPOSITORY}.git#branch=main,ref=HEAD~1'
+          against: "https://github.com/${GITHUB_REPOSITORY}.git#branch=main,ref=HEAD~1"
       - uses: bufbuild/buf-push-action@v1
         with:
           buf_token: ${{ secrets.botBufToken }}
@@ -52,6 +52,7 @@ jobs:
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
           buf generate
+          cwd=$(pwd) && cd gen/go/instill && ls -d */ | xargs -I{} rm -rf $cwd/protogen-go/{} && cd $cwd
           cp -r gen/go/instill/* protogen-go/
           cd protogen-go
           if [[ `git status --porcelain` ]]; then
@@ -89,6 +90,7 @@ jobs:
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
           buf generate
+          cwd=$(pwd) && cd gen/python/instill && ls -d */ | xargs -I{} rm -rf $cwd/protogen-python/{} && cd $cwd
           cp -r gen/python/instill/* protogen-python/
           cd protogen-python
           if [[ `git status --porcelain` ]]; then
