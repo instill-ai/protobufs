@@ -2,14 +2,12 @@ syntax = "proto3";
 
 package instill.mgmt.v1alpha;
 
-// Protocol Buffers Well-known Types
+// Protobuf standard
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 // Google API
-import "google/api/client.proto";
 import "google/api/resource.proto";
-import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 
 // HealthCheckRequest represents a request to health check a service
@@ -191,68 +189,3 @@ message DeleteUserRequest {
 
 // DeleteUserResponse represents an empty response
 message DeleteUserResponse {}
-
-// User service responds to incoming user requests.
-service UserService {
-
-  // Liveness method receives a LivenessRequest message and returns a
-  // LivenessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
-    option (google.api.http) = {
-      get : "/v1alpha/__liveness"
-      additional_bindings : [ {get : "/health/mgmt"} ]
-    };
-  }
-
-  // Readiness method receives a ReadinessRequest message and returns a
-  // ReadinessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
-    option (google.api.http) = {
-      get : "/v1alpha/__readiness"
-    };
-  }
-
-  // ListUser method receives a ListUserRequest message and returns a
-  // ListUserResponse message.
-  rpc ListUser(ListUserRequest) returns (ListUserResponse) {
-    option (google.api.http) = {
-      get : "/v1alpha/users"
-    };
-  }
-
-  // CreateUser receives a CreateUserRequest message and returns a
-  // aGetUserResponse
-  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
-    option (google.api.http) = {
-      post : "/v1alpha/users"
-      body : "user"
-    };
-  }
-
-  // GetUser method receives a GetUserRequest message and returns
-  // a GetUserResponse message.
-  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
-    option (google.api.http) = {
-      get : "/v1alpha/{name=users/*}"
-    };
-  }
-
-  // UpdateUser method receives a UpdateUserRequest message and returns
-  // a UpdateUserResponse
-  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
-    option (google.api.http) = {
-      patch : "/v1alpha/{user.name=users/*}"
-      body : "user"
-    };
-  }
-
-  // DeleteUser method receives a DeleteUserRequest message and returns a
-  // DeleteUserResponse
-  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
-    option (google.api.http) = {
-      delete : "/v1alpha/{name=users/*}"
-    };
-  }
-}
