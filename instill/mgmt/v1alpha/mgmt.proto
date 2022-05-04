@@ -192,24 +192,6 @@ message DeleteUserRequest {
 // DeleteUserResponse represents an empty response
 message DeleteUserResponse {}
 
-// RenameUserRequest represents a request to rename a user
-message RenameUserRequest {
-  // Resource name for the user to be renamed.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/User"
-  ];
-
-  // New ID of this user
-  string new_user_id = 2 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// RenameUserResponse represents a response for a user
-message RenameUserResponse {
-  // Renamed user
-  User user = 1;
-}
-
 // User service responds to incoming user requests.
 service UserService {
 
@@ -272,14 +254,5 @@ service UserService {
     option (google.api.http) = {
       delete : "/v1alpha/{name=users/*}"
     };
-  }
-
-  // RenameModel method rename a user
-  rpc RenameUser(RenameUserRequest) returns (RenameUserResponse) {
-    option (google.api.http) = {
-      post : "/v1alpha/{name=users/*}:rename"
-      body : "*"
-    };
-    option (google.api.method_signature) = "name,new_user_id";
   }
 }
