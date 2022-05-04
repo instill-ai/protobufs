@@ -8,94 +8,34 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 // Google API
-import "google/api/annotations.proto";
+import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
-// HealthCheckRequest represents a request to health check a service
-message HealthCheckRequest {
-  // Service name to check for its readiness status
-  optional string service = 1 [ (google.api.field_behavior) = OPTIONAL ];
-}
-
-// HealthCheckResponse represents a response for a service heath status
-message HealthCheckResponse {
-  // ServingStatus enumerates the status of a queried service
-  enum ServingStatus {
-    // Serving status: UNSPECIFIED
-    SERVING_STATUS_UNSPECIFIED = 0;
-    // Serving status: SERVING
-    SERVING_STATUS_SERVING = 1;
-    // Serving status: NOT SERVING
-    SERVING_STATUS_NOT_SERVING = 2;
-  }
-
-  // Status is the instance of the enum type ServingStatus
-  ServingStatus status = 1;
-}
-
-// LivenessRequest represents a request to check a service liveness status
-message LivenessRequest {
-  // HealthCheckRequest message
-  optional HealthCheckRequest health_check_request = 1
-      [ (google.api.field_behavior) = OPTIONAL ];
-}
-
-// LivenessResponse represents a response for a service liveness status
-message LivenessResponse {
-  // HealthCheckResponse message
-  HealthCheckResponse health_check_response = 1;
-}
-
-// ReadinessRequest represents a request to check a service readiness status
-message ReadinessRequest {
-  // HealthCheckRequest message
-  optional HealthCheckRequest health_check_request = 1
-      [ (google.api.field_behavior) = OPTIONAL ];
-}
-
-// ReadinessResponse represents a response for a service readiness status
-message ReadinessResponse {
-  // HealthCheckResponse message
-  HealthCheckResponse health_check_response = 1;
-}
-
-// Source represents a source connector
-message Source {
-  // Source name
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// Destination represents a destination connector
-message Destination {
-  // Destination name
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// Model represents the content of a model
-message Model {
-  // Model name
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Model instance name
-  string instance_name = 2 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// Logic represents the content of a logic operator
-message Logic {}
-
-// Recipe represents the content of a recipe
+// Pipeline represents a pipeline recipe
 message Recipe {
-  // A source connector instance
-  Source source = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // A destination connector instance
-  Destination destination = 2 [ (google.api.field_behavior) = REQUIRED ];
-  // A list of model instances
-  repeated Model models = 3 [ (google.api.field_behavior) = REQUIRED ];
-  // A list of logic instances
-  repeated Logic logics = 4 [ (google.api.field_behavior) = REQUIRED ];
+  // A source connector resource
+  string source = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Connector"
+  ];
+  // A destination connector resource
+  string destination = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Connector"
+  ];
+  // A list of model instance resources
+  repeated string model_instances = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
+  ];
 }
 
 // Pipeline represents the content of a pipeline
 message Pipeline {
+  option (google.api.resource) = {
+    type : "api.instill.tech/Pipeline"
+    pattern : "pipelines/{pipeline}"
+  };
 
   // Mode enumerates the pipeline modes
   enum Mode {
@@ -107,36 +47,48 @@ message Pipeline {
     MODE_ASYNC = 2;
   }
 
-  // Status enumerates the status of a pipeline
-  enum Status {
-    // Status: UNSPECIFIED
-    STATUS_UNSPECIFIED = 0;
-    // Status: INACTIVATED
-    STATUS_INACTIVATED = 1;
-    // Status: ACTIVATED
-    STATUS_ACTIVATED = 2;
-    // Status: ERROR
-    STATUS_ERROR = 3;
+  // State enumerates the state of a pipeline
+  enum State {
+    // State: UNSPECIFIED
+    STATE_UNSPECIFIED = 0;
+    // State INACTIVE indicates the pipeline is inactive
+    STATE_INACTIVE = 1;
+    // State ACTIVE indicates the pipeline is active
+    STATE_ACTIVE = 2;
+    // State ERROR indicates the pipeline has error
+    STATE_ERROR = 3;
   }
 
   // Pipeline resource name. It must have the format of "pipelines/*"
   string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Pipeline UUID
-  string id = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Pipeline display name
-  string display_name = 3 [ (google.api.field_behavior) = REQUIRED ];
+  string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Pipeline resource ID (the last segment of the resource name) used to construct
+  // the resource name. This conforms to RFC-1034, which restricts to letters,
+  // numbers, and hyphen, with the first character a letter, the last a letter
+  // or a number, and a 63 character maximum.
+  string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
   // Pipeline description
   optional string description = 4 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline recipe
   Recipe recipe = 5 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline mode
   Mode mode = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Pipeline status
-  Status status = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Connector owner UUID
-  string owner_id = 8 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Connector full name (i.e., owner_name/pipeline_name)
-  string full_name = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Pipeline state
+  State state = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Pipeline owner
+  oneof owner {
+    // the resource name of a user, e.g., "users/local-user".
+    string user = 8 [
+      (google.api.resource_reference).type = "api.instill.tech/User",
+      (google.api.field_behavior) = OUTPUT_ONLY
+    ];
+    // the resource name of an organization
+    string org = 9 [
+      (google.api.resource_reference).type = "api.instill.tech/Organization",
+      (google.api.field_behavior) = OUTPUT_ONLY
+    ];
+  };
   // Pipeline creation time
   google.protobuf.Timestamp create_time = 10
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
@@ -147,24 +99,26 @@ message Pipeline {
 
 // CreatePipelineRequest represents a request to create a pipeline
 message CreatePipelineRequest {
-  // Pipeline instance
+  // A pipeline resource to create
   Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// CreatePipelineResponse represents a response for a pipeline instance
+// CreatePipelineResponse represents a response for a pipeline resource
 message CreatePipelineResponse {
-  // A pipeline instance
+  // The created pipeline resource
   Pipeline pipeline = 1;
 }
 
-// PipelineView enumerates the pipeline views
-enum PipelineView {
-  // PipelineView: UNSPECIFIED
-  PIPELINE_VIEW_UNSPECIFIED = 0;
-  // PipelineView: BASIC
-  PIPELINE_VIEW_BASIC = 1;
-  // PipelineView: FULL
-  PIPELINE_VIEW_FULL = 2;
+// View represents a view of any resource. The resource view is implemented by
+// adding a parameter to the method request which allows the client to specify
+// which view of the resource it wants to receive in the response.
+enum View {
+  // View: UNSPECIFIED
+  VIEW_UNSPECIFIED = 0;
+  // View: BASIC
+  VIEW_BASIC = 1;
+  // View: FULL
+  VIEW_FULL = 2;
 }
 
 // ListPipelineRequest represents a request to list pipelines
@@ -173,54 +127,111 @@ message ListPipelineRequest {
   optional int32 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // PipelineView view (default is PIPELINE_VIEW_BASIC)
-  optional PipelineView view = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // View view (default is VIEW_BASIC)
+  optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // ListPipelineResponse represents a response for a list of pipelines
 message ListPipelineResponse {
-  // A list of pipeline instances
+  // A list of pipeline resources
   repeated Pipeline pipelines = 1;
   // Next page token
   string next_page_token = 2;
+  // Total count of pipeline resources
+  int32 total_size = 3;
 }
 
 // GetPipelineRequest represents a request to query a pipeline
 message GetPipelineRequest {
   // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // PipelineView view (default is PIPELINE_VIEW_BASIC)
-  PipelineView view = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
+  ];
+  // View view (default is VIEW_BASIC)
+  View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
-// GetPipelineResponse represents a response for a pipeline instance
+// GetPipelineResponse represents a response for a pipeline resource
 message GetPipelineResponse {
-  // A pipeline instance
+  // A pipeline resource
   Pipeline pipeline = 1;
 }
 
 // UpdatePipelineRequest represents a request to update a pipeline
 message UpdatePipelineRequest {
-  // Pipeline instance to update
+  // A pipeline resource to update
   Pipeline pipeline = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Update mask for a pipeline instance
+  // Update mask for a pipeline resource
   google.protobuf.FieldMask update_mask = 2;
 }
 
-// UpdatePipelineResponse represents a response for a pipeline instance
+// UpdatePipelineResponse represents a response for a pipeline resource
 message UpdatePipelineResponse {
-  // A pipeline instance
+  // An updated pipeline resource
   Pipeline pipeline = 1;
 }
 
-// DeletePipelineRequest represents a request to delete a pipeline
+// DeletePipelineRequest represents a request to delete a pipeline resource
 message DeletePipelineRequest {
   // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
+  ];
 }
 
 // DeletePipelineResponse represents an empty response
 message DeletePipelineResponse {}
+
+// ActivatePipelineRequest represents a request to activate a pipeline
+message ActivatePipelineRequest {
+  // Pipeline resource name. It must have the format of "pipelines/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
+  ];
+}
+
+// ActivatePipelineResponse represents an activated pipeline
+message ActivatePipelineResponse {
+  // A pipeline resource
+  Pipeline pipeline = 1;
+}
+
+// DeactivatePipelineRequest represents a request to deactivate a pipeline
+message DeactivatePipelineRequest {
+  // Pipeline resource name. It must have the format of "pipelines/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
+  ];
+}
+
+// DeactivatePipelineResponse represents an inactivated pipeline
+message DeactivatePipelineResponse {
+  // A pipeline resource
+  Pipeline pipeline = 1;
+}
+
+// RenamePipelineRequest represents a request to rename the pipeline resource
+// name
+message RenamePipelineRequest {
+  // Pipeline resource name. It must have the format of "pipelines/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
+  ];
+  // Pipeline new resource id to replace with the pipeline resource name to be
+  // "pipelines/{new_pipeline_id}"
+  string new_pipeline_id = 2 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// RenamePipelineResponse represents a renamed pipeline resource
+message RenamePipelineResponse {
+  // A pipeline resource
+  Pipeline pipeline = 1;
+}
 
 // Input represents the input to a pipeline
 message Input {
@@ -236,7 +247,10 @@ message Input {
 // TriggerPipelineRequest represents a request to trigger a pipeline
 message TriggerPipelineRequest {
   // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
+  ];
   // Input to the pipeline
   repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
@@ -251,7 +265,10 @@ message TriggerPipelineResponse {
 // pipeline
 message TriggerPipelineBinaryFileUploadRequest {
   // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
+  ];
   // The list of file length for each uploaded binary file
   repeated uint64 file_lengths = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline content in bytes
@@ -263,86 +280,4 @@ message TriggerPipelineBinaryFileUploadRequest {
 message TriggerPipelineBinaryFileUploadResponse {
   // Output from a pipeline
   google.protobuf.Struct output = 1;
-}
-
-// Pipeline service responds to incoming pipeline requests.
-service PipelineService {
-
-  // Liveness method receives a LivenessRequest message and returns a
-  // LivenessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
-    option (google.api.http) = {
-      get : "/__liveness"
-      additional_bindings : [ {get : "/health/pipeline"} ]
-    };
-  }
-
-  // Readiness method receives a ReadinessRequest message and returns a
-  // ReadinessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
-    option (google.api.http) = {
-      get : "/__readiness"
-    };
-  }
-
-  // CreatePipeline method receives a CreatePipelineRequest message and returns
-  // a CreatePipelineResponse message.
-  rpc CreatePipeline(CreatePipelineRequest) returns (CreatePipelineResponse) {
-    option (google.api.http) = {
-      post : "/pipelines"
-      body : "pipeline"
-    };
-  }
-
-  // ListPipeline method receives a ListPipelineRequest message and returns a
-  // ListPipelineResponse message.
-  rpc ListPipeline(ListPipelineRequest) returns (ListPipelineResponse) {
-    option (google.api.http) = {
-      get : "/pipelines"
-    };
-  }
-
-  // GetPipeline method receives a GetPipelineRequest message and returns a
-  // GetPipelineResponse message.
-  rpc GetPipeline(GetPipelineRequest) returns (GetPipelineResponse) {
-    option (google.api.http) = {
-      get : "/{name=pipelines/*}"
-    };
-  }
-
-  // UpdatePipeline method receives a UpdatePipelineRequest message and returns
-  // a UpdatePipelineResponse message.
-  rpc UpdatePipeline(UpdatePipelineRequest) returns (UpdatePipelineResponse) {
-    option (google.api.http) = {
-      patch : "/{pipeline.name=pipelines/*}"
-      body : "pipeline"
-    };
-  }
-
-  // UpdatePipeline method receives a DeletePipelineRequest message and returns
-  // a DeletePipelineResponse message.
-  rpc DeletePipeline(DeletePipelineRequest) returns (DeletePipelineResponse) {
-    option (google.api.http) = {
-      delete : "/{name=pipelines/*}"
-    };
-  }
-
-  // TriggerPipeline method receives a TriggerPipelineRequest message and
-  // returns a TriggerPipelineResponse.
-  rpc TriggerPipeline(TriggerPipelineRequest)
-      returns (TriggerPipelineResponse) {
-    option (google.api.http) = {
-      post : "/pipelines/{name}/outputs"
-      body : "*"
-    };
-  }
-
-  // TriggerPipelineBinaryFileUpload method receives a
-  // TriggerPipelineBinaryFileUploadRequest message and returns a
-  // TriggerPipelineBinaryFileUploadResponse message.
-  rpc TriggerPipelineBinaryFileUpload(
-      stream TriggerPipelineBinaryFileUploadRequest)
-      returns (TriggerPipelineBinaryFileUploadResponse) {}
 }
