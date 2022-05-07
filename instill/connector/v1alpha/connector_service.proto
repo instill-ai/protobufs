@@ -1,0 +1,244 @@
+syntax = "proto3";
+
+package instill.connector.v1alpha;
+
+// Google API
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+
+import "instill/connector/v1alpha/connector_definition.proto";
+import "instill/connector/v1alpha/connector.proto";
+
+// HealthCheckRequest represents a request to health check a service
+message HealthCheckRequest {
+  // Service name to check for its readiness status
+  optional string service = 1 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// HealthCheckResponse represents a response for a service heath status
+message HealthCheckResponse {
+  // ServingStatus enumerates the status of a queried service
+  enum ServingStatus {
+    // Serving status: UNSPECIFIED
+    SERVING_STATUS_UNSPECIFIED = 0;
+    // Serving status: SERVING
+    SERVING_STATUS_SERVING = 1;
+    // Serving status: NOT SERVING
+    SERVING_STATUS_NOT_SERVING = 2;
+  }
+
+  // Status is the instance of the enum type ServingStatus
+  ServingStatus status = 1;
+}
+
+// LivenessRequest represents a request to check a service liveness status
+message LivenessRequest {
+  // HealthCheckRequest message
+  optional HealthCheckRequest health_check_request = 1
+      [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// LivenessResponse represents a response for a service liveness status
+message LivenessResponse {
+  // HealthCheckResponse message
+  HealthCheckResponse health_check_response = 1;
+}
+
+// ReadinessRequest represents a request to check a service readiness status
+message ReadinessRequest {
+  // HealthCheckRequest message
+  optional HealthCheckRequest health_check_request = 1
+      [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ReadinessResponse represents a response for a service readiness status
+message ReadinessResponse {
+  // HealthCheckResponse message
+  HealthCheckResponse health_check_response = 1;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Connector service responds to incoming connector requests.
+service ConnectorService {
+
+  /////////////////////////////////
+  // Connector definition methods
+  /////////////////////////////////
+
+  // Liveness method receives a LivenessRequest message and returns a
+  // LivenessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__liveness"
+      additional_bindings : [ {get : "/v1alpha/health/connector"} ]
+    };
+  }
+
+  // Readiness method receives a ReadinessRequest message and returns a
+  // ReadinessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__readiness"
+    };
+  }
+
+  // ListSourceConnectorDefinition method receives a
+  // ListSourceConnectorDefinitionRequest message and returns a
+  // ListSourceConnectorDefinitionResponse message.
+  rpc ListSourceConnectorDefinition(ListSourceConnectorDefinitionRequest)
+      returns (ListSourceConnectorDefinitionResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/source-connector-definitions"
+    };
+  }
+
+  // GetSourceConnectorDefinition method receives a
+  // GetSourceConnectorDefinitionRequest message and returns a
+  // GetGetSourceConnectorDefinitionResponse message.
+  rpc GetSourceConnectorDefinition(GetSourceConnectorDefinitionRequest)
+      returns (GetSourceConnectorDefinitionResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=source-connector-definitions/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListDestinationConnectorDefinition method receives a
+  // ListDestinationConnectorDefinitionRequest message and returns a
+  // ListDestinationConnectorDefinitionResponse message.
+  rpc ListDestinationConnectorDefinition(
+      ListDestinationConnectorDefinitionRequest)
+      returns (ListDestinationConnectorDefinitionResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/destination-connector-definitions"
+    };
+  }
+
+  // GetDestinationConnectorDefinition method receives a
+  // GetDestinationConnectorDefinitionRequest message and returns a
+  // GetGetDestinationConnectorDefinitionResponse message.
+  rpc GetDestinationConnectorDefinition(
+      GetDestinationConnectorDefinitionRequest)
+      returns (GetDestinationConnectorDefinitionResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=destination-connector-definitions/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  /////////////////////////////////
+  // Connector methods
+  /////////////////////////////////
+
+  // *SourceConnector methods
+
+  // CreateSourceConnector method receives a CreateSourceConnectorRequest
+  // message and returns a CreateSourceConnectorResponse message.
+  rpc CreateSourceConnector(CreateSourceConnectorRequest)
+      returns (CreateSourceConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/source-connectors"
+      body : "source_connector"
+    };
+    option (google.api.method_signature) = "source_connector";
+  }
+
+  // ListSourceConnector method receives a ListSourceConnectorRequest message
+  // and returns a ListSourceConnectorResponse message.
+  rpc ListSourceConnector(ListSourceConnectorRequest)
+      returns (ListSourceConnectorResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/source-connectors"
+    };
+  }
+
+  // GetSourceConnector method receives a GetSourceConnectorRequest message and
+  // returns a GetSourceConnectorResponse message.
+  rpc GetSourceConnector(GetSourceConnectorRequest)
+      returns (GetSourceConnectorResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=source-connectors/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdateSourceConnector method receives a UpdateSourceConnectorRequest
+  // message and returns a UpdateSourceConnectorResponse message.
+  rpc UpdateSourceConnector(UpdateSourceConnectorRequest)
+      returns (UpdateSourceConnectorResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/{source_connector.name=connectors/*}"
+      body : "source_connector"
+    };
+    option (google.api.method_signature) = "source_connector,update_mask";
+  }
+
+  // DeleteSourceConnector method receives a DeleteSourceConnectorRequest
+  // message and returns a DeleteSourceConnectorResponse message.
+  rpc DeleteSourceConnector(DeleteSourceConnectorRequest)
+      returns (DeleteSourceConnectorResponse) {
+    option (google.api.http) = {
+      delete : "/v1alpha/{name=source-connectors/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // *DestinationConnector methods
+
+  // CreateDestinationConnector method receives a
+  // CreateDestinationConnectorRequest message and returns a
+  // CreateDestinationConnectorResponse message.
+  rpc CreateDestinationConnector(CreateDestinationConnectorRequest)
+      returns (CreateDestinationConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/destination-connectors"
+      body : "destination_connector"
+    };
+    option (google.api.method_signature) = "destination_connector";
+  }
+
+  // ListDestinationConnector method receives a ListDestinationConnectorRequest
+  // message and returns a ListDestinationConnectorResponse message.
+  rpc ListDestinationConnector(ListDestinationConnectorRequest)
+      returns (ListDestinationConnectorResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/destination-connectors"
+    };
+  }
+
+  // GetDestinationConnector method receives a GetDestinationConnectorRequest
+  // message and returns a GetDestinationConnectorResponse message.
+  rpc GetDestinationConnector(GetDestinationConnectorRequest)
+      returns (GetDestinationConnectorResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=destination-connectors/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdateDestinationConnector method receives a
+  // UpdateDestinationConnectorRequest message and returns a
+  // UpdateDestinationConnectorResponse message.
+  rpc UpdateDestinationConnector(UpdateDestinationConnectorRequest)
+      returns (UpdateDestinationConnectorResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/{destination_connector.name=connectors/*}"
+      body : "destination_connector"
+    };
+    option (google.api.method_signature) = "destination_connector,update_mask";
+  }
+
+  // DeleteDestinationConnector method receives a
+  // DeleteDestinationConnectorRequest message and returns a
+  // DeleteDestinationConnectorResponse message.
+  rpc DeleteDestinationConnector(DeleteDestinationConnectorRequest)
+      returns (DeleteDestinationConnectorResponse) {
+    option (google.api.http) = {
+      delete : "/v1alpha/{name=destination-connectors/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+}
