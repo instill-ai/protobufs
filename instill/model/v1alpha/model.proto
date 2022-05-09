@@ -11,7 +11,7 @@ import "google/protobuf/timestamp.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
-import "instill/model/v1alpha/definition.proto";
+import "instill/model/v1alpha/model_definition.proto";
 
 // Model represents a model
 message Model {
@@ -158,7 +158,7 @@ message ModelInstanceCard {
 // ListModelRequest represents a request to list all models
 message ListModelRequest {
   // Page size: the maximum number of resources to return. The service may
-  // return fewer than this value. If unspecified, at most 10 users will be
+  // return fewer than this value. If unspecified, at most 10 models will be
   // returned. The maximum value is 100; values above 100 will be coereced to
   // 100.
   int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
@@ -258,6 +258,20 @@ message DeleteModelRequest {
 // DeleteModelResponse represents an empty response
 message DeleteModelResponse {}
 
+// LookUpModelRequest represents a request to query a model instance by
+// permalink
+message LookUpModelRequest {
+  // Permalink of a model. For example:
+  // "models/{uid}"
+  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// LookUpModelResponse represents a response for a model instance
+message LookUpModelResponse {
+  // A model resource
+  Model model = 1;
+}
+
 // RenameModelRequest represents a request to rename a model
 message RenameModelRequest {
   // Resource name for the model to be renamed.
@@ -287,9 +301,9 @@ message ListModelInstanceRequest {
   ];
 
   // Page size: the maximum number of resources to return. The service may
-  // return fewer than this value. If unspecified, at most 10 users will be
-  // returned. The maximum value is 100; values above 100 will be coereced to
-  // 100.
+  // return fewer than this value. If unspecified, at most 10 model instances
+  // will be returned. The maximum value is 100; values above 100 will be
+  // coereced to 100.
   int64 page_size = 2 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   string page_token = 3 [ (google.api.field_behavior) = OPTIONAL ];
@@ -320,6 +334,20 @@ message GetModelInstanceRequest {
 // GetModelInstanceResponse represents a response for a model instance
 message GetModelInstanceResponse {
   // Retrieved model instance
+  ModelInstance instance = 1;
+}
+
+// LookUpModelInstanceRequest represents a request to query a model instance by
+// permalink
+message LookUpModelInstanceRequest {
+  // Permalink of a model instance. For example:
+  // "models/{model_uid}/instances/{instance_uid}"
+  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// LookUpModelInstanceResponse represents a response for a model instance
+message LookUpModelInstanceResponse {
+  // A model instance
   ModelInstance instance = 1;
 }
 
