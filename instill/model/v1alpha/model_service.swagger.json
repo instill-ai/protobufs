@@ -133,7 +133,7 @@
         "parameters": [
           {
             "name": "page_size",
-            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 users will be\nreturned. The maximum value is 100; values above 100 will be coereced to\n100.",
+            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 ModelDefinitions\nwill be returned. The maximum value is 100; values above 100 will be\ncoereced to 100.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -186,7 +186,7 @@
         "parameters": [
           {
             "name": "page_size",
-            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 users will be\nreturned. The maximum value is 100; values above 100 will be coereced to\n100.",
+            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 models will be\nreturned. The maximum value is 100; values above 100 will be coereced to\n100.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -623,7 +623,7 @@
     "/v1alpha/{name}:trigger": {
       "post": {
         "summary": "/////////////////////////////////////////////////////",
-        "description": "TriggerModelInstance method receives a TriggerModelInstanceRequest message and\nreturns a TriggerModelInstanceResponse message.",
+        "description": "TriggerModelInstance method receives a TriggerModelInstanceRequest message\nand returns a TriggerModelInstanceResponse message.",
         "operationId": "ModelService_TriggerModelInstance",
         "responses": {
           "200": {
@@ -749,7 +749,7 @@
           },
           {
             "name": "page_size",
-            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 users will be\nreturned. The maximum value is 100; values above 100 will be coereced to\n100.",
+            "description": "Page size: the maximum number of resources to return. The service may\nreturn fewer than this value. If unspecified, at most 10 model instances\nwill be returned. The maximum value is 100; values above 100 will be\ncoereced to 100.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -774,6 +774,72 @@
               "VIEW_FULL"
             ],
             "default": "VIEW_UNSPECIFIED"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{permalink_1}:lookUp": {
+      "get": {
+        "summary": "LookUpModelInstance method receives a LookUpModelInstanceRequest message\nand returns a\nLookUpModelInstanceResponse",
+        "operationId": "ModelService_LookUpModelInstance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaLookUpModelInstanceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "permalink_1",
+            "description": "Permalink of a model instance. For example:\n\"models/{model_uid}/instances/{instance_uid}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+/instances/[^/]+"
+          }
+        ],
+        "tags": [
+          "ModelService"
+        ]
+      }
+    },
+    "/v1alpha/{permalink}:lookUp": {
+      "get": {
+        "summary": "LookUpModel method receives a LookUpModelRequest message and returns a\nLookUpModelResponse",
+        "operationId": "ModelService_LookUpModel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaLookUpModelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "permalink",
+            "description": "Permalink of a model. For example:\n\"models/{uid}\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "models/[^/]+"
           }
         ],
         "tags": [
@@ -1054,6 +1120,26 @@
         }
       },
       "title": "ListModelResponse represents a response for a list of models"
+    },
+    "v1alphaLookUpModelInstanceResponse": {
+      "type": "object",
+      "properties": {
+        "instance": {
+          "$ref": "#/definitions/v1alphaModelInstance",
+          "title": "A model instance"
+        }
+      },
+      "title": "LookUpModelInstanceResponse represents a response for a model instance"
+    },
+    "v1alphaLookUpModelResponse": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "$ref": "#/definitions/v1alphaModel",
+          "title": "A model resource"
+        }
+      },
+      "title": "LookUpModelResponse represents a response for a model instance"
     },
     "v1alphaModel": {
       "type": "object",
