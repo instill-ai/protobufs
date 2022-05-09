@@ -870,27 +870,6 @@
       },
       "title": "ReadinessResponse represents a response for a service readiness status"
     },
-    "instillmodelv1alphaSpec": {
-      "type": "object",
-      "properties": {
-        "documentation_url": {
-          "type": "string",
-          "title": "Spec documentation URL",
-          "readOnly": true
-        },
-        "specification": {
-          "type": "object",
-          "title": "Spec specification",
-          "required": [
-            "specification"
-          ]
-        }
-      },
-      "title": "//////////////////////////////////\nSpec represents a spec data model",
-      "required": [
-        "specification"
-      ]
-    },
     "instillmodelv1alphaView": {
       "type": "string",
       "enum": [
@@ -1102,8 +1081,8 @@
           "title": "Model definition resource name"
         },
         "configuration": {
-          "$ref": "#/definitions/instillmodelv1alphaSpec",
-          "title": "Model definition configuration"
+          "type": "object",
+          "title": "Model configuration represents the configuration JSON object that has been\nvalidated using the `model_spec` JSON schema of a ModelDefinition"
         },
         "visibility": {
           "$ref": "#/definitions/ModelVisibility",
@@ -1167,19 +1146,17 @@
           "title": "ModelDefinition icon",
           "readOnly": true
         },
-        "spec": {
-          "$ref": "#/definitions/instillmodelv1alphaSpec",
-          "title": "ModelDefinition spec"
-        },
-        "public": {
-          "type": "boolean",
-          "title": "ModelDefinition public flag, i.e., true if this definition is available to\nall workspaces",
+        "model_spec": {
+          "type": "object",
+          "description": "ModelDefinition model specification represents the JSON schema used to\nvalidate the JSON configurations of a model created from a specific model\nsource. Must be a valid JSON that includes what fields are needed to\ncreate/display a model.",
           "readOnly": true
         },
-        "custom": {
-          "type": "boolean",
-          "title": "ModelDefinition custom flag, i.e., true if this is a custom model\ndefinition",
-          "readOnly": true
+        "model_instance_spec": {
+          "type": "object",
+          "description": "ModelDefinition model instance specification represents the JSON schema\nused to validate the JSON configurations of a model instance from a\nspecific model source. Must be a valid JSON that includes what fields are\nneeded to display a model instance.",
+          "required": [
+            "model_instance_spec"
+          ]
         },
         "create_time": {
           "type": "string",
@@ -1194,7 +1171,10 @@
           "readOnly": true
         }
       },
-      "title": "/////////////////////////////////////////////////////////////////\nModelDefinition represents the definition of a model"
+      "title": "/////////////////////////////////////////////////////////////////\nModelDefinition represents the definition of a model",
+      "required": [
+        "model_instance_spec"
+      ]
     },
     "v1alphaModelInstance": {
       "type": "object",
@@ -1228,8 +1208,9 @@
           "readOnly": true
         },
         "configuration": {
-          "$ref": "#/definitions/instillmodelv1alphaSpec",
-          "title": "Model instance configuration"
+          "type": "object",
+          "title": "Model instance configuration represents the JSON configuration that has\nbeen validated using the `model_instance_spec` JSON schema of a\nModelDefinition",
+          "readOnly": true
         },
         "create_time": {
           "type": "string",
