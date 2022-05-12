@@ -2,9 +2,6 @@ syntax = "proto3";
 
 package instill.connector.v1alpha;
 
-// Protobuf standard
-import "google/protobuf/struct.proto";
-
 // Protocol Buffers Well-Known Types
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
@@ -19,11 +16,8 @@ import "instill/connector/v1alpha/connector_definition.proto";
 message Connector {
   // Connector description
   optional string description = 1 [ (google.api.field_behavior) = OPTIONAL ];
-  // Connector configuration
-  google.protobuf.Struct configuration = 2 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Spec"}
-  ];
+  // Connector configuration in JSON string
+  string configuration = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Connector tombstone
   bool tombstone = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Connector owner
@@ -67,7 +61,7 @@ message SourceConnector {
   // Connector Definition resource (e.g. SourceDefinition or Destination
   // Destination)
   string source_connector_definition = 4 [
-    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnectorDefinition"
     }
@@ -96,7 +90,7 @@ message DestinationConnector {
   // Connector Definition resource (e.g. SourceDefinition or Destination
   // Destination)
   string destination_connector_definition = 4 [
-    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnectorDefinition"
     }
@@ -206,6 +200,46 @@ message DeleteSourceConnectorRequest {
 // DeleteSourceConnectorResponse represents an empty response
 message DeleteSourceConnectorResponse {}
 
+// LookUpSourceConnectorRequest represents a request to query a source connector
+// by permalink
+message LookUpSourceConnectorRequest {
+  // Permalink of a source connector. For example:
+  // "source-connectors/{uid}"
+  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // SourceConnector view (default is VIEW_BASIC)
+  optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// LookUpSourceConnectorResponse represents a response for a source connector
+message LookUpSourceConnectorResponse {
+  // SourceConnector resource
+  SourceConnector source_connector = 1;
+}
+
+// RenameSourceConnectorRequest represents a request to rename the
+// SourceConnector resource name
+message RenameSourceConnectorRequest {
+  // SourceConnector resource name. It must have the format of
+  // "source-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/SourceConnector"
+    }
+  ];
+  // SourceConnector new resource id to replace with the
+  // SourceConnector resource name to be
+  // "source-connectors/{new_source_connector_id}"
+  string new_source_connector_id = 2
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// RenameSourceConnectorResponse represents a renamed SourceConnector resource
+message RenameSourceConnectorResponse {
+  // A SourceConnector resource
+  SourceConnector source_connector = 1;
+}
+
 // DestinationConnector
 //
 // CreateDestinationConnectorRequest represents a request to create a
@@ -303,31 +337,43 @@ message DeleteDestinationConnectorRequest {
 // DeleteDestinationConnectorResponse represents an empty response
 message DeleteDestinationConnectorResponse {}
 
-// LookUpSourceConnectorRequest represents a request to query a source connector
-// by permalink
-message LookUpSourceConnectorRequest {
-  // Permalink of a source connector. For example:
-  // "source-connectors/{uid}"
-  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// LookUpSourceConnectorResponse represents a response for a source connector
-message LookUpSourceConnectorResponse {
-  // SourceConnector resource
-  SourceConnector source_connector = 1;
-}
-
 // LookUpDestinationConnectorRequest represents a request to query a destination
 // connector by permalink
 message LookUpDestinationConnectorRequest {
   // Permalink of a source connector. For example:
   // "destination-connectors/{uid}"
   string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // SourceConnector view (default is VIEW_BASIC)
+  optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // LookUpDestinationConnectorResponse represents a response for a destination
 // connector
 message LookUpDestinationConnectorResponse {
   // DestinationConnector resource
+  DestinationConnector destination_connector = 1;
+}
+
+// RenameDestinationConnectorRequest represents a request to rename the
+// DestinationConnector resource name
+message RenameDestinationConnectorRequest {
+  // DestinationConnector resource name. It must have the format of
+  // "destination-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/DestinationConnector"
+    }
+  ];
+  // DestinationConnector new resource id to replace with the
+  // DestinationConnector resource name to be
+  // "destination-connectors/{new_destination_connector_id}"
+  string new_destination_connector_id = 2
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// RenameDestinationConnectorResponse represents a renamed DestinationConnector resource
+message RenameDestinationConnectorResponse {
+  // A DestinationConnector resource
   DestinationConnector destination_connector = 1;
 }
