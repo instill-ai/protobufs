@@ -413,7 +413,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "pattern": "connectors/[^/]+"
+            "pattern": "destination-connectors/[^/]+"
           },
           {
             "name": "body",
@@ -507,6 +507,60 @@
             "required": true,
             "type": "string",
             "pattern": "destination-connectors/[^/]+"
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1alpha/{name_1}:rename": {
+      "post": {
+        "summary": "RenameDestinationConnector method receives a RenameDestinationConnectorRequest message and returns\na RenameDestinationConnectorResponse message.",
+        "operationId": "ConnectorService_RenameDestinationConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaRenameDestinationConnectorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name_1",
+            "description": "DestinationConnector resource name. It must have the format of\n\"destination-connectors/*\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "destination-connectors/[^/]+"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "new_destination_connector_id": {
+                  "type": "string",
+                  "title": "DestinationConnector new resource id to replace with the\nDestinationConnector resource name to be\n\"destination-connectors/{new_destination_connector_id}\"",
+                  "required": [
+                    "new_destination_connector_id"
+                  ]
+                }
+              },
+              "title": "RenameDestinationConnectorRequest represents a request to rename the\nDestinationConnector resource name",
+              "required": [
+                "new_destination_connector_id"
+              ]
+            }
           }
         ],
         "tags": [
@@ -714,6 +768,60 @@
         ]
       }
     },
+    "/v1alpha/{name}:rename": {
+      "post": {
+        "summary": "RenameDestinationConnector method receives a RenameSourceConnectorRequest message and returns\na RenameSourceConnectorResponse message.",
+        "operationId": "ConnectorService_RenameSourceConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alphaRenameSourceConnectorResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "description": "SourceConnector resource name. It must have the format of\n\"source-connectors/*\"",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "source-connectors/[^/]+"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "new_source_connector_id": {
+                  "type": "string",
+                  "title": "SourceConnector new resource id to replace with the\nSourceConnector resource name to be\n\"source-connectors/{new_source_connector_id}\"",
+                  "required": [
+                    "new_source_connector_id"
+                  ]
+                }
+              },
+              "title": "RenameSourceConnectorRequest represents a request to rename the\nSourceConnector resource name",
+              "required": [
+                "new_source_connector_id"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
     "/v1alpha/{permalink_1}:lookUp": {
       "get": {
         "summary": "LookUpDestinationConnector method receives a\nLookUpDestinationConnectorRequest message and returns a\nLookUpDestinationConnectorResponse",
@@ -740,6 +848,19 @@
             "required": true,
             "type": "string",
             "pattern": "destination-connectors/[^/]+"
+          },
+          {
+            "name": "view",
+            "description": "SourceConnector view (default is VIEW_BASIC).\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED\n - VIEW_BASIC: View: BASIC\n - VIEW_FULL: View: FULL",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "VIEW_UNSPECIFIED",
+              "VIEW_BASIC",
+              "VIEW_FULL"
+            ],
+            "default": "VIEW_UNSPECIFIED"
           }
         ],
         "tags": [
@@ -773,6 +894,19 @@
             "required": true,
             "type": "string",
             "pattern": "source-connectors/[^/]+"
+          },
+          {
+            "name": "view",
+            "description": "SourceConnector view (default is VIEW_BASIC).\n\n - VIEW_UNSPECIFIED: View: UNSPECIFIED\n - VIEW_BASIC: View: BASIC\n - VIEW_FULL: View: FULL",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "VIEW_UNSPECIFIED",
+              "VIEW_BASIC",
+              "VIEW_FULL"
+            ],
+            "default": "VIEW_UNSPECIFIED"
           }
         ],
         "tags": [
@@ -805,7 +939,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "pattern": "connectors/[^/]+"
+            "pattern": "source-connectors/[^/]+"
           },
           {
             "name": "body",
@@ -904,59 +1038,6 @@
         }
       },
       "title": "ReadinessResponse represents a response for a service readiness status"
-    },
-    "instillconnectorv1alphaSpec": {
-      "type": "object",
-      "properties": {
-        "documentation_url": {
-          "type": "string",
-          "title": "Spec documentation URL",
-          "readOnly": true
-        },
-        "changelog_url": {
-          "type": "string",
-          "title": "Spec changelog URL",
-          "readOnly": true
-        },
-        "connection_specification": {
-          "type": "object",
-          "title": "Spec connection specification",
-          "required": [
-            "connection_specification"
-          ]
-        },
-        "supports_incremental": {
-          "type": "boolean",
-          "title": "Spec supports incremental flag, i.e., if the connector supports incremental\nmode or not",
-          "readOnly": true
-        },
-        "supports_normalization": {
-          "type": "boolean",
-          "title": "Spec supports normalization flag, i.e., if the connector supports\nnormalization or not",
-          "readOnly": true
-        },
-        "supports_dbt": {
-          "type": "boolean",
-          "title": "Spec supports dbt flag, i.e., if the connector supports DBT or not",
-          "readOnly": true
-        },
-        "supported_destination_sync_modes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SpecSupportedDestinationSyncModes"
-          },
-          "title": "Spec destination sync mode, i.e., a list of destination sync modes\nsupported by the connector",
-          "readOnly": true
-        },
-        "advanced_auth": {
-          "$ref": "#/definitions/v1alphaAdvancedAuth",
-          "title": "Spec advanced auth, i.e., additional and optional specification object to\ndescribe what an 'advanced' Auth flow would need to function"
-        }
-      },
-      "title": "//////////////////////////////////\nSpec represents a spec data model",
-      "required": [
-        "connection_specification"
-      ]
     },
     "instillconnectorv1alphaView": {
       "type": "string",
@@ -1073,8 +1154,8 @@
           "title": "Connector description"
         },
         "configuration": {
-          "type": "object",
-          "title": "Connector configuration",
+          "type": "string",
+          "title": "Connector configuration in JSON string",
           "required": [
             "configuration"
           ]
@@ -1145,7 +1226,7 @@
           "title": "ConnectorDefinition connection type"
         },
         "spec": {
-          "$ref": "#/definitions/instillconnectorv1alphaSpec",
+          "$ref": "#/definitions/v1alphaSpec",
           "title": "ConnectorDefinition spec"
         },
         "tombstone": {
@@ -1238,20 +1319,14 @@
         },
         "destination_connector_definition": {
           "type": "string",
-          "title": "Connector Definition resource (e.g. SourceDefinition or Destination\nDestination)",
-          "required": [
-            "destination_connector_definition"
-          ]
+          "title": "Connector Definition resource (e.g. SourceDefinition or Destination\nDestination)"
         },
         "connector": {
           "$ref": "#/definitions/v1alphaConnector",
           "title": "DestinationConnector's connector data structure"
         }
       },
-      "title": "DestinationConnector represents a destination connector resource",
-      "required": [
-        "destination_connector_definition"
-      ]
+      "title": "DestinationConnector represents a destination connector resource"
     },
     "v1alphaDestinationConnectorDefinition": {
       "type": "object",
@@ -1466,6 +1541,26 @@
       "description": "- RELEASE_STAGE_UNSPECIFIED: ReleaseStage: UNSPECIFIED\n - RELEASE_STAGE_ALPHA: ReleaseStage: ALPHA\n - RELEASE_STAGE_BETA: ReleaseStage: BETA\n - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE\n - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM",
       "title": "ReleaseStage enumerates the release stages"
     },
+    "v1alphaRenameDestinationConnectorResponse": {
+      "type": "object",
+      "properties": {
+        "destination_connector": {
+          "$ref": "#/definitions/v1alphaDestinationConnector",
+          "title": "A DestinationConnector resource"
+        }
+      },
+      "title": "RenameDestinationConnectorResponse represents a renamed DestinationConnector resource"
+    },
+    "v1alphaRenameSourceConnectorResponse": {
+      "type": "object",
+      "properties": {
+        "source_connector": {
+          "$ref": "#/definitions/v1alphaSourceConnector",
+          "title": "A SourceConnector resource"
+        }
+      },
+      "title": "RenameSourceConnectorResponse represents a renamed SourceConnector resource"
+    },
     "v1alphaSourceConnector": {
       "type": "object",
       "properties": {
@@ -1485,20 +1580,14 @@
         },
         "source_connector_definition": {
           "type": "string",
-          "title": "Connector Definition resource (e.g. SourceDefinition or Destination\nDestination)",
-          "required": [
-            "source_connector_definition"
-          ]
+          "title": "Connector Definition resource (e.g. SourceDefinition or Destination\nDestination)"
         },
         "connector": {
           "$ref": "#/definitions/v1alphaConnector",
           "title": "SourceConnector's connector data structure"
         }
       },
-      "title": "SourceConnector represents a source connector resource",
-      "required": [
-        "source_connector_definition"
-      ]
+      "title": "SourceConnector represents a source connector resource"
     },
     "v1alphaSourceConnectorDefinition": {
       "type": "object",
@@ -1523,6 +1612,59 @@
         }
       },
       "title": "SourceConnectorDefinition represents the source connector definition resource"
+    },
+    "v1alphaSpec": {
+      "type": "object",
+      "properties": {
+        "documentation_url": {
+          "type": "string",
+          "title": "Spec documentation URL",
+          "readOnly": true
+        },
+        "changelog_url": {
+          "type": "string",
+          "title": "Spec changelog URL",
+          "readOnly": true
+        },
+        "connection_specification": {
+          "type": "object",
+          "title": "Spec connection specification",
+          "required": [
+            "connection_specification"
+          ]
+        },
+        "supports_incremental": {
+          "type": "boolean",
+          "title": "Spec supports incremental flag, i.e., if the connector supports incremental\nmode or not",
+          "readOnly": true
+        },
+        "supports_normalization": {
+          "type": "boolean",
+          "title": "Spec supports normalization flag, i.e., if the connector supports\nnormalization or not",
+          "readOnly": true
+        },
+        "supports_dbt": {
+          "type": "boolean",
+          "title": "Spec supports dbt flag, i.e., if the connector supports DBT or not",
+          "readOnly": true
+        },
+        "supported_destination_sync_modes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SpecSupportedDestinationSyncModes"
+          },
+          "title": "Spec destination sync mode, i.e., a list of destination sync modes\nsupported by the connector",
+          "readOnly": true
+        },
+        "advanced_auth": {
+          "$ref": "#/definitions/v1alphaAdvancedAuth",
+          "title": "Spec advanced auth, i.e., additional and optional specification object to\ndescribe what an 'advanced' Auth flow would need to function"
+        }
+      },
+      "title": "//////////////////////////////////\nSpec represents a spec data model",
+      "required": [
+        "connection_specification"
+      ]
     },
     "v1alphaUpdateDestinationConnectorResponse": {
       "type": "object",
