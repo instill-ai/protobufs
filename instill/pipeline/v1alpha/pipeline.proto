@@ -15,17 +15,17 @@ import "google/api/field_behavior.proto";
 message Recipe {
   // A source connector resource
   string source = 1 [
-    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference).type = "api.instill.tech/Connector"
   ];
   // A destination connector resource
   string destination = 2 [
-    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference).type = "api.instill.tech/Connector"
   ];
   // A list of model instance resources
   repeated string model_instances = 3 [
-    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
   ];
 }
@@ -71,7 +71,7 @@ message Pipeline {
   // Pipeline description
   optional string description = 4 [ (google.api.field_behavior) = OPTIONAL ];
   // Pipeline recipe
-  Recipe recipe = 5 [ (google.api.field_behavior) = REQUIRED ];
+  Recipe recipe = 5 [ (google.api.field_behavior) = IMMUTABLE ];
   // Pipeline mode
   Mode mode = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Pipeline state
@@ -151,7 +151,7 @@ message GetPipelineRequest {
     (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
   ];
   // Pipeline resource view (default is VIEW_BASIC)
-  View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // GetPipelineResponse represents a response for a pipeline resource
@@ -192,6 +192,8 @@ message LookUpPipelineRequest {
   // Permalink of a pipeline. For example:
   // "pipelines/{uid}"
   string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // View view (default is VIEW_BASIC)
+  optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
 // LookUpPipelineResponse represents a response for a pipeline resource
