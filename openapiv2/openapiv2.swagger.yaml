@@ -61,6 +61,72 @@ paths:
       tags:
       - PipelineService
   /v1alpha/{destination_connector.name}:
+    get:
+      summary: |-
+        GetDestinationConnector method receives a GetDestinationConnectorRequest
+        message and returns a GetDestinationConnectorResponse message.
+      operationId: ConnectorService_GetDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: destination_connector.name
+        description: |-
+          DestinationConnectorConnector resource name. It must have the format of
+          "destination-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: destination-connectors/[^/]+
+      - name: view
+        description: |-
+          DestinationConnector view (default is VIEW_BASIC)
+
+           - VIEW_UNSPECIFIED: View: UNSPECIFIED
+           - VIEW_BASIC: View: BASIC
+           - VIEW_FULL: View: FULL
+        in: query
+        required: false
+        type: string
+        enum:
+        - VIEW_UNSPECIFIED
+        - VIEW_BASIC
+        - VIEW_FULL
+        default: VIEW_UNSPECIFIED
+      tags:
+      - ConnectorService
+    delete:
+      summary: |-
+        DeleteDestinationConnector method receives a
+        DeleteDestinationConnectorRequest message and returns a
+        DeleteDestinationConnectorResponse message.
+      operationId: ConnectorService_DeleteDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: destination_connector.name
+        description: |-
+          DestinationConnector resource name. It must have the format of
+          "destination-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: destination-connectors/[^/]+
+      tags:
+      - ConnectorService
     patch:
       summary: |-
         UpdateDestinationConnector method receives a
@@ -119,74 +185,7 @@ paths:
         type: string
       tags:
       - ConnectorService
-  /v1alpha/{destinationConnector.name}:
-    get:
-      summary: |-
-        GetDestinationConnector method receives a GetDestinationConnectorRequest
-        message and returns a GetDestinationConnectorResponse message.
-      operationId: ConnectorService_GetDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-      - name: destinationConnector.name
-        description: |-
-          DestinationConnectorConnector resource name. It must have the format of
-          "destination-connectors/*"
-        in: path
-        required: true
-        type: string
-        pattern: destination-connectors/[^/]+
-      - name: view
-        description: |-
-          DestinationConnector view (default is VIEW_BASIC)
-
-           - VIEW_UNSPECIFIED: View: UNSPECIFIED
-           - VIEW_BASIC: View: BASIC
-           - VIEW_FULL: View: FULL
-        in: query
-        required: false
-        type: string
-        enum:
-        - VIEW_UNSPECIFIED
-        - VIEW_BASIC
-        - VIEW_FULL
-        default: VIEW_UNSPECIFIED
-      tags:
-      - ConnectorService
-    delete:
-      summary: |-
-        DeleteDestinationConnector method receives a
-        DeleteDestinationConnectorRequest message and returns a
-        DeleteDestinationConnectorResponse message.
-      operationId: ConnectorService_DeleteDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeleteDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-      - name: destinationConnector.name
-        description: |-
-          DestinationConnector resource name. It must have the format of
-          "destination-connectors/*"
-        in: path
-        required: true
-        type: string
-        pattern: destination-connectors/[^/]+
-      tags:
-      - ConnectorService
-  /v1alpha/{destinationConnectorDefinition.name}:
+  /v1alpha/{destination_connector_definition.name}:
     get:
       summary: |-
         GetDestinationConnectorDefinition method receives a
@@ -203,7 +202,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-      - name: destinationConnectorDefinition.name
+      - name: destination_connector_definition.name
         description: |-
           DestinationConnectorDefinition resource name. It must have the format of
           "source-connector-definitions/*"
@@ -349,9 +348,9 @@ paths:
               type: string
               title: Model definition resource name
             configuration:
-              type: object
+              type: string
               title: |-
-                Model configuration represents the configuration JSON object that has been
+                Model configuration represents the configuration JSON string that has been
                 validated using the `model_spec` JSON schema of a ModelDefinition
             visibility:
               $ref: '#/definitions/ModelVisibility'
@@ -385,7 +384,7 @@ paths:
         type: string
       tags:
       - ModelService
-  /v1alpha/{modelDefinition.name}:
+  /v1alpha/{model_definition.name}:
     get:
       summary: |-
         GetModelDefinition method receives a GetModelDefinitionRequest message and
@@ -401,7 +400,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-      - name: modelDefinition.name
+      - name: model_definition.name
         description: |-
           Resource name of the model definition.
           For example "model-definitions/{uuid}"
@@ -429,7 +428,7 @@ paths:
         default: VIEW_UNSPECIFIED
       tags:
       - ModelService
-  /v1alpha/{modelInstance.name/readme}:
+  /v1alpha/{model_instance.name/readme}:
     get:
       summary: |-
         GetModelInstanceCard method receives a GetModelInstanceCardRequest message
@@ -445,7 +444,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-      - name: modelInstance.name/readme
+      - name: model_instance.name/readme
         description: |-
           Resource name of the model instance card.
           For example "models/{model}/instances/{instance}/readme"
@@ -455,7 +454,7 @@ paths:
         pattern: models/[^/]+/instances/[^/]+/readme
       tags:
       - ModelService
-  /v1alpha/{modelInstance.name}:
+  /v1alpha/{model_instance.name}:
     get:
       summary: |-
         GetModelInstance method receives a GetModelInstanceRequest message and
@@ -471,7 +470,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-      - name: modelInstance.name
+      - name: model_instance.name
         description: |-
           Resource name of the model instance.
           For example "models/{model}/instances/{instance}"
@@ -1381,6 +1380,71 @@ paths:
       tags:
       - PipelineService
   /v1alpha/{source_connector.name}:
+    get:
+      summary: |-
+        GetSourceConnector method receives a GetSourceConnectorRequest message and
+        returns a GetSourceConnectorResponse message.
+      operationId: ConnectorService_GetSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: source_connector.name
+        description: |-
+          SourceConnectorConnector resource name. It must have the format of
+          "destination-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: source-connectors/[^/]+
+      - name: view
+        description: |-
+          SourceConnector view (default is VIEW_BASIC)
+
+           - VIEW_UNSPECIFIED: View: UNSPECIFIED
+           - VIEW_BASIC: View: BASIC
+           - VIEW_FULL: View: FULL
+        in: query
+        required: false
+        type: string
+        enum:
+        - VIEW_UNSPECIFIED
+        - VIEW_BASIC
+        - VIEW_FULL
+        default: VIEW_UNSPECIFIED
+      tags:
+      - ConnectorService
+    delete:
+      summary: |-
+        DeleteSourceConnector method receives a DeleteSourceConnectorRequest
+        message and returns a DeleteSourceConnectorResponse message.
+      operationId: ConnectorService_DeleteSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: source_connector.name
+        description: |-
+          SourceConnector resource name. It must have the format of
+          "destination-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: source-connectors/[^/]+
+      tags:
+      - ConnectorService
     patch:
       summary: |-
         UpdateSourceConnector method receives a UpdateSourceConnectorRequest
@@ -1438,73 +1502,7 @@ paths:
         type: string
       tags:
       - ConnectorService
-  /v1alpha/{sourceConnector.name}:
-    get:
-      summary: |-
-        GetSourceConnector method receives a GetSourceConnectorRequest message and
-        returns a GetSourceConnectorResponse message.
-      operationId: ConnectorService_GetSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-      - name: sourceConnector.name
-        description: |-
-          SourceConnectorConnector resource name. It must have the format of
-          "destination-connectors/*"
-        in: path
-        required: true
-        type: string
-        pattern: source-connectors/[^/]+
-      - name: view
-        description: |-
-          SourceConnector view (default is VIEW_BASIC)
-
-           - VIEW_UNSPECIFIED: View: UNSPECIFIED
-           - VIEW_BASIC: View: BASIC
-           - VIEW_FULL: View: FULL
-        in: query
-        required: false
-        type: string
-        enum:
-        - VIEW_UNSPECIFIED
-        - VIEW_BASIC
-        - VIEW_FULL
-        default: VIEW_UNSPECIFIED
-      tags:
-      - ConnectorService
-    delete:
-      summary: |-
-        DeleteSourceConnector method receives a DeleteSourceConnectorRequest
-        message and returns a DeleteSourceConnectorResponse message.
-      operationId: ConnectorService_DeleteSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeleteSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-      - name: sourceConnector.name
-        description: |-
-          SourceConnector resource name. It must have the format of
-          "destination-connectors/*"
-        in: path
-        required: true
-        type: string
-        pattern: source-connectors/[^/]+
-      tags:
-      - ConnectorService
-  /v1alpha/{sourceConnectorDefinition.name}:
+  /v1alpha/{source_connector_definition.name}:
     get:
       summary: |-
         GetSourceConnectorDefinition method receives a
@@ -1521,7 +1519,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-      - name: sourceConnectorDefinition.name
+      - name: source_connector_definition.name
         description: |-
           SourceConnectorDefinition resource name. It must have the format of
           "source-connector-definitions/*"
@@ -3242,9 +3240,9 @@ definitions:
         type: string
         title: Model definition resource name
       configuration:
-        type: object
+        type: string
         title: |-
-          Model configuration represents the configuration JSON object that has been
+          Model configuration represents the configuration JSON string that has been
           validated using the `model_spec` JSON schema of a ModelDefinition
       visibility:
         $ref: '#/definitions/ModelVisibility'
@@ -3363,10 +3361,10 @@ definitions:
         title: Model definition resource name
         readOnly: true
       configuration:
-        type: object
+        type: string
         title: |-
-          Model instance configuration represents the JSON configuration that has
-          been validated using the `model_instance_spec` JSON schema of a
+          Model instance configuration represents the configuration JSON string that
+          has been validated using the `model_instance_spec` JSON schema of a
           ModelDefinition
         readOnly: true
       create_time:
