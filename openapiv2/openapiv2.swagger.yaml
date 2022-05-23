@@ -7,6 +7,7 @@ tags:
 - name: UserService
 - name: ModelService
 - name: PipelineService
+- name: UsageService
 consumes:
 - application/json
 produces:
@@ -18,12 +19,12 @@ paths:
         Liveness method receives a LivenessRequest message and returns a
         LivenessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: PipelineService_Liveness
+      operationId: UsageService_Liveness
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillpipelinev1alphaLivenessResponse'
+            $ref: '#/definitions/instillusagev1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -35,19 +36,19 @@ paths:
         required: false
         type: string
       tags:
-      - PipelineService
+      - UsageService
   /v1alpha/__readiness:
     get:
       summary: |-
         Readiness method receives a ReadinessRequest message and returns a
         ReadinessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: PipelineService_Readiness
+      operationId: UsageService_Readiness
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillpipelinev1alphaReadinessResponse'
+            $ref: '#/definitions/instillusagev1alphaReadinessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -59,7 +60,7 @@ paths:
         required: false
         type: string
       tags:
-      - PipelineService
+      - UsageService
   /v1alpha/{destination_connector.name}:
     get:
       summary: |-
@@ -1841,12 +1842,12 @@ paths:
         Liveness method receives a LivenessRequest message and returns a
         LivenessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: UserService_Liveness2
+      operationId: UsageService_Liveness2
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillmgmtv1alphaLivenessResponse'
+            $ref: '#/definitions/instillusagev1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1858,7 +1859,7 @@ paths:
         required: false
         type: string
       tags:
-      - UserService
+      - UsageService
   /v1alpha/health/model:
     get:
       summary: |-
@@ -2105,6 +2106,53 @@ paths:
           $ref: '#/definitions/v1alphaPipeline'
       tags:
       - PipelineService
+  /v1alpha/reports:send:
+    post:
+      summary: |-
+        SendReport method receives a SendReportRequest message and returns a
+        SendReportResponse message.
+      operationId: UsageService_SendReport
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaSendReportResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1alphaSendReportRequest'
+      tags:
+      - UsageService
+  /v1alpha/sessions:
+    post:
+      summary: |-
+        CreateSession method receives a CreateSessionRequest message and returns
+        a CreateSessionResponse message.
+      operationId: UsageService_CreateSession
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateSessionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: session
+        description: A session resource to create
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1alphaSession'
+      tags:
+      - UsageService
   /v1alpha/source-connector-definitions:
     get:
       summary: |-
@@ -2569,6 +2617,46 @@ definitions:
        - VIEW_UNSPECIFIED: View: UNSPECIFIED
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
+  instillusagev1alphaHealthCheckRequest:
+    type: object
+    properties:
+      service:
+        type: string
+        title: Service name to check for its readiness status
+    title: HealthCheckRequest represents a request to health check a service
+  instillusagev1alphaHealthCheckResponse:
+    type: object
+    properties:
+      status:
+        $ref: '#/definitions/instillusagev1alphaHealthCheckResponseServingStatus'
+        title: Status is the instance of the enum type ServingStatus
+    title: HealthCheckResponse represents a response for a service heath status
+  instillusagev1alphaHealthCheckResponseServingStatus:
+    type: string
+    enum:
+    - SERVING_STATUS_UNSPECIFIED
+    - SERVING_STATUS_SERVING
+    - SERVING_STATUS_NOT_SERVING
+    default: SERVING_STATUS_UNSPECIFIED
+    description: |-
+      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
+       - SERVING_STATUS_SERVING: Serving status: SERVING
+       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
+    title: ServingStatus enumerates the status of a queried service
+  instillusagev1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/instillusagev1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  instillusagev1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/instillusagev1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
   protobufAny:
     type: object
     properties:
@@ -2831,6 +2919,13 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: The created pipeline resource
     title: CreatePipelineResponse represents a response for a pipeline resource
+  v1alphaCreateSessionResponse:
+    type: object
+    properties:
+      session:
+        $ref: '#/definitions/v1alphaSession'
+        title: A session resource
+    title: CreateSessionResponse represents a response for a session response
   v1alphaCreateSourceConnectorResponse:
     type: object
     properties:
@@ -3672,6 +3767,67 @@ definitions:
         $ref: '#/definitions/v1alphaSourceConnector'
         title: A SourceConnector resource
     title: RenameSourceConnectorResponse represents a renamed SourceConnector resource
+  v1alphaReport:
+    type: object
+    properties:
+      permalink:
+        type: string
+        title: Permalink of a report. It must have the format of "reports/{uid}"
+        readOnly: true
+      uid:
+        type: string
+        title: Report ID in UUIDv4
+        readOnly: true
+      pow:
+        type: string
+        title: Pow
+        required:
+        - pow
+      data:
+        $ref: '#/definitions/v1alphaUsageData'
+        title: Usage data
+    title: |-
+      Report represents a report to be sent to the server that includes the usage
+      data of a session
+    required:
+    - pow
+  v1alphaSendReportRequest:
+    type: object
+    properties:
+      report:
+        $ref: '#/definitions/v1alphaReport'
+        title: A report resource to create
+    title: SendReportRequest represents a request to send a usage report
+  v1alphaSendReportResponse:
+    type: object
+    title: SendReportResponse represents an empty response
+  v1alphaSession:
+    type: object
+    properties:
+      permalink:
+        type: string
+        title: Permalink of a session. It must have the format of "sessons/{uid}"
+        readOnly: true
+      uid:
+        type: string
+        title: Session ID in UUIDv4
+        readOnly: true
+      cluster_id:
+        type: string
+        title: Cluster Identifier
+      server_id:
+        type: string
+        title: Server Identifier
+      token:
+        type: string
+        description: |-
+          Token to send report. The token is generated by the server and sent to the
+          client. Client needs to use the token to send report to the server.
+    title: |-
+      Session represents a unique session whenever a new instance of VDP gets
+      started. The usage server returns a token for the given pair of identifiers
+      (`cluster_id` and `server_id`) that should be used as part of the challenge
+      when creating a report
   v1alphaSourceConnector:
     type: object
     properties:
@@ -3865,6 +4021,46 @@ definitions:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
     title: UpdateUserResponse represents a response for a user resource
+  v1alphaUsageData:
+    type: object
+    properties:
+      session:
+        $ref: '#/definitions/v1alphaSession'
+        title: Session
+      version:
+        type: string
+        title: Version of the system
+        required:
+        - version
+      arch:
+        type: string
+        title: Architecture of the system
+        required:
+        - arch
+      os:
+        type: string
+        title: Operating system
+        required:
+        - os
+      uptime:
+        type: string
+        format: int64
+        title: Session service uptime
+        required:
+        - uptime
+      time:
+        type: string
+        format: date-time
+        title: Report time
+        required:
+        - time
+    title: UsageData represents the usage data collected from a session
+    required:
+    - version
+    - arch
+    - os
+    - uptime
+    - time
   v1alphaUser:
     type: object
     properties:
