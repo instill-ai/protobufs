@@ -2887,6 +2887,60 @@ definitions:
         title: ConnectorDefinition update time
         readOnly: true
     title: ConnectorDefinition represents the connector definition data model
+  v1alphaConnectorUsageData:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/v1alphaConnectorUsageDataOwnerUsageData'
+        title: Usage data of all owners in the connector service
+    title: Connector service usage data
+  v1alphaConnectorUsageDataOwnerUsageData:
+    type: object
+    properties:
+      owner_uid:
+        type: string
+        title: Owner UUID
+        required:
+        - owner_uid
+      source_connector_connected_num:
+        type: string
+        format: int64
+        title: Number of source connectors with 'connected' state
+        required:
+        - source_connector_connected_num
+      source_connector_definition_ids:
+        type: array
+        items:
+          type: string
+        description: |-
+          Definition IDs of the connected source connectors. Element in the list
+          should not be duplicated.
+        required:
+        - source_connector_definition_ids
+      destination_connected_num:
+        type: string
+        format: int64
+        title: Number of destination connectors with 'connected' state
+        required:
+        - destination_connected_num
+      destination_connector_definitions:
+        type: array
+        items:
+          type: string
+        description: |-
+          Definitions of the connected destination connectors. Element in the list
+          should not be duplicated.
+        required:
+        - destination_connector_definitions
+    title: Per owner usage data in the connector service
+    required:
+    - owner_uid
+    - source_connector_connected_num
+    - source_connector_definition_ids
+    - destination_connected_num
+    - destination_connector_definitions
   v1alphaCreateDestinationConnectorResponse:
     type: object
     properties:
@@ -3308,6 +3362,15 @@ definitions:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
     title: LookUpUserResponse represents a response for a user resource
+  v1alphaMgmtUsageData:
+    type: object
+    properties:
+      user:
+        type: array
+        items:
+          $ref: '#/definitions/v1alphaUser'
+        title: Repeated user usage data
+    title: Management service usage data
   v1alphaModel:
     type: object
     properties:
@@ -3517,6 +3580,50 @@ definitions:
        - STATE_ONLINE: State: ONLINE
        - STATE_ERROR: State: ERROR
     title: State enumerates the lifecycling state of a model instance
+  v1alphaModelUsageData:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/v1alphaModelUsageDataOwnerUsageData'
+        title: Usage data of all owners in the model service
+    title: Model service usage data
+  v1alphaModelUsageDataOwnerUsageData:
+    type: object
+    properties:
+      owner_uid:
+        type: string
+        title: Owner UUID
+        required:
+        - owner_uid
+      instance_online_num:
+        type: string
+        format: int64
+        title: Number of model instances with 'online' state
+        required:
+        - instance_online_num
+      model_definition_ids:
+        type: array
+        items:
+          type: string
+        description: |-
+          Definition IDs of the online model instances. Element in the list
+          should not be duplicated.
+        required:
+        - model_definition_ids
+      test_num:
+        type: string
+        format: int64
+        title: Number of model instance testing operations
+        required:
+        - test_num
+    title: Per owner usage data in the model service
+    required:
+    - owner_uid
+    - instance_online_num
+    - model_definition_ids
+    - test_num
   v1alphaOauthConfigSpecification:
     type: object
     properties:
@@ -3699,6 +3806,54 @@ definitions:
        - STATE_ACTIVE: State ACTIVE indicates the pipeline is active
        - STATE_ERROR: State ERROR indicates the pipeline has error
     title: State enumerates the state of a pipeline
+  v1alphaPipelineUsageData:
+    type: object
+    properties:
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/v1alphaPipelineUsageDataOwnerUsageData'
+        title: Usage data of all owners in the pipeline service
+    title: Pipeline service usage data
+  v1alphaPipelineUsageDataOwnerUsageData:
+    type: object
+    properties:
+      owner_uid:
+        type: string
+        title: Owner UUID
+        required:
+        - owner_uid
+      active_num:
+        type: string
+        format: int64
+        title: Number of pipelines with 'active' state
+        required:
+        - active_num
+      async_active_num:
+        type: string
+        format: int64
+        title: Number of pipelines with 'active' state and 'async' mode
+        required:
+        - async_active_num
+      sync_active_num:
+        type: string
+        format: int64
+        title: Number of pipelines with 'active' state and 'sync' mode
+        required:
+        - sync_active_num
+      trigger_num:
+        type: string
+        format: int64
+        title: Number of pipeline triggering operations
+        required:
+        - trigger_num
+    title: Per owner usage data in the pipeline service
+    required:
+    - owner_uid
+    - active_num
+    - async_active_num
+    - sync_active_num
+    - trigger_num
   v1alphaPublishModelResponse:
     type: object
     properties:
@@ -3780,9 +3935,21 @@ definitions:
         title: Proof-of-work See https://en.wikipedia.org/wiki/Proof_of_work
         required:
         - pow
-      data:
-        $ref: '#/definitions/v1alphaUsageData'
-        title: Usage data
+      session_data:
+        $ref: '#/definitions/v1alphaSessionData'
+        title: Session data
+      mgmt_usage_data:
+        $ref: '#/definitions/v1alphaMgmtUsageData'
+        title: Management service usage data
+      connector_usage_data:
+        $ref: '#/definitions/v1alphaConnectorUsageData'
+        title: Connector service usage data
+      model_usage_data:
+        $ref: '#/definitions/v1alphaModelUsageData'
+        title: Model service usage data
+      pipeline_usage_data:
+        $ref: '#/definitions/v1alphaPipelineUsageData'
+        title: Pipeline service usage data
     title: |-
       Report represents a report to be sent to the server that includes the usage
       data of a session
@@ -3802,23 +3969,91 @@ definitions:
   v1alphaSession:
     type: object
     properties:
-      cluster_id:
+      name:
         type: string
-        title: Cluster Identifier
-      server_id:
+        title: Resource name in the format of 'sessions/uid'
+        readOnly: true
+      uid:
         type: string
-        title: Server Identifier
+        title: Resource UUID
+        readOnly: true
+      env:
+        type: string
+        title: Session env, e.g., 'os', 'cloud'
+        required:
+        - env
       token:
         type: string
         description: |-
           Token to send report. The token is generated by the server and sent to the
           client. Client needs to use the token to send report to the server.
         readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        title: Session creation time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: Session update time
+        readOnly: true
     title: |-
       Session represents a unique session whenever a new instance of VDP gets
       started. The usage server returns a token for the given pair of identifiers
       (`cluster_id` and `server_id`) that should be used as part of the challenge
       when creating a report
+    required:
+    - env
+  v1alphaSessionData:
+    type: object
+    properties:
+      session_uid:
+        type: string
+        title: Session UUID
+        required:
+        - session_uid
+      service_id:
+        type: string
+        title: Service ID, e.g., 'mgmt', 'connector', 'model', 'pipeline'
+        required:
+        - service_id
+      version:
+        type: string
+        title: Version of the service
+        required:
+        - version
+      arch:
+        type: string
+        title: Architecture of the system
+        required:
+        - arch
+      os:
+        type: string
+        title: Operating system
+        required:
+        - os
+      uptime:
+        type: string
+        format: int64
+        title: Session service uptime
+        required:
+        - uptime
+      report_time:
+        type: string
+        format: date-time
+        title: Report time
+        required:
+        - report_time
+    title: SessionData represents the usage data collected from a session
+    required:
+    - session_uid
+    - service_id
+    - version
+    - arch
+    - os
+    - uptime
+    - report_time
   v1alphaSourceConnector:
     type: object
     properties:
@@ -4008,55 +4243,6 @@ definitions:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
     title: UpdateUserResponse represents a response for a user resource
-  v1alphaUsageData:
-    type: object
-    properties:
-      cluster_id:
-        type: string
-        title: Session cluster ID
-        required:
-        - cluster_id
-      server_id:
-        type: string
-        title: Session server ID
-        required:
-        - server_id
-      version:
-        type: string
-        title: Version of the system
-        required:
-        - version
-      arch:
-        type: string
-        title: Architecture of the system
-        required:
-        - arch
-      os:
-        type: string
-        title: Operating system
-        required:
-        - os
-      uptime:
-        type: string
-        format: int64
-        title: Session service uptime
-        required:
-        - uptime
-      time:
-        type: string
-        format: date-time
-        title: Report time
-        required:
-        - time
-    title: UsageData represents the usage data collected from a session
-    required:
-    - cluster_id
-    - server_id
-    - version
-    - arch
-    - os
-    - uptime
-    - time
   v1alphaUser:
     type: object
     properties:
