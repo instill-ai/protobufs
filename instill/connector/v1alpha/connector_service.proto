@@ -196,6 +196,32 @@ service ConnectorService {
     option (google.api.method_signature) = "permalink";
   }
 
+  // Connect a source connector.
+  // The "state" of the connector after connecting is "CONNECTED".
+  // ConnectSourceConnector can be called on SourceConnector in the state `DISCONNECTED`;
+  // SourceConnector in a different state (including `CONNECTED`) returns an error.
+  rpc ConnectSourceConnector(ConnectSourceConnectorRequest)
+      returns (ConnectSourceConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=source-connectors/*}:connect"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Disconnect a source connector.
+  // The "state" of the connector after disconnecting is "DISCONNECTED".
+  // DisconnectSourceConnector can be called on SourceConnector in the state `CONNECTED`;
+  // SourceConnector in a different state (including `DISCONNECTED`) returns an error.
+  rpc DisconnectSourceConnector(DisconnectSourceConnectorRequest)
+      returns (DisconnectSourceConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=source-connectors/*}:disconnect"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
   // RenameDestinationConnector method receives a RenameSourceConnectorRequest message and returns
   // a RenameSourceConnectorResponse message.
   rpc RenameSourceConnector(RenameSourceConnectorRequest) returns (RenameSourceConnectorResponse) {
@@ -271,6 +297,32 @@ service ConnectorService {
       get : "/v1alpha/{permalink=destination-connectors/*}:lookUp"
     };
     option (google.api.method_signature) = "permalink";
+  }
+
+  // Connect a destination connector.
+  // The "state" of the connector after connecting is "CONNECTED".
+  // ConnectDestinationConnector can be called on DestinationConnector in the state `DISCONNECTED`;
+  // DestinationConnector in a different state (including `CONNECTED`) returns an error.
+  rpc ConnectDestinationConnector(ConnectDestinationConnectorRequest)
+      returns (ConnectDestinationConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=destination-connectors/*}:connect"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Disconnect a destination connector.
+  // The "state" of the connector after disconnecting is "DISCONNECTED".
+  // DisconnectDestinationConnector can be called on DestinationConnector in the state `CONNECTED`;
+  // DestinationConnector in a different state (including `DISCONNECTED`) returns an error.
+  rpc DisconnectDestinationConnector(DisconnectDestinationConnectorRequest)
+      returns (DisconnectDestinationConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=destination-connectors/*}:disconnect"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name";
   }
 
   // RenameDestinationConnector method receives a RenameDestinationConnectorRequest message and returns
