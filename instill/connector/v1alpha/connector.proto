@@ -15,30 +15,45 @@ import "instill/connector/v1alpha/connector_definition.proto";
 
 // Connector represents a connector data model
 message Connector {
+
+  // State enumerates the state of the connector
+  enum State {
+    // State: UNSPECIFIED
+    STATE_UNSPECIFIED = 0;
+    // State: DISCONNECTED
+    STATE_DISCONNECTED = 1;
+    // State: CONNECTED
+    STATE_CONNECTED = 2;
+    // State: ERROR
+    STATE_ERROR = 3;
+  }
+
   // Connector description
   optional string description = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Connector configuration in JSON string
   string configuration = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Connector state
+  State state = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Connector tombstone
-  bool tombstone = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  bool tombstone = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Connector owner
   oneof owner {
     // The resource name of a user, e.g., "users/local-user".
-    string user = 4 [
+    string user = 5 [
       (google.api.resource_reference).type = "api.instill.tech/User",
       (google.api.field_behavior) = OUTPUT_ONLY
     ];
     // The resource name of an organization
-    string org = 5 [
+    string org = 6 [
       (google.api.resource_reference).type = "api.instill.tech/Organization",
       (google.api.field_behavior) = OUTPUT_ONLY
     ];
   };
   // Connector creation time
-  google.protobuf.Timestamp create_time = 6
+  google.protobuf.Timestamp create_time = 7
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Connector update time
-  google.protobuf.Timestamp update_time = 7
+  google.protobuf.Timestamp update_time = 8
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
