@@ -2551,12 +2551,13 @@ definitions:
     - SERVICE_MODEL
     - SERVICE_PIPELINE
     default: SERVICE_UNSPECIFIED
-    title: |-
+    description: |-
       - SERVICE_UNSPECIFIED: Service: UNSPECIFIED
        - SERVICE_MGMT: Service: MGMT
        - SERVICE_CONNECTOR: Service: CONNECTOR
        - SERVICE_MODEL: Service: MODEL
-       - SERVICE_PIPELINE: Service: Pipeline
+       - SERVICE_PIPELINE: Service: PIPELINE
+    title: Service enumerates the services to collect data from
   SpecSupportedDestinationSyncModes:
     type: string
     enum:
@@ -2866,12 +2867,12 @@ definitions:
           should not be duplicated.
         required:
         - source_connector_definition_ids
-      destination_connected_num:
+      destination_connector_connected_num:
         type: string
         format: int64
         title: Number of destination connectors with 'connected' state
         required:
-        - destination_connected_num
+        - destination_connector_connected_num
       destination_connector_definitions:
         type: array
         items:
@@ -2886,7 +2887,7 @@ definitions:
     - owner_uid
     - source_connector_connected_num
     - source_connector_definition_ids
-    - destination_connected_num
+    - destination_connector_connected_num
     - destination_connector_definitions
   v1alphaCreateDestinationConnectorResponse:
     type: object
@@ -3589,18 +3590,18 @@ definitions:
           should not be duplicated.
         required:
         - model_definition_ids
-      test_num:
+      test_image_num:
         type: string
         format: int64
-        title: Number of model instance testing operations
+        title: Number of processed images via model instance testing operations
         required:
-        - test_num
+        - test_image_num
     title: Per owner usage data in the model service
     required:
     - owner_uid
     - instance_online_num
     - model_definition_ids
-    - test_num
+    - test_image_num
   v1alphaOauthConfigSpecification:
     type: object
     properties:
@@ -3818,19 +3819,19 @@ definitions:
         title: Number of pipelines with 'active' state and 'sync' mode
         required:
         - sync_active_num
-      trigger_num:
+      trigger_image_num:
         type: string
         format: int64
-        title: Number of pipeline triggering operations
+        title: Number of processed images via pipeline triggering operations
         required:
-        - trigger_num
+        - trigger_image_num
     title: Per owner usage data in the pipeline service
     required:
     - owner_uid
     - active_num
     - async_active_num
     - sync_active_num
-    - trigger_num
+    - trigger_image_num
   v1alphaPublishModelResponse:
     type: object
     properties:
@@ -3954,11 +3955,6 @@ definitions:
         type: string
         title: Resource UUID
         readOnly: true
-      env:
-        type: string
-        title: Session env, e.g., 'os', 'cloud'
-        required:
-        - env
       token:
         type: string
         description: |-
@@ -3980,8 +3976,6 @@ definitions:
       started. The usage server returns a token for the given pair of identifiers
       (`cluster_id` and `server_id`) that should be used as part of the challenge
       when creating a report
-    required:
-    - env
   v1alphaSessionData:
     type: object
     properties:
@@ -3993,6 +3987,11 @@ definitions:
       service:
         $ref: '#/definitions/SessionDataService'
         title: name of the service to collect data from
+      env:
+        type: string
+        title: Session env, e.g., 'os', 'cloud'
+        required:
+        - env
       version:
         type: string
         title: Version of the service
@@ -4023,6 +4022,7 @@ definitions:
     title: SessionData represents the session data collected from a session
     required:
     - session_uid
+    - env
     - version
     - arch
     - os
