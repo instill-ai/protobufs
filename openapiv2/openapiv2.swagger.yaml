@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: instill/connector/v1alpha/auth.proto
+  title: connector/v1alpha/auth.proto
   version: version not set
 tags:
 - name: ConnectorService
@@ -24,7 +24,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillusagev1alphaLivenessResponse'
+            $ref: '#/definitions/usagev1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -48,7 +48,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillusagev1alphaReadinessResponse'
+            $ref: '#/definitions/usagev1alphaReadinessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -498,11 +498,86 @@ paths:
         default: VIEW_UNSPECIFIED
       tags:
       - ModelService
+  /v1alpha/{name_1}:connect:
+    post:
+      summary: |-
+        Connect a destination connector.
+        The "state" of the connector after connecting is "CONNECTED".
+        ConnectDestinationConnector can be called on DestinationConnector in the
+        state `DISCONNECTED`; DestinationConnector in a different state (including
+        `CONNECTED`) returns an error.
+      operationId: ConnectorService_ConnectDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaConnectDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: name_1
+        description: |-
+          DestinationConnector resource name. It must have the format of
+          "destination-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: destination-connectors/[^/]+
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          title: |-
+            ConnectDestinationConnectorRequest represents a request to connect a
+            destination connector
+      tags:
+      - ConnectorService
+  /v1alpha/{name_1}:disconnect:
+    post:
+      summary: |-
+        Disconnect a destination connector.
+        The "state" of the connector after disconnecting is "DISCONNECTED".
+        DisconnectDestinationConnector can be called on DestinationConnector in the
+        state `CONNECTED`; DestinationConnector in a different state (including
+        `DISCONNECTED`) returns an error.
+      operationId: ConnectorService_DisconnectDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDisconnectDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: name_1
+        description: |-
+          DestinationConnector resource name. It must have the format of
+          "destination-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: destination-connectors/[^/]+
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          title: |-
+            DisconnectDestinationConnectorRequest represents a request to disconnect a
+            destination connector
+      tags:
+      - ConnectorService
   /v1alpha/{name_1}:rename:
     post:
       summary: |-
-        RenameDestinationConnector method receives a RenameDestinationConnectorRequest message and returns
-        a RenameDestinationConnectorResponse message.
+        RenameDestinationConnector method receives a
+        RenameDestinationConnectorRequest message and returns a
+        RenameDestinationConnectorResponse message.
       operationId: ConnectorService_RenameDestinationConnector
       responses:
         "200":
@@ -574,7 +649,7 @@ paths:
             inputs:
               type: array
               items:
-                $ref: '#/definitions/instillpipelinev1alphaInput'
+                $ref: '#/definitions/pipelinev1alphaInput'
               title: Input to the pipeline
               required:
               - inputs
@@ -665,9 +740,9 @@ paths:
     post:
       summary: |-
         Activate a pipeline.
-        The `state` of the pipeline after activating is `ACTIVE`.
-        ActivatePipeline` can be called on Pipelines in the state `INACTIVE`;
-        Pipelines in a different state (including `ACTIVE`) returns an error.
+        The "state" of the pipeline after activating is "ACTIVE".
+        ActivatePipeline can be called on Pipelines in the state "INACTIVE";
+        Pipelines in a different state (including "ACTIVE") returns an error.
       operationId: PipelineService_ActivatePipeline
       responses:
         "200":
@@ -693,13 +768,50 @@ paths:
           title: ActivatePipelineRequest represents a request to activate a pipeline
       tags:
       - PipelineService
+  /v1alpha/{name}:connect:
+    post:
+      summary: |-
+        Connect a source connector.
+        The "state" of the connector after connecting is "CONNECTED".
+        ConnectSourceConnector can be called on SourceConnector in the state
+        `DISCONNECTED`; SourceConnector in a different state (including
+        `CONNECTED`) returns an error.
+      operationId: ConnectorService_ConnectSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaConnectSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: name
+        description: |-
+          SourceConnector resource name. It must have the format of
+          "source-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: source-connectors/[^/]+
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          title: |-
+            ConnectSourceConnectorRequest represents a request to connect a
+            source connector
+      tags:
+      - ConnectorService
   /v1alpha/{name}:deactivate:
     post:
       summary: |-
         Deactivate a pipeline.
-        The `state` of the pipeline after inactivating is `INACTIVE`.
-        DeactivatePipeline` can be called on Pipelines in the state `ACTIVE`;
-        Pipelines in a different state (including `INACTIVE`) returns an error.
+        The "state" of the pipeline after inactivating is "INACTIVE".
+        DeactivatePipeline can be called on Pipelines in the state "ACTIVE";
+        Pipelines in a different state (including "INACTIVE") returns an error.
       operationId: PipelineService_DeactivatePipeline
       responses:
         "200":
@@ -759,6 +871,43 @@ paths:
             online state
       tags:
       - ModelService
+  /v1alpha/{name}:disconnect:
+    post:
+      summary: |-
+        Disconnect a source connector.
+        The "state" of the connector after disconnecting is "DISCONNECTED".
+        DisconnectSourceConnector can be called on SourceConnector in the state
+        `CONNECTED`; SourceConnector in a different state (including
+        `DISCONNECTED`) returns an error.
+      operationId: ConnectorService_DisconnectSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDisconnectSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: name
+        description: |-
+          SourceConnector resource name. It must have the format of
+          "source-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: source-connectors/[^/]+
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          title: |-
+            DisconnectSourceConnectorRequest represents a request to disconnect a
+            source connector
+      tags:
+      - ConnectorService
   /v1alpha/{name}:publish:
     post:
       summary: |-
@@ -794,8 +943,8 @@ paths:
   /v1alpha/{name}:rename:
     post:
       summary: |-
-        RenameDestinationConnector method receives a RenameSourceConnectorRequest message and returns
-        a RenameSourceConnectorResponse message.
+        RenameDestinationConnector method receives a RenameSourceConnectorRequest
+        message and returns a RenameSourceConnectorResponse message.
       operationId: ConnectorService_RenameSourceConnector
       responses:
         "200":
@@ -870,7 +1019,7 @@ paths:
             inputs:
               type: array
               items:
-                $ref: '#/definitions/instillmodelv1alphaInput'
+                $ref: '#/definitions/modelv1alphaInput'
               title: Input to trigger the model instance
               required:
               - inputs
@@ -1823,7 +1972,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillconnectorv1alphaLivenessResponse'
+            $ref: '#/definitions/connectorv1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1847,7 +1996,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillusagev1alphaLivenessResponse'
+            $ref: '#/definitions/usagev1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1871,7 +2020,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillmodelv1alphaLivenessResponse'
+            $ref: '#/definitions/modelv1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1895,7 +2044,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/instillpipelinev1alphaLivenessResponse'
+            $ref: '#/definitions/pipelinev1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2345,6 +2494,18 @@ definitions:
        - AUTH_FLOW_TYPE_OAUTH2_0: AuthFlowType: AUTH_TYPE_OAUTH2_0
        - AUTH_FLOW_TYPE_OAUTH1_0: AuthFlowType: AUTH_TYPE_OAUTH1_0
     title: AuthFlowType enumerates the type of auth
+  HealthCheckResponseServingStatus:
+    type: string
+    enum:
+    - SERVING_STATUS_UNSPECIFIED
+    - SERVING_STATUS_SERVING
+    - SERVING_STATUS_NOT_SERVING
+    default: SERVING_STATUS_UNSPECIFIED
+    description: |-
+      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
+       - SERVING_STATUS_SERVING: Serving status: SERVING
+       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
+    title: ServingStatus enumerates the status of a queried service
   ModelInstanceTask:
     type: string
     enum:
@@ -2395,47 +2556,21 @@ definitions:
        - SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE: SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_OVERWRITE
        - SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP: SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_APPEND_DEDUP
     title: SupportedDestinationSyncMode enumerates destination sync mode
-  instillconnectorv1alphaHealthCheckRequest:
-    type: object
-    properties:
-      service:
-        type: string
-        title: Service name to check for its readiness status
-    title: HealthCheckRequest represents a request to health check a service
-  instillconnectorv1alphaHealthCheckResponse:
-    type: object
-    properties:
-      status:
-        $ref: '#/definitions/instillconnectorv1alphaHealthCheckResponseServingStatus'
-        title: Status is the instance of the enum type ServingStatus
-    title: HealthCheckResponse represents a response for a service heath status
-  instillconnectorv1alphaHealthCheckResponseServingStatus:
-    type: string
-    enum:
-    - SERVING_STATUS_UNSPECIFIED
-    - SERVING_STATUS_SERVING
-    - SERVING_STATUS_NOT_SERVING
-    default: SERVING_STATUS_UNSPECIFIED
-    description: |-
-      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
-       - SERVING_STATUS_SERVING: Serving status: SERVING
-       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
-    title: ServingStatus enumerates the status of a queried service
-  instillconnectorv1alphaLivenessResponse:
+  connectorv1alphaLivenessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillconnectorv1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: LivenessResponse represents a response for a service liveness status
-  instillconnectorv1alphaReadinessResponse:
+  connectorv1alphaReadinessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillconnectorv1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  instillconnectorv1alphaView:
+  connectorv1alphaView:
     type: string
     enum:
     - VIEW_UNSPECIFIED
@@ -2447,73 +2582,21 @@ definitions:
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
     title: View enumerates the definition views
-  instillmgmtv1alphaHealthCheckRequest:
-    type: object
-    properties:
-      service:
-        type: string
-        title: Service name to check for its readiness status
-    title: HealthCheckRequest represents a request to health check a service
-  instillmgmtv1alphaHealthCheckResponse:
-    type: object
-    properties:
-      status:
-        $ref: '#/definitions/instillmgmtv1alphaHealthCheckResponseServingStatus'
-        title: Status is the instance of the enum type ServingStatus
-    title: HealthCheckResponse represents a response for a service heath status
-  instillmgmtv1alphaHealthCheckResponseServingStatus:
-    type: string
-    enum:
-    - SERVING_STATUS_UNSPECIFIED
-    - SERVING_STATUS_SERVING
-    - SERVING_STATUS_NOT_SERVING
-    default: SERVING_STATUS_UNSPECIFIED
-    description: |-
-      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
-       - SERVING_STATUS_SERVING: Serving status: SERVING
-       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
-    title: ServingStatus enumerates the status of a queried service
-  instillmgmtv1alphaLivenessResponse:
+  mgmtv1alphaLivenessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillmgmtv1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: LivenessResponse represents a response for a service liveness status
-  instillmgmtv1alphaReadinessResponse:
+  mgmtv1alphaReadinessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillmgmtv1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  instillmodelv1alphaHealthCheckRequest:
-    type: object
-    properties:
-      service:
-        type: string
-        title: Service name to check for its readiness status
-    title: HealthCheckRequest represents a request to health check a service
-  instillmodelv1alphaHealthCheckResponse:
-    type: object
-    properties:
-      status:
-        $ref: '#/definitions/instillmodelv1alphaHealthCheckResponseServingStatus'
-        title: Status is the instance of the enum type ServingStatus
-    title: HealthCheckResponse represents a response for a service heath status
-  instillmodelv1alphaHealthCheckResponseServingStatus:
-    type: string
-    enum:
-    - SERVING_STATUS_UNSPECIFIED
-    - SERVING_STATUS_SERVING
-    - SERVING_STATUS_NOT_SERVING
-    default: SERVING_STATUS_UNSPECIFIED
-    description: |-
-      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
-       - SERVING_STATUS_SERVING: Serving status: SERVING
-       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
-    title: ServingStatus enumerates the status of a queried service
-  instillmodelv1alphaInput:
+  modelv1alphaInput:
     type: object
     properties:
       image_url:
@@ -2523,21 +2606,21 @@ definitions:
         type: string
         title: Image type base64
     title: Input represents the input to trigger a model instance
-  instillmodelv1alphaLivenessResponse:
+  modelv1alphaLivenessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillmodelv1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: LivenessResponse represents a response for a service liveness status
-  instillmodelv1alphaReadinessResponse:
+  modelv1alphaReadinessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillmodelv1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  instillmodelv1alphaView:
+  modelv1alphaView:
     type: string
     enum:
     - VIEW_UNSPECIFIED
@@ -2552,33 +2635,7 @@ definitions:
        - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
        - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
        - VIEW_FULL: View: FULL, full representation of the resource
-  instillpipelinev1alphaHealthCheckRequest:
-    type: object
-    properties:
-      service:
-        type: string
-        title: Service name to check for its readiness status
-    title: HealthCheckRequest represents a request to health check a service
-  instillpipelinev1alphaHealthCheckResponse:
-    type: object
-    properties:
-      status:
-        $ref: '#/definitions/instillpipelinev1alphaHealthCheckResponseServingStatus'
-        title: Status is the instance of the enum type ServingStatus
-    title: HealthCheckResponse represents a response for a service heath status
-  instillpipelinev1alphaHealthCheckResponseServingStatus:
-    type: string
-    enum:
-    - SERVING_STATUS_UNSPECIFIED
-    - SERVING_STATUS_SERVING
-    - SERVING_STATUS_NOT_SERVING
-    default: SERVING_STATUS_UNSPECIFIED
-    description: |-
-      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
-       - SERVING_STATUS_SERVING: Serving status: SERVING
-       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
-    title: ServingStatus enumerates the status of a queried service
-  instillpipelinev1alphaInput:
+  pipelinev1alphaInput:
     type: object
     properties:
       image_url:
@@ -2588,21 +2645,21 @@ definitions:
         type: string
         title: Image type base64
     title: Input represents the input to a pipeline
-  instillpipelinev1alphaLivenessResponse:
+  pipelinev1alphaLivenessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillpipelinev1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: LivenessResponse represents a response for a service liveness status
-  instillpipelinev1alphaReadinessResponse:
+  pipelinev1alphaReadinessResponse:
     type: object
     properties:
       health_check_response:
-        $ref: '#/definitions/instillpipelinev1alphaHealthCheckResponse'
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  instillpipelinev1alphaView:
+  pipelinev1alphaView:
     type: string
     enum:
     - VIEW_UNSPECIFIED
@@ -2617,46 +2674,6 @@ definitions:
        - VIEW_UNSPECIFIED: View: UNSPECIFIED
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
-  instillusagev1alphaHealthCheckRequest:
-    type: object
-    properties:
-      service:
-        type: string
-        title: Service name to check for its readiness status
-    title: HealthCheckRequest represents a request to health check a service
-  instillusagev1alphaHealthCheckResponse:
-    type: object
-    properties:
-      status:
-        $ref: '#/definitions/instillusagev1alphaHealthCheckResponseServingStatus'
-        title: Status is the instance of the enum type ServingStatus
-    title: HealthCheckResponse represents a response for a service heath status
-  instillusagev1alphaHealthCheckResponseServingStatus:
-    type: string
-    enum:
-    - SERVING_STATUS_UNSPECIFIED
-    - SERVING_STATUS_SERVING
-    - SERVING_STATUS_NOT_SERVING
-    default: SERVING_STATUS_UNSPECIFIED
-    description: |-
-      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
-       - SERVING_STATUS_SERVING: Serving status: SERVING
-       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
-    title: ServingStatus enumerates the status of a queried service
-  instillusagev1alphaLivenessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/instillusagev1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  instillusagev1alphaReadinessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/instillusagev1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
   protobufAny:
     type: object
     properties:
@@ -2723,6 +2740,20 @@ definitions:
       day and time zone are either specified elsewhere or are insignificant. The
       date is relative to the Gregorian Calendar. This can represent one of the
       following:
+  usagev1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  usagev1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
   v1alphaActivatePipelineResponse:
     type: object
     properties:
@@ -2762,6 +2793,22 @@ definitions:
       instance or workspace admins beforehand. The trade-off is that the user does
       not have to provide as many technical inputs anymore and the auth process is
       faster and easier to complete.
+  v1alphaConnectDestinationConnectorResponse:
+    type: object
+    properties:
+      destination_connector:
+        $ref: '#/definitions/v1alphaDestinationConnector'
+        title: A DestinationConnector resource
+    title: |-
+      ConnectDestinationConnectorResponse represents a connected destination
+      connector
+  v1alphaConnectSourceConnectorResponse:
+    type: object
+    properties:
+      source_connector:
+        $ref: '#/definitions/v1alphaSourceConnector'
+        title: A SourceConnector resource
+    title: ConnectSourceConnectorResponse represents a connected source connector
   v1alphaConnectionType:
     type: string
     enum:
@@ -2791,6 +2838,9 @@ definitions:
         title: Connector configuration in JSON string
         required:
         - configuration
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Connector state
       tombstone:
         type: boolean
         title: Connector tombstone
@@ -2887,6 +2937,20 @@ definitions:
         title: ConnectorDefinition update time
         readOnly: true
     title: ConnectorDefinition represents the connector definition data model
+  v1alphaConnectorState:
+    type: string
+    enum:
+    - STATE_UNSPECIFIED
+    - STATE_DISCONNECTED
+    - STATE_CONNECTED
+    - STATE_ERROR
+    default: STATE_UNSPECIFIED
+    description: |-
+      - STATE_UNSPECIFIED: State: UNSPECIFIED
+       - STATE_DISCONNECTED: State: DISCONNECTED
+       - STATE_CONNECTED: State: CONNECTED
+       - STATE_ERROR: State: ERROR
+    title: State enumerates the state of the connector
   v1alphaConnectorUsageData:
     type: object
     properties:
@@ -3084,6 +3148,22 @@ definitions:
     title: |-
       DestinationConnectorDefinition represents the destination connector
       definition resource
+  v1alphaDisconnectDestinationConnectorResponse:
+    type: object
+    properties:
+      destination_connector:
+        $ref: '#/definitions/v1alphaDestinationConnector'
+        title: A DestinationConnector resource
+    title: |-
+      DisconnectDestinationConnectorResponse represents a disconnected destination
+      connector
+  v1alphaDisconnectSourceConnectorResponse:
+    type: object
+    properties:
+      source_connector:
+        $ref: '#/definitions/v1alphaSourceConnector'
+        title: A SourceConnector resource
+    title: DisconnectSourceConnectorResponse represents a disconnected source connector
   v1alphaGetDestinationConnectorDefinitionResponse:
     type: object
     properties:
@@ -3164,6 +3244,20 @@ definitions:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
     title: GetUserResponse represents a response for a user resource
+  v1alphaHealthCheckRequest:
+    type: object
+    properties:
+      service:
+        type: string
+        title: Service name to check for its readiness status
+    title: HealthCheckRequest represents a request to health check a service
+  v1alphaHealthCheckResponse:
+    type: object
+    properties:
+      status:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Status is the instance of the enum type ServingStatus
+    title: HealthCheckResponse represents a response for a service heath status
   v1alphaListDestinationConnectorDefinitionResponse:
     type: object
     properties:
