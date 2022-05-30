@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package vdp.mgmt.v1alpha;
+
+// Google API
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+
+import "vdp/mgmt/v1alpha/healthcheck.proto";
+import "vdp/mgmt/v1alpha/mgmt.proto";
+
+// User service responds to incoming user requests.
+service UserService {
+  option (google.api.default_host) = "api.instill.tech";
+
+  // Liveness method receives a LivenessRequest message and returns a
+  // LivenessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__liveness"
+      additional_bindings : [ {get : "/v1alpha/health/mgmt"} ]
+    };
+  }
+
+  // Readiness method receives a ReadinessRequest message and returns a
+  // ReadinessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__readiness"
+    };
+  }
+
+  // ListUser method receives a ListUserRequest message and returns a
+  // ListUserResponse message.
+  rpc ListUser(ListUserRequest) returns (ListUserResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/users"
+    };
+  }
+
+  // CreateUser receives a CreateUserRequest message and returns a
+  // aGetUserResponse
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/users"
+      body : "user"
+    };
+    option (google.api.method_signature) = "user";
+  }
+
+  // GetUser method receives a GetUserRequest message and returns
+  // a GetUserResponse message.
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=users/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdateUser method receives a UpdateUserRequest message and returns
+  // a UpdateUserResponse
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/{user.name=users/*}"
+      body : "user"
+    };
+    option (google.api.method_signature) = "user,update_mask";
+  }
+
+  // DeleteUser method receives a DeleteUserRequest message and returns a
+  // DeleteUserResponse
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {
+      delete : "/v1alpha/{name=users/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // LookUpUser method receives a LookUpUserRequest message and returns a
+  // LookUpUserResponse
+  rpc LookUpUser(LookUpUserRequest) returns (LookUpUserResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{permalink=users/*}:lookUp"
+    };
+    option (google.api.method_signature) = "permalink";
+  }
+}

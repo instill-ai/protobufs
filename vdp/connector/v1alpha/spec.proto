@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package vdp.connector.v1alpha;
+
+// Protocol Buffers Well-Known Types
+import "google/protobuf/struct.proto";
+
+// Google API
+import "google/api/field_behavior.proto";
+
+import "vdp/connector/v1alpha/auth.proto";
+
+////////////////////////////////////
+// Spec represents a spec data model
+message Spec {
+
+  // SupportedDestinationSyncMode enumerates destination sync mode
+  enum SupportedDestinationSyncModes {
+    // SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_UNSPECIFIED
+    SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED = 0;
+    // SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_APPEND
+    SUPPORTED_DESTINATION_SYNC_MODES_APPEND = 1;
+    // SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_OVERWRITE
+    SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE = 2;
+    // SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_APPEND_DEDUP
+    SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP = 3;
+  }
+
+  // Spec documentation URL
+  string documentation_url = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Spec connection specification
+  google.protobuf.Struct connection_specification = 5
+      [ (google.api.field_behavior) = REQUIRED ];
+  // Spec supports incremental flag, i.e., if the connector supports incremental
+  // mode or not
+  bool supports_incremental = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Spec supports normalization flag, i.e., if the connector supports
+  // normalization or not
+  bool supports_normalization = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Spec supports dbt flag, i.e., if the connector supports DBT or not
+  bool supports_dbt = 8 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Spec destination sync mode, i.e., a list of destination sync modes
+  // supported by the connector
+  repeated SupportedDestinationSyncModes supported_destination_sync_modes = 9
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Spec advanced auth, i.e., additional and optional specification object to
+  // describe what an 'advanced' Auth flow would need to function
+  AdvancedAuth advanced_auth = 10 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
