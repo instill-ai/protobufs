@@ -2542,6 +2542,21 @@ definitions:
        - MODE_SYNC: Mode: SYNC
        - MODE_ASYNC: Mode: ASYNC
     title: Mode enumerates the pipeline modes
+  SessionDataService:
+    type: string
+    enum:
+    - SERVICE_UNSPECIFIED
+    - SERVICE_MGMT
+    - SERVICE_CONNECTOR
+    - SERVICE_MODEL
+    - SERVICE_PIPELINE
+    default: SERVICE_UNSPECIFIED
+    title: |-
+      - SERVICE_UNSPECIFIED: Service: UNSPECIFIED
+       - SERVICE_MGMT: Service: MGMT
+       - SERVICE_CONNECTOR: Service: CONNECTOR
+       - SERVICE_MODEL: Service: MODEL
+       - SERVICE_PIPELINE: Service: Pipeline
   SpecSupportedDestinationSyncModes:
     type: string
     enum:
@@ -3975,11 +3990,9 @@ definitions:
         title: Session UUID
         required:
         - session_uid
-      service_id:
-        type: string
-        title: Service ID, e.g., 'mgmt', 'connector', 'model', 'pipeline'
-        required:
-        - service_id
+      service:
+        $ref: '#/definitions/SessionDataService'
+        title: name of the service to collect data from
       version:
         type: string
         title: Version of the service
@@ -4007,10 +4020,9 @@ definitions:
         title: Report time
         required:
         - report_time
-    title: SessionData represents the usage data collected from a session
+    title: SessionData represents the session data collected from a session
     required:
     - session_uid
-    - service_id
     - version
     - arch
     - os
