@@ -89,6 +89,8 @@ message ModelInstance {
     TASK_CLASSIFICATION = 1;
     // Task: DETECTION
     TASK_DETECTION = 2;
+    // Task: KEYPOINT
+    TASK_KEYPOINT = 3;
   }
   // State enumerates the lifecycling state of a model instance
   enum State {
@@ -498,6 +500,24 @@ message ClassificationOutputs {
   // A list of classification outputs
   repeated ClassificationOutput classification_outputs = 1
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+message Keypoint {
+  // x coordinate
+  float x = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // y coordinate
+  float y = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // visibility
+  float v = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// KeypointOutput represents the output of keypoint detection task
+// The keypoint detection model do not support batch, so output is singular
+message KeypointOutput {
+  // Keypoints
+  repeated Keypoint keypoints = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Classification score
+  float score = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // BoundingBox represents the bounding box data structure
