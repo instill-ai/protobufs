@@ -3,6 +3,7 @@ syntax = "proto3";
 package vdp.connector.v1alpha;
 
 // Protocol Buffers Well-Known Types
+import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -11,12 +12,13 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
+import "vdp/model/v1alpha/model.proto";
 import "vdp/connector/v1alpha/connector_definition.proto";
 
 // Connector represents a connector data model
 message Connector {
 
-  // State enumerates the state of the connector
+  // State enumerates the connector state
   enum State {
     // State: UNSPECIFIED
     STATE_UNSPECIFIED = 0;
@@ -74,8 +76,7 @@ message SourceConnector {
   // letters, numbers, and hyphen, with the first character a letter, the last a
   // letter or a number, and a 63 character maximum.
   string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
-  // Connector Definition resource (e.g. SourceDefinition or Destination
-  // Destination)
+  // SourceConnectorDefinition resource
   string source_connector_definition = 4 [
     (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference) = {
@@ -94,7 +95,7 @@ message DestinationConnector {
   };
 
   // DestinationConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // "destination-connectors/*"
   string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // DestinationConnector UUID
   string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
@@ -103,8 +104,7 @@ message DestinationConnector {
   // restricts to letters, numbers, and hyphen, with the first character a
   // letter, the last a letter or a number, and a 63 character maximum.
   string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
-  // Connector Definition resource (e.g. SourceDefinition or Destination
-  // Destination)
+  // DestinationConnectorDefinition resource
   string destination_connector_definition = 4 [
     (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference) = {
@@ -164,7 +164,7 @@ message ListSourceConnectorResponse {
 // SourceConnector resource
 message GetSourceConnectorRequest {
   // SourceConnectorConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // "source-connectors/*"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -207,7 +207,7 @@ message UpdateSourceConnectorResponse {
 // SourceConnector resource
 message DeleteSourceConnectorRequest {
   // SourceConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // "source-connectors/*"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -297,6 +297,25 @@ message RenameSourceConnectorRequest {
 message RenameSourceConnectorResponse {
   // A SourceConnector resource
   SourceConnector source_connector = 1;
+}
+
+// ReadSourceConnectorRequest represents a request to perform read operation of a
+// SourceConnector given the resource name
+message ReadSourceConnectorRequest {
+  // SourceConnector resource name. It must have the format of
+  // "source-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/SourceConnector"
+    }
+  ];
+}
+
+// ReadSourceConnectorResponse represents the read data from a SourceConnector resource
+message ReadSourceConnectorResponse {
+  // Read data in bytes
+  bytes data = 1;
 }
 
 // DestinationConnector
@@ -405,7 +424,7 @@ message DeleteDestinationConnectorResponse {}
 // LookUpDestinationConnectorRequest represents a request to query a destination
 // connector by permalink
 message LookUpDestinationConnectorRequest {
-  // Permalink of a source connector. For example:
+  // Permalink of a destination connector. For example:
   // "destination-connectors/{uid}"
   string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
   // SourceConnector view (default is VIEW_BASIC)
@@ -482,4 +501,25 @@ message RenameDestinationConnectorRequest {
 message RenameDestinationConnectorResponse {
   // A DestinationConnector resource
   DestinationConnector destination_connector = 1;
+}
+
+// WriteDestinationConnectorRequest represents a request to perform write operation of a
+// DestinationConnector given the resource name
+message WriteDestinationConnectorRequest {
+  // DestinationConnector resource name. It must have the format of
+  // "destination-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/DestinationConnector"
+    }
+  ];
+  // Task type of the model instance
+  vdp.model.v1alpha.ModelInstance.Task task = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // JSON data to write
+  google.protobuf.Struct data = 3 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// WriteDestinationConnectorResponse represents the read data from a DestinationConnector resource
+message WriteDestinationConnectorResponse {
 }

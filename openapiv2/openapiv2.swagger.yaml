@@ -147,7 +147,7 @@ paths:
       - name: destination_connector.name
         description: |-
           DestinationConnector resource name. It must have the format of
-          "source-connectors/*"
+          "destination-connectors/*"
         in: path
         required: true
         type: string
@@ -172,9 +172,7 @@ paths:
                 letter, the last a letter or a number, and a 63 character maximum.
             destination_connector_definition:
               type: string
-              title: |-
-                Connector Definition resource (e.g. SourceDefinition or Destination
-                Destination)
+              title: DestinationConnectorDefinition resource
             connector:
               $ref: '#/definitions/v1alphaConnector'
               title: DestinationConnector's connector data structure
@@ -940,10 +938,44 @@ paths:
           title: PublishModelRequest represents a request to publish a model
       tags:
       - ModelService
+  /v1alpha/{name}:read:
+    post:
+      summary: |-
+        ReadSourceConnector method receives a ReadSourceConnectorRequest
+        message and returns a ReadSourceConnectorResponse message.
+      operationId: ConnectorService_ReadSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaReadSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: name
+        description: |-
+          SourceConnector resource name. It must have the format of
+          "source-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: source-connectors/[^/]+
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          title: |-
+            ReadSourceConnectorRequest represents a request to perform read operation of a
+            SourceConnector given the resource name
+      tags:
+      - ConnectorService
   /v1alpha/{name}:rename:
     post:
       summary: |-
-        RenameDestinationConnector method receives a RenameSourceConnectorRequest
+        RenameSourceConnector method receives a RenameSourceConnectorRequest
         message and returns a RenameSourceConnectorResponse message.
       operationId: ConnectorService_RenameSourceConnector
       responses:
@@ -985,6 +1017,48 @@ paths:
           - new_source_connector_id
       tags:
       - ConnectorService
+  /v1alpha/{name}:test:
+    post:
+      summary: |-
+        TestModelInstance method receives a TestModelInstanceRequest message
+        and returns a TestModelInstanceResponse message.
+      operationId: ModelService_TestModelInstance
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTestModelInstanceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: name
+        description: |-
+          The resource name of the model instance to trigger.
+          For example "models/{model}/instances/{instance}"
+        in: path
+        required: true
+        type: string
+        pattern: models/[^/]+/instances/[^/]+
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            inputs:
+              type: array
+              items:
+                $ref: '#/definitions/vdpmodelv1alphaInput'
+              title: Input to trigger the model instance
+              required:
+              - inputs
+          title: TestModelInstanceRequest represents a request to test a model instance
+          required:
+          - inputs
+      tags:
+      - ModelService
   /v1alpha/{name}:trigger:
     post:
       summary: /////////////////////////////////////////////////////
@@ -1095,6 +1169,52 @@ paths:
           title: UnpublishModelRequest represents a request to unpublish a model
       tags:
       - ModelService
+  /v1alpha/{name}:write:
+    post:
+      summary: |-
+        WriteDestinationConnector method receives a
+        WriteDestinationConnectorRequest message and returns a
+        WriteDestinationConnectorResponse message.
+      operationId: ConnectorService_WriteDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWriteDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+      - name: name
+        description: |-
+          DestinationConnector resource name. It must have the format of
+          "destination-connectors/*"
+        in: path
+        required: true
+        type: string
+        pattern: destination-connectors/[^/]+
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            task:
+              $ref: '#/definitions/ModelInstanceTask'
+              title: Task type of the model instance
+            data:
+              type: object
+              title: JSON data to write
+              required:
+              - data
+          title: |-
+            WriteDestinationConnectorRequest represents a request to perform write operation of a
+            DestinationConnector given the resource name
+          required:
+          - data
+      tags:
+      - ConnectorService
   /v1alpha/{parent}/instances:
     get:
       summary: |-
@@ -1172,7 +1292,7 @@ paths:
       parameters:
       - name: permalink_1
         description: |-
-          Permalink of a source connector. For example:
+          Permalink of a destination connector. For example:
           "destination-connectors/{uid}"
         in: path
         required: true
@@ -1548,7 +1668,7 @@ paths:
       - name: source_connector.name
         description: |-
           SourceConnectorConnector resource name. It must have the format of
-          "destination-connectors/*"
+          "source-connectors/*"
         in: path
         required: true
         type: string
@@ -1588,7 +1708,7 @@ paths:
       - name: source_connector.name
         description: |-
           SourceConnector resource name. It must have the format of
-          "destination-connectors/*"
+          "source-connectors/*"
         in: path
         required: true
         type: string
@@ -1638,9 +1758,7 @@ paths:
                 letter or a number, and a 63 character maximum.
             source_connector_definition:
               type: string
-              title: |-
-                Connector Definition resource (e.g. SourceDefinition or Destination
-                Destination)
+              title: SourceConnectorDefinition resource
             connector:
               $ref: '#/definitions/v1alphaConnector'
               title: SourceConnector's connector data structure
@@ -2861,7 +2979,7 @@ definitions:
        - STATE_DISCONNECTED: State: DISCONNECTED
        - STATE_CONNECTED: State: CONNECTED
        - STATE_ERROR: State: ERROR
-    title: State enumerates the state of the connector
+    title: State enumerates the connector state
   v1alphaConnectorUsageData:
     type: object
     properties:
@@ -3024,7 +3142,7 @@ definitions:
         type: string
         title: |-
           DestinationConnector resource name. It must have the format of
-          "source-connectors/*"
+          "destination-connectors/*"
         readOnly: true
       uid:
         type: string
@@ -3039,9 +3157,7 @@ definitions:
           letter, the last a letter or a number, and a 63 character maximum.
       destination_connector_definition:
         type: string
-        title: |-
-          Connector Definition resource (e.g. SourceDefinition or Destination
-          Destination)
+        title: DestinationConnectorDefinition resource
       connector:
         $ref: '#/definitions/v1alphaConnector'
         title: DestinationConnector's connector data structure
@@ -3584,7 +3700,7 @@ definitions:
         readOnly: true
     description: |-
       ModelInstanceCard represents the README card for a model instance. There
-      exists one one and exactly one README card per model instance.
+      exists one and exactly one README card per model instance.
   v1alphaModelInstanceState:
     type: string
     enum:
@@ -3598,7 +3714,7 @@ definitions:
        - STATE_OFFLINE: State: OFFLINE
        - STATE_ONLINE: State: ONLINE
        - STATE_ERROR: State: ERROR
-    title: State enumerates the lifecycling state of a model instance
+    title: State enumerates a model instance state
   v1alphaModelUsageData:
     type: object
     properties:
@@ -3917,6 +4033,15 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: Published model
     title: PublishModelResponse represents a response for the published model
+  v1alphaReadSourceConnectorResponse:
+    type: object
+    properties:
+      data:
+        type: string
+        format: byte
+        title: Read data in bytes
+    title: ReadSourceConnectorResponse represents the read data from a SourceConnector
+      resource
   v1alphaRecipe:
     type: object
     properties:
@@ -4116,9 +4241,7 @@ definitions:
           letter or a number, and a 63 character maximum.
       source_connector_definition:
         type: string
-        title: |-
-          Connector Definition resource (e.g. SourceDefinition or Destination
-          Destination)
+        title: SourceConnectorDefinition resource
       connector:
         $ref: '#/definitions/v1alphaConnector'
         title: SourceConnector's connector data structure
@@ -4193,15 +4316,24 @@ definitions:
       Spec represents a spec data model
     required:
     - connection_specification
-  v1alphaTriggerModelInstanceBinaryFileUploadResponse:
+  v1alphaTestModelInstanceBinaryFileUploadResponse:
     type: object
     properties:
       output:
         type: object
         title: Output from a model
     title: |-
-      TriggerModelInstanceBinaryFileUploadResponse represents a response for the
-      output for triggering a model instance
+      TestModelInstanceBinaryFileUploadResponse represents a response for the
+      output for testing a model instance
+  v1alphaTestModelInstanceResponse:
+    type: object
+    properties:
+      output:
+        type: object
+        title: Output from a model
+    title: |-
+      TestModelInstanceResponse represents a response for the output for
+      testing a model instance
   v1alphaTriggerModelInstanceResponse:
     type: object
     properties:
@@ -4344,6 +4476,10 @@ definitions:
     title: User represents the content of a user
     required:
     - newsletter_subscription
+  v1alphaWriteDestinationConnectorResponse:
+    type: object
+    title: WriteDestinationConnectorResponse represents the read data from a DestinationConnector
+      resource
   vdpconnectorv1alphaLivenessResponse:
     type: object
     properties:
