@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.2.0-alpha](https://github.com/instill-ai/protobufs/compare/v0.1.5-alpha...v0.2.0-alpha) (2022-06-20)
+
+
+### Features
+
+* add mgmt-backend proto ([#62](https://github.com/instill-ai/protobufs/issues/62)) ([59f03aa](https://github.com/instill-ai/protobufs/commit/59f03aa2930d87b95b5688f67c9523db10497165))
+* add usage package ([#74](https://github.com/instill-ai/protobufs/issues/74)) ([15a5103](https://github.com/instill-ai/protobufs/commit/15a5103a28675ff654241c6f5a40b49942a2bc3d))
+* **connector:** add connect/disconnect custom rpc method ([87a40ab](https://github.com/instill-ai/protobufs/commit/87a40ab4778620dd03cb131b5c055b2c5063757b))
+* **connector:** add protobuf ([#54](https://github.com/instill-ai/protobufs/issues/54)) ([f7f637b](https://github.com/instill-ai/protobufs/commit/f7f637bc719eabf98355b11f3e307ef1abdb5e10))
+* **connector:** add read and write custom rpc methods ([0bdc41d](https://github.com/instill-ai/protobufs/commit/0bdc41d6522eca8e3fe211c0609443ddd3183348))
+* **model:** add method create model by GitHub ([#49](https://github.com/instill-ai/protobufs/issues/49)) ([7ddc142](https://github.com/instill-ai/protobufs/commit/7ddc142c190964bd168875968610e84df3460943))
+
+
+### Bug Fixes
+
+* add v1alpha to health check endpoint ([4257891](https://github.com/instill-ai/protobufs/commit/42578915fdb4bc8e04d7b918b5305d68d19cc2c2))
+* fix openapi using snake case ([#46](https://github.com/instill-ai/protobufs/issues/46)) ([fe755b7](https://github.com/instill-ai/protobufs/commit/fe755b71d09b0e83970e61a21570d10562bcb0aa))
+* fix protoc-gen-openapiv2/options import issue ([26cc626](https://github.com/instill-ai/protobufs/commit/26cc626f40216685ad10c7e73b5ebf64083744f0))
+* **model:** add optional view param for GET operation ([#70](https://github.com/instill-ai/protobufs/issues/70)) ([a739d95](https://github.com/instill-ai/protobufs/commit/a739d95d0f55750932fec2f771a5bed5389077ab))
+* **model:** change configuration from struct to string ([#72](https://github.com/instill-ai/protobufs/issues/72)) ([77b02ea](https://github.com/instill-ai/protobufs/commit/77b02eaa10b98a9b0a5027da235ddba943257385))
+* **model:** move github from model to model version ([#51](https://github.com/instill-ai/protobufs/issues/51)) ([03170d7](https://github.com/instill-ai/protobufs/commit/03170d7a131037906eecfc81173c7a29a492a1fb))
+* **model:** support inferencing multiple files  ([#56](https://github.com/instill-ai/protobufs/issues/56)) ([c821464](https://github.com/instill-ai/protobufs/commit/c8214643c5b7019c4aef497e0b08e4d2f385b0b5))
+* move buf.yaml into the module to fix usage package import error ([#75](https://github.com/instill-ai/protobufs/issues/75)) ([3b33ff4](https://github.com/instill-ai/protobufs/commit/3b33ff4119ed5f398904dd7a90f1559298e2bb2c))
+* refactor mgmt-backend proto ([fc38f0d](https://github.com/instill-ai/protobufs/commit/fc38f0d7399c5ff6235b2621dc279945215966ce))
+
 ### [0.1.5-alpha](https://github.com/instill-ai/protobufs/compare/v0.1.4-alpha...v0.1.5-alpha) (2022-03-22)
 
 
