@@ -1,10 +1,11 @@
 name: Add PR to project
 
 on:
-  pull_request:
+  pull_request_target:
     types:
       - opened
       - ready_for_review
+
 jobs:
   track-pr:
     runs-on: ubuntu-latest
@@ -12,7 +13,7 @@ jobs:
     steps:
       - name: Get project data
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.botGitHubToken }}
           ORGANIZATION: instill-ai
           PROJECT_NUMBER: 5 # Visual Data Preparation (VDP) project
         run: |
@@ -39,7 +40,7 @@ jobs:
 
       - name: Add PR to project
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.botGitHubToken }}
           PR_ID: ${{ github.event.pull_request.node_id }}
         run: |
           item_id="$( gh api graphql -f query='
@@ -58,7 +59,7 @@ jobs:
 
       - name: Set fields
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.botGitHubToken }}
         run: |
           gh api graphql -f query='
             mutation (
