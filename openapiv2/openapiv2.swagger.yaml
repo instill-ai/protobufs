@@ -330,9 +330,9 @@ paths:
                     type: object
                     properties:
                         configuration:
-                            type: string
+                            type: object
                             title: |-
-                                Model configuration represents the configuration JSON string that has been
+                                Model configuration represents the configuration JSON that has been
                                 validated using the `model_spec` JSON schema of a ModelDefinition
                         create_time:
                             type: string
@@ -1204,6 +1204,16 @@ paths:
                             title: JSON data to write
                             required:
                                 - data
+                        destination_sync_mode:
+                            $ref: '#/definitions/v1alphaSupportedDestinationSyncModes'
+                            title: |-
+                                Destination sync mode:
+                                https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
+                        sync_mode:
+                            $ref: '#/definitions/v1alphaSupportedSyncModes'
+                            title: |-
+                                Sync mode:
+                                https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
                         task:
                             $ref: '#/definitions/ModelInstanceTask'
                             title: Task type of the model instance
@@ -2707,20 +2717,6 @@ definitions:
              - SERVICE_MODEL: Service: MODEL
              - SERVICE_PIPELINE: Service: PIPELINE
         title: Service enumerates the services to collect data from
-    SpecSupportedDestinationSyncModes:
-        type: string
-        enum:
-            - SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED
-            - SUPPORTED_DESTINATION_SYNC_MODES_APPEND
-            - SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE
-            - SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP
-        default: SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED
-        description: |-
-            - SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED: SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_UNSPECIFIED
-             - SUPPORTED_DESTINATION_SYNC_MODES_APPEND: SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_APPEND
-             - SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE: SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_OVERWRITE
-             - SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP: SupportedDestinationSyncModes: DESTINATION_SYNC_MODE_APPEND_DEDUP
-        title: SupportedDestinationSyncMode enumerates destination sync mode
     protobufAny:
         type: object
         properties:
@@ -2842,24 +2838,6 @@ definitions:
                 $ref: '#/definitions/v1alphaSourceConnector'
                 title: A SourceConnector resource
         title: ConnectSourceConnectorResponse represents a connected source connector
-    v1alphaConnectionType:
-        type: string
-        enum:
-            - CONNECTION_TYPE_UNSPECIFIED
-            - CONNECTION_TYPE_DIRECTNESS
-            - CONNECTION_TYPE_API
-            - CONNECTION_TYPE_FILE
-            - CONNECTION_TYPE_DATABASE
-            - CONNECTION_TYPE_CUSTOM
-        default: CONNECTION_TYPE_UNSPECIFIED
-        description: |-
-            - CONNECTION_TYPE_UNSPECIFIED: ConnectionType: UNSPECIFIED
-             - CONNECTION_TYPE_DIRECTNESS: ConnectionType: DIRECTNESS
-             - CONNECTION_TYPE_API: ConnectionType: API
-             - CONNECTION_TYPE_FILE: ConnectionType: FILE
-             - CONNECTION_TYPE_DATABASE: ConnectionType: DATABASE
-             - CONNECTION_TYPE_CUSTOM: ConnectionType: CUSTOM
-        title: ConnectionType enumerates a connection type
     v1alphaConnector:
         type: object
         properties:
@@ -2902,9 +2880,6 @@ definitions:
     v1alphaConnectorDefinition:
         type: object
         properties:
-            connection_type:
-                $ref: '#/definitions/v1alphaConnectionType'
-                title: ConnectorDefinition connection type
             create_time:
                 type: string
                 format: date-time
@@ -3514,9 +3489,9 @@ definitions:
         type: object
         properties:
             configuration:
-                type: string
+                type: object
                 title: |-
-                    Model configuration represents the configuration JSON string that has been
+                    Model configuration represents the configuration JSON that has been
                     validated using the `model_spec` JSON schema of a ModelDefinition
             create_time:
                 type: string
@@ -3633,9 +3608,9 @@ definitions:
         type: object
         properties:
             configuration:
-                type: string
+                type: object
                 title: |-
-                    Model instance configuration represents the configuration JSON string that
+                    Model instance configuration represents the configuration JSON that
                     has been validated using the `model_instance_spec` JSON schema of a
                     ModelDefinition
                 readOnly: true
@@ -4281,7 +4256,7 @@ definitions:
             supported_destination_sync_modes:
                 type: array
                 items:
-                    $ref: '#/definitions/SpecSupportedDestinationSyncModes'
+                    $ref: '#/definitions/v1alphaSupportedDestinationSyncModes'
                 title: |-
                     Spec destination sync mode, i.e., a list of destination sync modes
                     supported by the connector
@@ -4307,6 +4282,36 @@ definitions:
             Spec represents a spec data model
         required:
             - connection_specification
+    v1alphaSupportedDestinationSyncModes:
+        type: string
+        enum:
+            - SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED
+            - SUPPORTED_DESTINATION_SYNC_MODES_APPEND
+            - SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE
+            - SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP
+        default: SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED
+        description: |-
+            - SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_UNSPECIFIED
+             - SUPPORTED_DESTINATION_SYNC_MODES_APPEND: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_APPEND
+             - SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_OVERWRITE
+             - SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_APPEND_DEDUP
+        title: |-
+            SupportedDestinationSyncModes enumerates destination sync mode (this needs to
+            be in plural form to match with Airbyte protocol)
+    v1alphaSupportedSyncModes:
+        type: string
+        enum:
+            - SUPPORTED_SYNC_MODES_UNSPECIFIED
+            - SUPPORTED_SYNC_MODES_FULL_REFRESH
+            - SUPPORTED_SYNC_MODES_INCREMENTAL
+        default: SUPPORTED_SYNC_MODES_UNSPECIFIED
+        description: |-
+            - SUPPORTED_SYNC_MODES_UNSPECIFIED: SupportedSyncModes: SUPPORTED_SYNC_MODES_UNSPECIFIED
+             - SUPPORTED_SYNC_MODES_FULL_REFRESH: SupportedSyncModes: SUPPORTED_SYNC_MODES_FULL_REFRESH
+             - SUPPORTED_SYNC_MODES_INCREMENTAL: SupportedSyncModes: SUPPORTED_SYNC_MODES_INCREMENTAL
+        title: |-
+            SupportedSyncModes enumerates sync mode (this needs to be in plural form to
+            match with Airbyte protocol)
     v1alphaTestModelInstanceBinaryFileUploadResponse:
         type: object
         properties:
