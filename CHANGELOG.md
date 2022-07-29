@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2-alpha](https://github.com/instill-ai/protobufs/compare/v0.2.1-alpha...v0.2.2-alpha) (2022-07-29)
+
+
+### Bug Fixes
+
+* **model:** fix wrong field name ([1bdf2d3](https://github.com/instill-ai/protobufs/commit/1bdf2d3afdd2ff86baa590f373dea8c3dff93d4a))
+
 ## [0.2.1-alpha](https://github.com/instill-ai/protobufs/compare/v0.2.0-alpha...v0.2.1-alpha) (2022-07-07)
 
 
