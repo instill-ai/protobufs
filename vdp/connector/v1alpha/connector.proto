@@ -12,6 +12,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
+import "vdp/pipeline/v1alpha/pipeline.proto";
 import "vdp/model/v1alpha/model.proto";
 import "vdp/connector/v1alpha/connector_definition.proto";
 import "vdp/connector/v1alpha/spec.proto";
@@ -527,15 +528,17 @@ message WriteDestinationConnectorRequest {
   // https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
   SupportedDestinationSyncModes destination_sync_mode = 4
       [ (google.api.field_behavior) = REQUIRED ];
-  // Model instance used to generate the batch structured data
-  string model_instance = 5 [
+  // Pipeline resource name
+  string pipeline = 5 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/ModelInstance"}
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
   ];
+  // Pipeline recipe
+  pipeline.v1alpha.Recipe recipe = 6 [(google.api.field_behavior) = REQUIRED];
   // Indices corresponding to each JSON data element
-  repeated string indices = 6 [ (google.api.field_behavior) = REQUIRED ];
+  repeated string indices = 7 [ (google.api.field_behavior) = REQUIRED ];
   // JSON data to write
-  google.protobuf.Struct data = 7 [ (google.api.field_behavior) = REQUIRED ];
+  google.protobuf.Struct data = 8 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // WriteDestinationConnectorResponse represents the read data from a
