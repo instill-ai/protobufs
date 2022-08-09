@@ -13,6 +13,10 @@ import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
 import "vdp/model/v1alpha/model_definition.proto";
+import "vdp/model/v1alpha/classification_output_definition.proto";
+import "vdp/model/v1alpha/detection_output_definition.proto";
+import "vdp/model/v1alpha/keypoint_output_definition.proto";
+import "vdp/model/v1alpha/unspecify_output_definition.proto";
 
 // Model represents a model
 message Model {
@@ -487,88 +491,6 @@ message Input {
   }
 }
 
-// UnspecifiedTaskOutputs represents a list of unspecified task outputs
-message UnspecifiedTaskOutputs {
-  // A list of unspecified task outputs
-  repeated google.protobuf.Struct raw_outputs = 1
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// ClassificationOutput represents the output of classification task
-message ClassificationOutput {
-  // Classification category
-  string category = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Classification score
-  float score = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// ClassificationOutputs represents a list of classification task outputs
-message ClassificationOutputs {
-  // A list of classification outputs
-  repeated ClassificationOutput classification_outputs = 1
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// Keypoint structure which include coordinate and keypoint visibility
-message Keypoint {
-  // x coordinate
-  float x = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // y coordinate
-  float y = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // visibility
-  float v = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// List of keypoints and a score corresponding to a person object
-message KeypointObject {
-  // Keypoints
-  repeated Keypoint keypoints = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Keypoint score
-  float score = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// KeypointOutput represents the output of keypoint detection task
-message KeypointOutputs {
-  // Keypoint Objects
-  repeated KeypointObject keypoint_outputs = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// BoundingBox represents the bounding box data structure
-message BoundingBox {
-  // Bounding box top y-axis value
-  float top = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Bounding box left x-axis value
-  float left = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Bounding box width value
-  float width = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Bounding box height value
-  float height = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// BoundingBoxObject represents a predicted bounding box object
-message BoundingBoxObject {
-  // Bounding box object category
-  string category = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Bounding box object score
-  float score = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Bounding box
-  BoundingBox bounding_box = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// DetectionOutput represents the output of detection task
-message DetectionOutput {
-  // A list of bounding box objects
-  repeated BoundingBoxObject bounding_box_objects = 1
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// DetectionOutputs represents a list of detection task outputs
-message DetectionOutputs {
-  // A list of detection outputs
-  repeated DetectionOutput detection_outputs = 1
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
 // TriggerModelInstanceRequest represents a request to trigger a model instance
 message TriggerModelInstanceRequest {
   // The resource name of the model instance to trigger.
@@ -585,7 +507,7 @@ message TriggerModelInstanceRequest {
 // triggering a model instance
 message TriggerModelInstanceResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TriggerModelInstanceBinaryFileUploadRequest represents a request to test a
@@ -607,7 +529,7 @@ message TriggerModelInstanceBinaryFileUploadRequest {
 // output for testing a model instance
 message TriggerModelInstanceBinaryFileUploadResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceRequest represents a request to test a model instance
@@ -626,7 +548,7 @@ message TestModelInstanceRequest {
 // testing a model instance
 message TestModelInstanceResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceBinaryFileUploadRequest represents a request to test a
@@ -644,9 +566,26 @@ message TestModelInstanceBinaryFileUploadRequest {
   bytes content = 3 [ (google.api.field_behavior) = REQUIRED ];
 }
 
+// ModelInstanceInferenceResponse represents a response for the
+// output for inference a model instance
+message ModelInstanceInferenceResponse {
+    // The task type
+    string task = 1 [ (google.api.field_behavior) = REQUIRED ];
+    oneof output {
+        // The classification output
+        ClassificationOutput classification = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+        // The detection output
+        DetectionOutput detection = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+        // The keypoint output
+        KeypointOutput keypoint = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+        // The unspecified task output
+        UnspecifiedTaskOutput unspecified = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    }
+}
+
 // TestModelInstanceBinaryFileUploadResponse represents a response for the
 // output for testing a model instance
 message TestModelInstanceBinaryFileUploadResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
