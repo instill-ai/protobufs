@@ -13,6 +13,10 @@ import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
 import "vdp/model/v1alpha/model_definition.proto";
+import "vdp/model/v1alpha/classification_output_definition.proto";
+import "vdp/model/v1alpha/detection_output_definition.proto";
+import "vdp/model/v1alpha/keypoint_output_definition.proto";
+import "vdp/model/v1alpha/unspecify_output_definition.proto";
 
 // Model represents a model
 message Model {
@@ -503,7 +507,7 @@ message TriggerModelInstanceRequest {
 // triggering a model instance
 message TriggerModelInstanceResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TriggerModelInstanceBinaryFileUploadRequest represents a request to test a
@@ -525,7 +529,7 @@ message TriggerModelInstanceBinaryFileUploadRequest {
 // output for testing a model instance
 message TriggerModelInstanceBinaryFileUploadResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceRequest represents a request to test a model instance
@@ -544,7 +548,7 @@ message TestModelInstanceRequest {
 // testing a model instance
 message TestModelInstanceResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceBinaryFileUploadRequest represents a request to test a
@@ -562,9 +566,26 @@ message TestModelInstanceBinaryFileUploadRequest {
   bytes content = 3 [ (google.api.field_behavior) = REQUIRED ];
 }
 
+// ModelInstanceInferenceResponse represents a response for the
+// output for inference a model instance
+message ModelInstanceInferenceResponse {
+    // The task type
+    string task = 1 [ (google.api.field_behavior) = REQUIRED ];
+    oneof output {
+        // The classification output
+        ClassificationOutput classification = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+        // The detection output
+        DetectionOutput detection = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+        // The keypoint output
+        KeypointOutput keypoint = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+        // The unspecified task output
+        UnspecifiedTaskOutput unspecified = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    }
+}
+
 // TestModelInstanceBinaryFileUploadResponse represents a response for the
 // output for testing a model instance
 message TestModelInstanceBinaryFileUploadResponse {
   // Output from a model
-  google.protobuf.Struct output = 1;
+  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
