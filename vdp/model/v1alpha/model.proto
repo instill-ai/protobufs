@@ -54,7 +54,8 @@ message Model {
   ];
   // Model configuration represents the configuration JSON that has been
   // validated using the `model_spec` JSON schema of a ModelDefinition
-  google.protobuf.Struct configuration = 6 [ (google.api.field_behavior) = IMMUTABLE ];
+  google.protobuf.Struct configuration = 6
+      [ (google.api.field_behavior) = IMMUTABLE ];
   // Model visibility including public or private
   Visibility visibility = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model owner
@@ -96,6 +97,7 @@ message ModelInstance {
     // Task: KEYPOINT
     TASK_KEYPOINT = 3;
   }
+
   // State enumerates a model instance state
   enum State {
     // State: UNSPECIFIED
@@ -130,7 +132,8 @@ message ModelInstance {
   // Model instance configuration represents the configuration JSON that
   // has been validated using the `model_instance_spec` JSON schema of a
   // ModelDefinition
-  google.protobuf.Struct configuration = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  google.protobuf.Struct configuration = 7
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Model instance create time
   google.protobuf.Timestamp create_time = 8
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
@@ -480,6 +483,24 @@ message GetModelInstanceCardResponse {
 //  Custom methods
 ////////////////////////////////////
 
+// ModelInstanceOutput represents the output of a CV Task result from a
+// model instance
+message ModelInstanceOutput {
+  // The inference task output
+  oneof output {
+    // The classification output
+    ClassificationOutput classification = 1
+        [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // The detection output
+    DetectionOutput detection = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // The keypoint output
+    KeypointOutput keypoint = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // The unspecified task output
+    UnspecifiedTaskOutput unspecified = 4
+        [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  }
+}
+
 // Input represents the input to trigger a model instance
 message Input {
   // Input type
@@ -506,8 +527,11 @@ message TriggerModelInstanceRequest {
 // TriggerModelInstanceResponse represents a response for the output for
 // triggering a model instance
 message TriggerModelInstanceResponse {
-  // Output from a model
-  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The task type
+  ModelInstance.Task task = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The batch output from a model instance
+  repeated ModelInstanceOutput batch_outputs = 2
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TriggerModelInstanceBinaryFileUploadRequest represents a request to test a
@@ -528,8 +552,11 @@ message TriggerModelInstanceBinaryFileUploadRequest {
 // TriggerModelInstanceBinaryFileUploadResponse represents a response for the
 // output for testing a model instance
 message TriggerModelInstanceBinaryFileUploadResponse {
-  // Output from a model
-  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The task type
+  ModelInstance.Task task = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The batch output from a model instance
+  repeated ModelInstanceOutput batch_outputs = 2
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceRequest represents a request to test a model instance
@@ -547,8 +574,11 @@ message TestModelInstanceRequest {
 // TestModelInstanceResponse represents a response for the output for
 // testing a model instance
 message TestModelInstanceResponse {
-  // Output from a model
-  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The task type
+  ModelInstance.Task task = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The batch output from a model instance
+  repeated ModelInstanceOutput batch_outputs = 2
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceBinaryFileUploadRequest represents a request to test a
@@ -566,27 +596,12 @@ message TestModelInstanceBinaryFileUploadRequest {
   bytes content = 3 [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// ModelInstanceInferenceResponse represents a response for the
-// output for inference a model instance
-message ModelInstanceInferenceResponse {
-    // The task type
-    ModelInstance.Task task = 1 [ (google.api.field_behavior) = REQUIRED ];
-    // The inference task output
-    oneof output {
-        // The classification output
-        ClassificationOutput classification = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-        // The detection output
-        DetectionOutput detection = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-        // The keypoint output
-        KeypointOutput keypoint = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-        // The unspecified task output
-        UnspecifiedTaskOutput unspecified = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-    }
-}
-
 // TestModelInstanceBinaryFileUploadResponse represents a response for the
 // output for testing a model instance
 message TestModelInstanceBinaryFileUploadResponse {
-  // Output from a model
-  repeated ModelInstanceInferenceResponse batch_outputs = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The task type
+  ModelInstance.Task task = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The batch output from a model instance
+  repeated ModelInstanceOutput batch_outputs = 2
+      [ (google.api.field_behavior) = REQUIRED ];
 }
