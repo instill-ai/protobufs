@@ -3,7 +3,6 @@ syntax = "proto3";
 package vdp.pipeline.v1alpha;
 
 // Protocol Buffers Well-Known Types
-import "google/protobuf/struct.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -12,6 +11,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
+import "vdp/model/v1alpha/model.proto";
 
 // Pipeline represents a pipeline recipe
 message Recipe {
@@ -261,6 +261,14 @@ message RenamePipelineResponse {
   Pipeline pipeline = 1;
 }
 
+// ModelInstanceOutput represents the batch of model instance inference results
+message ModelInstanceOutput {
+  // The task type
+  model.v1alpha.ModelInstance.Task task = 1;
+  // The batch outputs of a model instance inference (i.e., from each trigger endpoint of model-backend)
+  repeated model.v1alpha.ModelInstanceOutput batch_outputs = 2;
+}
+
 // Input represents the input to a pipeline
 message Input {
   // Input type
@@ -283,10 +291,11 @@ message TriggerPipelineRequest {
   repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// TriggerPipelineResponse represents a response for the output of a pipeline
+// TriggerPipelineResponse represents a response for the output
+// of a pipeline, which is the multiple model instance inference outputs
 message TriggerPipelineResponse {
-  // Output from a pipeline
-  repeated google.protobuf.Struct output = 1;
+  // The multiple model instance inference outputs
+  repeated ModelInstanceOutput model_instance_outputs = 1;
 }
 
 // TriggerPipelineBinaryFileUploadRequest represents a request to trigger a
@@ -306,8 +315,8 @@ message TriggerPipelineBinaryFileUploadRequest {
 }
 
 // TriggerPipelineBinaryFileUploadResponse represents a response for the output
-// of a pipeline
+// of a pipeline, which is the multiple model instance inference outputs
 message TriggerPipelineBinaryFileUploadResponse {
-  // Output from a pipeline
-  repeated google.protobuf.Struct output = 1;
+  // The multiple model instance inference outputs
+  repeated ModelInstanceOutput model_instance_outputs = 1;
 }
