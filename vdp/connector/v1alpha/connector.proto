@@ -13,7 +13,6 @@ import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
 import "vdp/pipeline/v1alpha/pipeline.proto";
-import "vdp/model/v1alpha/model.proto";
 import "vdp/connector/v1alpha/connector_definition.proto";
 import "vdp/connector/v1alpha/spec.proto";
 
@@ -518,27 +517,25 @@ message WriteDestinationConnectorRequest {
       type : "api.instill.tech/DestinationConnector"
     }
   ];
-  // Task type of the model instance
-  vdp.model.v1alpha.ModelInstance.Task task = 2
-      [ (google.api.field_behavior) = REQUIRED ];
   // Sync mode:
   // https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
-  SupportedSyncModes sync_mode = 3 [ (google.api.field_behavior) = REQUIRED ];
+  SupportedSyncModes sync_mode = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Destination sync mode:
   // https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
-  SupportedDestinationSyncModes destination_sync_mode = 4
+  SupportedDestinationSyncModes destination_sync_mode = 3
       [ (google.api.field_behavior) = REQUIRED ];
   // Pipeline resource name
-  string pipeline = 5 [
+  string pipeline = 4 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
   ];
   // Pipeline recipe
-  pipeline.v1alpha.Recipe recipe = 6 [(google.api.field_behavior) = REQUIRED];
-  // Indices corresponding to each JSON data element
-  repeated string indices = 7 [ (google.api.field_behavior) = REQUIRED ];
+  pipeline.v1alpha.Recipe recipe = 5 [ (google.api.field_behavior) = REQUIRED ];
+  // Indices corresponds to each JSON data element
+  repeated string indices = 6 [ (google.api.field_behavior) = REQUIRED ];
   // JSON data to write
-  google.protobuf.Struct data = 8 [ (google.api.field_behavior) = REQUIRED ];
+  repeated pipeline.v1alpha.ModelInstanceOutput model_instance_outputs = 7
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // WriteDestinationConnectorResponse represents the read data from a
