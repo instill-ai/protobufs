@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0-alpha](https://github.com/instill-ai/protobufs/compare/v0.2.1-alpha...v0.3.0-alpha) (2022-08-17)
+
+
+### Features
+
+* **model:** add ocr output ([#94](https://github.com/instill-ai/protobufs/issues/94)) ([a84ed0d](https://github.com/instill-ai/protobufs/commit/a84ed0d2d5beef5be3d63d31907c2fbe61700413))
+
+
+### Bug Fixes
+
+* **model:** fix wrong field name ([1bdf2d3](https://github.com/instill-ai/protobufs/commit/1bdf2d3afdd2ff86baa590f373dea8c3dff93d4a))
+
 ## [0.2.1-alpha](https://github.com/instill-ai/protobufs/compare/v0.2.0-alpha...v0.2.1-alpha) (2022-07-07)
 
 
