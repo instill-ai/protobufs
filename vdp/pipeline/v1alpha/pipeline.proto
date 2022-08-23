@@ -12,6 +12,11 @@ import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
 import "vdp/model/v1alpha/model.proto";
+import "vdp/model/v1alpha/classification_output.proto";
+import "vdp/model/v1alpha/detection_output.proto";
+import "vdp/model/v1alpha/keypoint_output.proto";
+import "vdp/model/v1alpha/ocr_output.proto";
+import "vdp/model/v1alpha/unspecified_output.proto";
 
 // Pipeline represents a pipeline recipe
 message Recipe {
@@ -261,12 +266,52 @@ message RenamePipelineResponse {
   Pipeline pipeline = 1;
 }
 
-// ModelInstanceOutput represents the batch of model instance inference results
+////////////////////////////////////
+//  Trigger methods
+////////////////////////////////////
+
+// BatchOutput represents the output of a CV Task result from a
+// model instance, extended from model.v1alpha.BatchOutput.
+// Here we don't use a model.v1alpha.BatchOutput type field but explicitly use the
+// replicated oneof field because we want the CV Task output to be at the same message
+// layer like the trigger output of model instance.
+message BatchOutput {
+  // The index of input data in a batch
+  string index = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // The inference task output
+  oneof output {
+    // The classification output
+    model.v1alpha.ClassificationOutput classification = 2
+        [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // The detection output
+    model.v1alpha.DetectionOutput detection = 3
+        [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // The keypoint output
+    model.v1alpha.KeypointOutput keypoint = 4
+        [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // The ocr output
+    model.v1alpha.OcrOutput ocr = 5
+        [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // The unspecified task output
+    model.v1alpha.UnspecifiedOutput unspecified = 6
+        [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  }
+}
+
+// ModelInstanceOutput represents one model instance inference result
 message ModelInstanceOutput {
+  // The model instance
+  string model_instance = 1 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
+  ];
   // The task type
-  model.v1alpha.ModelInstance.Task task = 1;
-  // The batch outputs of a model instance inference (i.e., from each trigger endpoint of model-backend)
-  repeated model.v1alpha.ModelInstanceOutput batch_outputs = 2;
+  model.v1alpha.ModelInstance.Task task = 2
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // The extended batch outputs based on the model instance inference (i.e.,
+  // from a trigger endpoint of model-backend)
+  repeated BatchOutput batch_outputs = 3
+      [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // Input represents the input to a pipeline
@@ -292,10 +337,12 @@ message TriggerPipelineRequest {
 }
 
 // TriggerPipelineResponse represents a response for the output
-// of a pipeline, which is the multiple model instance inference outputs
+// of a pipeline, i.e., the multiple model instance inference outputs
 message TriggerPipelineResponse {
+  // The data mapping indices stores UUID for each input
+  repeated string data_mapping_indices = 1;
   // The multiple model instance inference outputs
-  repeated ModelInstanceOutput model_instance_outputs = 1;
+  repeated ModelInstanceOutput model_instance_outputs = 2;
 }
 
 // TriggerPipelineBinaryFileUploadRequest represents a request to trigger a
@@ -315,8 +362,10 @@ message TriggerPipelineBinaryFileUploadRequest {
 }
 
 // TriggerPipelineBinaryFileUploadResponse represents a response for the output
-// of a pipeline, which is the multiple model instance inference outputs
+// of a pipeline, i.e., the multiple model instance inference outputs
 message TriggerPipelineBinaryFileUploadResponse {
+  // The data mapping indices stores UUID for each input
+  repeated string data_mapping_indices = 1;
   // The multiple model instance inference outputs
-  repeated ModelInstanceOutput model_instance_outputs = 1;
+  repeated ModelInstanceOutput model_instance_outputs = 2;
 }
