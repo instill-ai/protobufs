@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2-alpha](https://github.com/instill-ai/protobufs/compare/v0.3.1-alpha...v0.3.2-alpha) (2022-09-13)
+
+
+### Miscellaneous Chores
+
+* release v0.3.2-alpha ([b5daaa2](https://github.com/instill-ai/protobufs/commit/b5daaa2926a03f6d8b3cd74ca1ba0d9e95b2ffdd))
+
 ## [0.3.1-alpha](https://github.com/instill-ai/protobufs/compare/v0.2.1-alpha...v0.3.1-alpha) (2022-08-17)
 
 
