@@ -20,6 +20,16 @@ import "vdp/model/v1alpha/ocr_output.proto";
 import "vdp/model/v1alpha/instance_segmentation_output.proto";
 import "vdp/model/v1alpha/unspecified_output.proto";
 
+// Task enumerates the task type of a model instance
+enum ApiMode {
+    // ApiMode: UNSPECIFIED
+    API_MODE_UNSPECIFIED = 0;
+    // ApiMode: SYNC
+    API_MODE_SYNC = 1;
+    // ApiMode: ASYNC
+    API_MODE_ASYNC = 2;
+}
+
 // Model represents a model
 message Model {
   option (google.api.resource) = {
@@ -435,6 +445,9 @@ message DeployModelInstanceRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
   ];
+  // Deploy model mode instance sync or async
+  // If not specified, default deploy async
+  ApiMode mode = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // DeployModelInstanceResponse represents a response for a deployed model
@@ -454,6 +467,9 @@ message UndeployModelInstanceRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
   ];
+  // Undeploy model instance mode sync or async
+  // If not specified, default deploy async
+  ApiMode mode = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // UndeployModelInstanceResponse represents a response for a undeployed model
@@ -508,6 +524,9 @@ message TaskOutput {
     UnspecifiedOutput unspecified = 6
         [ (google.api.field_behavior) = OUTPUT_ONLY ];
   }
+  // The task ID for async request to obtain result
+  // For sync request, task ID is empty
+  string id = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // Input represents the input to trigger a model instance
@@ -531,6 +550,9 @@ message TriggerModelInstanceRequest {
   ];
   // Input to trigger the model instance
   repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Trigger model instance mode sync or async
+  // If not specified, default deploy async
+  ApiMode mode = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // TriggerModelInstanceResponse represents a response for the output for
@@ -555,6 +577,9 @@ message TriggerModelInstanceBinaryFileUploadRequest {
   repeated uint64 file_lengths = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Content of images in bytes
   bytes content = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Trigger model instance mode sync or async
+  // If not specified, default deploy async
+  ApiMode mode = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // TriggerModelInstanceBinaryFileUploadResponse represents a response for the
@@ -577,6 +602,9 @@ message TestModelInstanceRequest {
   ];
   // Input to trigger the model instance
   repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
+  // Test model instance mode sync or async
+  // If not specified, default deploy async
+  ApiMode mode = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // TestModelInstanceResponse represents a response for the output for
@@ -602,11 +630,38 @@ message TestModelInstanceBinaryFileUploadRequest {
   repeated uint64 file_lengths = 2 [ (google.api.field_behavior) = REQUIRED ];
   // Content of images in bytes
   bytes content = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Test model instance mode sync or async
+  // If not specified, default deploy async
+  ApiMode mode = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // TestModelInstanceBinaryFileUploadResponse represents a response for the
 // output for testing a model instance
 message TestModelInstanceBinaryFileUploadResponse {
+  // The task type
+  ModelInstance.Task task = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The task output from a model instance
+  repeated TaskOutput task_outputs = 2
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// GetModelInstanceInferenceResultRequest represents a request to a model instance's inference result
+message GetModelInstanceInferenceResultRequest {
+  // Resource name of the model instance.
+  // For example "models/{model}/instances/{instance}"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/ModelInstance",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "model_instance.name"}
+    }
+  ];
+  // Async request ID
+  string id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetModelInstanceInferenceResultResponse represents a response of model instance's inference result
+message GetModelInstanceInferenceResultResponse {
   // The task type
   ModelInstance.Task task = 1 [ (google.api.field_behavior) = REQUIRED ];
   // The task output from a model instance
