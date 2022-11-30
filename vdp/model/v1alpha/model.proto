@@ -19,6 +19,7 @@ import "vdp/model/v1alpha/keypoint_output.proto";
 import "vdp/model/v1alpha/ocr_output.proto";
 import "vdp/model/v1alpha/instance_segmentation_output.proto";
 import "vdp/model/v1alpha/unspecified_output.proto";
+import "vdp/operation.proto";
 
 // Model represents a model
 message Model {
@@ -439,10 +440,9 @@ message DeployModelInstanceRequest {
 
 // DeployModelInstanceResponse represents a response for a deployed model
 // instance
-// TODO: should use [Long-running operations](https://google.aip.dev/151)
 message DeployModelInstanceResponse {
-  // Deployed model instance
-  ModelInstance instance = 1;
+  // Deploy operation message
+  Operation operation = 1;
 }
 
 // UndeployModelInstanceRequest represents a request to undeploy a model
@@ -458,10 +458,9 @@ message UndeployModelInstanceRequest {
 
 // UndeployModelInstanceResponse represents a response for a undeployed model
 // instance
-// TODO: should use [Long-running operations](https://google.aip.dev/151)
 message UndeployModelInstanceResponse {
-  // Undeployed model instance
-  ModelInstance instance = 1;
+  // Undeploy operation message
+  Operation operation = 1;
 }
 
 // GetModelInstanceCardRequest represents a request to query a model instance's
@@ -612,4 +611,44 @@ message TestModelInstanceBinaryFileUploadResponse {
   // The task output from a model instance
   repeated TaskOutput task_outputs = 2
       [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// GetOperationRequest represents a request to query a operation
+message GetOperationRequest {
+  // Resource name of the operation.
+  // For example "operations/{operation}"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Operation",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "operation.name"}
+    }
+  ];
+}
+
+// GetModelResponse represents a response for a model
+message GetOperationResponse {
+  // The retrieved operation
+  Operation operation = 1;
+}
+
+// ListModelOperationRequest represents a request to list all model operations including deploy and undeploy
+message ListModelOperationRequest {
+  // Page size: the maximum number of resources to return. The service may
+  // return fewer than this value. If unspecified, at most 10 operations will be
+  // returned. The maximum value is 100; values above 100 will be coereced to
+  // 100.
+  optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListModelOperationResponse represents a response for a list of model operations including deploy and undeploy
+message ListModelOperationResponse {
+  // a list of model operations
+  repeated Operation operations = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of operations
+  int64 total_size = 3;
 }
