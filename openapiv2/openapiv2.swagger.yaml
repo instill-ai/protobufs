@@ -496,7 +496,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ModelService
-    /v1alpha/{name_1}:connect:
+    /v1alpha/{name_1}/connect:
         post:
             summary: |-
                 Connect a destination connector.
@@ -533,7 +533,7 @@ paths:
                         destination connector
             tags:
                 - ConnectorService
-    /v1alpha/{name_1}:disconnect:
+    /v1alpha/{name_1}/disconnect:
         post:
             summary: |-
                 Disconnect a destination connector.
@@ -570,7 +570,7 @@ paths:
                         destination connector
             tags:
                 - ConnectorService
-    /v1alpha/{name_1}:rename:
+    /v1alpha/{name_1}/rename:
         post:
             summary: |-
                 RenameDestinationConnector method receives a
@@ -616,7 +616,7 @@ paths:
                         - new_destination_connector_id
             tags:
                 - ConnectorService
-    /v1alpha/{name_1}:trigger:
+    /v1alpha/{name_1}/trigger:
         post:
             summary: |-
                 TriggerPipeline method receives a TriggerPipelineRequest message and
@@ -656,7 +656,7 @@ paths:
                         - inputs
             tags:
                 - PipelineService
-    /v1alpha/{name_2}:rename:
+    /v1alpha/{name_2}/rename:
         post:
             summary: RenameModel method rename a model
             operationId: ModelService_RenameModel
@@ -692,7 +692,7 @@ paths:
                         - new_model_id
             tags:
                 - ModelService
-    /v1alpha/{name_3}:rename:
+    /v1alpha/{name_3}/rename:
         post:
             summary: |-
                 RenamePipeline method receives a RenamePipelineRequest message and returns
@@ -734,7 +734,7 @@ paths:
                         - new_pipeline_id
             tags:
                 - PipelineService
-    /v1alpha/{name}:activate:
+    /v1alpha/{name}/activate:
         post:
             summary: |-
                 Activate a pipeline.
@@ -766,7 +766,7 @@ paths:
                     title: ActivatePipelineRequest represents a request to activate a pipeline
             tags:
                 - PipelineService
-    /v1alpha/{name}:connect:
+    /v1alpha/{name}/connect:
         post:
             summary: |-
                 Connect a source connector.
@@ -803,7 +803,7 @@ paths:
                         source connector
             tags:
                 - ConnectorService
-    /v1alpha/{name}:deactivate:
+    /v1alpha/{name}/deactivate:
         post:
             summary: |-
                 Deactivate a pipeline.
@@ -835,7 +835,7 @@ paths:
                     title: DeactivatePipelineRequest represents a request to deactivate a pipeline
             tags:
                 - PipelineService
-    /v1alpha/{name}:deploy:
+    /v1alpha/{name}/deploy:
         post:
             summary: |-
                 DeployModelInstance deploy a model instance to online state
@@ -869,7 +869,7 @@ paths:
                         online state
             tags:
                 - ModelService
-    /v1alpha/{name}:disconnect:
+    /v1alpha/{name}/disconnect:
         post:
             summary: |-
                 Disconnect a source connector.
@@ -906,7 +906,7 @@ paths:
                         source connector
             tags:
                 - ConnectorService
-    /v1alpha/{name}:publish:
+    /v1alpha/{name}/publish:
         post:
             summary: |-
                 PublishModel method receives a PublishModelRequest message and returns a
@@ -938,7 +938,7 @@ paths:
                     title: PublishModelRequest represents a request to publish a model
             tags:
                 - ModelService
-    /v1alpha/{name}:read:
+    /v1alpha/{name}/read:
         post:
             summary: |-
                 ReadSourceConnector method receives a ReadSourceConnectorRequest
@@ -972,7 +972,7 @@ paths:
                         a SourceConnector given the resource name
             tags:
                 - ConnectorService
-    /v1alpha/{name}:rename:
+    /v1alpha/{name}/rename:
         post:
             summary: |-
                 RenameSourceConnector method receives a RenameSourceConnectorRequest
@@ -1017,7 +1017,7 @@ paths:
                         - new_source_connector_id
             tags:
                 - ConnectorService
-    /v1alpha/{name}:test:
+    /v1alpha/{name}/test:
         post:
             summary: |-
                 TestModelInstance method receives a TestModelInstanceRequest message
@@ -1059,7 +1059,7 @@ paths:
                         - inputs
             tags:
                 - ModelService
-    /v1alpha/{name}:trigger:
+    /v1alpha/{name}/trigger:
         post:
             summary: /////////////////////////////////////////////////////
             description: |-
@@ -1102,7 +1102,7 @@ paths:
                         - inputs
             tags:
                 - ModelService
-    /v1alpha/{name}:undeploy:
+    /v1alpha/{name}/undeploy:
         post:
             summary: |-
                 UndeployModelInstance undeploy a model instance to offline state
@@ -1136,7 +1136,7 @@ paths:
                         instance to offline state
             tags:
                 - ModelService
-    /v1alpha/{name}:unpublish:
+    /v1alpha/{name}/unpublish:
         post:
             summary: |-
                 UnpublishModel method receives a UnpublishModelRequest message and returns
@@ -1168,7 +1168,7 @@ paths:
                     title: UnpublishModelRequest represents a request to unpublish a model
             tags:
                 - ModelService
-    /v1alpha/{name}:write:
+    /v1alpha/{name}/write:
         post:
             summary: |-
                 WriteDestinationConnector method receives a
@@ -1199,29 +1199,45 @@ paths:
                   schema:
                     type: object
                     properties:
-                        data:
-                            type: object
-                            title: JSON data to write
+                        data_mapping_indices:
+                            type: array
+                            items:
+                                type: string
+                            title: Indices corresponds to each JSON data element
                             required:
-                                - data
+                                - data_mapping_indices
                         destination_sync_mode:
                             $ref: '#/definitions/v1alphaSupportedDestinationSyncModes'
                             title: |-
                                 Destination sync mode:
                                 https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
+                        model_instance_outputs:
+                            type: array
+                            items:
+                                $ref: '#/definitions/v1alphaModelInstanceOutput'
+                            title: JSON data to write
+                            required:
+                                - model_instance_outputs
+                        pipeline:
+                            type: string
+                            title: Pipeline resource name
+                            required:
+                                - pipeline
+                        recipe:
+                            $ref: '#/definitions/v1alphaRecipe'
+                            title: Pipeline recipe
                         sync_mode:
                             $ref: '#/definitions/v1alphaSupportedSyncModes'
                             title: |-
                                 Sync mode:
                                 https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
-                        task:
-                            $ref: '#/definitions/ModelInstanceTask'
-                            title: Task type of the model instance
                     title: |-
                         WriteDestinationConnectorRequest represents a request to perform write
                         operation of a DestinationConnector given the resource name
                     required:
-                        - data
+                        - pipeline
+                        - data_mapping_indices
+                        - model_instance_outputs
             tags:
                 - ConnectorService
     /v1alpha/{parent}/instances:
@@ -1282,7 +1298,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ModelService
-    /v1alpha/{permalink_1}:lookUp:
+    /v1alpha/{permalink_1}/lookUp:
         get:
             summary: |-
                 LookUpDestinationConnector method receives a
@@ -1324,7 +1340,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ConnectorService
-    /v1alpha/{permalink_2}:lookUp:
+    /v1alpha/{permalink_2}/lookUp:
         get:
             summary: |-
                 LookUpUser method receives a LookUpUserRequest message and returns a
@@ -1350,7 +1366,7 @@ paths:
                   pattern: users/[^/]+
             tags:
                 - UserService
-    /v1alpha/{permalink_3}:lookUp:
+    /v1alpha/{permalink_3}/lookUp:
         get:
             summary: |-
                 LookUpModel method receives a LookUpModelRequest message and returns a
@@ -1393,7 +1409,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ModelService
-    /v1alpha/{permalink_4}:lookUp:
+    /v1alpha/{permalink_4}/lookUp:
         get:
             summary: |-
                 LookUpModelInstance method receives a LookUpModelInstanceRequest message
@@ -1437,7 +1453,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ModelService
-    /v1alpha/{permalink_5}:lookUp:
+    /v1alpha/{permalink_5}/lookUp:
         get:
             summary: |-
                 LookUpPipeline method receives a LookUpPipelineRequest message and returns
@@ -1478,7 +1494,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - PipelineService
-    /v1alpha/{permalink}:lookUp:
+    /v1alpha/{permalink}/lookUp:
         get:
             summary: |-
                 LookUpSourceConnector method receives a LookUpSourceConnectorRequest
@@ -2670,12 +2686,18 @@ definitions:
             - TASK_CLASSIFICATION
             - TASK_DETECTION
             - TASK_KEYPOINT
+            - TASK_OCR
+            - TASK_INSTANCE_SEGMENTATION
+            - TASK_SEMANTIC_SEGMENTATION
         default: TASK_UNSPECIFIED
         description: |-
             - TASK_UNSPECIFIED: Task: UNSPECIFIED
              - TASK_CLASSIFICATION: Task: CLASSIFICATION
              - TASK_DETECTION: Task: DETECTION
              - TASK_KEYPOINT: Task: KEYPOINT
+             - TASK_OCR: Task: OCR
+             - TASK_INSTANCE_SEGMENTATION: Task: INSTANCE SEGMENTATION
+             - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
         title: Task enumerates the task type of a model instance
     ModelVisibility:
         type: string
@@ -2822,6 +2844,43 @@ definitions:
             instance or workspace admins beforehand. The trade-off is that the user does
             not have to provide as many technical inputs anymore and the auth process is
             faster and easier to complete.
+    v1alphaBoundingBox:
+        type: object
+        properties:
+            height:
+                type: number
+                format: float
+                title: Bounding box height value
+                readOnly: true
+            left:
+                type: number
+                format: float
+                title: Bounding box left x-axis value
+                readOnly: true
+            top:
+                type: number
+                format: float
+                title: Bounding box top y-axis value
+                readOnly: true
+            width:
+                type: number
+                format: float
+                title: Bounding box width value
+                readOnly: true
+        title: BoundingBox represents the bounding box data structure
+    v1alphaClassificationOutput:
+        type: object
+        properties:
+            category:
+                type: string
+                title: Classification category
+                readOnly: true
+            score:
+                type: number
+                format: float
+                title: Classification score
+                readOnly: true
+        title: ClassificationOutput represents the output of classification task
     v1alphaConnectDestinationConnectorResponse:
         type: object
         properties:
@@ -3168,6 +3227,32 @@ definitions:
         title: |-
             DestinationConnectorDefinition represents the destination connector
             definition resource
+    v1alphaDetectionObject:
+        type: object
+        properties:
+            bounding_box:
+                $ref: '#/definitions/v1alphaBoundingBox'
+                title: Detection bounding box
+            category:
+                type: string
+                title: Detection object category
+                readOnly: true
+            score:
+                type: number
+                format: float
+                title: Detection object score
+                readOnly: true
+        title: DetectionObject represents a predicted object
+    v1alphaDetectionOutput:
+        type: object
+        properties:
+            objects:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaDetectionObject'
+                title: A list of detection objects
+                readOnly: true
+        title: DetectionOutput represents the output of detection task
     v1alphaDisconnectDestinationConnectorResponse:
         type: object
         properties:
@@ -3278,6 +3363,85 @@ definitions:
                 $ref: '#/definitions/HealthCheckResponseServingStatus'
                 title: Status is the instance of the enum type ServingStatus
         title: HealthCheckResponse represents a response for a service heath status
+    v1alphaInstanceSegmentationObject:
+        type: object
+        properties:
+            bounding_box:
+                $ref: '#/definitions/v1alphaBoundingBox'
+                title: Instance bounding box
+            category:
+                type: string
+                title: Instance category
+                readOnly: true
+            rle:
+                type: string
+                title: Instance RLE segmentation mask
+                readOnly: true
+            score:
+                type: number
+                format: float
+                title: Instance score
+                readOnly: true
+        title: InstanceSegmentationObject corresponding to a instance segmentation object
+    v1alphaInstanceSegmentationOutput:
+        type: object
+        properties:
+            objects:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaInstanceSegmentationObject'
+                title: A list of instance segmentation objects
+                readOnly: true
+        title: |-
+            InstanceSegmentationOutput represents the output of instance segmentation
+            task
+    v1alphaKeypoint:
+        type: object
+        properties:
+            v:
+                type: number
+                format: float
+                title: visibility
+                readOnly: true
+            x:
+                type: number
+                format: float
+                title: x coordinate
+                readOnly: true
+            "y":
+                type: number
+                format: float
+                title: y coordinate
+                readOnly: true
+        title: Keypoint structure which include coordinate and keypoint visibility
+    v1alphaKeypointObject:
+        type: object
+        properties:
+            bounding_box:
+                $ref: '#/definitions/v1alphaBoundingBox'
+                title: Bounding box object
+            keypoints:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaKeypoint'
+                title: Keypoints
+                readOnly: true
+            score:
+                type: number
+                format: float
+                title: Keypoint score
+                readOnly: true
+        title: KeypointObject corresponding to a person object
+    v1alphaKeypointOutput:
+        type: object
+        properties:
+            objects:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaKeypointObject'
+                title: A list of keypoint objects
+                readOnly: true
+        title: KeypointOutput represents the output of keypoint detection task
     v1alphaListDestinationConnectorDefinitionResponse:
         type: object
         properties:
@@ -3683,6 +3847,25 @@ definitions:
         description: |-
             ModelInstanceCard represents the README card for a model instance. There
             exists one and exactly one README card per model instance.
+    v1alphaModelInstanceOutput:
+        type: object
+        properties:
+            model_instance:
+                type: string
+                title: The model instance
+                readOnly: true
+            task:
+                $ref: '#/definitions/ModelInstanceTask'
+                title: The task type
+            task_outputs:
+                type: array
+                items:
+                    $ref: '#/definitions/vdppipelinev1alphaTaskOutput'
+                title: |-
+                    The extended task outputs based on the model instance inference (i.e.,
+                    from a trigger endpoint of model-backend)
+                readOnly: true
+        title: ModelInstanceOutput represents one model instance inference result
     v1alphaModelInstanceState:
         type: string
         enum:
@@ -3746,15 +3929,17 @@ definitions:
                 type: array
                 items:
                     $ref: '#/definitions/ModelInstanceTask'
-                description: Tasks of the model instances. Element in the list should not be duplicated.
+                description: |-
+                    Tasks of the model instances. Element in the list should not be
+                    duplicated.
                 required:
                     - tasks
-            test_image_num:
+            test_num:
                 type: string
                 format: int64
-                title: Number of processed images via model instance testing operations
+                title: Number of model instance testing operations
                 required:
-                    - test_image_num
+                    - test_num
             user_uid:
                 type: string
                 title: User UUID
@@ -3769,7 +3954,7 @@ definitions:
             - instance_offline_state_num
             - model_definition_ids
             - tasks
-            - test_image_num
+            - test_num
     v1alphaOauthConfigSpecification:
         type: object
         properties:
@@ -3877,6 +4062,32 @@ definitions:
                      }
                 readOnly: true
         title: OauthConfigSpecification represents oauth config specification
+    v1alphaOcrObject:
+        type: object
+        properties:
+            bounding_box:
+                $ref: '#/definitions/v1alphaBoundingBox'
+                title: OCR bounding box
+            score:
+                type: number
+                format: float
+                title: OCR text score
+                readOnly: true
+            text:
+                type: string
+                title: OCR text
+                readOnly: true
+        title: OcrObject represents a predicted ocr object
+    v1alphaOcrOutput:
+        type: object
+        properties:
+            objects:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaOcrObject'
+                title: A list of OCR objects
+                readOnly: true
+        title: OcrOutput represents the output of ocr task
     v1alphaOwnerType:
         type: string
         enum:
@@ -3988,12 +4199,12 @@ definitions:
                 title: Number of pipelines with 'sync' mode
                 required:
                     - pipeline_sync_mode_num
-            trigger_image_num:
+            trigger_num:
                 type: string
                 format: int64
-                title: Number of processed images via pipeline triggering operations
+                title: Number of pipeline triggering operations
                 required:
-                    - trigger_image_num
+                    - trigger_num
             user_uid:
                 type: string
                 title: User UUID
@@ -4006,7 +4217,7 @@ definitions:
             - pipeline_inactive_state_num
             - pipeline_async_mode_num
             - pipeline_sync_mode_num
-            - trigger_image_num
+            - trigger_num
     v1alphaPublishModelResponse:
         type: object
         properties:
@@ -4069,6 +4280,30 @@ definitions:
                 $ref: '#/definitions/v1alphaSourceConnector'
                 title: A SourceConnector resource
         title: RenameSourceConnectorResponse represents a renamed SourceConnector resource
+    v1alphaSemanticSegmentationOutput:
+        type: object
+        properties:
+            stuffs:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaSemanticSegmentationStuff'
+                title: A list of semantic segmentation stuffs
+                readOnly: true
+        title: |-
+            SemanticSegmentationOutput represents the output of semantic segmentation
+            task
+    v1alphaSemanticSegmentationStuff:
+        type: object
+        properties:
+            category:
+                type: string
+                title: Stuff category
+                readOnly: true
+            rle:
+                type: string
+                title: RLE segmentation mask
+                readOnly: true
+        title: SemanticSegmentationStuff corresponding to a semantic segmentation stuff
     v1alphaSendSessionReportResponse:
         type: object
         title: SendReportResponse represents an empty response
@@ -4315,59 +4550,103 @@ definitions:
     v1alphaTestModelInstanceBinaryFileUploadResponse:
         type: object
         properties:
-            output:
-                type: object
-                title: Output from a model
+            task:
+                $ref: '#/definitions/ModelInstanceTask'
+                title: The task type
+            task_outputs:
+                type: array
+                items:
+                    $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+                title: The task output from a model instance
+                required:
+                    - task_outputs
         title: |-
             TestModelInstanceBinaryFileUploadResponse represents a response for the
             output for testing a model instance
+        required:
+            - task_outputs
     v1alphaTestModelInstanceResponse:
         type: object
         properties:
-            output:
-                type: object
-                title: Output from a model
+            task:
+                $ref: '#/definitions/ModelInstanceTask'
+                title: The task type
+            task_outputs:
+                type: array
+                items:
+                    $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+                title: The task output from a model instance
+                required:
+                    - task_outputs
         title: |-
             TestModelInstanceResponse represents a response for the output for
             testing a model instance
+        required:
+            - task_outputs
     v1alphaTriggerModelInstanceBinaryFileUploadResponse:
         type: object
         properties:
-            output:
-                type: object
-                title: Output from a model
+            task:
+                $ref: '#/definitions/ModelInstanceTask'
+                title: The task type
+            task_outputs:
+                type: array
+                items:
+                    $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+                title: The task output from a model instance
+                required:
+                    - task_outputs
         title: |-
             TriggerModelInstanceBinaryFileUploadResponse represents a response for the
             output for testing a model instance
+        required:
+            - task_outputs
     v1alphaTriggerModelInstanceResponse:
         type: object
         properties:
-            output:
-                type: object
-                title: Output from a model
+            task:
+                $ref: '#/definitions/ModelInstanceTask'
+                title: The task type
+            task_outputs:
+                type: array
+                items:
+                    $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+                title: The task output from a model instance
         title: |-
             TriggerModelInstanceResponse represents a response for the output for
             triggering a model instance
     v1alphaTriggerPipelineBinaryFileUploadResponse:
         type: object
         properties:
-            output:
+            data_mapping_indices:
                 type: array
                 items:
-                    type: object
-                title: Output from a pipeline
+                    type: string
+                title: The data mapping indices stores UUID for each input
+            model_instance_outputs:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaModelInstanceOutput'
+                title: The multiple model instance inference outputs
         title: |-
             TriggerPipelineBinaryFileUploadResponse represents a response for the output
-            of a pipeline
+            of a pipeline, i.e., the multiple model instance inference outputs
     v1alphaTriggerPipelineResponse:
         type: object
         properties:
-            output:
+            data_mapping_indices:
                 type: array
                 items:
-                    type: object
-                title: Output from a pipeline
-        title: TriggerPipelineResponse represents a response for the output of a pipeline
+                    type: string
+                title: The data mapping indices stores UUID for each input
+            model_instance_outputs:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaModelInstanceOutput'
+                title: The multiple model instance inference outputs
+        title: |-
+            TriggerPipelineResponse represents a response for the output
+            of a pipeline, i.e., the multiple model instance inference outputs
     v1alphaUndeployModelInstanceResponse:
         type: object
         properties:
@@ -4385,6 +4664,16 @@ definitions:
                 $ref: '#/definitions/v1alphaModel'
                 title: Unpublished model
         title: UnpublishModelResponse represents a response for the unpublished model
+    v1alphaUnspecifiedOutput:
+        type: object
+        properties:
+            raw_outputs:
+                type: array
+                items:
+                    type: object
+                title: A list of unspecified task outputs
+                readOnly: true
+        title: UnspecifiedOutput represents a list of unspecified task output
     v1alphaUpdateDestinationConnectorResponse:
         type: object
         properties:
@@ -4586,6 +4875,31 @@ definitions:
              - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
              - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
         title: ReleaseStage enumerates the release stages
+    vdpmodelv1alphaTaskOutput:
+        type: object
+        properties:
+            classification:
+                $ref: '#/definitions/v1alphaClassificationOutput'
+                title: The classification output
+            detection:
+                $ref: '#/definitions/v1alphaDetectionOutput'
+                title: The detection output
+            instance_segmentation:
+                $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
+                title: The instance segmentation output
+            keypoint:
+                $ref: '#/definitions/v1alphaKeypointOutput'
+                title: The keypoint output
+            ocr:
+                $ref: '#/definitions/v1alphaOcrOutput'
+                title: The ocr output
+            semantic_segmentation:
+                $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
+                title: The semantic segmentation output
+            unspecified:
+                $ref: '#/definitions/v1alphaUnspecifiedOutput'
+                title: The unspecified task output
+        title: TaskOutput represents the output of a CV Task result from a model instance
     vdpmodelv1alphaView:
         type: string
         enum:
@@ -4625,6 +4939,37 @@ definitions:
                 $ref: '#/definitions/v1alphaHealthCheckResponse'
                 title: HealthCheckResponse message
         title: ReadinessResponse represents a response for a service readiness status
+    vdppipelinev1alphaTaskOutput:
+        type: object
+        properties:
+            classification:
+                $ref: '#/definitions/v1alphaClassificationOutput'
+                title: The classification output
+            detection:
+                $ref: '#/definitions/v1alphaDetectionOutput'
+                title: The detection output
+            index:
+                type: string
+                title: The index of input data in a batch
+                readOnly: true
+            instance_segmentation:
+                $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
+                title: The instance segmentation output
+            keypoint:
+                $ref: '#/definitions/v1alphaKeypointOutput'
+                title: The keypoint output
+            ocr:
+                $ref: '#/definitions/v1alphaOcrOutput'
+                title: The ocr output
+            unspecified:
+                $ref: '#/definitions/v1alphaUnspecifiedOutput'
+                title: The unspecified task output
+        description: |-
+            TaskOutput represents the output of a CV Task result from a
+            model instance, extended from model.v1alpha.TaskOutput.
+            Here we don't use a model.v1alpha.TaskOutput type field but explicitly use the
+            replicated oneof field because we want the CV Task output to be at the same message
+            layer like the trigger output of model instance.
     vdppipelinev1alphaView:
         type: string
         enum:
