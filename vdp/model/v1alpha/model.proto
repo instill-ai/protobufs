@@ -11,6 +11,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 // Google api
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
+import "google/longrunning/operations.proto";
 
 import "vdp/model/v1alpha/model_definition.proto";
 import "vdp/model/v1alpha/classification_output.proto";
@@ -442,10 +443,9 @@ message DeployModelInstanceRequest {
 
 // DeployModelInstanceResponse represents a response for a deployed model
 // instance
-// TODO: should use [Long-running operations](https://google.aip.dev/151)
 message DeployModelInstanceResponse {
-  // Deployed model instance
-  ModelInstance instance = 1;
+  // Deploy operation message
+  google.longrunning.Operation operation = 1;
 }
 
 // UndeployModelInstanceRequest represents a request to undeploy a model
@@ -461,10 +461,9 @@ message UndeployModelInstanceRequest {
 
 // UndeployModelInstanceResponse represents a response for a undeployed model
 // instance
-// TODO: should use [Long-running operations](https://google.aip.dev/151)
 message UndeployModelInstanceResponse {
-  // Undeployed model instance
-  ModelInstance instance = 1;
+  // Undeploy operation message
+  google.longrunning.Operation operation = 1;
 }
 
 // GetModelInstanceCardRequest represents a request to query a model instance's
@@ -618,3 +617,51 @@ message TestModelInstanceBinaryFileUploadResponse {
   repeated TaskOutput task_outputs = 2
       [ (google.api.field_behavior) = REQUIRED ];
 }
+
+// GetModelOperationRequest represents a request to query a model operation
+message GetModelOperationRequest {
+  // The name of the operation resource.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+}
+
+// GetModelOperationResponse represents a response for a model operation
+message GetModelOperationResponse {
+  // The retrieved model operation
+  google.longrunning.Operation operation = 1;
+}
+
+// ListModelOperationRequest represents a request to list all model operations including deploy and undeploy
+message ListModelOperationRequest {
+  // Page size: the maximum number of resources to return. The service may
+  // return fewer than this value. If unspecified, at most 10 operations will be
+  // returned. The maximum value is 100; values above 100 will be coereced to
+  // 100.
+  optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  string page_token = 2;
+  // Filter expression to list operations
+  optional string filter = 3 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListModelOperationResponse represents a response for a list of model operations including deploy and undeploy
+message ListModelOperationResponse {
+  // a list of model operations
+  repeated google.longrunning.Operation operations = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of operations
+  int64 total_size = 3;
+}
+
+// CancelModelOperationRequest represents a request to cancel a model operation
+message CancelModelOperationRequest {
+  // The name of the operation resource.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+}
+
+// CancelModelOperationResponse represents a response for canceling a model operation
+message CancelModelOperationResponse {}
