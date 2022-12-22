@@ -1,6 +1,6 @@
-# Visual Data Preparation (VDP) Protobufs
+# Versatile Data Pipeline (VDP) Protobufs
 
-This repository is the interface definitions of [Visual Data Preparation (VDP) APIs](https://github.com/instill-ai/vdp) that support both REST and gRPC protocols. You can also use these definitions with open source tools to generate client libraries, documentation, and other artifacts.
+This repository is the interface definitions of [Versatile Data Pipeline (VDP) APIs](https://github.com/instill-ai/vdp) that support both REST and gRPC protocols. You can also use these definitions with open source tools to generate client libraries, documentation, and other artifacts.
 
 ## Overview
 
