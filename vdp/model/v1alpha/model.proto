@@ -14,13 +14,13 @@ import "google/api/field_behavior.proto";
 import "google/longrunning/operations.proto";
 
 import "vdp/model/v1alpha/model_definition.proto";
-import "vdp/model/v1alpha/classification_output.proto";
-import "vdp/model/v1alpha/detection_output.proto";
-import "vdp/model/v1alpha/keypoint_output.proto";
-import "vdp/model/v1alpha/ocr_output.proto";
-import "vdp/model/v1alpha/instance_segmentation_output.proto";
-import "vdp/model/v1alpha/semantic_segmentation_output.proto";
-import "vdp/model/v1alpha/unspecified_output.proto";
+import "vdp/model/v1alpha/task_classification.proto";
+import "vdp/model/v1alpha/task_detection.proto";
+import "vdp/model/v1alpha/task_keypoint.proto";
+import "vdp/model/v1alpha/task_ocr.proto";
+import "vdp/model/v1alpha/task_instance_segmentation.proto";
+import "vdp/model/v1alpha/task_semantic_segmentation.proto";
+import "vdp/model/v1alpha/task_unspecified.proto";
 
 // Model represents a model
 message Model {
@@ -491,6 +491,27 @@ message GetModelInstanceCardResponse {
 //  Trigger methods
 ////////////////////////////////////
 
+// Input represents the input to trigger a model instance
+message TaskInput {
+  // Input type
+  oneof input {
+    // The classification input
+    ClassificationInput classiciation = 1;
+    // The detection input
+    DetectionInput detection = 2;
+    // The keypoint input
+    KeypointInput keypoint = 3;
+    // The ocr input
+    OcrInput ocr = 4;
+    // The instance segmentation input
+    InstanceSegmentationInput instance_segmentation = 5;
+    // The semantic segmentation input
+    SemanticSegmentationInput semantic_segmentation = 6;
+    // The unspecified task input
+    UnspecifiedInput unspecified = 7;
+  }
+}
+
 // TaskOutput represents the output of a CV Task result from a model instance
 message TaskOutput {
   // The inference task output
@@ -514,17 +535,6 @@ message TaskOutput {
   }
 }
 
-// Input represents the input to trigger a model instance
-message Input {
-  // Input type
-  oneof type {
-    // Image type URL
-    string image_url = 1;
-    // Image type base64
-    string image_base64 = 2;
-  }
-}
-
 // TriggerModelInstanceRequest represents a request to trigger a model instance
 message TriggerModelInstanceRequest {
   // The resource name of the model instance to trigger.
@@ -534,7 +544,7 @@ message TriggerModelInstanceRequest {
     (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
   ];
   // Input to trigger the model instance
-  repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
+  repeated TaskInput task_inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TriggerModelInstanceResponse represents a response for the output for
@@ -580,7 +590,7 @@ message TestModelInstanceRequest {
     (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
   ];
   // Input to trigger the model instance
-  repeated Input inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
+  repeated TaskInput task_inputs = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceResponse represents a response for the output for

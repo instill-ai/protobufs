@@ -647,7 +647,7 @@ paths:
                         inputs:
                             type: array
                             items:
-                                $ref: '#/definitions/vdppipelinev1alphaInput'
+                                $ref: '#/definitions/v1alphaTaskInput'
                             title: Input to the pipeline
                             required:
                                 - inputs
@@ -734,6 +734,48 @@ paths:
                         - new_pipeline_id
             tags:
                 - PipelineService
+    /v1alpha/{name}:
+        get:
+            summary: |-
+                GetModelOperation method receives a
+                GetModelOperationRequest message and returns a
+                GetModelOperationResponse message.
+            operationId: ModelService_GetModelOperation
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaGetModelOperationResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: name
+                  description: The name of the operation resource.
+                  in: path
+                  required: true
+                  type: string
+                  pattern: operations/[^/]+
+                - name: view
+                  description: |-
+                    View (default is VIEW_BASIC)
+                    VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`, `ModelInstance.configuration`
+                    VIEW_FULL: show full information
+
+                     - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+                     - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+                     - VIEW_FULL: View: FULL, full representation of the resource
+                  in: query
+                  required: false
+                  type: string
+                  enum:
+                    - VIEW_UNSPECIFIED
+                    - VIEW_BASIC
+                    - VIEW_FULL
+                  default: VIEW_UNSPECIFIED
+            tags:
+                - ModelService
     /v1alpha/{name}/activate:
         post:
             summary: |-
@@ -766,6 +808,36 @@ paths:
                     title: ActivatePipelineRequest represents a request to activate a pipeline
             tags:
                 - PipelineService
+    /v1alpha/{name}/cancel:
+        post:
+            summary: |-
+                CancelModelOperation method receives a CancelModelOperationRequest message
+                and returns a CancelModelOperationResponse
+            operationId: ModelService_CancelModelOperation
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaCancelModelOperationResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: name
+                  description: The name of the operation resource.
+                  in: path
+                  required: true
+                  type: string
+                  pattern: operations/[^/]+
+                - name: body
+                  in: body
+                  required: true
+                  schema:
+                    type: object
+                    title: CancelModelOperationRequest represents a request to cancel a model operation
+            tags:
+                - ModelService
     /v1alpha/{name}/connect:
         post:
             summary: |-
@@ -837,9 +909,7 @@ paths:
                 - PipelineService
     /v1alpha/{name}/deploy:
         post:
-            summary: |-
-                DeployModelInstance deploy a model instance to online state
-                TODO: should use [Long-running operations](https://google.aip.dev/151)
+            summary: DeployModelInstance deploy a model instance to online state
             operationId: ModelService_DeployModelInstance
             responses:
                 "200":
@@ -1047,16 +1117,16 @@ paths:
                   schema:
                     type: object
                     properties:
-                        inputs:
+                        task_inputs:
                             type: array
                             items:
-                                $ref: '#/definitions/vdpmodelv1alphaInput'
+                                $ref: '#/definitions/v1alphaTaskInput'
                             title: Input to trigger the model instance
                             required:
-                                - inputs
+                                - task_inputs
                     title: TestModelInstanceRequest represents a request to test a model instance
                     required:
-                        - inputs
+                        - task_inputs
             tags:
                 - ModelService
     /v1alpha/{name}/trigger:
@@ -1090,23 +1160,21 @@ paths:
                   schema:
                     type: object
                     properties:
-                        inputs:
+                        task_inputs:
                             type: array
                             items:
-                                $ref: '#/definitions/vdpmodelv1alphaInput'
+                                $ref: '#/definitions/v1alphaTaskInput'
                             title: Input to trigger the model instance
                             required:
-                                - inputs
+                                - task_inputs
                     title: TriggerModelInstanceRequest represents a request to trigger a model instance
                     required:
-                        - inputs
+                        - task_inputs
             tags:
                 - ModelService
     /v1alpha/{name}/undeploy:
         post:
-            summary: |-
-                UndeployModelInstance undeploy a model instance to offline state
-                TODO: should use [Long-running operations](https://google.aip.dev/151)
+            summary: UndeployModelInstance undeploy a model instance to offline state
             operationId: ModelService_UndeployModelInstance
             responses:
                 "200":
@@ -2352,6 +2420,61 @@ paths:
                     $ref: '#/definitions/v1alphaModel'
             tags:
                 - ModelService
+    /v1alpha/operations:
+        get:
+            summary: |-
+                ListModelOperation method receives a ListModelOperationRequest message
+                and returns a ListModelOperationResponse
+            operationId: ModelService_ListModelOperation
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaListModelOperationResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: page_size
+                  description: |-
+                    Page size: the maximum number of resources to return. The service may
+                    return fewer than this value. If unspecified, at most 10 operations will be
+                    returned. The maximum value is 100; values above 100 will be coereced to
+                    100.
+                  in: query
+                  required: false
+                  type: string
+                  format: int64
+                - name: page_token
+                  description: Page token
+                  in: query
+                  required: false
+                  type: string
+                - name: filter
+                  description: Filter expression to list operations
+                  in: query
+                  required: false
+                  type: string
+                - name: view
+                  description: |-
+                    View (default is VIEW_BASIC)
+                    VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`, `ModelInstance.configuration`
+                    VIEW_FULL: show full information
+
+                     - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+                     - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+                     - VIEW_FULL: View: FULL, full representation of the resource
+                  in: query
+                  required: false
+                  type: string
+                  enum:
+                    - VIEW_UNSPECIFIED
+                    - VIEW_BASIC
+                    - VIEW_FULL
+                  default: VIEW_UNSPECIFIED
+            tags:
+                - ModelService
     /v1alpha/pipelines:
         get:
             summary: |-
@@ -2739,12 +2862,162 @@ definitions:
              - SERVICE_MODEL: Service: MODEL
              - SERVICE_PIPELINE: Service: PIPELINE
         title: Service enumerates the services to collect data from
+    googlelongrunningOperation:
+        type: object
+        properties:
+            done:
+                type: boolean
+                description: |-
+                    If the value is `false`, it means the operation is still in progress.
+                    If `true`, the operation is completed, and either `error` or `response` is
+                    available.
+            error:
+                $ref: '#/definitions/rpcStatus'
+                description: The error result of the operation in case of failure or cancellation.
+            metadata:
+                $ref: '#/definitions/protobufAny'
+                description: |-
+                    Service-specific metadata associated with the operation.  It typically
+                    contains progress information and common metadata such as create time.
+                    Some services might not provide such metadata.  Any method that returns a
+                    long-running operation should document the metadata type, if any.
+            name:
+                type: string
+                description: |-
+                    The server-assigned name, which is only unique within the same service that
+                    originally returns it. If you use the default HTTP mapping, the
+                    `name` should be a resource name ending with `operations/{unique_id}`.
+            response:
+                $ref: '#/definitions/protobufAny'
+                description: |-
+                    The normal response of the operation in case of success.  If the original
+                    method returns no data on success, such as `Delete`, the response is
+                    `google.protobuf.Empty`.  If the original method is standard
+                    `Get`/`Create`/`Update`, the response should be the resource.  For other
+                    methods, the response should have the type `XxxResponse`, where `Xxx`
+                    is the original method name.  For example, if the original method name
+                    is `TakeSnapshot()`, the inferred response type is
+                    `TakeSnapshotResponse`.
+        description: |-
+            This resource represents a long-running operation that is the result of a
+            network API call.
     protobufAny:
         type: object
         properties:
             '@type':
                 type: string
+                description: |-
+                    A URL/resource name that uniquely identifies the type of the serialized
+                    protocol buffer message. This string must contain at least
+                    one "/" character. The last segment of the URL's path must represent
+                    the fully qualified name of the type (as in
+                    `path/google.protobuf.Duration`). The name should be in a canonical form
+                    (e.g., leading "." is not accepted).
+
+                    In practice, teams usually precompile into the binary all types that they
+                    expect it to use in the context of Any. However, for URLs which use the
+                    scheme `http`, `https`, or no scheme, one can optionally set up a type
+                    server that maps type URLs to message definitions as follows:
+
+                    * If no scheme is provided, `https` is assumed.
+                    * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                      value in binary format, or produce an error.
+                    * Applications are allowed to cache lookup results based on the
+                      URL, or have them precompiled into a binary to avoid any
+                      lookup. Therefore, binary compatibility needs to be preserved
+                      on changes to types. (Use versioned type names to manage
+                      breaking changes.)
+
+                    Note: this functionality is not currently available in the official
+                    protobuf release, and it is not used for type URLs beginning with
+                    type.googleapis.com.
+
+                    Schemes other than `http`, `https` (or the empty scheme) might be
+                    used with implementation specific semantics.
         additionalProperties: {}
+        description: |-
+            `Any` contains an arbitrary serialized protocol buffer message along with a
+            URL that describes the type of the serialized message.
+
+            Protobuf library provides support to pack/unpack Any values in the form
+            of utility functions or additional generated methods of the Any type.
+
+            Example 1: Pack and unpack a message in C++.
+
+                Foo foo = ...;
+                Any any;
+                any.PackFrom(foo);
+                ...
+                if (any.UnpackTo(&foo)) {
+                  ...
+                }
+
+            Example 2: Pack and unpack a message in Java.
+
+                Foo foo = ...;
+                Any any = Any.pack(foo);
+                ...
+                if (any.is(Foo.class)) {
+                  foo = any.unpack(Foo.class);
+                }
+
+            Example 3: Pack and unpack a message in Python.
+
+                foo = Foo(...)
+                any = Any()
+                any.Pack(foo)
+                ...
+                if any.Is(Foo.DESCRIPTOR):
+                  any.Unpack(foo)
+                  ...
+
+            Example 4: Pack and unpack a message in Go
+
+                 foo := &pb.Foo{...}
+                 any, err := anypb.New(foo)
+                 if err != nil {
+                   ...
+                 }
+                 ...
+                 foo := &pb.Foo{}
+                 if err := any.UnmarshalTo(foo); err != nil {
+                   ...
+                 }
+
+            The pack methods provided by protobuf library will by default use
+            'type.googleapis.com/full.type.name' as the type URL and the unpack
+            methods only use the fully qualified type name after the last '/'
+            in the type URL, for example "foo.bar.com/x/y.z" will yield type
+            name "y.z".
+
+
+            JSON
+
+            The JSON representation of an `Any` value uses the regular
+            representation of the deserialized, embedded message, with an
+            additional field `@type` which contains the type URL. Example:
+
+                package google.profile;
+                message Person {
+                  string first_name = 1;
+                  string last_name = 2;
+                }
+
+                {
+                  "@type": "type.googleapis.com/google.profile.Person",
+                  "firstName": <string>,
+                  "lastName": <string>
+                }
+
+            If the embedded message type is well-known and has a custom JSON
+            representation, that representation will be embedded adding a field
+            `value` which holds the custom JSON in addition to the `@type`
+            field. Example (for message [google.protobuf.Duration][]):
+
+                {
+                  "@type": "type.googleapis.com/google.protobuf.Duration",
+                  "value": "1.212s"
+                }
     protobufNullValue:
         type: string
         enum:
@@ -2763,12 +3036,28 @@ definitions:
             code:
                 type: integer
                 format: int32
+                description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
             details:
                 type: array
                 items:
                     $ref: '#/definitions/protobufAny'
+                description: |-
+                    A list of messages that carry the error details.  There is a common set of
+                    message types for APIs to use.
             message:
                 type: string
+                description: |-
+                    A developer-facing error message, which should be in English. Any
+                    user-facing error message should be localized and sent in the
+                    [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        description: |-
+            The `Status` type defines a logical error model that is suitable for
+            different programming environments, including REST APIs and RPC APIs. It is
+            used by [gRPC](https://github.com/grpc). Each `Status` message contains
+            three pieces of data: error code, error message, and error details.
+
+            You can find out more about this error model and how to work with it in the
+            [API Design Guide](https://cloud.google.com/apis/design/errors).
     typeDate:
         type: object
         properties:
@@ -2868,6 +3157,19 @@ definitions:
                 title: Bounding box width value
                 readOnly: true
         title: BoundingBox represents the bounding box data structure
+    v1alphaCancelModelOperationResponse:
+        type: object
+        title: CancelModelOperationResponse represents a response for canceling a model operation
+    v1alphaClassificationInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: ClassificationInput represents the input of classification task
     v1alphaClassificationOutput:
         type: object
         properties:
@@ -3098,18 +3400,18 @@ definitions:
     v1alphaCreateModelBinaryFileUploadResponse:
         type: object
         properties:
-            model:
-                $ref: '#/definitions/v1alphaModel'
-                title: The created model
+            operation:
+                $ref: '#/definitions/googlelongrunningOperation'
+                title: Create model operation message
         title: |-
             CreateModelBinaryFileUploadResponse represents a response for a model
             instance
     v1alphaCreateModelResponse:
         type: object
         properties:
-            model:
-                $ref: '#/definitions/v1alphaModel'
-                title: The created model
+            operation:
+                $ref: '#/definitions/googlelongrunningOperation'
+                title: Create model operation message
         title: CreateModelResponse represents a response for a model
     v1alphaCreatePipelineResponse:
         type: object
@@ -3166,13 +3468,12 @@ definitions:
     v1alphaDeployModelInstanceResponse:
         type: object
         properties:
-            instance:
-                $ref: '#/definitions/v1alphaModelInstance'
-                title: Deployed model instance
+            operation:
+                $ref: '#/definitions/googlelongrunningOperation'
+                title: Deploy operation message
         title: |-
             DeployModelInstanceResponse represents a response for a deployed model
             instance
-            TODO: should use [Long-running operations](https://google.aip.dev/151)
     v1alphaDestinationConnector:
         type: object
         properties:
@@ -3227,6 +3528,16 @@ definitions:
         title: |-
             DestinationConnectorDefinition represents the destination connector
             definition resource
+    v1alphaDetectionInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: DetectionInput represents the input of detection task
     v1alphaDetectionObject:
         type: object
         properties:
@@ -3310,6 +3621,13 @@ definitions:
                 $ref: '#/definitions/v1alphaModelInstance'
                 title: Retrieved model instance
         title: GetModelInstanceResponse represents a response for a model instance
+    v1alphaGetModelOperationResponse:
+        type: object
+        properties:
+            operation:
+                $ref: '#/definitions/googlelongrunningOperation'
+                title: The retrieved model operation
+        title: GetModelOperationResponse represents a response for a model operation
     v1alphaGetModelResponse:
         type: object
         properties:
@@ -3363,6 +3681,16 @@ definitions:
                 $ref: '#/definitions/HealthCheckResponseServingStatus'
                 title: Status is the instance of the enum type ServingStatus
         title: HealthCheckResponse represents a response for a service heath status
+    v1alphaInstanceSegmentationInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: InstanceSegmentationInput represents the input of instance segmentation task
     v1alphaInstanceSegmentationObject:
         type: object
         properties:
@@ -3392,9 +3720,7 @@ definitions:
                     $ref: '#/definitions/v1alphaInstanceSegmentationObject'
                 title: A list of instance segmentation objects
                 readOnly: true
-        title: |-
-            InstanceSegmentationOutput represents the output of instance segmentation
-            task
+        title: InstanceSegmentationOutput represents the output of instance segmentation task
     v1alphaKeypoint:
         type: object
         properties:
@@ -3414,6 +3740,16 @@ definitions:
                 title: y coordinate
                 readOnly: true
         title: Keypoint structure which include coordinate and keypoint visibility
+    v1alphaKeypointInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: KeypointInput represents the input of keypoint detection task
     v1alphaKeypointObject:
         type: object
         properties:
@@ -3512,6 +3848,22 @@ definitions:
                 format: int64
                 title: Total count of model instances
         title: ListModelInstanceResponse represents a response for a list of model instances
+    v1alphaListModelOperationResponse:
+        type: object
+        properties:
+            next_page_token:
+                type: string
+                title: Next page token
+            operations:
+                type: array
+                items:
+                    $ref: '#/definitions/googlelongrunningOperation'
+                title: a list of model operations
+            total_size:
+                type: string
+                format: int64
+                title: Total count of operations
+        title: ListModelOperationResponse represents a response for a list of model operations including deploy and undeploy
     v1alphaListModelResponse:
         type: object
         properties:
@@ -4062,6 +4414,16 @@ definitions:
                      }
                 readOnly: true
         title: OauthConfigSpecification represents oauth config specification
+    v1alphaOcrInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: OcrInput represents the input of ocr task
     v1alphaOcrObject:
         type: object
         properties:
@@ -4280,6 +4642,16 @@ definitions:
                 $ref: '#/definitions/v1alphaSourceConnector'
                 title: A SourceConnector resource
         title: RenameSourceConnectorResponse represents a renamed SourceConnector resource
+    v1alphaSemanticSegmentationInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: SemanticSegmentationInput represents the input of semantic segmentation task
     v1alphaSemanticSegmentationOutput:
         type: object
         properties:
@@ -4289,9 +4661,7 @@ definitions:
                     $ref: '#/definitions/v1alphaSemanticSegmentationStuff'
                 title: A list of semantic segmentation stuffs
                 readOnly: true
-        title: |-
-            SemanticSegmentationOutput represents the output of semantic segmentation
-            task
+        title: SemanticSegmentationOutput represents the output of semantic segmentation task
     v1alphaSemanticSegmentationStuff:
         type: object
         properties:
@@ -4547,6 +4917,31 @@ definitions:
         title: |-
             SupportedSyncModes enumerates sync mode (this needs to be in plural form to
             match with Airbyte protocol)
+    v1alphaTaskInput:
+        type: object
+        properties:
+            classiciation:
+                $ref: '#/definitions/v1alphaClassificationInput'
+                title: The classification input
+            detection:
+                $ref: '#/definitions/v1alphaDetectionInput'
+                title: The detection input
+            instance_segmentation:
+                $ref: '#/definitions/v1alphaInstanceSegmentationInput'
+                title: The instance segmentation input
+            keypoint:
+                $ref: '#/definitions/v1alphaKeypointInput'
+                title: The keypoint input
+            ocr:
+                $ref: '#/definitions/v1alphaOcrInput'
+                title: The ocr input
+            semantic_segmentation:
+                $ref: '#/definitions/v1alphaSemanticSegmentationInput'
+                title: The semantic segmentation input
+            unspecified:
+                $ref: '#/definitions/v1alphaUnspecifiedInput'
+                title: The unspecified task input
+        title: Input represents the input to trigger a model instance
     v1alphaTestModelInstanceBinaryFileUploadResponse:
         type: object
         properties:
@@ -4650,13 +5045,12 @@ definitions:
     v1alphaUndeployModelInstanceResponse:
         type: object
         properties:
-            instance:
-                $ref: '#/definitions/v1alphaModelInstance'
-                title: Undeployed model instance
+            operation:
+                $ref: '#/definitions/googlelongrunningOperation'
+                title: Undeploy operation message
         title: |-
             UndeployModelInstanceResponse represents a response for a undeployed model
             instance
-            TODO: should use [Long-running operations](https://google.aip.dev/151)
     v1alphaUnpublishModelResponse:
         type: object
         properties:
@@ -4664,6 +5058,15 @@ definitions:
                 $ref: '#/definitions/v1alphaModel'
                 title: Unpublished model
         title: UnpublishModelResponse represents a response for the unpublished model
+    v1alphaUnspecifiedInput:
+        type: object
+        properties:
+            raw_inputs:
+                type: array
+                items:
+                    type: object
+                title: A list of unspecified task inputs
+        title: UnspecifiedInput represents the input of unspecified task
     v1alphaUnspecifiedOutput:
         type: object
         properties:
@@ -4673,7 +5076,7 @@ definitions:
                     type: object
                 title: A list of unspecified task outputs
                 readOnly: true
-        title: UnspecifiedOutput represents a list of unspecified task output
+        title: UnspecifiedOutput represents the output of unspecified task
     v1alphaUpdateDestinationConnectorResponse:
         type: object
         properties:
@@ -4835,16 +5238,6 @@ definitions:
                 $ref: '#/definitions/v1alphaHealthCheckResponse'
                 title: HealthCheckResponse message
         title: ReadinessResponse represents a response for a service readiness status
-    vdpmodelv1alphaInput:
-        type: object
-        properties:
-            image_base64:
-                type: string
-                title: Image type base64
-            image_url:
-                type: string
-                title: Image type URL
-        title: Input represents the input to trigger a model instance
     vdpmodelv1alphaLivenessResponse:
         type: object
         properties:
@@ -4915,16 +5308,6 @@ definitions:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
              - VIEW_FULL: View: FULL, full representation of the resource
-    vdppipelinev1alphaInput:
-        type: object
-        properties:
-            image_base64:
-                type: string
-                title: Image type base64
-            image_url:
-                type: string
-                title: Image type URL
-        title: Input represents the input to a pipeline
     vdppipelinev1alphaLivenessResponse:
         type: object
         properties:
@@ -4961,6 +5344,9 @@ definitions:
             ocr:
                 $ref: '#/definitions/v1alphaOcrOutput'
                 title: The ocr output
+            semantic_segmentation:
+                $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
+                title: The semantic segmentation output
             unspecified:
                 $ref: '#/definitions/v1alphaUnspecifiedOutput'
                 title: The unspecified task output
