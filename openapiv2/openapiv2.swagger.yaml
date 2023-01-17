@@ -647,7 +647,7 @@ paths:
                         inputs:
                             type: array
                             items:
-                                $ref: '#/definitions/vdppipelinev1alphaInput'
+                                $ref: '#/definitions/v1alphaTaskInput'
                             title: Input to the pipeline
                             required:
                                 - inputs
@@ -1117,16 +1117,16 @@ paths:
                   schema:
                     type: object
                     properties:
-                        inputs:
+                        task_inputs:
                             type: array
                             items:
-                                $ref: '#/definitions/vdpmodelv1alphaInput'
+                                $ref: '#/definitions/v1alphaTaskInput'
                             title: Input to trigger the model instance
                             required:
-                                - inputs
+                                - task_inputs
                     title: TestModelInstanceRequest represents a request to test a model instance
                     required:
-                        - inputs
+                        - task_inputs
             tags:
                 - ModelService
     /v1alpha/{name}/trigger:
@@ -1160,16 +1160,16 @@ paths:
                   schema:
                     type: object
                     properties:
-                        inputs:
+                        task_inputs:
                             type: array
                             items:
-                                $ref: '#/definitions/vdpmodelv1alphaInput'
+                                $ref: '#/definitions/v1alphaTaskInput'
                             title: Input to trigger the model instance
                             required:
-                                - inputs
+                                - task_inputs
                     title: TriggerModelInstanceRequest represents a request to trigger a model instance
                     required:
-                        - inputs
+                        - task_inputs
             tags:
                 - ModelService
     /v1alpha/{name}/undeploy:
@@ -3160,6 +3160,16 @@ definitions:
     v1alphaCancelModelOperationResponse:
         type: object
         title: CancelModelOperationResponse represents a response for canceling a model operation
+    v1alphaClassificationInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: ClassificationInput represents the input of classification task
     v1alphaClassificationOutput:
         type: object
         properties:
@@ -3518,6 +3528,16 @@ definitions:
         title: |-
             DestinationConnectorDefinition represents the destination connector
             definition resource
+    v1alphaDetectionInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: DetectionInput represents the input of detection task
     v1alphaDetectionObject:
         type: object
         properties:
@@ -3661,6 +3681,16 @@ definitions:
                 $ref: '#/definitions/HealthCheckResponseServingStatus'
                 title: Status is the instance of the enum type ServingStatus
         title: HealthCheckResponse represents a response for a service heath status
+    v1alphaInstanceSegmentationInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: InstanceSegmentationInput represents the input of instance segmentation task
     v1alphaInstanceSegmentationObject:
         type: object
         properties:
@@ -3710,6 +3740,16 @@ definitions:
                 title: y coordinate
                 readOnly: true
         title: Keypoint structure which include coordinate and keypoint visibility
+    v1alphaKeypointInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: KeypointInput represents the input of keypoint detection task
     v1alphaKeypointObject:
         type: object
         properties:
@@ -4374,6 +4414,16 @@ definitions:
                      }
                 readOnly: true
         title: OauthConfigSpecification represents oauth config specification
+    v1alphaOcrInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: OcrInput represents the input of ocr task
     v1alphaOcrObject:
         type: object
         properties:
@@ -4592,6 +4642,16 @@ definitions:
                 $ref: '#/definitions/v1alphaSourceConnector'
                 title: A SourceConnector resource
         title: RenameSourceConnectorResponse represents a renamed SourceConnector resource
+    v1alphaSemanticSegmentationInput:
+        type: object
+        properties:
+            image_base64:
+                type: string
+                title: Image type base64
+            image_url:
+                type: string
+                title: Image type URL
+        title: SemanticSegmentationInput represents the input of semantic segmentation task
     v1alphaSemanticSegmentationOutput:
         type: object
         properties:
@@ -4857,6 +4917,31 @@ definitions:
         title: |-
             SupportedSyncModes enumerates sync mode (this needs to be in plural form to
             match with Airbyte protocol)
+    v1alphaTaskInput:
+        type: object
+        properties:
+            classiciation:
+                $ref: '#/definitions/v1alphaClassificationInput'
+                title: The classification input
+            detection:
+                $ref: '#/definitions/v1alphaDetectionInput'
+                title: The detection input
+            instance_segmentation:
+                $ref: '#/definitions/v1alphaInstanceSegmentationInput'
+                title: The instance segmentation input
+            keypoint:
+                $ref: '#/definitions/v1alphaKeypointInput'
+                title: The keypoint input
+            ocr:
+                $ref: '#/definitions/v1alphaOcrInput'
+                title: The ocr input
+            semantic_segmentation:
+                $ref: '#/definitions/v1alphaSemanticSegmentationInput'
+                title: The semantic segmentation input
+            unspecified:
+                $ref: '#/definitions/v1alphaUnspecifiedInput'
+                title: The unspecified task input
+        title: Input represents the input to trigger a model instance
     v1alphaTestModelInstanceBinaryFileUploadResponse:
         type: object
         properties:
@@ -4973,6 +5058,15 @@ definitions:
                 $ref: '#/definitions/v1alphaModel'
                 title: Unpublished model
         title: UnpublishModelResponse represents a response for the unpublished model
+    v1alphaUnspecifiedInput:
+        type: object
+        properties:
+            raw_inputs:
+                type: array
+                items:
+                    type: object
+                title: A list of unspecified task inputs
+        title: UnspecifiedInput represents the input of unspecified task
     v1alphaUnspecifiedOutput:
         type: object
         properties:
@@ -5144,16 +5238,6 @@ definitions:
                 $ref: '#/definitions/v1alphaHealthCheckResponse'
                 title: HealthCheckResponse message
         title: ReadinessResponse represents a response for a service readiness status
-    vdpmodelv1alphaInput:
-        type: object
-        properties:
-            image_base64:
-                type: string
-                title: Image type base64
-            image_url:
-                type: string
-                title: Image type URL
-        title: Input represents the input to trigger a model instance
     vdpmodelv1alphaLivenessResponse:
         type: object
         properties:
@@ -5224,16 +5308,6 @@ definitions:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
              - VIEW_FULL: View: FULL, full representation of the resource
-    vdppipelinev1alphaInput:
-        type: object
-        properties:
-            image_base64:
-                type: string
-                title: Image type base64
-            image_url:
-                type: string
-                title: Image type URL
-        title: Input represents the input to a pipeline
     vdppipelinev1alphaLivenessResponse:
         type: object
         properties:
