@@ -2550,6 +2550,30 @@ paths:
                     $ref: '#/definitions/v1alphaPipeline'
             tags:
                 - PipelineService
+    /v1alpha/ready/model:
+        get:
+            summary: |-
+                Readiness method receives a ReadinessRequest message and returns a
+                ReadinessResponse message.
+                See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+            operationId: ModelService_Readiness2
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/vdpmodelv1alphaReadinessResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: health_check_request.service
+                  description: Service name to check for its readiness status
+                  in: query
+                  required: false
+                  type: string
+            tags:
+                - ModelService
     /v1alpha/reports:
         post:
             summary: |-
@@ -2812,6 +2836,7 @@ definitions:
             - TASK_OCR
             - TASK_INSTANCE_SEGMENTATION
             - TASK_SEMANTIC_SEGMENTATION
+            - TASK_TEXT_TO_IMAGE
         default: TASK_UNSPECIFIED
         description: |-
             - TASK_UNSPECIFIED: Task: UNSPECIFIED
@@ -2821,6 +2846,7 @@ definitions:
              - TASK_OCR: Task: OCR
              - TASK_INSTANCE_SEGMENTATION: Task: INSTANCE SEGMENTATION
              - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
+             - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
         title: Task enumerates the task type of a model instance
     ModelVisibility:
         type: string
@@ -4920,7 +4946,7 @@ definitions:
     v1alphaTaskInput:
         type: object
         properties:
-            classiciation:
+            classification:
                 $ref: '#/definitions/v1alphaClassificationInput'
                 title: The classification input
             detection:
@@ -4938,6 +4964,9 @@ definitions:
             semantic_segmentation:
                 $ref: '#/definitions/v1alphaSemanticSegmentationInput'
                 title: The semantic segmentation input
+            text_to_image:
+                $ref: '#/definitions/v1alphaTextToImageInput'
+                title: The text to image input
             unspecified:
                 $ref: '#/definitions/v1alphaUnspecifiedInput'
                 title: The unspecified task input
@@ -4978,6 +5007,24 @@ definitions:
             testing a model instance
         required:
             - task_outputs
+    v1alphaTextToImageInput:
+        type: object
+        properties:
+            text:
+                type: string
+                title: The input text
+                readOnly: true
+        title: TextToImageInput represents the input of text to image task
+    v1alphaTextToImageOutput:
+        type: object
+        properties:
+            images:
+                type: array
+                items:
+                    type: string
+                title: List of generated images
+                readOnly: true
+        title: TextToImageOutput represents the output of text to image task
     v1alphaTriggerModelInstanceBinaryFileUploadResponse:
         type: object
         properties:
@@ -5289,6 +5336,9 @@ definitions:
             semantic_segmentation:
                 $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
                 title: The semantic segmentation output
+            text_to_image:
+                $ref: '#/definitions/v1alphaTextToImageOutput'
+                title: The text to image output
             unspecified:
                 $ref: '#/definitions/v1alphaUnspecifiedOutput'
                 title: The unspecified task output
