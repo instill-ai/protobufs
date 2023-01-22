@@ -1,8 +1,9 @@
 swagger: "2.0"
 info:
-    title: vdp/connector/v1alpha/auth.proto
+    title: vdp/healthcheck/v1alpha/healthcheck.proto
     version: version not set
 tags:
+    - name: PlanService
     - name: ConnectorService
     - name: UserService
     - name: ModelService
@@ -370,7 +371,7 @@ paths:
                             description: The resource name of a user, e.g., "users/local-user".
                             readOnly: true
                         visibility:
-                            $ref: '#/definitions/ModelVisibility'
+                            $ref: '#/definitions/v1alphaModelVisibility'
                             title: Model visibility including public or private
                     description: |-
                         The model `name` field is used to identify the model to update.
@@ -1411,32 +1412,6 @@ paths:
     /v1alpha/{permalink_2}/lookUp:
         get:
             summary: |-
-                LookUpUser method receives a LookUpUserRequest message and returns a
-                LookUpUserResponse
-            operationId: UserService_LookUpUser
-            responses:
-                "200":
-                    description: A successful response.
-                    schema:
-                        $ref: '#/definitions/v1alphaLookUpUserResponse'
-                default:
-                    description: An unexpected error response.
-                    schema:
-                        $ref: '#/definitions/rpcStatus'
-            parameters:
-                - name: permalink_2
-                  description: |-
-                    Permalink of a user. For example:
-                    "users/{uid}"
-                  in: path
-                  required: true
-                  type: string
-                  pattern: users/[^/]+
-            tags:
-                - UserService
-    /v1alpha/{permalink_3}/lookUp:
-        get:
-            summary: |-
                 LookUpModel method receives a LookUpModelRequest message and returns a
                 LookUpModelResponse
             operationId: ModelService_LookUpModel
@@ -1450,7 +1425,7 @@ paths:
                     schema:
                         $ref: '#/definitions/rpcStatus'
             parameters:
-                - name: permalink_3
+                - name: permalink_2
                   description: |-
                     Permalink of a model. For example:
                     "models/{uid}"
@@ -1477,7 +1452,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ModelService
-    /v1alpha/{permalink_4}/lookUp:
+    /v1alpha/{permalink_3}/lookUp:
         get:
             summary: |-
                 LookUpModelInstance method receives a LookUpModelInstanceRequest message
@@ -1494,7 +1469,7 @@ paths:
                     schema:
                         $ref: '#/definitions/rpcStatus'
             parameters:
-                - name: permalink_4
+                - name: permalink_3
                   description: |-
                     Permalink of a model instance. For example:
                     "models/{model_uid}/instances/{instance_uid}"
@@ -1521,7 +1496,7 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ModelService
-    /v1alpha/{permalink_5}/lookUp:
+    /v1alpha/{permalink_4}/lookUp:
         get:
             summary: |-
                 LookUpPipeline method receives a LookUpPipelineRequest message and returns
@@ -1537,7 +1512,7 @@ paths:
                     schema:
                         $ref: '#/definitions/rpcStatus'
             parameters:
-                - name: permalink_5
+                - name: permalink_4
                   description: |-
                     Permalink of a pipeline. For example:
                     "pipelines/{uid}"
@@ -1905,7 +1880,215 @@ paths:
                   default: VIEW_UNSPECIFIED
             tags:
                 - ConnectorService
-    /v1alpha/{user.name}:
+    /v1alpha/{user.name}/exists:
+        get:
+            summary: |-
+                ExistUsername method receives a ExistUsernameRequest message and returns a
+                ExistUsernameResponse
+            operationId: UserService_ExistUsername
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaExistUsernameResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: user.name
+                  description: |-
+                    The resource name of the user to be deleted,
+                    for example: "users/local-user"
+                  in: path
+                  required: true
+                  type: string
+                  pattern: users/[^/]+
+            tags:
+                - UserService
+    /v1alpha/admin/{permalink_1}/lookUp:
+        get:
+            summary: |-
+                LookUpUser method receives a LookUpUserRequest message and returns a
+                LookUpUserResponse
+            operationId: UserService_LookUpUser
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaLookUpUserResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: permalink_1
+                  description: |-
+                    Permalink of a user. For example:
+                    "users/{uid}"
+                  in: path
+                  required: true
+                  type: string
+                  pattern: users/[^/]+
+            tags:
+                - UserService
+    /v1alpha/admin/{permalink}/lookUp:
+        get:
+            summary: |-
+                LookUpPlan method receives a LookUpPlanRequest message and returns a
+                LookUpPlanResponse
+            operationId: PlanService_LookUpPlan
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaLookUpPlanResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: permalink
+                  description: |-
+                    Permalink of a plan. For example:
+                    "plans/{uid}"
+                  in: path
+                  required: true
+                  type: string
+                  pattern: plans/[^/]+
+            tags:
+                - PlanService
+    /v1alpha/admin/{plan.name}:
+        get:
+            summary: |-
+                GetPlan method receives a GetPlanRequest message and returns
+                a GetPlanResponse message.
+            operationId: PlanService_GetPlan
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaGetPlanResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: plan.name
+                  description: |-
+                    Resource name of a plan. For example:
+                    "plans/free"
+                  in: path
+                  required: true
+                  type: string
+                  pattern: plans/[^/]+
+            tags:
+                - PlanService
+        delete:
+            summary: |-
+                DeletePlan method receives a DeletePlanRequest message and returns a
+                DeletePlanResponse
+            operationId: PlanService_DeletePlan
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaDeletePlanResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: plan.name
+                  description: |-
+                    The resource name of the plan to be deleted,
+                    for example: "plans/local-plan"
+                  in: path
+                  required: true
+                  type: string
+                  pattern: plans/[^/]+
+            tags:
+                - PlanService
+        patch:
+            summary: |-
+                UpdatePlan method receives a UpdatePlanRequest message and returns
+                a UpdatePlanResponse
+            operationId: PlanService_UpdatePlan
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaUpdatePlanResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: plan.name
+                  description: |-
+                    Resource name. It must have the format of "plans/*".
+                    For example: "plans/free".
+                  in: path
+                  required: true
+                  type: string
+                  pattern: plans/[^/]+
+                - name: plan
+                  description: |-
+                    The plan to update
+
+                    The plan's `name` field is used to identify the plan to update.
+                    Format: plans/{plan}
+                  in: body
+                  required: true
+                  schema:
+                    type: object
+                    properties:
+                        create_time:
+                            type: string
+                            format: date-time
+                            title: Plan creation time
+                            readOnly: true
+                        id:
+                            type: string
+                            description: |-
+                                Pipeline resource ID (the last segment of the resource name) used to
+                                construct the resource name. This conforms to RFC-1034, which restricts to
+                                letters, numbers, and hyphen, with the first character a letter, the last a
+                                letter or a number, and a 63 character maximum.
+                        spec:
+                            type: object
+                            title: Plan specification in JSON format
+                            required:
+                                - spec
+                        tier:
+                            $ref: '#/definitions/PlanTier'
+                            title: Plan tier
+                        uid:
+                            type: string
+                            title: Pipeline UUID
+                            readOnly: true
+                        update_time:
+                            type: string
+                            format: date-time
+                            title: Plan update time
+                            readOnly: true
+                        visibility:
+                            $ref: '#/definitions/v1alphaPlanVisibility'
+                            title: Plan visibility
+                    description: |-
+                        The plan's `name` field is used to identify the plan to update.
+                        Format: plans/{plan}
+                    title: The plan to update
+                    required:
+                        - spec
+                - name: update_mask
+                  description: Update mask for a plan resource
+                  in: query
+                  required: true
+                  type: string
+            tags:
+                - PlanService
+    /v1alpha/admin/{user.name}:
         get:
             summary: |-
                 GetUser method receives a GetUserRequest message and returns
@@ -1990,9 +2173,6 @@ paths:
                   schema:
                     type: object
                     properties:
-                        company_name:
-                            type: string
-                            title: User company name
                         cookie_token:
                             type: string
                             title: User console cookie token
@@ -2004,18 +2184,30 @@ paths:
                         email:
                             type: string
                             title: User email
+                            required:
+                                - email
+                        first_name:
+                            type: string
+                            title: User first name
                         id:
                             type: string
-                            description: |-
-                                Resource ID (the last segment of the resource name), also the user login
-                                username. This conforms to RFC-1034, which restricts to letters, numbers,
-                                and hyphen, with the first character a letter, the last a letter or a
-                                number, and a 63 character maximum.
+                            description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
+                            required:
+                                - id
+                        last_name:
+                            type: string
+                            title: User last name
                         newsletter_subscription:
                             type: boolean
                             title: User newsletter subscription
                             required:
                                 - newsletter_subscription
+                        org_name:
+                            type: string
+                            title: User company or institution name
+                        plan:
+                            $ref: '#/definitions/v1alphaPlan'
+                            title: User plan
                         role:
                             type: string
                             title: |-
@@ -2033,7 +2225,8 @@ paths:
                         uid:
                             type: string
                             title: User ID in UUIDv4
-                            readOnly: true
+                            required:
+                                - uid
                         update_time:
                             type: string
                             format: date-time
@@ -2044,12 +2237,135 @@ paths:
                         Format: users/{user}
                     title: The user to update
                     required:
+                        - uid
+                        - id
+                        - email
                         - newsletter_subscription
                 - name: update_mask
                   description: Update mask for a user resource
                   in: query
                   required: true
                   type: string
+            tags:
+                - UserService
+    /v1alpha/admin/plans:
+        get:
+            summary: |-
+                ListPlan method receives a ListPlanRequest message and returns a
+                ListPlanResponse message.
+            operationId: PlanService_ListPlan
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaListPlanResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: page_size
+                  description: |-
+                    Page size: the maximum number of resources to return. The service may
+                    return fewer than this value. If unspecified, at most 10 plans will be
+                    returned. The maximum value is 100; values above 100 will be coereced to
+                    100.
+                  in: query
+                  required: false
+                  type: string
+                  format: int64
+                - name: page_token
+                  description: Page token
+                  in: query
+                  required: false
+                  type: string
+            tags:
+                - PlanService
+        post:
+            summary: |-
+                CreatePlan receives a CreatePlanRequest message and returns a
+                aGetPlanResponses
+            operationId: PlanService_CreatePlan
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaCreatePlanResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: plan
+                  description: |-
+                    The plan to be created
+
+                    The plan's `name` field is used to identify the plan to create.
+                    Format: plans/{plan}
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/v1alphaPlan'
+            tags:
+                - PlanService
+    /v1alpha/admin/users:
+        get:
+            summary: |-
+                ListUser method receives a ListUserRequest message and returns a
+                ListUserResponse message.
+            operationId: UserService_ListUser
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaListUserResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: page_size
+                  description: |-
+                    Page size: the maximum number of resources to return. The service may
+                    return fewer than this value. If unspecified, at most 10 users will be
+                    returned. The maximum value is 100; values above 100 will be coereced to
+                    100.
+                  in: query
+                  required: false
+                  type: string
+                  format: int64
+                - name: page_token
+                  description: Page token
+                  in: query
+                  required: false
+                  type: string
+            tags:
+                - UserService
+        post:
+            summary: |-
+                CreateUser receives a CreateUserRequest message and returns a
+                aGetUserResponse
+            operationId: UserService_CreateUser
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/v1alphaCreateUserResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: user
+                  description: |-
+                    The user to be created
+
+                    The user's `name` field is used to identify the user to create.
+                    Format: users/{user}
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/v1alphaUser'
             tags:
                 - UserService
     /v1alpha/destination-connector-definitions:
@@ -2172,6 +2488,30 @@ paths:
                     $ref: '#/definitions/v1alphaDestinationConnector'
             tags:
                 - ConnectorService
+    /v1alpha/health/billing:
+        get:
+            summary: |-
+                Liveness method receives a LivenessRequest message and returns a
+                LivenessResponse message.
+                See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+            operationId: PlanService_Liveness2
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/vdpbillingv1alphaLivenessResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: health_check_request.service
+                  description: Service name to check for its readiness status
+                  in: query
+                  required: false
+                  type: string
+            tags:
+                - PlanService
     /v1alpha/health/connector:
         get:
             summary: |-
@@ -2550,6 +2890,54 @@ paths:
                     $ref: '#/definitions/v1alphaPipeline'
             tags:
                 - PipelineService
+    /v1alpha/ready/billing:
+        get:
+            summary: |-
+                Readiness method receives a ReadinessRequest message and returns a
+                ReadinessResponse message.
+                See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+            operationId: PlanService_Readiness2
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/vdpbillingv1alphaReadinessResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: health_check_request.service
+                  description: Service name to check for its readiness status
+                  in: query
+                  required: false
+                  type: string
+            tags:
+                - PlanService
+    /v1alpha/ready/mgmt:
+        get:
+            summary: |-
+                Readiness method receives a ReadinessRequest message and returns a
+                ReadinessResponse message.
+                See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+            operationId: UserService_Readiness2
+            responses:
+                "200":
+                    description: A successful response.
+                    schema:
+                        $ref: '#/definitions/vdpmgmtv1alphaReadinessResponse'
+                default:
+                    description: An unexpected error response.
+                    schema:
+                        $ref: '#/definitions/rpcStatus'
+            parameters:
+                - name: health_check_request.service
+                  description: Service name to check for its readiness status
+                  in: query
+                  required: false
+                  type: string
+            tags:
+                - UserService
     /v1alpha/ready/model:
         get:
             summary: |-
@@ -2741,64 +3129,47 @@ paths:
                     $ref: '#/definitions/v1alphaSourceConnector'
             tags:
                 - ConnectorService
-    /v1alpha/users:
+    /v1alpha/user:
         get:
             summary: |-
-                ListUser method receives a ListUserRequest message and returns a
-                ListUserResponse message.
-            operationId: UserService_ListUser
+                GetAuthenticatedUser method receives a GetAuthenticatedUserRequest message and returns
+                a GetAuthenticatedUserResponse message.
+            operationId: UserService_GetAuthenticatedUser
             responses:
                 "200":
                     description: A successful response.
                     schema:
-                        $ref: '#/definitions/v1alphaListUserResponse'
+                        $ref: '#/definitions/v1alphaGetAuthenticatedUserResponse'
                 default:
                     description: An unexpected error response.
                     schema:
                         $ref: '#/definitions/rpcStatus'
-            parameters:
-                - name: page_size
-                  description: |-
-                    Page size: the maximum number of resources to return. The service may
-                    return fewer than this value. If unspecified, at most 10 users will be
-                    returned. The maximum value is 100; values above 100 will be coereced to
-                    100.
-                  in: query
-                  required: false
-                  type: string
-                  format: int64
-                - name: page_token
-                  description: Page token
-                  in: query
-                  required: false
-                  type: string
             tags:
                 - UserService
-        post:
-            summary: |-
-                CreateUser receives a CreateUserRequest message and returns a
-                aGetUserResponse
-            operationId: UserService_CreateUser
+        patch:
+            summary: "UpdateAuthenticatedUser method receives a UpdateAuthenticatedUserRequest message and returns \na UpdateAuthenticatedUserResponse message."
+            operationId: UserService_UpdateAuthenticatedUser
             responses:
                 "200":
                     description: A successful response.
                     schema:
-                        $ref: '#/definitions/v1alphaCreateUserResponse'
+                        $ref: '#/definitions/v1alphaUpdateAuthenticatedUserResponse'
                 default:
                     description: An unexpected error response.
                     schema:
                         $ref: '#/definitions/rpcStatus'
             parameters:
                 - name: user
-                  description: |-
-                    The user to be created
-
-                    The user's `name` field is used to identify the user to create.
-                    Format: users/{user}
+                  description: The user to update
                   in: body
                   required: true
                   schema:
                     $ref: '#/definitions/v1alphaUser'
+                - name: update_mask
+                  description: Update mask for a user resource
+                  in: query
+                  required: true
+                  type: string
             tags:
                 - UserService
 definitions:
@@ -2848,18 +3219,6 @@ definitions:
              - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
              - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
         title: Task enumerates the task type of a model instance
-    ModelVisibility:
-        type: string
-        enum:
-            - VISIBILITY_UNSPECIFIED
-            - VISIBILITY_PRIVATE
-            - VISIBILITY_PUBLIC
-        default: VISIBILITY_UNSPECIFIED
-        description: |-
-            - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
-             - VISIBILITY_PRIVATE: Visibility: PRIVATE
-             - VISIBILITY_PUBLIC: Visibility: PUBLIC
-        title: Model visibility including public or private
     PipelineMode:
         type: string
         enum:
@@ -2872,6 +3231,18 @@ definitions:
              - MODE_SYNC: Mode: SYNC
              - MODE_ASYNC: Mode: ASYNC
         title: Mode enumerates the pipeline modes
+    PlanTier:
+        type: string
+        enum:
+            - TIER_UNSPECIFIED
+            - TIER_FREE
+            - TIER_CUSTOM
+        default: TIER_UNSPECIFIED
+        description: |-
+            - TIER_UNSPECIFIED: PlanType: UNSPECIFIED, equivalent to FREE.
+             - TIER_FREE: PlanType: FREE
+             - TIER_CUSTOM: PlanType: CUSTOM
+        title: Tier enumerates the billing plan tier type
     SessionService:
         type: string
         enum:
@@ -2987,7 +3358,7 @@ definitions:
                   foo = any.unpack(Foo.class);
                 }
 
-             Example 3: Pack and unpack a message in Python.
+            Example 3: Pack and unpack a message in Python.
 
                 foo = Foo(...)
                 any = Any()
@@ -2997,7 +3368,7 @@ definitions:
                   any.Unpack(foo)
                   ...
 
-             Example 4: Pack and unpack a message in Go
+            Example 4: Pack and unpack a message in Go
 
                  foo := &pb.Foo{...}
                  any, err := anypb.New(foo)
@@ -3018,7 +3389,7 @@ definitions:
 
 
             JSON
-            ====
+
             The JSON representation of an `Any` value uses the regular
             representation of the deserialized, embedded message, with an
             additional field `@type` which contains the type URL. Example:
@@ -3448,6 +3819,13 @@ definitions:
                 $ref: '#/definitions/v1alphaPipeline'
                 title: The created pipeline resource
         title: CreatePipelineResponse represents a response for a pipeline resource
+    v1alphaCreatePlanResponse:
+        type: object
+        properties:
+            plan:
+                $ref: '#/definitions/v1alphaPlan'
+                title: A plan resource
+        title: CreatePlanResponse represents a response for a plan response
     v1alphaCreateSessionResponse:
         type: object
         properties:
@@ -3487,6 +3865,9 @@ definitions:
     v1alphaDeletePipelineResponse:
         type: object
         title: DeletePipelineResponse represents an empty response
+    v1alphaDeletePlanResponse:
+        type: object
+        title: DeletePlanResponse represents an empty response
     v1alphaDeleteSourceConnectorResponse:
         type: object
         title: DeleteSourceConnectorResponse represents an empty response
@@ -3608,6 +3989,24 @@ definitions:
                 $ref: '#/definitions/v1alphaSourceConnector'
                 title: A SourceConnector resource
         title: DisconnectSourceConnectorResponse represents a disconnected source connector
+    v1alphaExistUsernameResponse:
+        type: object
+        properties:
+            exists:
+                type: boolean
+                title: A boolean value indicating whether the username has been occupied
+        title: |-
+            ExistUsernameResponse represents a response about whether
+            the queried username has been occupied
+    v1alphaGetAuthenticatedUserResponse:
+        type: object
+        properties:
+            user:
+                $ref: '#/definitions/v1alphaUser'
+                title: A user resource
+        title: |-
+            GetAuthenticatedUserResponse represents a response for
+            the authenticated user resource
     v1alphaGetDestinationConnectorDefinitionResponse:
         type: object
         properties:
@@ -3670,6 +4069,13 @@ definitions:
                 $ref: '#/definitions/v1alphaPipeline'
                 title: A pipeline resource
         title: GetPipelineResponse represents a response for a pipeline resource
+    v1alphaGetPlanResponse:
+        type: object
+        properties:
+            plan:
+                $ref: '#/definitions/v1alphaPlan'
+                title: A plan resource
+        title: GetPlanResponse represents a response for a plan resource
     v1alphaGetSourceConnectorDefinitionResponse:
         type: object
         properties:
@@ -3928,6 +4334,22 @@ definitions:
                 format: int64
                 title: Total count of pipeline resources
         title: ListPipelineResponse represents a response for a list of pipelines
+    v1alphaListPlanResponse:
+        type: object
+        properties:
+            next_page_token:
+                type: string
+                title: Next page token
+            plans:
+                type: array
+                items:
+                    $ref: '#/definitions/v1alphaPlan'
+                title: A list of plans
+            total_size:
+                type: string
+                format: int64
+                title: Total count of plans
+        title: ListPlanResponse represents a response for a list of plans
     v1alphaListSourceConnectorDefinitionResponse:
         type: object
         properties:
@@ -4010,6 +4432,13 @@ definitions:
                 $ref: '#/definitions/v1alphaPipeline'
                 title: A pipeline resource
         title: LookUpPipelineResponse represents a response for a pipeline resource
+    v1alphaLookUpPlanResponse:
+        type: object
+        properties:
+            plan:
+                $ref: '#/definitions/v1alphaPlan'
+                title: A plan resource
+        title: LookUpPlanResponse represents a response for a plan resource
     v1alphaLookUpSourceConnectorResponse:
         type: object
         properties:
@@ -4083,7 +4512,7 @@ definitions:
                 description: The resource name of a user, e.g., "users/local-user".
                 readOnly: true
             visibility:
-                $ref: '#/definitions/ModelVisibility'
+                $ref: '#/definitions/v1alphaModelVisibility'
                 title: Model visibility including public or private
         title: Model represents a model
     v1alphaModelDefinition:
@@ -4339,6 +4768,18 @@ definitions:
             - model_definition_ids
             - tasks
             - test_num
+    v1alphaModelVisibility:
+        type: string
+        enum:
+            - VISIBILITY_UNSPECIFIED
+            - VISIBILITY_PRIVATE
+            - VISIBILITY_PUBLIC
+        default: VISIBILITY_UNSPECIFIED
+        description: |-
+            - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
+             - VISIBILITY_PRIVATE: Visibility: PRIVATE
+             - VISIBILITY_PUBLIC: Visibility: PUBLIC
+        title: Model visibility including public or private
     v1alphaOauthConfigSpecification:
         type: object
         properties:
@@ -4612,6 +5053,62 @@ definitions:
             - pipeline_async_mode_num
             - pipeline_sync_mode_num
             - trigger_num
+    v1alphaPlan:
+        type: object
+        properties:
+            create_time:
+                type: string
+                format: date-time
+                title: Plan creation time
+                readOnly: true
+            id:
+                type: string
+                description: |-
+                    Pipeline resource ID (the last segment of the resource name) used to
+                    construct the resource name. This conforms to RFC-1034, which restricts to
+                    letters, numbers, and hyphen, with the first character a letter, the last a
+                    letter or a number, and a 63 character maximum.
+            name:
+                type: string
+                description: |-
+                    Resource name. It must have the format of "plans/*".
+                    For example: "plans/free".
+                readOnly: true
+            spec:
+                type: object
+                title: Plan specification in JSON format
+                required:
+                    - spec
+            tier:
+                $ref: '#/definitions/PlanTier'
+                title: Plan tier
+            uid:
+                type: string
+                title: Pipeline UUID
+                readOnly: true
+            update_time:
+                type: string
+                format: date-time
+                title: Plan update time
+                readOnly: true
+            visibility:
+                $ref: '#/definitions/v1alphaPlanVisibility'
+                title: Plan visibility
+        title: Plan represents the content of a billing plan
+        required:
+            - spec
+    v1alphaPlanVisibility:
+        type: string
+        enum:
+            - VISIBILITY_UNSPECIFIED
+            - VISIBILITY_PRIVATE
+            - VISIBILITY_PUBLIC
+        default: VISIBILITY_UNSPECIFIED
+        description: |-
+            - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
+             - VISIBILITY_PRIVATE: Visibility: PRIVATE
+             - VISIBILITY_PUBLIC: Visibility: PUBLIC
+        title: Plan visibility including public or private
     v1alphaPublishModelResponse:
         type: object
         properties:
@@ -5147,6 +5644,15 @@ definitions:
                 title: A list of unspecified task outputs
                 readOnly: true
         title: UnspecifiedOutput represents the output of unspecified task
+    v1alphaUpdateAuthenticatedUserResponse:
+        type: object
+        properties:
+            user:
+                $ref: '#/definitions/v1alphaUser'
+                title: A user resource
+        title: |-
+            UpdateAuthenticatedUserResponse represents a response for
+            the authenticated user resource
     v1alphaUpdateDestinationConnectorResponse:
         type: object
         properties:
@@ -5170,6 +5676,13 @@ definitions:
                 $ref: '#/definitions/v1alphaPipeline'
                 title: An updated pipeline resource
         title: UpdatePipelineResponse represents a response for a pipeline resource
+    v1alphaUpdatePlanResponse:
+        type: object
+        properties:
+            plan:
+                $ref: '#/definitions/v1alphaPlan'
+                title: A plan resource
+        title: UpdatePlanResponse represents a response for a plan resource
     v1alphaUpdateSourceConnectorResponse:
         type: object
         properties:
@@ -5189,9 +5702,6 @@ definitions:
     v1alphaUser:
         type: object
         properties:
-            company_name:
-                type: string
-                title: User company name
             cookie_token:
                 type: string
                 title: User console cookie token
@@ -5203,13 +5713,19 @@ definitions:
             email:
                 type: string
                 title: User email
+                required:
+                    - email
+            first_name:
+                type: string
+                title: User first name
             id:
                 type: string
-                description: |-
-                    Resource ID (the last segment of the resource name), also the user login
-                    username. This conforms to RFC-1034, which restricts to letters, numbers,
-                    and hyphen, with the first character a letter, the last a letter or a
-                    number, and a 63 character maximum.
+                description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
+                required:
+                    - id
+            last_name:
+                type: string
+                title: User last name
             name:
                 type: string
                 description: |-
@@ -5221,6 +5737,12 @@ definitions:
                 title: User newsletter subscription
                 required:
                     - newsletter_subscription
+            org_name:
+                type: string
+                title: User company or institution name
+            plan:
+                $ref: '#/definitions/v1alphaPlan'
+                title: User plan
             role:
                 type: string
                 title: |-
@@ -5238,7 +5760,8 @@ definitions:
             uid:
                 type: string
                 title: User ID in UUIDv4
-                readOnly: true
+                required:
+                    - uid
             update_time:
                 type: string
                 format: date-time
@@ -5246,12 +5769,29 @@ definitions:
                 readOnly: true
         title: User represents the content of a user
         required:
+            - uid
+            - id
+            - email
             - newsletter_subscription
     v1alphaWriteDestinationConnectorResponse:
         type: object
         title: |-
             WriteDestinationConnectorResponse represents the read data from a
             DestinationConnector resource
+    vdpbillingv1alphaLivenessResponse:
+        type: object
+        properties:
+            health_check_response:
+                $ref: '#/definitions/v1alphaHealthCheckResponse'
+                title: HealthCheckResponse message
+        title: LivenessResponse represents a response for a service liveness status
+    vdpbillingv1alphaReadinessResponse:
+        type: object
+        properties:
+            health_check_response:
+                $ref: '#/definitions/v1alphaHealthCheckResponse'
+                title: HealthCheckResponse message
+        title: ReadinessResponse represents a response for a service readiness status
     vdpconnectorv1alphaLivenessResponse:
         type: object
         properties:
