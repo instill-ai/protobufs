@@ -29,14 +29,17 @@ service UserService {
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
     option (google.api.http) = {
       get : "/v1alpha/__readiness"
+      additional_bindings : [ {get : "/v1alpha/ready/mgmt"} ]
     };
   }
+
+  // ========== Admin API: create, get, update and delete user accounts
 
   // ListUser method receives a ListUserRequest message and returns a
   // ListUserResponse message.
   rpc ListUser(ListUserRequest) returns (ListUserResponse) {
     option (google.api.http) = {
-      get : "/v1alpha/users"
+      get : "/v1alpha/admin/users"
     };
   }
 
@@ -44,7 +47,7 @@ service UserService {
   // aGetUserResponse
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
-      post : "/v1alpha/users"
+      post : "/v1alpha/admin/users"
       body : "user"
     };
     option (google.api.method_signature) = "user";
@@ -54,7 +57,7 @@ service UserService {
   // a GetUserResponse message.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {
-      get : "/v1alpha/{name=users/*}"
+      get : "/v1alpha/admin/{name=users/*}"
     };
     option (google.api.method_signature) = "name";
   }
@@ -63,7 +66,7 @@ service UserService {
   // a UpdateUserResponse
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      patch : "/v1alpha/{user.name=users/*}"
+      patch : "/v1alpha/admin/{user.name=users/*}"
       body : "user"
     };
     option (google.api.method_signature) = "user,update_mask";
@@ -73,7 +76,7 @@ service UserService {
   // DeleteUserResponse
   rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
     option (google.api.http) = {
-      delete : "/v1alpha/{name=users/*}"
+      delete : "/v1alpha/admin/{name=users/*}"
     };
     option (google.api.method_signature) = "name";
   }
@@ -82,8 +85,37 @@ service UserService {
   // LookUpUserResponse
   rpc LookUpUser(LookUpUserRequest) returns (LookUpUserResponse) {
     option (google.api.http) = {
-      get : "/v1alpha/{permalink=users/*}/lookUp"
+      get : "/v1alpha/admin/{permalink=users/*}/lookUp"
     };
     option (google.api.method_signature) = "permalink";
+  }
+
+  // ========== Public API: endpoints exposed to public internet traffic
+
+  // GetAuthenticatedUser method receives a GetAuthenticatedUserRequest message and returns
+  // a GetAuthenticatedUserResponse message.
+  rpc GetAuthenticatedUser(GetAuthenticatedUserRequest) returns (GetAuthenticatedUserResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/user"
+    };
+  }
+
+  // UpdateAuthenticatedUser method receives a UpdateAuthenticatedUserRequest message and returns 
+  // a UpdateAuthenticatedUserResponse message.
+  rpc UpdateAuthenticatedUser(UpdateAuthenticatedUserRequest) returns (UpdateAuthenticatedUserResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/user"
+      body : "user"
+    };
+    option (google.api.method_signature) = "user,update_mask";
+  }
+
+  // ExistUsername method receives a ExistUsernameRequest message and returns a
+  // ExistUsernameResponse
+  rpc ExistUsername(ExistUsernameRequest) returns (ExistUsernameResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=users/*}/exists"
+    };
+    option (google.api.method_signature) = "name";
   }
 }
