@@ -5,7 +5,8 @@ info:
 tags:
   - name: PlanService
   - name: ConnectorService
-  - name: UserService
+  - name: UserAdminService
+  - name: UserPublicService
   - name: ModelService
   - name: PipelineService
   - name: UsageService
@@ -1875,7 +1876,7 @@ paths:
       summary: |-
         ExistUsername method receives a ExistUsernameRequest message and returns a
         ExistUsernameResponse
-      operationId: UserService_ExistUsername
+      operationId: UserPublicService_ExistUsername
       responses:
         "200":
           description: A successful response.
@@ -1895,13 +1896,13 @@ paths:
           type: string
           pattern: users/[^/]+
       tags:
-        - UserService
+        - UserPublicService
   /v1alpha/admin/{permalink_1}/lookUp:
     get:
       summary: |-
         LookUpUser method receives a LookUpUserRequest message and returns a
         LookUpUserResponse
-      operationId: UserService_LookUpUser
+      operationId: UserAdminService_LookUpUser
       responses:
         "200":
           description: A successful response.
@@ -1936,7 +1937,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - UserService
+        - UserAdminService
   /v1alpha/admin/{permalink}/lookUp:
     get:
       summary: |-
@@ -2128,7 +2129,7 @@ paths:
       summary: |-
         GetUser method receives a GetUserRequest message and returns
         a GetUserResponse message.
-      operationId: UserService_GetUser
+      operationId: UserAdminService_GetUser
       responses:
         "200":
           description: A successful response.
@@ -2142,7 +2143,7 @@ paths:
         - name: user.name
           description: |-
             Resource name of a user. For example:
-            "users/instill"
+            "users/local-user"
           in: path
           required: true
           type: string
@@ -2163,12 +2164,12 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - UserService
+        - UserAdminService
     delete:
       summary: |-
         DeleteUser method receives a DeleteUserRequest message and returns a
         DeleteUserResponse
-      operationId: UserService_DeleteUser
+      operationId: UserAdminService_DeleteUser
       responses:
         "200":
           description: A successful response.
@@ -2188,12 +2189,12 @@ paths:
           type: string
           pattern: users/[^/]+
       tags:
-        - UserService
+        - UserAdminService
     patch:
       summary: |-
         UpdateUser method receives a UpdateUserRequest message and returns
         a UpdateUserResponse
-      operationId: UserService_UpdateUser
+      operationId: UserAdminService_UpdateUser
       responses:
         "200":
           description: A successful response.
@@ -2225,7 +2226,7 @@ paths:
             properties:
               uid:
                 type: string
-                title: User ID in UUIDv4
+                description: "User ID in UUIDv4. This field is optionally set by users \n(optional on resource creation, server-generated if unset)."
               id:
                 type: string
                 description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
@@ -2283,7 +2284,6 @@ paths:
               Format: users/{user}
             title: The user to update
             required:
-              - uid
               - id
               - email
               - newsletter_subscription
@@ -2293,7 +2293,7 @@ paths:
           required: true
           type: string
       tags:
-        - UserService
+        - UserAdminService
   /v1alpha/admin/plans:
     get:
       summary: |-
@@ -2381,7 +2381,7 @@ paths:
       summary: |-
         ListUser method receives a ListUserRequest message and returns a
         ListUserResponse message.
-      operationId: UserService_ListUser
+      operationId: UserAdminService_ListUser
       responses:
         "200":
           description: A successful response.
@@ -2428,12 +2428,12 @@ paths:
           required: false
           type: string
       tags:
-        - UserService
+        - UserAdminService
     post:
       summary: |-
         CreateUser receives a CreateUserRequest message and returns a
         aGetUserResponse
-      operationId: UserService_CreateUser
+      operationId: UserAdminService_CreateUser
       responses:
         "200":
           description: A successful response.
@@ -2457,7 +2457,7 @@ paths:
             required:
               - user
       tags:
-        - UserService
+        - UserAdminService
   /v1alpha/destination-connector-definitions:
     get:
       summary: |-
@@ -2634,7 +2634,7 @@ paths:
         Liveness method receives a LivenessRequest message and returns a
         LivenessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: UserService_Liveness2
+      operationId: UserPublicService_Liveness2
       responses:
         "200":
           description: A successful response.
@@ -2651,7 +2651,7 @@ paths:
           required: false
           type: string
       tags:
-        - UserService
+        - UserPublicService
   /v1alpha/health/model:
     get:
       summary: |-
@@ -3016,7 +3016,7 @@ paths:
         Readiness method receives a ReadinessRequest message and returns a
         ReadinessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: UserService_Readiness2
+      operationId: UserPublicService_Readiness2
       responses:
         "200":
           description: A successful response.
@@ -3033,7 +3033,7 @@ paths:
           required: false
           type: string
       tags:
-        - UserService
+        - UserPublicService
   /v1alpha/ready/model:
     get:
       summary: |-
@@ -3236,7 +3236,7 @@ paths:
       summary: |-
         GetAuthenticatedUser method receives a GetAuthenticatedUserRequest message and returns
         a GetAuthenticatedUserResponse message.
-      operationId: UserService_GetAuthenticatedUser
+      operationId: UserPublicService_GetAuthenticatedUser
       responses:
         "200":
           description: A successful response.
@@ -3247,10 +3247,10 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       tags:
-        - UserService
+        - UserPublicService
     patch:
       summary: "UpdateAuthenticatedUser method receives a UpdateAuthenticatedUserRequest message and returns \na UpdateAuthenticatedUserResponse message."
-      operationId: UserService_UpdateAuthenticatedUser
+      operationId: UserPublicService_UpdateAuthenticatedUser
       responses:
         "200":
           description: A successful response.
@@ -3275,7 +3275,7 @@ paths:
           required: true
           type: string
       tags:
-        - UserService
+        - UserPublicService
 definitions:
   AdvancedAuthAuthFlowType:
     type: string
@@ -5774,7 +5774,7 @@ definitions:
         readOnly: true
       uid:
         type: string
-        title: User ID in UUIDv4
+        description: "User ID in UUIDv4. This field is optionally set by users \n(optional on resource creation, server-generated if unset)."
       id:
         type: string
         description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
@@ -5829,7 +5829,6 @@ definitions:
         title: User console cookie token
     title: User represents the content of a user
     required:
-      - uid
       - id
       - email
       - newsletter_subscription
