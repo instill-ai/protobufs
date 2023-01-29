@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package vdp.mgmt.v1alpha;
+
+// Google API
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+
+import "vdp/mgmt/v1alpha/healthcheck.proto";
+import "vdp/mgmt/v1alpha/mgmt.proto";
+
+// User service responds to incoming user requests.
+service UserPublicService {
+  option (google.api.default_host) = "api.instill.tech";
+
+  // Liveness method receives a LivenessRequest message and returns a
+  // LivenessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__liveness"
+      additional_bindings : [ {get : "/v1alpha/health/mgmt"} ]
+    };
+  }
+
+  // Readiness method receives a ReadinessRequest message and returns a
+  // ReadinessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__readiness"
+      additional_bindings : [ {get : "/v1alpha/ready/mgmt"} ]
+    };
+  }
+
+  // ========== Public API: endpoints exposed to public internet traffic
+
+  // GetAuthenticatedUser method receives a GetAuthenticatedUserRequest message and returns
+  // a GetAuthenticatedUserResponse message.
+  rpc GetAuthenticatedUser(GetAuthenticatedUserRequest) returns (GetAuthenticatedUserResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/user"
+    };
+  }
+
+  // UpdateAuthenticatedUser method receives a UpdateAuthenticatedUserRequest message and returns 
+  // a UpdateAuthenticatedUserResponse message.
+  rpc UpdateAuthenticatedUser(UpdateAuthenticatedUserRequest) returns (UpdateAuthenticatedUserResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/user"
+      body : "user"
+    };
+    option (google.api.method_signature) = "user,update_mask";
+  }
+
+  // ExistUsername method receives a ExistUsernameRequest message and returns a
+  // ExistUsernameResponse
+  rpc ExistUsername(ExistUsernameRequest) returns (ExistUsernameResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=users/*}/exists"
+    };
+    option (google.api.method_signature) = "name";
+  }
+}
