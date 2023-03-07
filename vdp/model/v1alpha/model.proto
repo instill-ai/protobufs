@@ -524,6 +524,31 @@ message TaskInput {
   }
 }
 
+// TaskInputStream represents the input to trigger a model instance with stream method
+message TaskInputStream {
+  // Input type
+  oneof input {
+    // The classification input
+    ClassificationInputStream classification = 1;
+    // The detection input
+    DetectionInputStream detection = 2;
+    // The keypoint input
+    KeypointInputStream keypoint = 3;
+    // The ocr input
+    OcrInputStream ocr = 4;
+    // The instance segmentation input
+    InstanceSegmentationInputStream instance_segmentation = 5;
+    // The semantic segmentation input
+    SemanticSegmentationInputStream semantic_segmentation = 6;
+    // The text to image input
+    TextToImageInput text_to_image = 7;
+    // The text generation input
+    TextGenerationInput text_generation = 8;
+    // The unspecified task input
+    UnspecifiedInput unspecified = 9;
+  }
+}
+
 // TaskOutput represents the output of a CV Task result from a model instance
 message TaskOutput {
   // The inference task output
@@ -585,10 +610,8 @@ message TriggerModelInstanceBinaryFileUploadRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
   ];
-  // The list of file length for each uploaded binary file
-  repeated uint64 file_lengths = 2 [ (google.api.field_behavior) = REQUIRED ];
-  // Content of images in bytes
-  bytes content = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Input to trigger the model instance
+  TaskInputStream task_input = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TriggerModelInstanceBinaryFileUploadResponse represents a response for the
@@ -632,10 +655,8 @@ message TestModelInstanceBinaryFileUploadRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/ModelInstance"
   ];
-  // The list of file length for each uploaded binary file
-  repeated uint64 file_lengths = 2 [ (google.api.field_behavior) = REQUIRED ];
-  // Content of images in bytes
-  bytes content = 3 [ (google.api.field_behavior) = REQUIRED ];
+  // Input to trigger the model instance
+  TaskInputStream task_input = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TestModelInstanceBinaryFileUploadResponse represents a response for the
