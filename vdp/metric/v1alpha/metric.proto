@@ -1,0 +1,308 @@
+syntax = "proto3";
+
+package vdp.metric.v1alpha;
+
+// Protocol Buffers Well-Known Types
+import "google/protobuf/timestamp.proto";
+
+// Google API 203 - field behavior documentation
+import "google/api/field_behavior.proto";
+
+/**********************************/
+/*** REQ/RES MESSAGE DEFINITION ***/
+/**********************************/
+
+/* Pipeline trigger records REQ and RES messages for `pipeline-backend` clients */
+
+message ReportPipelineTriggerRequest {
+    UserRecord user = 1  [ (google.api.field_behavior) = REQUIRED ];
+    PipelineRecord pipeline = 2  [ (google.api.field_behavior) = REQUIRED ];
+    PipelineUsageRecord usage_record = 3 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message ReportPipelineTriggerResponse {
+    NullMessage null = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  }
+  
+  message ReportPipelineTriggersRequest {
+    repeated ReportPipelineTriggerRequest pipeline_trigger_records = 1  [ (google.api.field_behavior) = REQUIRED ]; 
+  }
+  
+  message ReportPipelineTriggersResponse {
+    NullMessage null = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  }
+  
+  /* Model online records REQ and RES messages for `model-backend` clients */
+  
+  message ReportModelOnlineRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    ModelRecord model = 2 [ (google.api.field_behavior) = REQUIRED ];
+    ModelUsageRecord cum_usage_record = 3 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message ReportModelOnlineResponse {
+    NullMessage null = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  }
+  
+  message ReportModelOnlinesRequest {
+    repeated ReportModelOnlineRequest model_online_records = 1 [ (google.api.field_behavior) = REQUIRED ]; 
+  }
+  
+  message ReportModelOnlinesReponse {
+    NullMessage null = 1  [ (google.api.field_behavior) = OPTIONAL ];
+  }
+  
+  
+  /* Query pipeline info with user info */
+  
+  message GetPipelinesRequest {
+    UserRecord user = 1  [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 2  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetPipelinesResponse {
+    repeated PipelineRecord pipelines = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  /* Query model info with user info */
+  
+  message GetModelsRequest {
+    UserRecord user = 1  [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 2  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetModelssResponse {
+    repeated ModelRecord models = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  /* Query REQ and RES for pipetline trigger records and summary */
+  
+  // Query for pipeline trigger records
+  message GetPipelineTriggerRecordsRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    PipelineRecord pipeline = 2 [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 3  [ (google.api.field_behavior) = OPTIONAL ];
+  }
+  
+  message GetPipelineTriggerRecordsResponse {
+    repeated PipelineUsageRecord records = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Bulk query for pipeline trigger records
+  message GetBulkPipelineTriggerRecordsRequest {
+    repeated GetPipelineTriggerRecordsRequest bulk_queries = 1  [ (google.api.field_behavior) = REQUIRED ];  
+  }
+  
+  message GetBulkPipelineTriggerRecordsResponse {
+    repeated GetPipelineTriggerRecordsResponse bulk_records = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Query for cumulative pipeline trigger records
+  message GetCumulativePipelineTriggerRecordsRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    PipelineRecord pipeline = 2 [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 3  [ (google.api.field_behavior) = OPTIONAL ];
+  }
+  
+  message GetCumulativePipelineTriggerRecordsResponse {
+    repeated PipelineUsageRecord cumulative_records = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Bulk query for cumulative pipeline trigger records
+  message GetBulkCumulativePipelineTriggerRecordsRequest {
+    repeated GetCumulativePipelineTriggerRecordsRequest bulk_queries = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkCumulativePipelineTriggerRecordsResponse {
+    repeated GetCumulativePipelineTriggerRecordsResponse bulk_cumulative_records = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Query for pipeline trigger summary
+  message GetPipelineTriggerSummaryRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    PipelineRecord pipeline = 2 [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 3  [ (google.api.field_behavior) = OPTIONAL ];
+  }
+  
+  message GetPipelineTriggerSummaryResponse {
+    UsageSummary summary = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Bulk query for pipeline trigger summaries
+  message GetBulkPipelineTriggerSummariesRequest {
+    repeated GetPipelineTriggerSummaryRequest bulk_queries = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkPipelineTriggerSummariesResponse {
+    repeated GetPipelineTriggerSummaryResponse bulk_summaries = 1  [ (google.api.field_behavior) = REQUIRED ]; 
+  }
+  
+  /* Query REQ and RES for model online records and summary */
+  
+  // Query for model online records
+  message GetModelOnlineRecordsRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    ModelRecord model = 2 [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 3 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetModelOnlineRecordsResponse {
+    repeated ModelUsageRecord records = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Bulk query for model online records
+  message GetBulkModelOnlineRecordsRequest {
+    repeated GetModelOnlineRecordsRequest bulk_queries = 1  [ (google.api.field_behavior) = REQUIRED ];  
+  }
+  
+  message GetBulkModelOnlineRecordsResponse {
+    repeated GetModelOnlineRecordsResponse bulk_records = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Query for cumulative model online records
+  message GetCumulativeModelOnlineRecordsRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    ModelRecord model = 2 [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 3 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetCumulativeModelOnlineRecordsResponse {
+    repeated ModelUsageRecord cumulative_records = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Bulk query for cumulative model online records
+  message GetBulkCumulativeModelOnlineRecordsRequest {
+    repeated GetCumulativeModelOnlineRecordsRequest bulk_queries = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkCumulativeModelOnlineRecordResponse {
+    repeated GetCumulativeModelOnlineRecordsResponse bulk_cumulative_records = 1  [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Query for model online summary
+  message GetModelOnlineSummaryRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    ModelRecord model = 2 [ (google.api.field_behavior) = REQUIRED ];
+    TimeData time = 3 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetModelOnlineSummaryResponse {
+    UsageSummary summary = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Bulk query for model online summary
+  message GetBulkModelOnlineSummaryRequest {
+    repeated GetModelOnlineSummaryRequest bulk_queries = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkModelOnlineSummaryResposne {
+    repeated GetModelOnlineSummaryResponse bulk_summaries = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  /* Query REQ and RES for pipeline trigger price */
+  /* We only provide the price that will be charged for the current period */
+  
+  /* Query for pipeline trigger price */
+  message GetPipelineTriggerPriceRequest {
+    UserRecord user = 1 [ (google.api.field_behavior) = REQUIRED ];
+    PipelineRecord pipeline = 2 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetPipelineTriggerPriceResponse {
+    PriceData price = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkPipelineTriggerPriceRequest {
+    repeated GetPipelineTriggerPriceRequest bulk_queries = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkPipelineTriggerPriceResponse {
+    repeated GetPipelineTriggerPriceResponse bulk_prices = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  /* Query for model online price */
+  message GetModelOnlinePriceRequest {
+    UserRecord user = 1  [ (google.api.field_behavior) = REQUIRED ];
+    ModelRecord model = 2 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetModelOnlinePriceResponse {
+    PriceData price = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkModelOnlinePriceRequest {
+    repeated GetModelOnlinePriceRequest bulk_queries = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  message GetBulkModelOnlinePriceResponse {
+    repeated GetModelOnlinePriceResponse bulk_prices = 1 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Nul Message for gRPC REQ/RES
+  message NullMessage {}
+  
+  /**************************/
+  /*** MESSAGE DEFINITION ***/
+  /**************************/
+  
+  /* Records for all usage reports */
+  // User records definition
+  message UserRecord {
+    string uid = 1 [ (google.api.field_behavior) = REQUIRED ];
+    string name = 2 [ (google.api.field_behavior) = OPTIONAL];
+  }
+  
+  /* Records for pipeline trigger reports and queires */
+  // Pipeline records definition
+  message PipelineRecord {
+    string uid = 1 [ (google.api.field_behavior) = REQUIRED ];
+    string id = 2 [ (google.api.field_behavior) = REQUIRED];
+    string task = 3 [ (google.api.field_behavior) = REQUIRED]; 
+  }
+  
+  // Pipeline trigger usage record definition
+  message PipelineUsageRecord {
+    string request_id = 1  [ (google.api.field_behavior) = REQUIRED ];
+    string operation_id = 2  [ (google.api.field_behavior) = REQUIRED ];
+    string status = 3  [ (google.api.field_behavior) = REQUIRED ];
+    google.protobuf.Timestamp trigger_time = 4  [ (google.api.field_behavior) = REQUIRED ];
+    google.protobuf.Timestamp record_time = 5  [ (google.api.field_behavior) = REQUIRED ];
+    int64 value = 6  [ (google.api.field_behavior) = REQUIRED];
+  }
+  
+  /* Records for model online reports and queries */
+  // Pipeline records definition
+  message ModelRecord {
+    string ud = 1  [ (google.api.field_behavior) = REQUIRED ];
+    string id = 2 [ (google.api.field_behavior) = REQUIRED ];
+    string instance_id = 3 [ (google.api.field_behavior) = REQUIRED ];
+    string task = 4 [ (google.api.field_behavior) = REQUIRED ];
+  }
+  
+  // Model online usage record definition
+  message ModelUsageRecord {
+    google.protobuf.Timestamp deploy_time = 1  [ (google.api.field_behavior) = REQUIRED ];
+    google.protobuf.Timestamp record_time = 2  [ (google.api.field_behavior) = REQUIRED ];
+    int64 value = 3  [ (google.api.field_behavior) = REQUIRED ]; 
+  }
+  
+  /* Record for query response */
+  // Usage summary definition
+  message UsageSummary {
+    google.protobuf.Timestamp time = 1  [ (google.api.field_behavior) = REQUIRED];
+    int64 value = 2  [ (google.api.field_behavior) = REQUIRED];
+  }
+  
+  // Pricing information
+  message PriceData {
+    TimeData time = 1  [ (google.api.field_behavior) = REQUIRED ];
+    string currency = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    float amount = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  }
+  
+  /* Arguments for query */
+  // Time interval
+  message TimeData {
+    google.protobuf.Timestamp start_time = 1 [ (google.api.field_behavior) = REQUIRED ];
+    google.protobuf.Timestamp end_time = 2  [ (google.api.field_behavior) = REQUIRED ];
+  }
