@@ -5,11 +5,13 @@ info:
 tags:
   - name: PlanService
   - name: ConnectorService
+  - name: ControllerPrivateService
   - name: PipelineService
   - name: ModelService
   - name: MgmtAdminService
   - name: MgmtPublicService
-  - name: ModelService
+  - name: ModelPrivateService
+  - name: ModelPublicService
   - name: PipelineService
   - name: UsageService
 consumes:
@@ -238,7 +240,7 @@ paths:
       summary: |-
         GetModel method receives a GetModelRequest message and returns a
         GetModelResponse
-      operationId: ModelService_GetModel
+      operationId: ModelPublicService_GetModel
       responses:
         "200":
           description: A successful response.
@@ -275,12 +277,12 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
     delete:
       summary: |-
         DeleteModel method receives a DeleteModelRequest message and returns a
         DeleteModelResponse
-      operationId: ModelService_DeleteModel
+      operationId: ModelPublicService_DeleteModel
       responses:
         "200":
           description: A successful response.
@@ -300,12 +302,12 @@ paths:
           type: string
           pattern: models/[^/]+
       tags:
-        - ModelService
+        - ModelPublicService
     patch:
       summary: |-
         UpdateModel method receives a UpdateModelRequest message and returns a
         UpdateModelResponse
-      operationId: ModelService_UpdateModel
+      operationId: ModelPublicService_UpdateModel
       responses:
         "200":
           description: A successful response.
@@ -389,13 +391,13 @@ paths:
           required: true
           type: string
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{model_definition.name}:
     get:
       summary: |-
         GetModelDefinition method receives a GetModelDefinitionRequest message and
         returns a GetModelDefinitionResponse
-      operationId: ModelService_GetModelDefinition
+      operationId: ModelPublicService_GetModelDefinition
       responses:
         "200":
           description: A successful response.
@@ -433,13 +435,13 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{model_instance.name/readme}:
     get:
       summary: |-
         GetModelInstanceCard method receives a GetModelInstanceCardRequest message
         and returns a GetModelInstanceCardResponse
-      operationId: ModelService_GetModelInstanceCard
+      operationId: ModelPublicService_GetModelInstanceCard
       responses:
         "200":
           description: A successful response.
@@ -459,13 +461,39 @@ paths:
           type: string
           pattern: models/[^/]+/instances/[^/]+/readme
       tags:
-        - ModelService
+        - ModelPublicService
+  /v1alpha/{model_instance.name/state}:
+    get:
+      summary: |-
+        WatchModelInstanceState method receives a WatchModelInstanceStateRequest message
+        and returns a WatchModelInstanceStateResponse
+      operationId: ModelPublicService_WatchModelInstanceState
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchModelInstanceStateResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_instance.name/state
+          description: |-
+            Resource name of the model instance state.
+            For example "models/{model}/instances/{instance}/state"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+/instances/[^/]+/state
+      tags:
+        - ModelPublicService
   /v1alpha/{model_instance.name}:
     get:
       summary: |-
         GetModelInstance method receives a GetModelInstanceRequest message and
         returns a GetModelInstanceResponse
-      operationId: ModelService_GetModelInstance
+      operationId: ModelPublicService_GetModelInstance
       responses:
         "200":
           description: A successful response.
@@ -502,7 +530,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name_1}/connect:
     post:
       summary: |-
@@ -662,7 +690,7 @@ paths:
   /v1alpha/{name_2}/rename:
     post:
       summary: RenameModel method rename a model
-      operationId: ModelService_RenameModel
+      operationId: ModelPublicService_RenameModel
       responses:
         "200":
           description: A successful response.
@@ -692,7 +720,7 @@ paths:
             required:
               - new_model_id
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name_3}/rename:
     post:
       summary: |-
@@ -739,7 +767,7 @@ paths:
         GetModelOperation method receives a
         GetModelOperationRequest message and returns a
         GetModelOperationResponse message.
-      operationId: ModelService_GetModelOperation
+      operationId: ModelPublicService_GetModelOperation
       responses:
         "200":
           description: A successful response.
@@ -774,7 +802,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/activate:
     post:
       summary: |-
@@ -812,7 +840,7 @@ paths:
       summary: |-
         CancelModelOperation method receives a CancelModelOperationRequest message
         and returns a CancelModelOperationResponse
-      operationId: ModelService_CancelModelOperation
+      operationId: ModelPublicService_CancelModelOperation
       responses:
         "200":
           description: A successful response.
@@ -836,7 +864,7 @@ paths:
             type: object
             title: CancelModelOperationRequest represents a request to cancel a model operation
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/connect:
     post:
       summary: |-
@@ -909,7 +937,7 @@ paths:
   /v1alpha/{name}/deploy:
     post:
       summary: DeployModelInstance deploy a model instance to online state
-      operationId: ModelService_DeployModelInstance
+      operationId: ModelPublicService_DeployModelInstance
       responses:
         "200":
           description: A successful response.
@@ -937,7 +965,7 @@ paths:
               DeployModelInstanceRequest represents a request to deploy a model instance to
               online state
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/disconnect:
     post:
       summary: |-
@@ -980,7 +1008,7 @@ paths:
       summary: |-
         PublishModel method receives a PublishModelRequest message and returns a
         PublishModelResponse
-      operationId: ModelService_PublishModel
+      operationId: ModelPublicService_PublishModel
       responses:
         "200":
           description: A successful response.
@@ -1006,7 +1034,7 @@ paths:
             type: object
             title: PublishModelRequest represents a request to publish a model
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/read:
     post:
       summary: |-
@@ -1089,7 +1117,7 @@ paths:
       summary: |-
         TestModelInstance method receives a TestModelInstanceRequest message
         and returns a TestModelInstanceResponse message.
-      operationId: ModelService_TestModelInstance
+      operationId: ModelPublicService_TestModelInstance
       responses:
         "200":
           description: A successful response.
@@ -1123,14 +1151,14 @@ paths:
             required:
               - task_inputs
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/trigger:
     post:
       summary: /////////////////////////////////////////////////////
       description: |-
         TriggerModelInstance method receives a TriggerModelInstanceRequest message
         and returns a TriggerModelInstanceResponse message.
-      operationId: ModelService_TriggerModelInstance
+      operationId: ModelPublicService_TriggerModelInstance
       responses:
         "200":
           description: A successful response.
@@ -1164,11 +1192,11 @@ paths:
             required:
               - task_inputs
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/undeploy:
     post:
       summary: UndeployModelInstance undeploy a model instance to offline state
-      operationId: ModelService_UndeployModelInstance
+      operationId: ModelPublicService_UndeployModelInstance
       responses:
         "200":
           description: A successful response.
@@ -1196,13 +1224,13 @@ paths:
               UndeployModelInstanceRequest represents a request to undeploy a model
               instance to offline state
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/unpublish:
     post:
       summary: |-
         UnpublishModel method receives a UnpublishModelRequest message and returns
         a UnpublishModelResponse
-      operationId: ModelService_UnpublishModel
+      operationId: ModelPublicService_UnpublishModel
       responses:
         "200":
           description: A successful response.
@@ -1228,7 +1256,7 @@ paths:
             type: object
             title: UnpublishModelRequest represents a request to unpublish a model
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{name}/write:
     post:
       summary: |-
@@ -1303,7 +1331,7 @@ paths:
       summary: |-
         ListModelInstance method receives a ListModelInstanceRequest message and
         returns a ListModelInstanceResponse
-      operationId: ModelService_ListModelInstance
+      operationId: ModelPublicService_ListModelInstance
       responses:
         "200":
           description: A successful response.
@@ -1355,7 +1383,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
@@ -1403,7 +1431,7 @@ paths:
       summary: |-
         LookUpModel method receives a LookUpModelRequest message and returns a
         LookUpModelResponse
-      operationId: ModelService_LookUpModel
+      operationId: ModelPublicService_LookUpModel
       responses:
         "200":
           description: A successful response.
@@ -1440,14 +1468,14 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{permalink_3}/lookUp:
     get:
       summary: |-
         LookUpModelInstance method receives a LookUpModelInstanceRequest message
         and returns a
         LookUpModelInstanceResponse
-      operationId: ModelService_LookUpModelInstance
+      operationId: ModelPublicService_LookUpModelInstance
       responses:
         "200":
           description: A successful response.
@@ -1484,7 +1512,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/{permalink_4}/lookUp:
     get:
       summary: |-
@@ -2660,7 +2688,7 @@ paths:
         Liveness method receives a LivenessRequest message and returns a
         LivenessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: ModelService_Liveness2
+      operationId: ModelPublicService_Liveness2
       responses:
         "200":
           description: A successful response.
@@ -2677,7 +2705,7 @@ paths:
           required: false
           type: string
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/health/pipeline:
     get:
       summary: |-
@@ -2731,7 +2759,7 @@ paths:
       summary: |-
         ListModelDefinition method receives a ListModelDefinitionRequest message
         and returns a ListModelDefinitionResponse
-      operationId: ModelService_ListModelDefinition
+      operationId: ModelPublicService_ListModelDefinition
       responses:
         "200":
           description: A successful response.
@@ -2776,13 +2804,13 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/models:
     get:
       summary: |-
         ListModel method receives a ListModelRequest message and returns a
         ListModelResponse
-      operationId: ModelService_ListModel
+      operationId: ModelPublicService_ListModel
       responses:
         "200":
           description: A successful response.
@@ -2826,12 +2854,12 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
     post:
       summary: |-
         CreateModel method receives a CreateModelRequest message and returns a
         CreateModelResponse
-      operationId: ModelService_CreateModel
+      operationId: ModelPublicService_CreateModel
       responses:
         "200":
           description: A successful response.
@@ -2855,13 +2883,13 @@ paths:
             required:
               - model
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/operations:
     get:
       summary: |-
         ListModelOperation method receives a ListModelOperationRequest message
         and returns a ListModelOperationResponse
-      operationId: ModelService_ListModelOperation
+      operationId: ModelPublicService_ListModelOperation
       responses:
         "200":
           description: A successful response.
@@ -2910,7 +2938,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/pipelines:
     get:
       summary: |-
@@ -3042,7 +3070,7 @@ paths:
         Readiness method receives a ReadinessRequest message and returns a
         ReadinessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: ModelService_Readiness2
+      operationId: ModelPublicService_Readiness2
       responses:
         "200":
           description: A successful response.
@@ -3059,7 +3087,7 @@ paths:
           required: false
           type: string
       tags:
-        - ModelService
+        - ModelPublicService
   /v1alpha/reports:
     post:
       summary: |-
@@ -3367,6 +3395,13 @@ definitions:
        - SERVICE_MODEL: Service: MODEL
        - SERVICE_PIPELINE: Service: PIPELINE
     title: Service enumerates the services to collect data from
+  controllerv1alphaState:
+    type: object
+    properties:
+      model_state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
+        title: Model instance state
+    title: State represents a state of a resource
   googlelongrunningOperation:
     type: object
     properties:
@@ -3466,7 +3501,7 @@ definitions:
             foo = any.unpack(Foo.class);
           }
 
-       Example 3: Pack and unpack a message in Python.
+      Example 3: Pack and unpack a message in Python.
 
           foo = Foo(...)
           any = Any()
@@ -3476,7 +3511,7 @@ definitions:
             any.Unpack(foo)
             ...
 
-       Example 4: Pack and unpack a message in Go
+      Example 4: Pack and unpack a message in Go
 
            foo := &pb.Foo{...}
            any, err := anypb.New(foo)
@@ -3497,7 +3532,7 @@ definitions:
 
 
       JSON
-      ====
+
       The JSON representation of an `Any` value uses the regular
       representation of the deserialized, embedded message, with an
       additional field `@type` which contains the type URL. Example:
@@ -3670,6 +3705,15 @@ definitions:
     title: |-
       CancelModelOperationResponse represents a response for canceling a model
       operation
+  v1alphaCheckModelInstanceStateResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
+        title: Retrieved model instance state
+    title: |-
+      CheckModelInstanceStateResponse represents a response to fetch a model
+      instance's actual state
   v1alphaClassificationInput:
     type: object
     properties:
@@ -3986,6 +4030,9 @@ definitions:
   v1alphaDeletePlanResponse:
     type: object
     title: DeletePlanResponse represents an empty response
+  v1alphaDeleteResourceStateResponse:
+    type: object
+    title: DeleteResourceStateResponse represents an empty response
   v1alphaDeleteSourceConnectorResponse:
     type: object
     title: DeleteSourceConnectorResponse represents an empty response
@@ -4542,6 +4589,13 @@ definitions:
         $ref: '#/definitions/v1alphaPlan'
         title: A plan resource
     title: GetPlanResponse represents a response for a plan resource
+  v1alphaGetResourceStateResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/controllerv1alphaState'
+        title: Retrieved resource state
+    title: GetResourceStateResponse represents a response to fetch a resource's state
   v1alphaGetSourceConnectorDefinitionResponse:
     type: object
     properties:
@@ -5206,6 +5260,20 @@ definitions:
         readOnly: true
     title: ModelInstanceOutput represents one model instance inference result
   v1alphaModelInstanceState:
+    type: string
+    enum:
+      - STATE_UNSPECIFIED
+      - STATE_OFFLINE
+      - STATE_ONLINE
+      - STATE_ERROR
+    default: STATE_UNSPECIFIED
+    description: |-
+      - STATE_UNSPECIFIED: State: UNSPECIFIED
+       - STATE_OFFLINE: State: OFFLINE
+       - STATE_ONLINE: State: ONLINE
+       - STATE_ERROR: State: ERROR
+    title: State enumerates a model instance state
+  v1alphaModelInstanceStateState:
     type: string
     enum:
       - STATE_UNSPECIFIED
@@ -6439,6 +6507,13 @@ definitions:
         $ref: '#/definitions/v1alphaPlan'
         title: A plan resource
     title: UpdatePlanResponse represents a response for a plan resource
+  v1alphaUpdateResourceStateResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/controllerv1alphaState'
+        title: Updated resource state
+    title: UpdateResourceStateResponse represents a response to update a resource's state
   v1alphaUpdateSourceConnectorResponse:
     type: object
     properties:
@@ -6551,6 +6626,15 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1alphaWatchModelInstanceStateResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
+        title: Retrieved model instance state
+    title: |-
+      WatchModelInstanceStateResponse represents a public response to
+      fetch a model instance's actual state
   v1alphaWriteDestinationConnectorResponse:
     type: object
     title: |-
@@ -6627,6 +6711,20 @@ definitions:
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
     title: View enumerates the definition views
+  vdpcontrollerv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  vdpcontrollerv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
   vdpmgmtv1alphaLivenessResponse:
     type: object
     properties:

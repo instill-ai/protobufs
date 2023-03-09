@@ -158,6 +158,35 @@ message ModelInstance {
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
+// ModelInstanceState represents the actual statue for a model instance. There
+// exists one and exactly one state per model instance.
+message ModelInstanceState {
+  option (google.api.resource) = {
+    type : "api.instill.tech/ModelInstanceState",
+    pattern : "models/{model}/instances/{instance}/state"
+  };
+
+  // State enumerates a model instance state
+  enum State {
+    // State: UNSPECIFIED
+    STATE_UNSPECIFIED = 0;
+    // State: OFFLINE
+    STATE_OFFLINE = 1;
+    // State: ONLINE
+    STATE_ONLINE = 2;
+    // State: ERROR
+    STATE_ERROR = 3;
+  }
+
+  // Resource name. It must have the format of
+  // "models/{model}/instances/{instance}"
+  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Model instance state
+  State state = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // Model instance state
+  int32 progress = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
 // ModelInstanceCard represents the README card for a model instance. There
 // exists one and exactly one README card per model instance.
 message ModelInstanceCard {
@@ -493,6 +522,42 @@ message GetModelInstanceCardRequest {
 message GetModelInstanceCardResponse {
   // Retrieved model instance card
   ModelInstanceCard readme = 1;
+}
+
+// WatchModelInstanceStateRequest represents a public request to query
+// a model instance's actual state
+message WatchModelInstanceStateRequest {
+  // Resource name of the model instance state.
+  // For example "models/{model}/instances/{instance}/state"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/ModelInstanceState",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "model_instance.name/state"}
+    }
+  ];
+}
+
+// WatchModelInstanceStateResponse represents a public response to
+// fetch a model instance's actual state
+message WatchModelInstanceStateResponse {
+  // Retrieved model instance state
+  ModelInstanceState state = 1;
+}
+
+// CheckModelInstanceStateRequest represents a private request to query
+// a model instance's actual state
+message CheckModelInstanceStateRequest {
+  // Resource name of the model instance state.
+  // For example "models/{model}/instances/{instance}/state"
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CheckModelInstanceStateResponse represents a response to fetch a model
+// instance's actual state
+message CheckModelInstanceStateResponse {
+  // Retrieved model instance state
+  ModelInstanceState state = 1;
 }
 
 ////////////////////////////////////

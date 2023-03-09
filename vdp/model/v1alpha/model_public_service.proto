@@ -11,7 +11,7 @@ import "vdp/model/v1alpha/model_definition.proto";
 import "vdp/model/v1alpha/model.proto";
 
 // Model service responds to incoming model requests
-service ModelService {
+service ModelPublicService {
   option (google.api.default_host) = "api.instill.tech";
 
   // Liveness method receives a LivenessRequest message and returns a
@@ -204,6 +204,16 @@ service ModelService {
       returns (GetModelInstanceCardResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=models/*/instances/*/readme}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // WatchModelInstanceState method receives a WatchModelInstanceStateRequest message
+  // and returns a WatchModelInstanceStateResponse
+  rpc WatchModelInstanceState(WatchModelInstanceStateRequest)
+      returns (WatchModelInstanceStateResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=models/*/instances/*/state}"
     };
     option (google.api.method_signature) = "name";
   }
