@@ -206,7 +206,7 @@ message DeletePipelineRequest {
 // DeletePipelineResponse represents an empty response
 message DeletePipelineResponse {}
 
-// LookUpPipelineRequest represents a request to query a pipeline by permalink
+// LookUpPipelineRequest represents a request to query a pipeline via permalink
 message LookUpPipelineRequest {
   // Permalink of a pipeline. For example:
   // "pipelines/{uid}"
@@ -370,4 +370,65 @@ message TriggerPipelineBinaryFileUploadResponse {
   repeated string data_mapping_indices = 1;
   // The multiple model instance inference outputs
   repeated ModelInstanceOutput model_instance_outputs = 2;
+}
+
+// ========== Admin endpoints
+
+// ListAdminPipelinesRequest represents a request to list all pipelines from all users by admin
+message ListAdminPipelinesRequest {
+  // The maximum number of pipelines to return. The service may return fewer
+  // than this value. If unspecified, at most 10 pipelines will be returned. The
+  // maximum value is 100; values above 100 will be coerced to 100.
+  optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // View view (default is VIEW_BASIC)
+  optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
+  // Filter expression to list pipelines
+  optional string filter = 4 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListAdminPipelinesResponse represents a response for a list of pipelines
+message ListAdminPipelinesResponse {
+  // A list of pipeline resources
+  repeated Pipeline pipelines = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of pipeline resources
+  int64 total_size = 3;
+}
+
+// GetAdminPipelineRequest represents a request to query a user's pipeline by admin
+message GetAdminPipelineRequest {
+  // Pipeline resource name. It must have the format of "pipelines/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "pipeline.name"}
+    }
+  ];
+  // Pipeline resource view (default is VIEW_BASIC)
+  optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// GetAdminPipelineResponse represents a response for a pipeline resource
+message GetAdminPipelineResponse {
+  // A pipeline resource
+  Pipeline pipeline = 1;
+}
+
+// LookUpAdminPipelineRequest represents a request to query a user's pipeline via permalink by admin 
+message LookUpAdminPipelineRequest {
+  // Permalink of a pipeline. For example:
+  // "pipelines/{uid}"
+  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // View view (default is VIEW_BASIC)
+  optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// LookUpAdminPipelineResponse represents a response for a pipeline resource
+message LookUpAdminPipelineResponse {
+  // A pipeline resource
+  Pipeline pipeline = 1;
 }
