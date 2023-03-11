@@ -9,7 +9,7 @@ import "google/api/client.proto";
 import "vdp/mgmt/v1alpha/healthcheck.proto";
 import "vdp/mgmt/v1alpha/mgmt.proto";
 
-// Mgmt service responds to incoming requests.
+// Mgmt service responds to external incoming requests.
 service MgmtPublicService {
   option (google.api.default_host) = "api.instill.tech";
 
@@ -35,19 +35,19 @@ service MgmtPublicService {
 
   // ========== Public API: endpoints exposed to public internet traffic
 
-  // GetAuthenticatedUser method receives a GetAuthenticatedUserRequest message and returns
-  // a GetAuthenticatedUserResponse message.
-  rpc GetAuthenticatedUser(GetAuthenticatedUserRequest) returns (GetAuthenticatedUserResponse) {
+  // QueryAuthenticatedUser method receives a QueryAuthenticatedUserRequest message and returns
+  // a QueryAuthenticatedUserResponse message.
+  rpc QueryAuthenticatedUser(QueryAuthenticatedUserRequest) returns (QueryAuthenticatedUserResponse) {
     option (google.api.http) = {
-      get : "/v1alpha/user"
+      get : "/v1alpha/users/me"
     };
   }
 
-  // UpdateAuthenticatedUser method receives a UpdateAuthenticatedUserRequest message and returns 
-  // a UpdateAuthenticatedUserResponse message.
-  rpc UpdateAuthenticatedUser(UpdateAuthenticatedUserRequest) returns (UpdateAuthenticatedUserResponse) {
+  // PatchAuthenticatedUser method receives a PatchAuthenticatedUserRequest message and returns 
+  // a PatchAuthenticatedUserResponse message.
+  rpc PatchAuthenticatedUser(PatchAuthenticatedUserRequest) returns (PatchAuthenticatedUserResponse) {
     option (google.api.http) = {
-      patch : "/v1alpha/user"
+      patch : "/v1alpha/users/me"
       body : "user"
     };
     option (google.api.method_signature) = "user,update_mask";
@@ -57,7 +57,7 @@ service MgmtPublicService {
   // ExistUsernameResponse
   rpc ExistUsername(ExistUsernameRequest) returns (ExistUsernameResponse) {
     option (google.api.http) = {
-      get : "/v1alpha/{name=users/*}/exists"
+      get : "/v1alpha/{name=users/*}/exist"
     };
     option (google.api.method_signature) = "name";
   }
