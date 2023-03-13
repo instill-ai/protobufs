@@ -6,6 +6,7 @@ tags:
   - name: PlanService
   - name: ConnectorPrivateService
   - name: ConnectorPublicService
+  - name: ControllerPrivateService
   - name: PipelineService
   - name: ModelService
   - name: MgmtPrivateService
@@ -461,6 +462,32 @@ paths:
           required: true
           type: string
           pattern: models/[^/]+/instances/[^/]+/readme
+      tags:
+        - ModelPublicService
+  /v1alpha/{model_instance.name/watch}:
+    get:
+      summary: |-
+        WatchModelInstance method receives a WatchModelInstanceRequest message
+        and returns a WatchModelInstanceResponse
+      operationId: ModelPublicService_WatchModelInstance
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchModelInstanceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_instance.name/watch
+          description: |-
+            Resource name of the model instance.
+            For example "models/{model}/instances/{instance}"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+/instances/[^/]+/watch
       tags:
         - ModelPublicService
   /v1alpha/{model_instance.name}:
@@ -4204,6 +4231,15 @@ definitions:
     title: |-
       CancelModelOperationResponse represents a response for canceling a model
       operation
+  v1alphaCheckModelInstanceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Retrieved model instance state
+    title: |-
+      CheckModelInstanceResponse represents a response to fetch a model
+      instance's current state and longrunning progress
   v1alphaClassificationInput:
     type: object
     properties:
@@ -4520,6 +4556,9 @@ definitions:
   v1alphaDeletePlanResponse:
     type: object
     title: DeletePlanResponse represents an empty response
+  v1alphaDeleteResourceResponse:
+    type: object
+    title: DeleteResourceResponse represents an empty response
   v1alphaDeleteSourceConnectorResponse:
     type: object
     title: DeleteSourceConnectorResponse represents an empty response
@@ -5090,6 +5129,13 @@ definitions:
         $ref: '#/definitions/v1alphaPlan'
         title: A plan resource
     title: GetPlanResponse represents a response for a plan resource
+  v1alphaGetResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Retrieved resource state
+    title: GetResourceResponse represents a response to fetch a resource's state
   v1alphaGetSourceConnectorAdminResponse:
     type: object
     properties:
@@ -6514,6 +6560,37 @@ definitions:
         $ref: '#/definitions/v1alphaNullMessage'
         title: Null message for empty response
     title: ReportPipelineTriggersResponse represents a respond to a pipeline-trigger-records reporting bulk request
+  v1alphaResource:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Resource name.
+        readOnly: true
+      state:
+        $ref: '#/definitions/v1alphaResourceState'
+        title: Resource state
+        readOnly: true
+      progress:
+        type: integer
+        format: int32
+        title: Resource longrunning progress
+        readOnly: true
+    title: Resource represents a state of a resource
+  v1alphaResourceState:
+    type: string
+    enum:
+      - STATE_UNSPECIFIED
+      - STATE_OFFLINE
+      - STATE_ONLINE
+      - STATE_ERROR
+    default: STATE_UNSPECIFIED
+    description: |-
+      - STATE_UNSPECIFIED: State: UNSPECIFIED
+       - STATE_OFFLINE: State: OFFLINE
+       - STATE_ONLINE: State: ONLINE
+       - STATE_ERROR: State: ERROR
+    title: State enumerates a resource state
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
@@ -7103,6 +7180,13 @@ definitions:
         $ref: '#/definitions/v1alphaPlan'
         title: A plan resource
     title: UpdatePlanResponse represents a response for a plan resource
+  v1alphaUpdateResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Updated resource state
+    title: UpdateResourceResponse represents a response to update a resource's state
   v1alphaUpdateSourceConnectorResponse:
     type: object
     properties:
@@ -7215,6 +7299,15 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1alphaWatchModelInstanceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Retrieved model instance state
+    title: |-
+      WatchModelInstanceResponse represents a public response to
+      fetch a model instance's current state and longrunning progress
   v1alphaWriteDestinationConnectorResponse:
     type: object
     title: |-
@@ -7291,6 +7384,20 @@ definitions:
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
     title: View enumerates the definition views
+  vdpcontrollerv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  vdpcontrollerv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
   vdpmgmtv1alphaLivenessResponse:
     type: object
     properties:
