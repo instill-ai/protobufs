@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package vdp.controller.v1alpha;
 
+// Google API
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+
 import "vdp/controller/v1alpha/controller.proto";
 import "vdp/controller/v1alpha/healthcheck.proto";
 
@@ -19,13 +23,28 @@ service ControllerPrivateService {
 
   // GetResource method receives a GetResourceRequest message
   // and returns a GetResourceResponse
-  rpc GetResource(GetResourceRequest) returns (GetResourceResponse);
+  rpc GetResource(GetResourceRequest) returns (GetResourceResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=resources/*}"
+    };
+    option (google.api.method_signature) = "name";
+  };
 
   // UpdateResource method receives a UpdateResourceRequest message
   // and returns a UpdateResourceResponse
-  rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse);
+  rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/{resource.name=resources/*}"
+      body : "resource"
+    };
+  };
 
   // DeleteResource method receives a DeleteResourceRequest message
   // and returns a DeleteResourceResponse
-  rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse);
+  rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
+    option (google.api.http) = {
+      delete : "/v1alpha/{name=resources/*}"
+    };
+    option (google.api.method_signature) = "name";
+  };
 }

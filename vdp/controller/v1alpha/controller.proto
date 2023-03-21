@@ -2,35 +2,52 @@ syntax = "proto3";
 
 package vdp.controller.v1alpha;
 
+// Protobuf standard
+import "protoc-gen-openapiv2/options/annotations.proto";
+
 // Google api
 import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
 
-// Resource represents a state of a resource
+import "vdp/model/v1alpha/model.proto";
+import "vdp/pipeline/v1alpha/pipeline.proto";
+import "vdp/connector/v1alpha/connector.proto";
+import "vdp/healthcheck/v1alpha/healthcheck.proto";
+
+// Resource represents the current information of a resource
 message Resource {
-    // State enumerates a resource state
-    enum State {
-      // State: UNSPECIFIED
-      STATE_UNSPECIFIED = 0;
-      // State: OFFLINE
-      STATE_OFFLINE = 1;
-      // State: ONLINE
-      STATE_ONLINE = 2;
-      // State: ERROR
-      STATE_ERROR = 3;
-    }
+    option (google.api.resource) = {
+      type : "api.instill.tech/Resource"
+      pattern : "resources/{resource}"
+    };
 
     // Resource name.
-    string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    string name = 1 [ (google.api.field_behavior) = REQUIRED ];
     // Resource state
-    State state = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    oneof state {
+        // Model instance state
+        vdp.model.v1alpha.ModelInstance.State model_instance_state = 2;
+        // Pipeline state
+        vdp.pipeline.v1alpha.Pipeline.State pipeline_state = 3;
+        // Connector state
+        vdp.connector.v1alpha.Connector.State connector_state = 4;
+        // Backend service state
+        vdp.healthcheck.v1alpha.HealthCheckResponse.ServingStatus backend_state = 5;
+    };
     // Resource longrunning progress
-    int32 progress = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    optional int32 progress = 6 [ (google.api.field_behavior) = OPTIONAL ];
   }
 
 // GetResourceRequest represents a request to query a resource's state
 message GetResourceRequest {
     // Resource name
-    string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+    string name = 1 [
+      (google.api.field_behavior) = REQUIRED,
+      (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        field_configuration : {path_param_name : "resource.name"}
+      }
+    ];
 }
 
 // GetResourceResponse represents a response to fetch a resource's state
@@ -56,7 +73,13 @@ message UpdateResourceResponse {
 // DeleteResourceRequest represents a request to delete a resource's state
 message DeleteResourceRequest {
     // Resource name
-    string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+    string name = 1 [
+      (google.api.field_behavior) = REQUIRED,
+      (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        field_configuration : {path_param_name : "resource.name"}
+      }
+    ];
 }
 
 // DeleteResourceResponse represents an empty response

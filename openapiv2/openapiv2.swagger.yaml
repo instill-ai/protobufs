@@ -464,7 +464,7 @@ paths:
           pattern: models/[^/]+/instances/[^/]+/readme
       tags:
         - ModelPublicService
-  /v1alpha/{model_instance.name/watch}:
+  /v1alpha/{model_instance.name/watch}/watch:
     get:
       summary: |-
         WatchModelInstance method receives a WatchModelInstanceRequest message
@@ -487,7 +487,7 @@ paths:
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+/watch
+          pattern: models/[^/]+/instances/[^/]+
       tags:
         - ModelPublicService
   /v1alpha/{model_instance.name}:
@@ -1738,6 +1738,105 @@ paths:
           type: string
       tags:
         - PipelinePublicService
+  /v1alpha/{resource.name}:
+    get:
+      summary: |-
+        GetResource method receives a GetResourceRequest message
+        and returns a GetResourceResponse
+      operationId: ControllerPrivateService_GetResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.name
+          description: Resource name
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+
+      tags:
+        - ControllerPrivateService
+    delete:
+      summary: |-
+        DeleteResource method receives a DeleteResourceRequest message
+        and returns a DeleteResourceResponse
+      operationId: ControllerPrivateService_DeleteResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.name
+          description: Resource name
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+
+      tags:
+        - ControllerPrivateService
+    patch:
+      summary: |-
+        UpdateResource method receives a UpdateResourceRequest message
+        and returns a UpdateResourceResponse
+      operationId: ControllerPrivateService_UpdateResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.name
+          description: Resource name.
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+
+        - name: resource
+          description: Resource state
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              model_instance_state:
+                $ref: '#/definitions/v1alphaModelInstanceState'
+                title: Model instance state
+              pipeline_state:
+                $ref: '#/definitions/v1alphaPipelineState'
+                title: Pipeline state
+              connector_state:
+                $ref: '#/definitions/v1alphaConnectorState'
+                title: Connector state
+              backend_state:
+                $ref: '#/definitions/HealthCheckResponseServingStatus'
+                title: Backend service state
+              progress:
+                type: integer
+                format: int32
+                title: Resource longrunning progress
+            title: Resource state
+        - name: workflow_id
+          description: Resource longrunnning workflow id
+          in: query
+          required: false
+          type: string
+      tags:
+        - ControllerPrivateService
   /v1alpha/{source_connector.name}:
     get:
       summary: |-
@@ -2012,6 +2111,32 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
+      tags:
+        - ModelPrivateService
+  /v1alpha/admin/{name}/check:
+    get:
+      summary: |-
+        CheckModelInstance method receives a CheckModelInstanceRequest message and returns a
+        CheckModelInstanceResponse
+      operationId: ModelPrivateService_CheckModelInstance
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCheckModelInstanceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            Resource name of the model instance.
+            For example "models/{model}/instances/{instance}"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+/instances/[^/]+
       tags:
         - ModelPrivateService
   /v1alpha/admin/{permalink_1}/lookUp:
@@ -2591,10 +2716,17 @@ paths:
             properties:
               uid:
                 type: string
-                description: "User ID in UUIDv4. This field is optionally set by users \n(optional on resource creation, server-generated if unset)."
+                description: |-
+                  User ID in UUIDv4. This field is optionally set by users
+                  (optional on resource creation, server-generated if unset).
               id:
                 type: string
-                description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
+                description: |-
+                  Resource ID (the last segment of the resource name), also the user username.
+                  This conforms to RFC-1034, which restricts to letters, numbers,
+                  and hyphen, with the first character a letter, the last a letter or a
+                  number, and a 63 character maximum.
+                  Note that the ID can be updated.
               type:
                 $ref: '#/definitions/v1alphaOwnerType'
                 title: 'Owner type: fixed to `OWNER_TYPE_USER`'
@@ -4234,8 +4366,8 @@ definitions:
   v1alphaCheckModelInstanceResponse:
     type: object
     properties:
-      resource:
-        $ref: '#/definitions/v1alphaResource'
+      state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
         title: Retrieved model instance state
     title: |-
       CheckModelInstanceResponse represents a response to fetch a model
@@ -6566,31 +6698,25 @@ definitions:
       name:
         type: string
         description: Resource name.
-        readOnly: true
-      state:
-        $ref: '#/definitions/v1alphaResourceState'
-        title: Resource state
-        readOnly: true
+      model_instance_state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
+        title: Model instance state
+      pipeline_state:
+        $ref: '#/definitions/v1alphaPipelineState'
+        title: Pipeline state
+      connector_state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Connector state
+      backend_state:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Backend service state
       progress:
         type: integer
         format: int32
         title: Resource longrunning progress
-        readOnly: true
-    title: Resource represents a state of a resource
-  v1alphaResourceState:
-    type: string
-    enum:
-      - STATE_UNSPECIFIED
-      - STATE_OFFLINE
-      - STATE_ONLINE
-      - STATE_ERROR
-    default: STATE_UNSPECIFIED
-    description: |-
-      - STATE_UNSPECIFIED: State: UNSPECIFIED
-       - STATE_OFFLINE: State: OFFLINE
-       - STATE_ONLINE: State: ONLINE
-       - STATE_ERROR: State: ERROR
-    title: State enumerates a resource state
+    title: Resource represents the current information of a resource
+    required:
+      - name
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
@@ -7229,10 +7355,17 @@ definitions:
         readOnly: true
       uid:
         type: string
-        description: "User ID in UUIDv4. This field is optionally set by users \n(optional on resource creation, server-generated if unset)."
+        description: |-
+          User ID in UUIDv4. This field is optionally set by users
+          (optional on resource creation, server-generated if unset).
       id:
         type: string
-        description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
+        description: |-
+          Resource ID (the last segment of the resource name), also the user username.
+          This conforms to RFC-1034, which restricts to letters, numbers,
+          and hyphen, with the first character a letter, the last a letter or a
+          number, and a 63 character maximum.
+          Note that the ID can be updated.
       type:
         $ref: '#/definitions/v1alphaOwnerType'
         title: 'Owner type: fixed to `OWNER_TYPE_USER`'
@@ -7302,9 +7435,13 @@ definitions:
   v1alphaWatchModelInstanceResponse:
     type: object
     properties:
-      resource:
-        $ref: '#/definitions/v1alphaResource'
+      state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
         title: Retrieved model instance state
+      progress:
+        type: integer
+        format: int32
+        title: Retrieved model instance logrunning progress
     title: |-
       WatchModelInstanceResponse represents a public response to
       fetch a model instance's current state and longrunning progress
