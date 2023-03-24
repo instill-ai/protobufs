@@ -685,9 +685,12 @@ paths:
         - ConnectorPublicService
   /v1alpha/{name_1}/trigger:
     post:
-      summary: |-
-        TriggerPipeline method receives a TriggerPipelineRequest message and
-        returns a TriggerPipelineResponse.
+      summary: Trigger a pipeline deployed on VDP
+      description: |-
+        `TriggerPipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This methods tiggers a pipeline and returns 1) UUID for each input and 2) model instance inference outputs. It takes in `TriggerPipelineRequest` and returns a `TriggerPipelineResponse`.
+
+        NOTE: pipeline name must have the format of "pipelines/*".
+        → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP and [our tutorial](https://www.instill.tech/tutorials/vdp-101-4-how-to-trigger-a-sync-pipeline) for further details about triggering a pipeline.
       operationId: PipelinePublicService_TriggerPipeline
       responses:
         "200":
@@ -757,9 +760,8 @@ paths:
         - ModelPublicService
   /v1alpha/{name_3}/rename:
     post:
-      summary: |-
-        RenamePipeline method receives a RenamePipelineRequest message and returns
-        a RenamePipelineResponse message.
+      summary: Rename a pipeline deployed on VDP.
+      description: '`RenamePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method changes the pipeline name and returns it''s latest detals. It takes in `RenamePipelineRequest` and returns `RenamePipelineResponse`.'
       operationId: PipelinePublicService_RenamePipeline
       responses:
         "200":
@@ -837,11 +839,11 @@ paths:
         - ConnectorPublicService
   /v1alpha/{name}/activate:
     post:
-      summary: |-
-        Activate a pipeline.
-        The "state" of the pipeline after activating is "ACTIVE".
-        ActivatePipeline can be called on Pipelines in the state "INACTIVE";
-        Pipelines in a different state (including "ACTIVE") returns an error.
+      summary: Activate a pipeline deployaed on VDP.
+      description: |-
+        `ActivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method activates a pipeline deployed on VDP. The "state" of the pipeline after activating is "ACTIVE". It takes in `ActivatePipelineRequest` and returns `ActivatePipelineResponse`.
+
+        NOTE: `ActivatePipeline` can be called on Pipelines in the state "INACTIVE"; Pipelines in a different state (including "ACTIVE") returns an error.
       operationId: PipelinePublicService_ActivatePipeline
       responses:
         "200":
@@ -936,11 +938,11 @@ paths:
         - ConnectorPublicService
   /v1alpha/{name}/deactivate:
     post:
-      summary: |-
-        Deactivate a pipeline.
-        The "state" of the pipeline after inactivating is "INACTIVE".
-        DeactivatePipeline can be called on Pipelines in the state "ACTIVE";
-        Pipelines in a different state (including "INACTIVE") returns an error.
+      summary: Deactivate a pipeline deployed on VDP.
+      description: |-
+        `DeactivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method deactivates a pipeline deployed on VDP. The "state" of the pipeline after inactivating is "INACTIVE". It takes in `DeactivatePipelineRequest` and returns `DeactivatePipelineResponse`.
+
+        NOTE: `DeactivatePipeline` can be called on Pipelines in the state "ACTIVE"; Pipelines in a different state (including "INACTIVE") returns an error.
       operationId: PipelinePublicService_DeactivatePipeline
       responses:
         "200":
@@ -1585,9 +1587,8 @@ paths:
       tags:
         - PipelinePublicService
     delete:
-      summary: |-
-        DeletePipeline method receives a DeletePipelineRequest message and returns
-        a DeletePipelineResponse message.
+      summary: Delete a pipeline deployed on VDP
+      description: '`DeletePipeline`is a call with the method(s) `DELETE` within the `PipelinePublicSerive` service. This method deletes a pipeline deployed on VDP given a pipeline name. It takes in `DeletePipelineRequest` and returns `DeletePipelineResponse`.'
       operationId: PipelinePublicService_DeletePipeline
       responses:
         "200":
@@ -1608,9 +1609,8 @@ paths:
       tags:
         - PipelinePublicService
     patch:
-      summary: |-
-        UpdatePipeline method receives a UpdatePipelineRequest message and returns
-        a UpdatePipelineResponse message.
+      summary: Update a pipeline deployed on VDP
+      description: '`UpdatePipeline` is a call with the method(s) `PATCH` within the `PipelinePublicSerive` service. This methods update an existing pipeline deployed on VDP. It takes in `UpdatePipelineRequest` and returns `UpdatePipelineResponse`.'
       operationId: PipelinePublicService_UpdatePipeline
       responses:
         "200":
@@ -2374,9 +2374,11 @@ paths:
         - ModelPrivateService
   /v1alpha/admin/{permalink_4}/lookUp:
     get:
-      summary: |-
-        LookUpPipelineAdmin method receives a LookUpPipelineAdminRequest message
-        and returns a LookUpPipelineAdminResponse
+      summary: Get the detail of a pipeline with it's permalink (admin only).
+      description: |-
+        `LookUpPipelineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service This is a *private* method that is only avaible for admins to get a pipeline given a permalink. It takes in `LookUpPipelineAdminRequest` and returns a `LookUpPipelineAdminResponse`.
+
+        NOTE: permalink must have to format of "pipelines/{uid}".
       operationId: PipelinePrivateService_LookUpPipelineAdmin
       responses:
         "200":
@@ -2457,9 +2459,11 @@ paths:
         - ConnectorPrivateService
   /v1alpha/admin/{pipeline.name}:
     get:
-      summary: |-
-        GetPipelineAdmin method receives a GetPipelineAdminRequest message and
-        returns a GetPipelineAdminResponse message.
+      summary: Get the detail of a pipeline with it's name (admin only).
+      description: |-
+        `GetPipeLineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service. This is a *private* method that is only avaible for admins to get a pipeline given a pipeline name embedded in the *GetPipelineAdminRequest*. It takes in `GetPipelineAdminRequest` and returns a `GetPipelineAdminResponse`.
+
+        NOTE: pipeline name must have the format of "pipelines/*".
       operationId: PipelinePrivateService_GetPipelineAdmin
       responses:
         "200":
@@ -2809,9 +2813,8 @@ paths:
         - ModelPrivateService
   /v1alpha/admin/pipelines:
     get:
-      summary: |-
-        ListPipelinesAdmin method receives a ListPipelinesAdminRequest message and
-        returns a ListPipelinesAdminResponse message.
+      summary: List all pipelines deployed on VDP (admin only).
+      description: '`ListPipelinesAdmin` is a call with the method(s) `GET` within the `PipelinePrivateSerive` service This is a *private* method that is only avaible for admins to list *all* pipelines from *all* users. Only admins with root permission can call this methods. It takes in `ListPipelinesAdminRequest` and returns a `ListPipelinesAdminResponse`.'
       operationId: PipelinePrivateService_ListPipelinesAdmin
       responses:
         "200":
@@ -3184,10 +3187,11 @@ paths:
         - ModelPublicService
   /v1alpha/health/pipeline:
     get:
-      summary: |-
-        Liveness method receives a LivenessRequest message and returns a
-        LivenessResponse message.
-        See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+      summary: Check if the pipeline service is alive or dead.
+      description: |-
+        `Liveness` is a call with the method(s) `GET within the `PipelinePublicSerive` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+
+        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
       operationId: PipelinePublicService_Liveness2
       responses:
         "200":
@@ -3417,9 +3421,11 @@ paths:
         - ModelPublicService
   /v1alpha/pipelines:
     get:
-      summary: |-
-        ListPipelines method receives a ListPipelinesRequest message and returns a
-        ListPipelinesResponse message.
+      summary: List all pipelines deployed on VDP
+      description: |-
+        `ListPipelines` is a call with the method(s) `GET` within the `PipelinePublicSerive` service. This method returns a list consisiting of all pipelines deployed on VDP. It takes in `ListPipelinesRequest` and returns `ListPipelinesResponse`.
+
+        If unspecified, this service returns at most 10 pipelines. The maxumum number of pipelines this service can return is set to 100.
       operationId: PipelinePublicService_ListPipelines
       responses:
         "200":
@@ -3468,9 +3474,11 @@ paths:
       tags:
         - PipelinePublicService
     post:
-      summary: |-
-        CreatePipeline method receives a CreatePipelineRequest message and returns
-        a CreatePipelineResponse message.
+      summary: Create a new pipeline
+      description: |-
+        `CreatePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method creates a new pipelines (given a recipie consisting of *source*, *model instance* and *destination*) on VDP. It takes in `CreatePipelineRequest` and returns `CreatePipelineResponse`.
+
+        → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP.
       operationId: PipelinePublicService_CreatePipeline
       responses:
         "200":
@@ -4004,6 +4012,10 @@ definitions:
           if (any.is(Foo.class)) {
             foo = any.unpack(Foo.class);
           }
+          // or ...
+          if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+            foo = any.unpack(Foo.getDefaultInstance());
+          }
 
       Example 3: Pack and unpack a message in Python.
 
@@ -4033,7 +4045,6 @@ definitions:
       methods only use the fully qualified type name after the last '/'
       in the type URL, for example "foo.bar.com/x/y.z" will yield type
       name "y.z".
-
 
       JSON
 
