@@ -687,7 +687,7 @@ paths:
     post:
       summary: Trigger a pipeline deployed on VDP
       description: |-
-        `TriggerPipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This methods tiggers a pipeline and returns 1) UUID for each input and 2) model instance inference outputs. It takes in `TriggerPipelineRequest` and returns a `TriggerPipelineResponse`.
+        `TriggerPipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This methods tiggers a pipeline and returns 1) UUID for each input and 2) model instance inference outputs. It takes in `TriggerPipelineRequest` and returns a `TriggerPipelineResponse`.
 
         NOTE: pipeline name must have the format of "pipelines/*".
         → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP and [our tutorial](https://www.instill.tech/tutorials/vdp-101-4-how-to-trigger-a-sync-pipeline) for further details about triggering a pipeline.
@@ -761,7 +761,7 @@ paths:
   /v1alpha/{name_3}/rename:
     post:
       summary: Rename a pipeline deployed on VDP.
-      description: '`RenamePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method changes the pipeline name and returns it''s latest detals. It takes in `RenamePipelineRequest` and returns `RenamePipelineResponse`.'
+      description: '`RenamePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method changes the pipeline name and returns it''s latest detals. It takes in `RenamePipelineRequest` and returns `RenamePipelineResponse`.'
       operationId: PipelinePublicService_RenamePipeline
       responses:
         "200":
@@ -841,7 +841,7 @@ paths:
     post:
       summary: Activate a pipeline deployaed on VDP.
       description: |-
-        `ActivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method activates a pipeline deployed on VDP. The "state" of the pipeline after activating is "ACTIVE". It takes in `ActivatePipelineRequest` and returns `ActivatePipelineResponse`.
+        `ActivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method activates a pipeline deployed on VDP. The "state" of the pipeline after activating is "ACTIVE". It takes in `ActivatePipelineRequest` and returns `ActivatePipelineResponse`.
 
         NOTE: `ActivatePipeline` can be called on Pipelines in the state "INACTIVE"; Pipelines in a different state (including "ACTIVE") returns an error.
       operationId: PipelinePublicService_ActivatePipeline
@@ -940,7 +940,7 @@ paths:
     post:
       summary: Deactivate a pipeline deployed on VDP.
       description: |-
-        `DeactivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method deactivates a pipeline deployed on VDP. The "state" of the pipeline after inactivating is "INACTIVE". It takes in `DeactivatePipelineRequest` and returns `DeactivatePipelineResponse`.
+        `DeactivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method deactivates a pipeline deployed on VDP. The "state" of the pipeline after inactivating is "INACTIVE". It takes in `DeactivatePipelineRequest` and returns `DeactivatePipelineResponse`.
 
         NOTE: `DeactivatePipeline` can be called on Pipelines in the state "ACTIVE"; Pipelines in a different state (including "INACTIVE") returns an error.
       operationId: PipelinePublicService_DeactivatePipeline
@@ -1588,7 +1588,7 @@ paths:
         - PipelinePublicService
     delete:
       summary: Delete a pipeline deployed on VDP
-      description: '`DeletePipeline`is a call with the method(s) `DELETE` within the `PipelinePublicSerive` service. This method deletes a pipeline deployed on VDP given a pipeline name. It takes in `DeletePipelineRequest` and returns `DeletePipelineResponse`.'
+      description: '`DeletePipeline`is a call with the method(s) `DELETE` within the `PipelinePublicService` service. This method deletes a pipeline deployed on VDP given a pipeline name. It takes in `DeletePipelineRequest` and returns `DeletePipelineResponse`.'
       operationId: PipelinePublicService_DeletePipeline
       responses:
         "200":
@@ -1610,7 +1610,7 @@ paths:
         - PipelinePublicService
     patch:
       summary: Update a pipeline deployed on VDP
-      description: '`UpdatePipeline` is a call with the method(s) `PATCH` within the `PipelinePublicSerive` service. This methods update an existing pipeline deployed on VDP. It takes in `UpdatePipelineRequest` and returns `UpdatePipelineResponse`.'
+      description: '`UpdatePipeline` is a call with the method(s) `PATCH` within the `PipelinePublicService` service. This methods update an existing pipeline deployed on VDP. It takes in `UpdatePipelineRequest` and returns `UpdatePipelineResponse`.'
       operationId: PipelinePublicService_UpdatePipeline
       responses:
         "200":
@@ -2290,9 +2290,11 @@ paths:
         - ConnectorPrivateService
   /v1alpha/admin/{permalink_2}/lookUp:
     get:
-      summary: |-
-        LookUpUserAdmin method receives a LookUpUserAdminRequest message and
-        returns a LookUpUserAdminResponse
+      summary: Get a existing user with a permalink consisting of unique ID (admin only).
+      description: |-
+        `LookUpUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to get existing users in VDP with user's unique ID (i.e., uid). Only admins with root permission can call this method. It takes in `LookUpUserAdminRequest` and returns `LookUpUserAdminResponse`.
+
+         NOTE: permalink in `GetUesrAdminRequest` must have the format of "users/*". For example: "users/{uid}", where {uid} denotes the unique ID of the user.
       operationId: MgmtPrivateService_LookUpUserAdmin
       responses:
         "200":
@@ -2376,7 +2378,7 @@ paths:
     get:
       summary: Get the detail of a pipeline with it's permalink (admin only).
       description: |-
-        `LookUpPipelineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service This is a *private* method that is only avaible for admins to get a pipeline given a permalink. It takes in `LookUpPipelineAdminRequest` and returns a `LookUpPipelineAdminResponse`.
+        `LookUpPipelineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service This is a *private* method that is only avaible for admins to get a pipeline given a permalink. Only admins with root permission can call this method. It takes in `LookUpPipelineAdminRequest` and returns a `LookUpPipelineAdminResponse`.
 
         NOTE: permalink must have to format of "pipelines/{uid}".
       operationId: PipelinePrivateService_LookUpPipelineAdmin
@@ -2461,7 +2463,7 @@ paths:
     get:
       summary: Get the detail of a pipeline with it's name (admin only).
       description: |-
-        `GetPipeLineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service. This is a *private* method that is only avaible for admins to get a pipeline given a pipeline name embedded in the *GetPipelineAdminRequest*. It takes in `GetPipelineAdminRequest` and returns a `GetPipelineAdminResponse`.
+        `GetPipeLineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service. This is a *private* method that is only avaible for admins to get a pipeline given a pipeline name. Only admins with root permission can call this method. It takes in `GetPipelineAdminRequest` and returns a `GetPipelineAdminResponse`.
 
         NOTE: pipeline name must have the format of "pipelines/*".
       operationId: PipelinePrivateService_GetPipelineAdmin
@@ -2541,9 +2543,11 @@ paths:
         - ConnectorPrivateService
   /v1alpha/admin/{user.name}:
     get:
-      summary: |-
-        GetUserAdmin method receives a GetUserAdminRequest message and returns
-        a GetUserAdminResponse message.
+      summary: Get a existing user with user's name (admin only).
+      description: |-
+        `GetUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to get a new user created in VDP with user's name. Only admins with root permission can call this method. It takes in `GetUserAdminRequest` and returns `GetUserAdminResponse`.
+
+        NOTE: username in `GetUesrAdminRequest` must have the format of "users/*". For example: "users/{username}".
       operationId: MgmtPrivateService_GetUserAdmin
       responses:
         "200":
@@ -2581,9 +2585,11 @@ paths:
       tags:
         - MgmtPrivateService
     delete:
-      summary: |-
-        DeleteUserAdmin method receives a DeleteUserAdminRequest message and
-        returns a DeleteUserAdminResponse
+      summary: Delete an existing user (admin only)
+      description: |-
+        `DeleteUserAdmin` is a call with the method(s) `DELETE` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to delete existing users in VDP. Only admins with root permission can call this method. It takes in `DeleteUserAdminRequest` and returns `DeleteUserAdminResponse`.
+
+        NOTE: username in `GetUesrAdminRequest` must have the format of "users/*". For example: "users/{username}".
       operationId: MgmtPrivateService_DeleteUserAdmin
       responses:
         "200":
@@ -2606,9 +2612,11 @@ paths:
       tags:
         - MgmtPrivateService
     patch:
-      summary: |-
-        UpdateUserAdmin method receives a UpdateUserAdminRequest message and
-        returns a UpdateUserAdminResponse
+      summary: Update an existing user (admin only)
+      description: |-
+        `UpdateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to udpate existing users in VDP. Only admins with root permission can call this method. It takes in `UpdateUserAdminRequest` and returns `UpdateUserAdminResponse`.
+
+        NOTE: In `UpdateUesrAdminRequest`, the user's `name` field is used to identify the user to update. For example: "users/{user}".
       operationId: MgmtPrivateService_UpdateUserAdmin
       responses:
         "200":
@@ -2814,7 +2822,10 @@ paths:
   /v1alpha/admin/pipelines:
     get:
       summary: List all pipelines deployed on VDP (admin only).
-      description: '`ListPipelinesAdmin` is a call with the method(s) `GET` within the `PipelinePrivateSerive` service This is a *private* method that is only avaible for admins to list *all* pipelines from *all* users. Only admins with root permission can call this methods. It takes in `ListPipelinesAdminRequest` and returns a `ListPipelinesAdminResponse`.'
+      description: |-
+        `ListPipelinesAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service This is a *private* method that is only avaible for admins to list *all* pipelines from *all* users. Only admins with root permission can call this method. It takes in `ListPipelinesAdminRequest` and returns a `ListPipelinesAdminResponse`.
+
+        NOTE: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100.
       operationId: PipelinePrivateService_ListPipelinesAdmin
       responses:
         "200":
@@ -2911,9 +2922,11 @@ paths:
         - ConnectorPrivateService
   /v1alpha/admin/users:
     get:
-      summary: |-
-        ListUsersAdmin method receives a ListUsersAdminRequest message and returns
-        a ListUsersAdminResponse message.
+      summary: List all users created in VDP (admin only).
+      description: |-
+        `ListUsersAdmin` is a call with the method(s) `GET` within the `MgmtPrivateSerive` service. This is a *private* method that is only avaible for admins to list *all* users created in VDP. Only admins with root permission can call this method. It takes in `ListUsersAdminRequest` and returns a `ListUsersAdminResponse`.
+
+        NOTE: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100.
       operationId: MgmtPrivateService_ListUsersAdmin
       responses:
         "200":
@@ -2963,9 +2976,11 @@ paths:
       tags:
         - MgmtPrivateService
     post:
-      summary: |-
-        CreateUserAdmin receives a CreateUserAdminRequest message and returns a
-        a GetUserAdminResponse
+      summary: Create a new user (admin only).
+      description: |-
+        `CreateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to create a new user in VDP. Only admins with root permission can call this method. It takes in `CreateUserAdminRequest` and returns a `CreateUserAdminResponse`.
+
+        NOTE: username must have the format of "users/*". For example: "users/local-user".
       operationId: MgmtPrivateService_CreateUserAdmin
       responses:
         "200":
@@ -3139,10 +3154,11 @@ paths:
         - ConnectorPublicService
   /v1alpha/health/mgmt:
     get:
-      summary: |-
-        Liveness method receives a LivenessRequest message and returns a
-        LivenessResponse message.
-        See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+      summary: Check if the Mgmt service is alive or dead.
+      description: |-
+        `Liveness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+
+        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
       operationId: MgmtPublicService_Liveness2
       responses:
         "200":
@@ -3189,7 +3205,7 @@ paths:
     get:
       summary: Check if the pipeline service is alive or dead.
       description: |-
-        `Liveness` is a call with the method(s) `GET within the `PipelinePublicSerive` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+        `Liveness` is a call with the method(s) `GET within the `PipelinePublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
 
         → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
       operationId: PipelinePublicService_Liveness2
@@ -3423,9 +3439,9 @@ paths:
     get:
       summary: List all pipelines deployed on VDP
       description: |-
-        `ListPipelines` is a call with the method(s) `GET` within the `PipelinePublicSerive` service. This method returns a list consisiting of all pipelines deployed on VDP. It takes in `ListPipelinesRequest` and returns `ListPipelinesResponse`.
+        `ListPipelines` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method returns a list consisiting of all pipelines deployed on VDP. It takes in `ListPipelinesRequest` and returns `ListPipelinesResponse`.
 
-        If unspecified, this service returns at most 10 pipelines. The maxumum number of pipelines this service can return is set to 100.
+        NOTE: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100.
       operationId: PipelinePublicService_ListPipelines
       responses:
         "200":
@@ -3476,7 +3492,7 @@ paths:
     post:
       summary: Create a new pipeline
       description: |-
-        `CreatePipeline` is a call with the method(s) `POST` within the `PipelinePublicSerive` service. This method creates a new pipelines (given a recipie consisting of *source*, *model instance* and *destination*) on VDP. It takes in `CreatePipelineRequest` and returns `CreatePipelineResponse`.
+        `CreatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method creates a new pipelines (given a recipie consisting of *source*, *model instance* and *destination*) on VDP. It takes in `CreatePipelineRequest` and returns `CreatePipelineResponse`.
 
         → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP.
       operationId: PipelinePublicService_CreatePipeline
@@ -3502,10 +3518,11 @@ paths:
         - PipelinePublicService
   /v1alpha/ready/mgmt:
     get:
-      summary: |-
-        Readiness method receives a ReadinessRequest message and returns a
-        ReadinessResponse message.
-        See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+      summary: Check if the Mgmt service is ready to serve traffics
+      description: |-
+        `Readiness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the Readiness (ready or not ready) of the pipeilne service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+
+        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
       operationId: MgmtPublicService_Readiness2
       responses:
         "200":
@@ -3796,9 +3813,8 @@ paths:
       tags:
         - MgmtPublicService
     patch:
-      summary: |-
-        PatchAuthenticatedUser method receives a PatchAuthenticatedUserRequest
-        message and returns a PatchAuthenticatedUserResponse message.
+      summary: Update user's own user information
+      description: '`PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPrivateService`. This method is for an authenticated user to update it''s *own* user information. It takes in `PatchAuthenticatedUserRequest` and returns a `PatchAuthenticatedUserResponse`.'
       operationId: MgmtPublicService_PatchAuthenticatedUser
       responses:
         "200":

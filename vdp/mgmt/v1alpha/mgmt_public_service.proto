@@ -13,9 +13,11 @@ import "vdp/mgmt/v1alpha/mgmt.proto";
 service MgmtPublicService {
   option (google.api.default_host) = "api.instill.tech";
 
-  // Liveness method receives a LivenessRequest message and returns a
-  // LivenessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  // Check if the Mgmt service is alive or dead.
+  // 
+  // `Liveness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+  //
+  // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   rpc Liveness(LivenessRequest) returns (LivenessResponse) {
     option (google.api.http) = {
       get : "/v1alpha/__liveness"
@@ -23,9 +25,11 @@ service MgmtPublicService {
     };
   }
 
-  // Readiness method receives a ReadinessRequest message and returns a
-  // ReadinessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  // Check if the Mgmt service is ready to serve traffics
+  //
+  // `Readiness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the Readiness (ready or not ready) of the pipeilne service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+  // 
+  // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
     option (google.api.http) = {
       get : "/v1alpha/__readiness"
@@ -33,8 +37,9 @@ service MgmtPublicService {
     };
   }
 
-  // QueryAuthenticatedUser method receives a QueryAuthenticatedUserRequest
-  // message and returns a QueryAuthenticatedUserResponse message.
+  // Query user's own user information
+  //
+  // `QueryAuthenticatedUser` is a call with the method(s) `GET` within the `MgmtPrivateService`. This method is for an authenticated user to query it's *own* user information. It takes in `QueryAuthenticatedUserRequest` and returns a `QueryAuthenticatedUserResponse`.
   rpc QueryAuthenticatedUser(QueryAuthenticatedUserRequest)
       returns (QueryAuthenticatedUserResponse) {
     option (google.api.http) = {
@@ -42,8 +47,9 @@ service MgmtPublicService {
     };
   }
 
-  // PatchAuthenticatedUser method receives a PatchAuthenticatedUserRequest
-  // message and returns a PatchAuthenticatedUserResponse message.
+  // Update user's own user information
+  //
+  // `PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPrivateService`. This method is for an authenticated user to update it's *own* user information. It takes in `PatchAuthenticatedUserRequest` and returns a `PatchAuthenticatedUserResponse`.
   rpc PatchAuthenticatedUser(PatchAuthenticatedUserRequest)
       returns (PatchAuthenticatedUserResponse) {
     option (google.api.http) = {
@@ -53,8 +59,11 @@ service MgmtPublicService {
     option (google.api.method_signature) = "user,update_mask";
   }
 
-  // ExistUsername method receives a ExistUsernameRequest message and returns a
-  // ExistUsernameResponse
+  // Check if an user exist given a username.
+  //
+  // `ExistUsername` is a call with the method(s) `GET` within the `MgmtPrivateService`. This method return a boolean value indicating the existtance of an user given a username. It takes in `ExistUsernameRequest` and returns a `ExistUsernameResponse`.
+  //
+  // NOTE: username in `ExistUsernameRequest` must have the format of "users/*". For example: "users/{username}".
   rpc ExistUsername(ExistUsernameRequest) returns (ExistUsernameResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=users/*}/exist"
