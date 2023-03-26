@@ -6,6 +6,7 @@ tags:
   - name: PlanService
   - name: ConnectorPrivateService
   - name: ConnectorPublicService
+  - name: ControllerPrivateService
   - name: PipelineService
   - name: ModelService
   - name: MgmtPrivateService
@@ -461,6 +462,32 @@ paths:
           required: true
           type: string
           pattern: models/[^/]+/instances/[^/]+/readme
+      tags:
+        - ModelPublicService
+  /v1alpha/{model_instance.name/watch}/watch:
+    get:
+      summary: |-
+        WatchModelInstance method receives a WatchModelInstanceRequest message
+        and returns a WatchModelInstanceResponse
+      operationId: ModelPublicService_WatchModelInstance
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchModelInstanceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_instance.name/watch
+          description: |-
+            Resource name of the model instance.
+            For example "models/{model}/instances/{instance}"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+/instances/[^/]+
       tags:
         - ModelPublicService
   /v1alpha/{model_instance.name}:
@@ -1711,6 +1738,105 @@ paths:
           type: string
       tags:
         - PipelinePublicService
+  /v1alpha/{resource.name}:
+    get:
+      summary: |-
+        GetResource method receives a GetResourceRequest message
+        and returns a GetResourceResponse
+      operationId: ControllerPrivateService_GetResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.name
+          description: Resource name
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+/types/[^/]+
+      tags:
+        - ControllerPrivateService
+    delete:
+      summary: |-
+        DeleteResource method receives a DeleteResourceRequest message
+        and returns a DeleteResourceResponse
+      operationId: ControllerPrivateService_DeleteResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.name
+          description: Resource name
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+/types/[^/]+
+      tags:
+        - ControllerPrivateService
+    patch:
+      summary: |-
+        UpdateResource method receives a UpdateResourceRequest message
+        and returns a UpdateResourceResponse
+      operationId: ControllerPrivateService_UpdateResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.name
+          description: Resource name.
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+/types/[^/]+
+        - name: resource
+          description: Resource state
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              model_instance_state:
+                $ref: '#/definitions/v1alphaModelInstanceState'
+                title: Model instance state
+              pipeline_state:
+                $ref: '#/definitions/v1alphaPipelineState'
+                title: Pipeline state
+              connector_state:
+                $ref: '#/definitions/v1alphaConnectorState'
+                title: Connector state
+              backend_state:
+                $ref: '#/definitions/HealthCheckResponseServingStatus'
+                title: Backend service state
+              progress:
+                type: integer
+                format: int32
+                title: Resource longrunning progress
+            title: Resource state
+        - name: workflow_id
+          description: Resource longrunnning workflow id
+          in: query
+          required: false
+          type: string
+      tags:
+        - ControllerPrivateService
   /v1alpha/{source_connector.name}:
     get:
       summary: |-
@@ -1985,6 +2111,32 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
+      tags:
+        - ModelPrivateService
+  /v1alpha/admin/{name}/check:
+    get:
+      summary: |-
+        CheckModelInstance method receives a CheckModelInstanceRequest message and returns a
+        CheckModelInstanceResponse
+      operationId: ModelPrivateService_CheckModelInstance
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCheckModelInstanceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            Resource name of the model instance.
+            For example "models/{model}/instances/{instance}"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+/instances/[^/]+
       tags:
         - ModelPrivateService
   /v1alpha/admin/{permalink_1}/lookUp:
@@ -2564,10 +2716,17 @@ paths:
             properties:
               uid:
                 type: string
-                description: "User ID in UUIDv4. This field is optionally set by users \n(optional on resource creation, server-generated if unset)."
+                description: |-
+                  User ID in UUIDv4. This field is optionally set by users
+                  (optional on resource creation, server-generated if unset).
               id:
                 type: string
-                description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
+                description: |-
+                  Resource ID (the last segment of the resource name), also the user username.
+                  This conforms to RFC-1034, which restricts to letters, numbers,
+                  and hyphen, with the first character a letter, the last a letter or a
+                  number, and a 63 character maximum.
+                  Note that the ID can be updated.
               type:
                 $ref: '#/definitions/v1alphaOwnerType'
                 title: 'Owner type: fixed to `OWNER_TYPE_USER`'
@@ -4204,6 +4363,15 @@ definitions:
     title: |-
       CancelModelOperationResponse represents a response for canceling a model
       operation
+  v1alphaCheckModelInstanceResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
+        title: Retrieved model instance state
+    title: |-
+      CheckModelInstanceResponse represents a response to fetch a model
+      instance's current state and longrunning progress
   v1alphaClassificationInput:
     type: object
     properties:
@@ -4520,6 +4688,9 @@ definitions:
   v1alphaDeletePlanResponse:
     type: object
     title: DeletePlanResponse represents an empty response
+  v1alphaDeleteResourceResponse:
+    type: object
+    title: DeleteResourceResponse represents an empty response
   v1alphaDeleteSourceConnectorResponse:
     type: object
     title: DeleteSourceConnectorResponse represents an empty response
@@ -5090,6 +5261,13 @@ definitions:
         $ref: '#/definitions/v1alphaPlan'
         title: A plan resource
     title: GetPlanResponse represents a response for a plan resource
+  v1alphaGetResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Retrieved resource state
+    title: GetResourceResponse represents a response to fetch a resource's state
   v1alphaGetSourceConnectorAdminResponse:
     type: object
     properties:
@@ -6514,6 +6692,31 @@ definitions:
         $ref: '#/definitions/v1alphaNullMessage'
         title: Null message for empty response
     title: ReportPipelineTriggersResponse represents a respond to a pipeline-trigger-records reporting bulk request
+  v1alphaResource:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Resource name.
+      model_instance_state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
+        title: Model instance state
+      pipeline_state:
+        $ref: '#/definitions/v1alphaPipelineState'
+        title: Pipeline state
+      connector_state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Connector state
+      backend_state:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Backend service state
+      progress:
+        type: integer
+        format: int32
+        title: Resource longrunning progress
+    title: Resource represents the current information of a resource
+    required:
+      - name
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
@@ -7103,6 +7306,13 @@ definitions:
         $ref: '#/definitions/v1alphaPlan'
         title: A plan resource
     title: UpdatePlanResponse represents a response for a plan resource
+  v1alphaUpdateResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Updated resource state
+    title: UpdateResourceResponse represents a response to update a resource's state
   v1alphaUpdateSourceConnectorResponse:
     type: object
     properties:
@@ -7145,10 +7355,17 @@ definitions:
         readOnly: true
       uid:
         type: string
-        description: "User ID in UUIDv4. This field is optionally set by users \n(optional on resource creation, server-generated if unset)."
+        description: |-
+          User ID in UUIDv4. This field is optionally set by users
+          (optional on resource creation, server-generated if unset).
       id:
         type: string
-        description: "Resource ID (the last segment of the resource name), also the user username. \nThis conforms to RFC-1034, which restricts to letters, numbers,\nand hyphen, with the first character a letter, the last a letter or a\nnumber, and a 63 character maximum.\nNote that the ID can be updated."
+        description: |-
+          Resource ID (the last segment of the resource name), also the user username.
+          This conforms to RFC-1034, which restricts to letters, numbers,
+          and hyphen, with the first character a letter, the last a letter or a
+          number, and a 63 character maximum.
+          Note that the ID can be updated.
       type:
         $ref: '#/definitions/v1alphaOwnerType'
         title: 'Owner type: fixed to `OWNER_TYPE_USER`'
@@ -7215,6 +7432,19 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1alphaWatchModelInstanceResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaModelInstanceState'
+        title: Retrieved model instance state
+      progress:
+        type: integer
+        format: int32
+        title: Retrieved model instance logrunning progress
+    title: |-
+      WatchModelInstanceResponse represents a public response to
+      fetch a model instance's current state and longrunning progress
   v1alphaWriteDestinationConnectorResponse:
     type: object
     title: |-
@@ -7291,6 +7521,20 @@ definitions:
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
     title: View enumerates the definition views
+  vdpcontrollerv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  vdpcontrollerv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
   vdpmgmtv1alphaLivenessResponse:
     type: object
     properties:
