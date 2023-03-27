@@ -1688,9 +1688,11 @@ paths:
         - PipelinePublicService
   /v1alpha/{resource.name}:
     get:
-      summary: |-
-        GetResource method receives a GetResourceRequest message
-        and returns a GetResourceResponse
+      summary: Get resource state given resource name and type.
+      description: |-
+        `GetResource` is a call with the method(s) `GET` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to get the current state of the queried resource. It takes in `GetResourceRequest` and returns a `GetResourceResponse`.
+
+        **NOTE**: The `resource.name` field in GetReourceRequest must has the format of `resources/{resource}/types/{type}`. For example: `resources/yolov7/types/model`. See parameter descriptions for further details.
       operationId: ControllerPrivateService_GetResource
       responses:
         "200":
@@ -1703,7 +1705,19 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: resource.name
-          description: Resource name
+          description: |-
+            Resource name is a string follows a specifit format: `resources/{resource}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+            ```
+            const (
+              RESOURCE_TYPE_MODEL     = "model"
+              RESOURCE_TYPE_SOURCE_CONNECTOR = "source-connectors"
+              RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
+              RESOURCE_TYPE_PIPELINE  = "pipeline"
+              RESOURCE_TYPE_SERVICE   = "service"
+            )
+            ```
+
+            For example, when query for the state of a pipeline named `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
           in: path
           required: true
           type: string
@@ -1711,9 +1725,11 @@ paths:
       tags:
         - ControllerPrivateService
     delete:
-      summary: |-
-        DeleteResource method receives a DeleteResourceRequest message
-        and returns a DeleteResourceResponse
+      summary: Delete a resource from the Controller Service.
+      description: |-
+        `DeleteResource` is a call with the method(s) `DELETE` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to delete a registered resource. It takes in `DeleteResourceRequest` and returns a `DeleteResourceResponse`.
+
+        **NOTE**: The `resource.name` field in `DeleteResourceRequest` is used to identify the resource to delete. Format: `resources/{resource}/types/{type}`.
       operationId: ControllerPrivateService_DeleteResource
       responses:
         "200":
@@ -1734,9 +1750,11 @@ paths:
       tags:
         - ControllerPrivateService
     patch:
-      summary: |-
-        UpdateResource method receives a UpdateResourceRequest message
-        and returns a UpdateResourceResponse
+      summary: Update resource state.
+      description: |-
+        `UpdateResource` is a call with the method(s) `PATCH` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to update the current state of the queried resource. It takes in `UpdateResourceRequest` and returns a `UpdateResourceResponse`.
+
+        **NOTE**: The `resource.name` field in `UpdateResourceRequest` is used to identify the resource to update. Format: `resources/{resource}/types/{type}`.
       operationId: ControllerPrivateService_UpdateResource
       responses:
         "200":
@@ -1749,13 +1767,25 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: resource.name
-          description: Resource name.
+          description: |-
+            Resource name is a string follows a specifit pattern: `resources/{resource}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+            ```
+            const (
+              RESOURCE_TYPE_MODEL     = "model"
+              RESOURCE_TYPE_SOURCE_CONNECTOR = "source-connectors"
+              RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
+              RESOURCE_TYPE_PIPELINE  = "pipeline"
+              RESOURCE_TYPE_SERVICE   = "service"
+            )
+            ```
+
+            For example, when query for the state of a pipeline named `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
           in: path
           required: true
           type: string
           pattern: resources/[^/]+/types/[^/]+
         - name: resource
-          description: Resource state
+          description: "The resource to update. It uses `resource.name` to identify the resource to update. \nFor **Model*, **Pipeline** and **Connector** services, the `resource.state` is one of the below:\n```\nenum State {\n  // State: UNSPECIFIED\n  STATE_UNSPECIFIED = 0;\n  // State INACTIVE indicates the pipeline is inactive\n  STATE_INACTIVE = 1;\n  // State ACTIVE indicates the pipeline is active\n  STATE_ACTIVE = 2;\n  // State ERROR indicates the pipeline has error\n  STATE_ERROR = 3;\n}\n```\n\nSee our documentation for further information: \n- [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline)\n- [Core Concepts - Connector](https://www.instill.tech/docs/core-concepts/connector)\n- [Core Concepts - Model](https://www.instill.tech/docs/core-concepts/model)\n\nFor **Backend** service, the `resource.state` is one of the below as:\n```\nenum ServingStatus {\n  // Serving status: UNSPECIFIED\n  SERVING_STATUS_UNSPECIFIED = 0;\n  // Serving status: SERVING\n  SERVING_STATUS_SERVING = 1;\n  // Serving status: NOT SERVING\n  SERVING_STATUS_NOT_SERVING = 2;\n}\n```"
           in: body
           required: true
           schema:
@@ -1777,7 +1807,8 @@ paths:
                 type: integer
                 format: int32
                 title: Resource longrunning progress
-            title: Resource state
+            description: "See our documentation for further information: \n- [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline)\n- [Core Concepts - Connector](https://www.instill.tech/docs/core-concepts/connector)\n- [Core Concepts - Model](https://www.instill.tech/docs/core-concepts/model)\n\nFor **Backend** service, the `resource.state` is one of the below as:\n```\nenum ServingStatus {\n  // Serving status: UNSPECIFIED\n  SERVING_STATUS_UNSPECIFIED = 0;\n  // Serving status: SERVING\n  SERVING_STATUS_SERVING = 1;\n  // Serving status: NOT SERVING\n  SERVING_STATUS_NOT_SERVING = 2;\n}\n```"
+            title: "The resource to update. It uses `resource.name` to identify the resource to update. \nFor **Model*, **Pipeline** and **Connector** services, the `resource.state` is one of the below:\n```\nenum State {\n  // State: UNSPECIFIED\n  STATE_UNSPECIFIED = 0;\n  // State INACTIVE indicates the pipeline is inactive\n  STATE_INACTIVE = 1;\n  // State ACTIVE indicates the pipeline is active\n  STATE_ACTIVE = 2;\n  // State ERROR indicates the pipeline has error\n  STATE_ERROR = 3;\n}\n```"
         - name: workflow_id
           description: Resource longrunnning workflow id
           in: query
@@ -3152,6 +3183,33 @@ paths:
           type: string
       tags:
         - ConnectorPublicService
+  /v1alpha/health/controller:
+    get:
+      summary: Check if the Controller service (private) is alive or dead.
+      description: |-
+        `Liveness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Liveness (alive or dead) of the controller service. Only admins with permission can call this method. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+
+        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+
+        **NOTE**: Controller Service is a private service that is not avaiable to publics. This method is therefore implemented as a private method instead of a public.
+      operationId: ControllerPrivateService_Liveness2
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/vdpcontrollerv1alphaLivenessResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: health_check_request.service
+          description: Service name to check for its readiness status
+          in: query
+          required: false
+          type: string
+      tags:
+        - ControllerPrivateService
   /v1alpha/health/mgmt:
     get:
       summary: Check if the Mgmt service is alive or dead.
@@ -3516,6 +3574,33 @@ paths:
               - pipeline
       tags:
         - PipelinePublicService
+  /v1alpha/ready/controller:
+    get:
+      summary: Check if the Controller service (private) is alive or dead.
+      description: |-
+        `Readiness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Readiness (ready or not ready) of the Controller service. Only admins with permission can call this method. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+
+        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+
+        **NOTE**: Controller Service is a private service that is not avaiable to publics. This method is therefore implemented as a private method instead of a public.
+      operationId: ControllerPrivateService_Readiness2
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/vdpcontrollerv1alphaReadinessResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: health_check_request.service
+          description: Service name to check for its readiness status
+          in: query
+          required: false
+          type: string
+      tags:
+        - ControllerPrivateService
   /v1alpha/ready/mgmt:
     get:
       summary: Check if the Mgmt service is ready to serve traffics
@@ -7094,7 +7179,7 @@ definitions:
     properties:
       resource:
         $ref: '#/definitions/v1alphaResource'
-        title: Updated resource state
+        title: Resource updated
     title: UpdateResourceResponse represents a response to update a resource's state
   v1alphaUpdateSourceConnectorResponse:
     type: object

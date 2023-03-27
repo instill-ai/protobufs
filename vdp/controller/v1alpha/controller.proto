@@ -21,9 +21,51 @@ message Resource {
       pattern : "resources/{resource}/types/{type}"
     };
 
-    // Resource name.
+    // Resource name is a string follows a specifit pattern: `resources/{resource}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+    // ```
+    // const (
+	  //   RESOURCE_TYPE_MODEL     = "model"
+	  //   RESOURCE_TYPE_SOURCE_CONNECTOR = "source-connectors"
+	  //   RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
+	  //   RESOURCE_TYPE_PIPELINE  = "pipeline"
+	  //   RESOURCE_TYPE_SERVICE   = "service"
+    // )
+    // ```
+    // 
+    // For example, when query for the state of a pipeline named `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
     string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-    // Resource state
+
+    // Resource state. For Model, Pipeline and Conector, the states are defied as:
+    // ```
+    // enum State {
+    //   // State: UNSPECIFIED
+    //   STATE_UNSPECIFIED = 0;
+    //   // State INACTIVE indicates the pipeline is inactive
+    //   STATE_INACTIVE = 1;
+    //   // State ACTIVE indicates the pipeline is active
+    //   STATE_ACTIVE = 2;
+    //   // State ERROR indicates the pipeline has error
+    //   STATE_ERROR = 3;
+    // }
+    // ```
+    //
+    // See our documentation for further information: 
+    // - [Core Concepts/Pipeline](https://www.instill.tech/docs/core-concepts/pipeline)
+    // - [Core Concepts/Connector](https://www.instill.tech/docs/core-concepts/connector)
+    // - [Core Concepts/Model](https://www.instill.tech/docs/core-concepts/model)
+    //
+    // For Backend service, the states are defeined as:
+    // ```
+    // enum ServingStatus {
+    //   // Serving status: UNSPECIFIED
+    //   SERVING_STATUS_UNSPECIFIED = 0;
+    //   // Serving status: SERVING
+    //   SERVING_STATUS_SERVING = 1;
+    //   // Serving status: NOT SERVING
+    //   SERVING_STATUS_NOT_SERVING = 2;
+    // }
+    // ```
+    //
     oneof state {
         // Model state
         vdp.model.v1alpha.Model.State model_state = 2;
@@ -38,9 +80,20 @@ message Resource {
     optional int32 progress = 6 [ (google.api.field_behavior) = OPTIONAL ];
   }
 
-// GetResourceRequest represents a request to query a resource's state
+// GetResourceRequest represents a request to query a resource's state.
 message GetResourceRequest {
-    // Resource name
+    // Resource name is a string follows a specifit format: `resources/{resource}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+    //```
+    // const (
+	  //   RESOURCE_TYPE_MODEL     = "model"
+	  //   RESOURCE_TYPE_SOURCE_CONNECTOR = "source-connectors"
+	  //   RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
+	  //   RESOURCE_TYPE_PIPELINE  = "pipeline"
+	  //   RESOURCE_TYPE_SERVICE   = "service"
+    // )
+    // ```
+    // 
+    // For example, when query for the state of a pipeline named `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
     string name = 1 [
       (google.api.field_behavior) = REQUIRED,
       (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
@@ -58,7 +111,39 @@ message GetResourceResponse {
 
 // UpdateResourceRequest represents a request to update a resource's state
 message UpdateResourceRequest {
-    // Resource state
+
+    // The resource to update. It uses `resource.name` to identify the resource to update. 
+    // For **Model*, **Pipeline** and **Connector** services, the `resource.state` is one of the below:
+    // ```
+    // enum State {
+    //   // State: UNSPECIFIED
+    //   STATE_UNSPECIFIED = 0;
+    //   // State INACTIVE indicates the pipeline is inactive
+    //   STATE_INACTIVE = 1;
+    //   // State ACTIVE indicates the pipeline is active
+    //   STATE_ACTIVE = 2;
+    //   // State ERROR indicates the pipeline has error
+    //   STATE_ERROR = 3;
+    // }
+    // ```
+    //
+    // See our documentation for further information: 
+    // - [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline)
+    // - [Core Concepts - Connector](https://www.instill.tech/docs/core-concepts/connector)
+    // - [Core Concepts - Model](https://www.instill.tech/docs/core-concepts/model)
+    //
+    // For **Backend** service, the `resource.state` is one of the below as:
+    // ```
+    // enum ServingStatus {
+    //   // Serving status: UNSPECIFIED
+    //   SERVING_STATUS_UNSPECIFIED = 0;
+    //   // Serving status: SERVING
+    //   SERVING_STATUS_SERVING = 1;
+    //   // Serving status: NOT SERVING
+    //   SERVING_STATUS_NOT_SERVING = 2;
+    // }
+    // ```
+    //
     Resource resource = 1 [ (google.api.field_behavior) = REQUIRED ];
     // Resource longrunnning workflow id
     optional string workflow_id = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -66,7 +151,7 @@ message UpdateResourceRequest {
 
 // UpdateResourceResponse represents a response to update a resource's state
 message UpdateResourceResponse {
-    // Updated resource state
+    // Resource updated
     Resource resource = 1;
 }
 

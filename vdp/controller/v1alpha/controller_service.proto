@@ -11,18 +11,40 @@ import "vdp/controller/v1alpha/healthcheck.proto";
 
 // Controller service responds to incoming controller requests
 service ControllerPrivateService {
-  // Liveness method receives a LivenessRequest message and returns a
-  // LivenessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Liveness(LivenessRequest) returns (LivenessResponse);
+  
+  // Check if the Controller service (private) is alive or dead.
+  // 
+  // `Liveness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Liveness (alive or dead) of the controller service. Only admins with permission can call this method. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+  //
+  // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+  //
+  // **NOTE**: Controller Service is a private service that is not avaiable to publics. This method is therefore implemented as a private method instead of a public. 
+  rpc Liveness(LivenessRequest) returns (LivenessResponse){
+    option (google.api.http) = {
+      get : "/v1alpha/__liveness"
+      additional_bindings : [ {get : "/v1alpha/health/controller"} ]
+    };
+  };
 
-  // Readiness method receives a ReadinessRequest message and returns a
-  // ReadinessResponse message.
-  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Readiness(ReadinessRequest) returns (ReadinessResponse);
+  // Check if the Controller service (private) is alive or dead.
+  // 
+  // `Readiness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Readiness (ready or not ready) of the Controller service. Only admins with permission can call this method. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+  //
+  // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+  //
+  // **NOTE**: Controller Service is a private service that is not avaiable to publics. This method is therefore implemented as a private method instead of a public. 
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse){
+    option (google.api.http) = {
+      get : "/v1alpha/__readiness"
+      additional_bindings : [ {get : "/v1alpha/ready/controller"} ]
+    };
+  };
 
-  // GetResource method receives a GetResourceRequest message
-  // and returns a GetResourceResponse
+  // Get resource state given resource name and type.
+  //
+  // `GetResource` is a call with the method(s) `GET` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to get the current state of the queried resource. It takes in `GetResourceRequest` and returns a `GetResourceResponse`.
+  //
+  // **NOTE**: The `resource.name` field in GetReourceRequest must has the format of `resources/{resource}/types/{type}`. For example: `resources/yolov7/types/model`. See parameter descriptions for further details.
   rpc GetResource(GetResourceRequest) returns (GetResourceResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=resources/*/types/*}"
@@ -30,8 +52,11 @@ service ControllerPrivateService {
     option (google.api.method_signature) = "name";
   };
 
-  // UpdateResource method receives a UpdateResourceRequest message
-  // and returns a UpdateResourceResponse
+  //  Update resource state.
+  //
+  // `UpdateResource` is a call with the method(s) `PATCH` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to update the current state of the queried resource. It takes in `UpdateResourceRequest` and returns a `UpdateResourceResponse`.
+  //
+  // **NOTE**: The `resource.name` field in `UpdateResourceRequest` is used to identify the resource to update. Format: `resources/{resource}/types/{type}`.  
   rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
     option (google.api.http) = {
       patch : "/v1alpha/{resource.name=resources/*/types/*}"
@@ -39,8 +64,11 @@ service ControllerPrivateService {
     };
   };
 
-  // DeleteResource method receives a DeleteResourceRequest message
-  // and returns a DeleteResourceResponse
+  // Delete a resource from the Controller Service.
+  //
+  // `DeleteResource` is a call with the method(s) `DELETE` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to delete a registered resource. It takes in `DeleteResourceRequest` and returns a `DeleteResourceResponse`.
+  //
+  // **NOTE**: The `resource.name` field in `DeleteResourceRequest` is used to identify the resource to delete. Format: `resources/{resource}/types/{type}`.  
   rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
     option (google.api.http) = {
       delete : "/v1alpha/{name=resources/*/types/*}"
