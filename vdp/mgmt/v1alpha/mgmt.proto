@@ -40,17 +40,13 @@ message User {
     pattern : "users/{user}"
   };
 
-  // Resource name. It must have the format of "users/*".
-  // For example: "users/local-user".
+  // Resource name. It must have the format of `users/{username}`. For example: `users/local-user`.
   string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // User ID in UUIDv4. This field is optionally set by users
-  // (optional on resource creation, server-generated if unset).
+  // User ID in UUIDv4. This field is optionally set by users (optional on resource creation, server-generated if unset).
   optional string uid = 2 [ (google.api.field_behavior) = IMMUTABLE ];
-  // Resource ID (the last segment of the resource name), also the user username.
-  // This conforms to RFC-1034, which restricts to letters, numbers,
-  // and hyphen, with the first character a letter, the last a letter or a
-  // number, and a 63 character maximum.
-  // Note that the ID can be updated.
+  // Resource ID (the last segment of the resource name), also the user username. This conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.
+  //
+  // NOTE: the ID can be updated.
   string id = 3 [ (google.api.field_behavior) = REQUIRED ];
   // Owner type: fixed to `OWNER_TYPE_USER`
   OwnerType type = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
@@ -88,10 +84,7 @@ message User {
 
 // ListUsersAdminRequest represents a request to list all users by admin
 message ListUsersAdminRequest {
-  // Page size: the maximum number of resources to return. The service may
-  // return fewer than this value. If unspecified, at most 10 users will be
-  // returned. The maximum value is 100; values above 100 will be coereced to
-  // 100.
+  // Page size: the maximum number of resources to return. The service may return fewer than this value. If unspecified, at most 10 users will be returned. The maximum value is 100; values above 100 will be coereced to 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -115,8 +108,7 @@ message ListUsersAdminResponse {
 message CreateUserAdminRequest {
   // The user to be created
   //
-  // The user's `name` field is used to identify the user to create.
-  // Format: users/{user}
+  // The `user.name` field is used to identify the user to create. Format: `users/{username}`
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -128,8 +120,7 @@ message CreateUserAdminResponse {
 
 // GetUserAdminRequest represents a request to query a user by admin
 message GetUserAdminRequest {
-  // Resource name of a user. For example:
-  // "users/local-user"
+  // Resource name of a user. Format: `users/{username}`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/User",
@@ -151,8 +142,7 @@ message GetUserAdminResponse {
 message UpdateUserAdminRequest {
   // The user to update
   //
-  // The user's `name` field is used to identify the user to update.
-  // Format: users/{user}
+  // The user's `name` field is used to identify the user to update. Format: `users/{username}`
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a user resource
   google.protobuf.FieldMask update_mask = 2
@@ -167,8 +157,7 @@ message UpdateUserAdminResponse {
 
 // DeleteUserAdminRequest represents a request to delete a user by admin
 message DeleteUserAdminRequest {
-  // The resource name of the user to be deleted,
-  // for example: "users/local-user"
+  // The resource name of the user to be deleted. Format: `users/{username}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/User",
@@ -183,8 +172,7 @@ message DeleteUserAdminResponse {}
 
 // LookUpUserAdminRequest represents a request to query a user via permalink by admin
 message LookUpUserAdminRequest {
-  // Permalink of a user. For example:
-  // "users/{uid}"
+  // Permalink of a user. Format: `users/{uid}`
   string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
   // View view (default is VIEW_BASIC)
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -196,19 +184,16 @@ message LookUpUserAdminResponse {
   User user = 1;
 }
 
-// QueryAuthenticatedUserRequest represents a request to
-// query the authenticated user
+// QueryAuthenticatedUserRequest represents a request to query the authenticated user
 message QueryAuthenticatedUserRequest {}
 
-// QueryAuthenticatedUserResponse represents a response for
-// the authenticated user resource
+// QueryAuthenticatedUserResponse represents a response for the authenticated user resource
 message QueryAuthenticatedUserResponse {
   // A user resource
   User user = 1;
 }
 
-// PatchAuthenticatedUserRequest represents a request to
-// update the authenticated user
+// PatchAuthenticatedUserRequest represents a request to update the authenticated user
 message PatchAuthenticatedUserRequest {
   // The user to update
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
@@ -217,18 +202,15 @@ message PatchAuthenticatedUserRequest {
       [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// PatchAuthenticatedUserResponse represents a response for
-// the authenticated user resource
+// PatchAuthenticatedUserResponse represents a response for the authenticated user resource
 message PatchAuthenticatedUserResponse {
   // A user resource
   User user = 1;
 }
 
-// ExistUsernameRequest represents a request to verify if
-// a username has been occupied
-message ExistUsernameRequest {
-  // The resource name of the user to check,
-  // for example: "users/local-user"
+// ExistUsernameRequest represents a request to verify if a username has been occupied
+message ExistUsernameRequest{
+  // The resource name of the user to be deleted. Format: `users/{username}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/User",
@@ -238,9 +220,8 @@ message ExistUsernameRequest {
   ];
 }
 
-// ExistUsernameResponse represents a response about whether
-// the queried username has been occupied
-message ExistUsernameResponse {
+// ExistUsernameResponse represents a response about whether the queried username has been occupied
+message ExistUsernameResponse{
   // A boolean value indicating whether the username has been occupied
   bool exists = 1;
 }
