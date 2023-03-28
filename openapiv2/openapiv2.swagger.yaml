@@ -68,6 +68,32 @@ paths:
           type: string
       tags:
         - UsageService
+  /v1alpha/{destination_connector.name/watch}/watch:
+    get:
+      summary: |-
+        WatchDestinationConnector method receives a WatchDestinationConnectorRequest message
+        and returns a WatchDestinationConnectorResponse
+      operationId: ConnectorPublicService_WatchDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: destination_connector.name/watch
+          description: |-
+            SourceConnector resource name. It must have the format of
+            "destination-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
+      tags:
+        - ConnectorPublicService
   /v1alpha/{destination_connector.name}:
     get:
       summary: Get a DESTINATION connector resource in VDP with it's name.
@@ -574,9 +600,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.name
-          description: |-
-            Resource name. It must have the format of "models/{model}".
-            For example: "models/yolov4"
+          description: 'Resource name. It must have the format of "models/{model}". For example: "models/yolov4"'
           in: path
           required: true
           type: string
@@ -859,11 +883,6 @@ paths:
         - ModelPublicService
   /v1alpha/{model.uid}/lookUp:
     get:
-      summary: |-
-        GetConnectorOperation method receives a
-        GetConnectorOperationRequest message and returns a
-        GetConnectorOperationResponse message.
-      operationId: ConnectorPublicService_GetConnectorOperation
       summary: Get a model resource in VDP with it's permalink.
       description: |-
         `LookUpModel` is a call with the method(s) `GET` within the `ModelPublicService`. This method gets a model resource in VDP with a permalink (i.e., `model.uid`). It takes in `LookUpModelRequest` and returns `LookUpModelResponse`.
@@ -874,7 +893,6 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
             $ref: '#/definitions/v1alphaLookUpModelResponse'
         default:
           description: An unexpected error response.
@@ -889,14 +907,13 @@ paths:
           pattern: models/[^/]+
         - name: view
           description: |-
-            SourceConnector view (default is VIEW_BASIC)
             Model view (default is VIEW_BASIC)
             VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
             VIEW_FULL: show full information
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
           type: string
@@ -906,10 +923,6 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
-  /v1alpha/{name}/activate:
-    post:
-      summary: Activate a pipeline deployaed on VDP.
         - ModelPublicService
   /v1alpha/{model_definition.name}:
     get:
@@ -1050,7 +1063,7 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{name}:
+  /v1alpha/{name_1}:
     get:
       summary: |-
         GetModelOperation method receives a
@@ -1067,7 +1080,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: name
+        - name: name_1
           description: The name of the operation resource.
           in: path
           required: true
@@ -1092,6 +1105,46 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
+  /v1alpha/{name}:
+    get:
+      summary: |-
+        GetConnectorOperation method receives a
+        GetConnectorOperationRequest message and returns a
+        GetConnectorOperationResponse message.
+      operationId: ConnectorPublicService_GetConnectorOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: The name of the operation resource.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            SourceConnector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ConnectorPublicService
   /v1alpha/{name}/cancel:
     post:
       summary: |-
@@ -1786,6 +1839,32 @@ paths:
           type: string
       tags:
         - ControllerPrivateService
+  /v1alpha/{source_connector.name/watch}/watch:
+    get:
+      summary: |-
+        WatchSourceConnector method receives a WatchSourceConnectorRequest message
+        and returns a WatchSourceConnectorResponse
+      operationId: ConnectorPublicService_WatchSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: source_connector.name/watch
+          description: |-
+            SourceConnector resource name. It must have the format of
+            "source-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+      tags:
+        - ConnectorPublicService
   /v1alpha/{source_connector.name}:
     get:
       summary: Get a SOURCE connector resource in VDP with it's name.
@@ -2031,10 +2110,6 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: user.name
-          description: |-
-            The resource name of the user to be deleted,
-            for example: "users/local-user"
         - name: source_connector.name
           description: |-
             SourceConnector resource name. It must have the format of
@@ -2382,7 +2457,33 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPrivateService
-  /v1alpha/admin/{name}/check:
+  /v1alpha/admin/{name_1}/check:
+    get:
+      summary: |-
+        CheckDestinationConnector method receives a CheckDestinationConnectorRequest message and returns a
+        CheckDestinationConnectorResponse
+      operationId: ConnectorPrivateService_CheckDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCheckDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            SourceConnector resource name. It must have the format of
+            "destination-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
+      tags:
+        - ConnectorPrivateService
+  /v1alpha/admin/{name_2}/check:
     get:
       summary: Check the state of a model instance deloyed on VDP (admin only).
       description: |-
@@ -2402,7 +2503,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: name
+        - name: name_2
           description: |-
             Resource name of the model instance.
             For example "models/{model}/instances/{instance}"
@@ -2412,27 +2513,26 @@ paths:
           pattern: models/[^/]+/instances/[^/]+
       tags:
         - ModelPrivateService
-  /v1alpha/admin/{permalink}/lookUp:
+  /v1alpha/admin/{name}/check:
     get:
       summary: |-
-        LookUpSourceConnectorAdmin method receives a
-        LookUpSourceConnectorAdminRequest message and returns a
-        LookUpSourceConnectorAdminResponse
-      operationId: ConnectorPrivateService_LookUpSourceConnectorAdmin
+        CheckSourceConnector method receives a CheckSourceConnectorRequest message and returns a
+        CheckSourceConnectorResponse
+      operationId: ConnectorPrivateService_CheckSourceConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpSourceConnectorAdminResponse'
+            $ref: '#/definitions/v1alphaCheckSourceConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: permalink
+        - name: name
           description: |-
-            Permalink of a source connector. For example:
-            "source-connectors/{uid}"
+            SourceConnector resource name. It must have the format of
+            "source-connectors/*"
           in: path
           required: true
           type: string
@@ -2460,7 +2560,7 @@ paths:
       description: |-
         `GetPipeLineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service. This is a *private* method that is only avaible for admins and other backend services to get a pipeline resource in VDP with it's name. Only admins with permission can call this method. It takes in `GetPipelineAdminRequest` and returns a `GetPipelineAdminResponse`.
 
-        NOTE: pipeline name must have the format of "pipelines/*".
+        **NOTE**: The `pipeline.name` field in `GetPipelineAdminRequest` must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
       operationId: PipelinePrivateService_GetPipelineAdmin
       responses:
         "200":
@@ -2693,14 +2793,16 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpSourceConnectorAdminResponse'
+            $ref: '#/definitions/v1alphaGetSourceConnectorAdminResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: source_connector.uid
-          description: Permalink of a source connector. It must has the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
+        - name: source_connector.name
+          description: |-
+            SourceConnectorConnector resource name. It must have the format of
+            "source-connectors/*"
           in: path
           required: true
           type: string
@@ -2767,9 +2869,9 @@ paths:
     get:
       summary: Get a existing user with user's name (admin only).
       description: |-
-        `GetUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to get a new user created in VDP with user's name. Only admins with root permission can call this method. It takes in `GetUserAdminRequest` and returns `GetUserAdminResponse`.
+        `GetUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to get a new user created in VDP with user's name. Only admins with permission can call this method. It takes in `GetUserAdminRequest` and returns `GetUserAdminResponse`.
 
-        NOTE: username in `GetUesrAdminRequest` must have the format of "users/*". For example: "users/{username}".
+        **NOTE**: The `user.name` field in `GetUserAdminRequest` must has the format of `users/{username}`. For example: `users/local-user`.
       operationId: MgmtPrivateService_GetUserAdmin
       responses:
         "200":
@@ -2782,9 +2884,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user.name
-          description: |-
-            Resource name of a user. For example:
-            "users/local-user"
+          description: 'Resource name of a user. Format: `users/{username}`.'
           in: path
           required: true
           type: string
@@ -2809,9 +2909,9 @@ paths:
     delete:
       summary: Delete an existing user (admin only)
       description: |-
-        `DeleteUserAdmin` is a call with the method(s) `DELETE` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to delete existing users in VDP. Only admins with root permission can call this method. It takes in `DeleteUserAdminRequest` and returns `DeleteUserAdminResponse`.
+        `DeleteUserAdmin` is a call with the method(s) `DELETE` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to delete existing users in VDP. Only admins with permission can call this method. It takes in `DeleteUserAdminRequest` and returns `DeleteUserAdminResponse`.
 
-        NOTE: username in `GetUesrAdminRequest` must have the format of "users/*". For example: "users/{username}".
+        **NOTE**: The `user.name` field in `DeleteUserAdminRequest` is used to identify the user to update. Format: `users/{username}`.
       operationId: MgmtPrivateService_DeleteUserAdmin
       responses:
         "200":
@@ -2824,9 +2924,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user.name
-          description: |-
-            The resource name of the user to be deleted,
-            for example: "users/local-user"
+          description: 'The resource name of the user to be deleted. Format: `users/{username}`'
           in: path
           required: true
           type: string
@@ -2836,9 +2934,9 @@ paths:
     patch:
       summary: Update an existing user (admin only)
       description: |-
-        `UpdateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to udpate existing users in VDP. Only admins with root permission can call this method. It takes in `UpdateUserAdminRequest` and returns `UpdateUserAdminResponse`.
+        `UpdateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to udpate existing users in VDP. Only admins with permission can call this method. It takes in `UpdateUserAdminRequest` and returns `UpdateUserAdminResponse`.
 
-        NOTE: In `UpdateUesrAdminRequest`, the user's `name` field is used to identify the user to update. For example: "users/{user}".
+        **NOTE**: The `user.name` field in `UpdateUserAdminRequest` is used to identify the user to update. Format: `users/{username}`.
       operationId: MgmtPrivateService_UpdateUserAdmin
       responses:
         "200":
@@ -2851,9 +2949,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user.name
-          description: |-
-            Resource name. It must have the format of "users/*".
-            For example: "users/local-user".
+          description: 'Resource name. It must have the format of `users/{username}`. For example: `users/local-user`.'
           in: path
           required: true
           type: string
@@ -2862,8 +2958,7 @@ paths:
           description: |-
             The user to update
 
-            The `user.name` field is used to identify the user to update.
-            Format: users/{user}
+            The `user.name` field is used to identify the user to update. Format: `users/{username}`
           in: body
           required: true
           schema:
@@ -2871,17 +2966,13 @@ paths:
             properties:
               uid:
                 type: string
-                description: |-
-                  User ID in UUIDv4. This field is optionally set by users
-                  (optional on resource creation, server-generated if unset).
+                description: User ID in UUIDv4. This field is optionally set by users (optional on resource creation, server-generated if unset).
               id:
                 type: string
                 description: |-
-                  Resource ID (the last segment of the resource name), also the user username.
-                  This conforms to RFC-1034, which restricts to letters, numbers,
-                  and hyphen, with the first character a letter, the last a letter or a
-                  number, and a 63 character maximum.
-                  Note that the ID can be updated.
+                  Resource ID (the last segment of the resource name), also the user username. This conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.
+
+                  NOTE: the ID can be updated.
               type:
                 $ref: '#/definitions/v1alphaOwnerType'
                 title: 'Owner type: fixed to `OWNER_TYPE_USER`'
@@ -3138,88 +3229,6 @@ paths:
           type: string
       tags:
         - PipelinePrivateService
-  /v1alpha/admin/plans:
-    get:
-      summary: |-
-        ListPlans method receives a ListPlansRequest message and returns a
-        ListPlansResponse message.
-      operationId: PlanService_ListPlans
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListPlansResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: page_size
-          description: |-
-            Page size: the maximum number of resources to return. The service may
-            return fewer than this value. If unspecified, at most 10 plans will be
-            returned. The maximum value is 100; values above 100 will be coereced to
-            100.
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: page_token
-          description: Page token
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            View view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-        - name: filter
-          description: Filter expression to list plans
-          in: query
-          required: false
-          type: string
-      tags:
-        - PlanService
-    post:
-      summary: |-
-        CreatePlan receives a CreatePlanRequest message and returns a
-        aGetPlanResponses
-      operationId: PlanService_CreatePlan
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCreatePlanResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: plan
-          description: |-
-            The plan to be created
-
-            The plan's `name` field is used to identify the plan to create.
-            Format: plans/{plan}
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1alphaPlan'
-            required:
-              - plan
-      tags:
-        - PlanService
   /v1alpha/admin/source-connectors:
     get:
       summary: List all SOURCE connector resources in VDP (admin only)
@@ -3273,9 +3282,9 @@ paths:
     get:
       summary: List all users created in VDP (admin only).
       description: |-
-        `ListUsersAdmin` is a call with the method(s) `GET` within the `MgmtPrivateSerive` service. This is a *private* method that is only avaible for admins to list *all* users created in VDP. Only admins with root permission can call this method. It takes in `ListUsersAdminRequest` and returns a `ListUsersAdminResponse`.
+        `ListUsersAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService` service. This is a *private* method that is only avaible for admins and backend sercices to list *all* users created in VDP. Only admins with root permission can call this method. It takes in `ListUsersAdminRequest` and returns a `ListUsersAdminResponse`.
 
-        NOTE: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100.
+        **NOTE**: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100.
       operationId: MgmtPrivateService_ListUsersAdmin
       responses:
         "200":
@@ -3288,11 +3297,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: page_size
-          description: |-
-            Page size: the maximum number of resources to return. The service may
-            return fewer than this value. If unspecified, at most 10 users will be
-            returned. The maximum value is 100; values above 100 will be coereced to
-            100.
+          description: 'Page size: the maximum number of resources to return. The service may return fewer than this value. If unspecified, at most 10 users will be returned. The maximum value is 100; values above 100 will be coereced to 100.'
           in: query
           required: false
           type: string
@@ -3327,9 +3332,9 @@ paths:
     post:
       summary: Create a new user (admin only).
       description: |-
-        `CreateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateSerive`. This is a *private* method that is only avaible for admins to create a new user in VDP. Only admins with root permission can call this method. It takes in `CreateUserAdminRequest` and returns a `CreateUserAdminResponse`.
+        `CreateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to create a new user in VDP. Only admins with root permission can call this method. It takes in `CreateUserAdminRequest` and returns a `CreateUserAdminResponse`.
 
-        NOTE: username must have the format of "users/*". For example: "users/local-user".
+        **NOTE**: The `user.name` field in `CreateUserAdminRequest` must has the format of `users/{username}`. For example: `users/local-user`.
       operationId: MgmtPrivateService_CreateUserAdmin
       responses:
         "200":
@@ -3345,8 +3350,7 @@ paths:
           description: |-
             The user to be created
 
-            The user's `name` field is used to identify the user to create.
-            Format: users/{user}
+            The `user.name` field is used to identify the user to create. Format: `users/{username}`
           in: body
           required: true
           schema:
@@ -5264,9 +5268,7 @@ definitions:
       exists:
         type: boolean
         title: A boolean value indicating whether the username has been occupied
-    title: |-
-      ExistUsernameResponse represents a response about whether
-      the queried username has been occupied
+    title: ExistUsernameResponse represents a response about whether the queried username has been occupied
   v1alphaGetBulkCumulativeModelOnlineRecordsResponse:
     type: object
     properties:
@@ -6195,9 +6197,7 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          Resource name. It must have the format of "models/{model}".
-          For example: "models/yolov4"
+        title: 'Resource name. It must have the format of "models/{model}". For example: "models/yolov4"'
         readOnly: true
       uid:
         type: string
@@ -6702,9 +6702,7 @@ definitions:
       user:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
-    title: |-
-      PatchAuthenticatedUserResponse represents a response for
-      the authenticated user resource
+    title: PatchAuthenticatedUserResponse represents a response for the authenticated user resource
   v1alphaPipeline:
     type: object
     properties:
@@ -6893,9 +6891,7 @@ definitions:
       user:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
-    title: |-
-      QueryAuthenticatedUserResponse represents a response for
-      the authenticated user resource
+    title: QueryAuthenticatedUserResponse represents a response for the authenticated user resource
   v1alphaReadSourceConnectorResponse:
     type: object
     properties:
@@ -7661,23 +7657,17 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          Resource name. It must have the format of "users/*".
-          For example: "users/local-user".
+        description: 'Resource name. It must have the format of `users/{username}`. For example: `users/local-user`.'
         readOnly: true
       uid:
         type: string
-        description: |-
-          User ID in UUIDv4. This field is optionally set by users
-          (optional on resource creation, server-generated if unset).
+        description: User ID in UUIDv4. This field is optionally set by users (optional on resource creation, server-generated if unset).
       id:
         type: string
         description: |-
-          Resource ID (the last segment of the resource name), also the user username.
-          This conforms to RFC-1034, which restricts to letters, numbers,
-          and hyphen, with the first character a letter, the last a letter or a
-          number, and a 63 character maximum.
-          Note that the ID can be updated.
+          Resource ID (the last segment of the resource name), also the user username. This conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.
+
+          NOTE: the ID can be updated.
       type:
         $ref: '#/definitions/v1alphaOwnerType'
         title: 'Owner type: fixed to `OWNER_TYPE_USER`'
@@ -7874,9 +7864,7 @@ definitions:
       - VIEW_FULL
     default: VIEW_UNSPECIFIED
     description: |-
-      View represents a view of any resource. The resource view is implemented by
-      adding a parameter to the method request which allows the client to specify
-      which view of the resource it wants to receive in the response.
+      View represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
        - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
        - VIEW_BASIC: View: BASIC, server response only include basic information of the user.
