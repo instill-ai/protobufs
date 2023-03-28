@@ -82,6 +82,16 @@ message User {
   optional string cookie_token = 14 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
+// View represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
+enum View {
+  // View: UNSPECIFIED, equivalent to BASIC.
+  VIEW_UNSPECIFIED = 0;
+  // View: BASIC, server response only include basic information of the user.
+  VIEW_BASIC = 1;
+  // View: FULL, full representation of the user
+  VIEW_FULL = 2;
+}
+
 // ListUsersAdminRequest represents a request to list all users by admin
 message ListUsersAdminRequest {
   // Page size: the maximum number of resources to return. The service may return fewer than this value. If unspecified, at most 10 users will be returned. The maximum value is 100; values above 100 will be coereced to 100.
@@ -142,7 +152,7 @@ message GetUserAdminResponse {
 message UpdateUserAdminRequest {
   // The user to update
   //
-  // The user's `name` field is used to identify the user to update. Format: `users/{username}`
+  // The `user.name` field is used to identify the user to update. Format: `users/{username}`
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a user resource
   google.protobuf.FieldMask update_mask = 2
@@ -173,8 +183,14 @@ message DeleteUserAdminResponse {}
 // LookUpUserAdminRequest represents a request to query a user via permalink by admin
 message LookUpUserAdminRequest {
   // Permalink of a user. Format: `users/{uid}`
-  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // View view (default is VIEW_BASIC)
+  string permalink = 1 [ 
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/User",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "user.uid"}
+    }
+  ];
+  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
