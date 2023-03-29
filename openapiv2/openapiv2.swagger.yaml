@@ -2093,6 +2093,87 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
+  /v1alpha/{token.name}:
+    get:
+      summary: |-
+        GetToken method receives a GetTokenRequest message and returns a
+        GetTokenResponse message.
+      operationId: MgmtPublicService_GetToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: token.name
+          description: API tokens resource name. It must have the format of "tokens/*"
+          in: path
+          required: true
+          type: string
+          pattern: tokens/[^/]+
+      tags:
+        - MgmtPublicService
+    delete:
+      summary: |-
+        DeleteToken method receives a DeleteTokenRequest message and returns
+        a DeleteTokenResponse message.
+      operationId: MgmtPublicService_DeleteToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: token.name
+          description: API token resource name. It must have the format of "tokens/*"
+          in: path
+          required: true
+          type: string
+          pattern: tokens/[^/]+
+      tags:
+        - MgmtPublicService
+  /v1alpha/{token.name}/validate:
+    post:
+      summary: |-
+        ValidateToken method receives a ValidateTokenRequest message and
+        returns a ValidateTokenResponse
+      operationId: MgmtPrivateService_ValidateToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaValidateTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: token.name
+          description: |-
+            The resource name of the API token to validate,
+            for example: "tokens/test-token"
+          in: path
+          required: true
+          type: string
+          pattern: tokens/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: |-
+              ValidateTokenRequest represents a request to validate whether
+              an API token is valid to be used for triggering pipelines
+      tags:
+        - MgmtPrivateService
   /v1alpha/{user.name}/exist:
     get:
       summary: |-
@@ -2111,7 +2192,7 @@ paths:
       parameters:
         - name: user.name
           description: |-
-            The resource name of the user to be deleted,
+            The resource name of the user to check,
             for example: "users/local-user"
           in: path
           required: true
@@ -3749,6 +3830,63 @@ paths:
               - source_connector
       tags:
         - ConnectorPublicService
+  /v1alpha/tokens:
+    get:
+      summary: |-
+        ListTokens method receives a ListTokensRequest message and returns a
+        ListTokensResponse message.
+      operationId: MgmtPublicService_ListTokens
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListTokensResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of API tokens to return. The service may return fewer
+            than this value. If unspecified, at most 10 API tokens will be returned. The
+            maximum value is 100; values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
+    post:
+      summary: |-
+        CreateToken method receives a CreateTokenRequest message and returns
+        a CreateTokenResponse message.
+      operationId: MgmtPublicService_CreateToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: token
+          description: A token resource to create
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaApiToken'
+            required:
+              - token
+      tags:
+        - MgmtPublicService
   /v1alpha/users/me:
     get:
       summary: |-
@@ -3983,6 +4121,10 @@ definitions:
           if (any.is(Foo.class)) {
             foo = any.unpack(Foo.class);
           }
+          // or ...
+          if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+            foo = any.unpack(Foo.getDefaultInstance());
+          }
 
       Example 3: Pack and unpack a message in Python.
 
@@ -4012,7 +4154,6 @@ definitions:
       methods only use the fully qualified type name after the last '/'
       in the type URL, for example "foo.bar.com/x/y.z" will yield type
       name "y.z".
-
 
       JSON
 
@@ -4159,6 +4300,71 @@ definitions:
       instance or workspace admins beforehand. The trade-off is that the user does
       not have to provide as many technical inputs anymore and the auth process is
       faster and easier to complete.
+  v1alphaApiToken:
+    type: object
+    properties:
+      name:
+        type: string
+        title: API token resource name. It must have the format of "tokens/*"
+        readOnly: true
+      uid:
+        type: string
+        title: API token UUID
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          API token resource ID (the last segment of the resource name) used to
+          construct the resource name. This conforms to RFC-1034, which restricts to
+          letters, numbers, and hyphen, with the first character a letter, the last a
+          letter or a number, and a 63 character maximum.
+          Use this field to define where it's being used.
+      create_time:
+        type: string
+        format: date-time
+        title: API token creation time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: API token update time
+        readOnly: true
+      access_token:
+        type: string
+        description: "An opaque access token representing the API token string. \nTo validate the token, the recipient of the token needs to call the server that issued the token."
+        readOnly: true
+      state:
+        $ref: '#/definitions/v1alphaApiTokenState'
+        title: API token state
+        readOnly: true
+      token_type:
+        type: string
+        title: API token type, value is fixed to "Bearer"
+        readOnly: true
+      lifetime:
+        type: string
+        format: int64
+        title: The amount of time (in seconds) the API token will live. If set to -1, indicating a non-expire token
+      expires_in:
+        type: string
+        format: int64
+        title: The amount of time (in seconds) the API token will expire. If value is -1, indicating a non-expire token
+        readOnly: true
+    title: ApiToken represents the content of a API token
+  v1alphaApiTokenState:
+    type: string
+    enum:
+      - STATE_UNSPECIFIED
+      - STATE_INACTIVE
+      - STATE_ACTIVE
+      - STATE_EXPIRED
+    default: STATE_UNSPECIFIED
+    description: |-
+      - STATE_UNSPECIFIED: State: UNSPECIFIED
+       - STATE_INACTIVE: State: INACTIVE
+       - STATE_ACTIVE: State: ACTIVE
+       - STATE_EXPIRED: State: EXPIRED
+    title: State enumerates the state of an API token
   v1alphaBoundingBox:
     type: object
     properties:
@@ -4498,6 +4704,13 @@ definitions:
     title: |-
       CreateSourceConnectorResponse represents a response for a
       SourceConnector resource
+  v1alphaCreateTokenResponse:
+    type: object
+    properties:
+      token:
+        $ref: '#/definitions/v1alphaApiToken'
+        title: The created API token resource
+    title: CreateTokenResponse represents a response for a API token resource
   v1alphaCreateUserAdminResponse:
     type: object
     properties:
@@ -4527,6 +4740,9 @@ definitions:
   v1alphaDeleteSourceConnectorResponse:
     type: object
     title: DeleteSourceConnectorResponse represents an empty response
+  v1alphaDeleteTokenResponse:
+    type: object
+    title: DeleteTokenResponse represents an empty response
   v1alphaDeleteUserAdminResponse:
     type: object
     title: DeleteUserAdminResponse represents an empty response
@@ -5128,6 +5344,13 @@ definitions:
     title: |-
       GetSourceConnectorResponse represents a response for a
       SourceConnector resource
+  v1alphaGetTokenResponse:
+    type: object
+    properties:
+      token:
+        $ref: '#/definitions/v1alphaApiToken'
+        title: An API token resource
+    title: GetTokenResponse represents a response for an API token resource
   v1alphaGetUserAdminResponse:
     type: object
     properties:
@@ -5508,6 +5731,22 @@ definitions:
     title: |-
       ListSourceConnectorsResponse represents a response for a list of
       SourceConnector resources
+  v1alphaListTokensResponse:
+    type: object
+    properties:
+      tokens:
+        type: array
+        items:
+          $ref: '#/definitions/v1alphaApiToken'
+        title: A list of API tokens resources
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of API tokens resources
+    title: ListTokensResponse represents a response for a list of API tokens
   v1alphaListUsersAdminResponse:
     type: object
     properties:
@@ -7165,6 +7404,15 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1alphaValidateTokenResponse:
+    type: object
+    properties:
+      valid:
+        type: boolean
+        title: A boolean value indicating whether the token is valid
+    title: |-
+      ValidateTokenResponse represents a response about whether
+      the queried token is valid
   v1alphaWatchDestinationConnectorResponse:
     type: object
     properties:
