@@ -262,6 +262,58 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
+  /v1alpha/{model.name/readme}:
+    get:
+      summary: |-
+        GetModelCard method receives a GetModelCardRequest message
+        and returns a GetModelCardResponse
+      operationId: ModelPublicService_GetModelCard
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelCardResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name/readme
+          description: |-
+            Resource name of the model card.
+            For example "models/{model}/readme"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+/readme
+      tags:
+        - ModelPublicService
+  /v1alpha/{model.name/watch}/watch:
+    get:
+      summary: |-
+        WatchModel method receives a WatchModelRequest message
+        and returns a WatchModelResponse
+      operationId: ModelPublicService_WatchModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name/watch
+          description: |-
+            Resource name of the model.
+            For example "models/{model}"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+      tags:
+        - ModelPublicService
   /v1alpha/{model.name}:
     get:
       summary: |-
@@ -386,6 +438,14 @@ paths:
                 title: |-
                   Model configuration represents the configuration JSON that has been
                   validated using the `model_spec` JSON schema of a ModelDefinition
+              task:
+                $ref: '#/definitions/ModelTask'
+                title: Model task
+                readOnly: true
+              state:
+                $ref: '#/definitions/v1alphaModelState'
+                title: Model state
+                readOnly: true
               visibility:
                 $ref: '#/definitions/ModelVisibility'
                 title: Model visibility including public or private
@@ -447,102 +507,7 @@ paths:
           description: |-
             Definition view (default is VIEW_BASIC)
             VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelDefinition.model_spec` and
-            `ModelDefinition.model_instance_spec`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
-  /v1alpha/{model_instance.name/readme}:
-    get:
-      summary: |-
-        GetModelInstanceCard method receives a GetModelInstanceCardRequest message
-        and returns a GetModelInstanceCardResponse
-      operationId: ModelPublicService_GetModelInstanceCard
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelInstanceCardResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model_instance.name/readme
-          description: |-
-            Resource name of the model instance card.
-            For example "models/{model}/instances/{instance}/readme"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+/readme
-      tags:
-        - ModelPublicService
-  /v1alpha/{model_instance.name/watch}/watch:
-    get:
-      summary: |-
-        WatchModelInstance method receives a WatchModelInstanceRequest message
-        and returns a WatchModelInstanceResponse
-      operationId: ModelPublicService_WatchModelInstance
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchModelInstanceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model_instance.name/watch
-          description: |-
-            Resource name of the model instance.
-            For example "models/{model}/instances/{instance}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+
-      tags:
-        - ModelPublicService
-  /v1alpha/{model_instance.name}:
-    get:
-      summary: |-
-        GetModelInstance method receives a GetModelInstanceRequest message and
-        returns a GetModelInstanceResponse
-      operationId: ModelPublicService_GetModelInstance
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelInstanceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model_instance.name
-          description: |-
-            Resource name of the model instance.
-            For example "models/{model}/instances/{instance}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+
-        - name: view
-          description: |-
-            Model instance view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelInstance.configuration`
+            `ModelDefinition.model_spec`
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
@@ -585,7 +550,7 @@ paths:
           description: |-
             View (default is VIEW_BASIC)
             VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `ModelInstance.configuration` VIEW_FULL: show full information
+            `Model.configuration` VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
@@ -1003,13 +968,13 @@ paths:
         - PipelinePublicService
   /v1alpha/{name}/deploy:
     post:
-      summary: DeployModelInstance deploy a model instance to online state
-      operationId: ModelPublicService_DeployModelInstance
+      summary: DeployModel deploy a model to online state
+      operationId: ModelPublicService_DeployModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeployModelInstanceResponse'
+            $ref: '#/definitions/v1alphaDeployModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1017,20 +982,18 @@ paths:
       parameters:
         - name: name
           description: |-
-            Resource name for the model instance to be deployed.
-            Format: models/{model}/instances/{instance}
+            Resource name for the model to be deployed.
+            Format: models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+
+          pattern: models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
-            title: |-
-              DeployModelInstanceRequest represents a request to deploy a model instance to
-              online state
+            title: DeployModelRequest represents a request to deploy a model to online state
       tags:
         - ModelPublicService
   /v1alpha/{name}/disconnect:
@@ -1182,14 +1145,14 @@ paths:
   /v1alpha/{name}/test:
     post:
       summary: |-
-        TestModelInstance method receives a TestModelInstanceRequest message
-        and returns a TestModelInstanceResponse message.
-      operationId: ModelPublicService_TestModelInstance
+        TestModel method receives a TestModelRequest message
+        and returns a TestModelResponse message.
+      operationId: ModelPublicService_TestModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaTestModelInstanceResponse'
+            $ref: '#/definitions/v1alphaTestModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1197,12 +1160,12 @@ paths:
       parameters:
         - name: name
           description: |-
-            The resource name of the model instance to trigger.
-            For example "models/{model}/instances/{instance}"
+            The resource name of the model to trigger.
+            For example "models/{model}"
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+
+          pattern: models/[^/]+
         - name: body
           in: body
           required: true
@@ -1213,8 +1176,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/v1alphaTaskInput'
-                title: Input to trigger the model instance
-            title: TestModelInstanceRequest represents a request to test a model instance
+                title: Input to trigger the model
+            title: TestModelRequest represents a request to test a model
             required:
               - task_inputs
       tags:
@@ -1223,14 +1186,14 @@ paths:
     post:
       summary: /////////////////////////////////////////////////////
       description: |-
-        TriggerModelInstance method receives a TriggerModelInstanceRequest message
-        and returns a TriggerModelInstanceResponse message.
-      operationId: ModelPublicService_TriggerModelInstance
+        TriggerModel method receives a TriggerModelRequest message
+        and returns a TriggerModelResponse message.
+      operationId: ModelPublicService_TriggerModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaTriggerModelInstanceResponse'
+            $ref: '#/definitions/v1alphaTriggerModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1238,12 +1201,12 @@ paths:
       parameters:
         - name: name
           description: |-
-            The resource name of the model instance to trigger.
-            For example "models/{model}/instances/{instance}"
+            The resource name of the model to trigger.
+            For example "models/{model}"
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+
+          pattern: models/[^/]+
         - name: body
           in: body
           required: true
@@ -1254,21 +1217,21 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/v1alphaTaskInput'
-                title: Input to trigger the model instance
-            title: TriggerModelInstanceRequest represents a request to trigger a model instance
+                title: Input to trigger the model
+            title: TriggerModelRequest represents a request to trigger a model
             required:
               - task_inputs
       tags:
         - ModelPublicService
   /v1alpha/{name}/undeploy:
     post:
-      summary: UndeployModelInstance undeploy a model instance to offline state
-      operationId: ModelPublicService_UndeployModelInstance
+      summary: UndeployModel undeploy a model to offline state
+      operationId: ModelPublicService_UndeployModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUndeployModelInstanceResponse'
+            $ref: '#/definitions/v1alphaUndeployModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1276,20 +1239,18 @@ paths:
       parameters:
         - name: name
           description: |-
-            Resource name for the model instance to be undeployed.
-            Format: models/{model}/instances/{instance}
+            Resource name for the model to be undeployed.
+            Format: models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+
+          pattern: models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
-            title: |-
-              UndeployModelInstanceRequest represents a request to undeploy a model
-              instance to offline state
+            title: UndeployModelRequest represents a request to undeploy a model to offline state
       tags:
         - ModelPublicService
   /v1alpha/{name}/unpublish:
@@ -1376,10 +1337,10 @@ paths:
                 items:
                   type: string
                 title: Indices corresponds to each JSON data element
-              model_instance_outputs:
+              model_outputs:
                 type: array
                 items:
-                  $ref: '#/definitions/v1alphaModelInstanceOutput'
+                  $ref: '#/definitions/v1alphaModelOutput'
                 title: JSON data to write
             title: |-
               WriteDestinationConnectorRequest represents a request to perform write
@@ -1390,67 +1351,9 @@ paths:
               - pipeline
               - recipe
               - data_mapping_indices
-              - model_instance_outputs
+              - model_outputs
       tags:
         - ConnectorPublicService
-  /v1alpha/{parent}/instances:
-    get:
-      summary: |-
-        ListModelInstances method receives a ListModelInstancesRequest message and
-        returns a ListModelInstancesResponse
-      operationId: ModelPublicService_ListModelInstances
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListModelInstancesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: parent
-          description: |-
-            The name of the model whose instances we'd like to list.
-            e.g., "models/yolov4"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: page_size
-          description: |-
-            Page size: the maximum number of resources to return. The service may
-            return fewer than this value. If unspecified, at most 10 model instances
-            will be returned. The maximum value is 100; values above 100 will be
-            coereced to 100.
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: page_token
-          description: Page token
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            Model instance view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelInstance.configuration`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
@@ -1539,50 +1442,6 @@ paths:
   /v1alpha/{permalink_3}/lookUp:
     get:
       summary: |-
-        LookUpModelInstance method receives a LookUpModelInstanceRequest message
-        and returns a
-        LookUpModelInstanceResponse
-      operationId: ModelPublicService_LookUpModelInstance
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpModelInstanceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: permalink_3
-          description: |-
-            Permalink of a model instance. For example:
-            "models/{model_uid}/instances/{instance_uid}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+
-        - name: view
-          description: |-
-            Model instance view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelInstance.configuration`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
-  /v1alpha/{permalink_4}/lookUp:
-    get:
-      summary: |-
         LookUpPipeline method receives a LookUpPipelineRequest message and returns
         a LookUpPipelineResponse
       operationId: PipelinePublicService_LookUpPipeline
@@ -1596,7 +1455,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: permalink_4
+        - name: permalink_3
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -1878,9 +1737,9 @@ paths:
           schema:
             type: object
             properties:
-              model_instance_state:
-                $ref: '#/definitions/v1alphaModelInstanceState'
-                title: Model instance state
+              model_state:
+                $ref: '#/definitions/v1alphaModelState'
+                title: Model state
               pipeline_state:
                 $ref: '#/definitions/v1alphaPipelineState'
                 title: Pipeline state
@@ -2314,14 +2173,14 @@ paths:
   /v1alpha/admin/{name_2}/check:
     get:
       summary: |-
-        CheckModelInstance method receives a CheckModelInstanceRequest message and returns a
-        CheckModelInstanceResponse
-      operationId: ModelPrivateService_CheckModelInstance
+        CheckModel method receives a CheckModelRequest message and returns a
+        CheckModelResponse
+      operationId: ModelPrivateService_CheckModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaCheckModelInstanceResponse'
+            $ref: '#/definitions/v1alphaCheckModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2329,12 +2188,12 @@ paths:
       parameters:
         - name: name_2
           description: |-
-            Resource name of the model instance.
-            For example "models/{model}/instances/{instance}"
+            Resource name of the model.
+            For example "models/{model}"
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+
+          pattern: models/[^/]+
       tags:
         - ModelPrivateService
   /v1alpha/admin/{name}/check:
@@ -3382,7 +3241,7 @@ paths:
           description: |-
             Definition view (default is VIEW_BASIC)
             VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelDefinition.model_spec` and
-            `ModelDefinition.model_instance_spec`
+            `ModelDefinition.model_spec`
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
@@ -3517,7 +3376,7 @@ paths:
           description: |-
             View (default is VIEW_BASIC)
             VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `ModelInstance.configuration` VIEW_FULL: show full information
+            `Model.configuration` VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
@@ -3959,7 +3818,7 @@ definitions:
        - SERVING_STATUS_SERVING: Serving status: SERVING
        - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
     title: ServingStatus enumerates the status of a queried service
-  ModelInstanceTask:
+  ModelTask:
     type: string
     enum:
       - TASK_UNSPECIFIED
@@ -3982,7 +3841,7 @@ definitions:
        - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
        - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
        - TASK_TEXT_GENERATION: Task: TEXT Generation
-    title: Task enumerates the task type of a model instance
+    title: Task enumerates the task type of a model
   ModelVisibility:
     type: string
     enum:
@@ -4403,15 +4262,15 @@ definitions:
     title: |-
       CheckDestinationConnectorResponse represents a response to fetch a destination connector's
       current state
-  v1alphaCheckModelInstanceResponse:
+  v1alphaCheckModelResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaModelInstanceState'
-        title: Retrieved model instance state
+        $ref: '#/definitions/v1alphaModelState'
+        title: Retrieved model state
     title: |-
-      CheckModelInstanceResponse represents a response to fetch a model
-      instance's current state and longrunning progress
+      CheckModelResponse represents a response to fetch a model's
+      current state and longrunning progress
   v1alphaCheckSourceConnectorResponse:
     type: object
     properties:
@@ -4670,9 +4529,7 @@ definitions:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Create model operation message
         readOnly: true
-    title: |-
-      CreateModelBinaryFileUploadResponse represents a response for a model
-      instance
+    title: CreateModelBinaryFileUploadResponse represents a response for a model
   v1alphaCreateModelResponse:
     type: object
     properties:
@@ -4746,15 +4603,13 @@ definitions:
   v1alphaDeleteUserAdminResponse:
     type: object
     title: DeleteUserAdminResponse represents an empty response
-  v1alphaDeployModelInstanceResponse:
+  v1alphaDeployModelResponse:
     type: object
     properties:
       operation:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Deploy operation message
-    title: |-
-      DeployModelInstanceResponse represents a response for a deployed model
-      instance
+    title: DeployModelResponse represents a response for a deployed model
   v1alphaDestinationConnector:
     type: object
     properties:
@@ -5075,6 +4930,13 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: The retrieved model
     title: GetModelAdminResponse represents a response for a model
+  v1alphaGetModelCardResponse:
+    type: object
+    properties:
+      readme:
+        $ref: '#/definitions/v1alphaModelCard'
+        title: Retrieved model card
+    title: GetModelCardResponse represents a response to fetch a model's README card
   v1alphaGetModelDefinitionResponse:
     type: object
     properties:
@@ -5082,22 +4944,6 @@ definitions:
         $ref: '#/definitions/v1alphaModelDefinition'
         title: A model definition instance
     title: GetModelDefinitionResponse represents a response for a model definition
-  v1alphaGetModelInstanceCardResponse:
-    type: object
-    properties:
-      readme:
-        $ref: '#/definitions/v1alphaModelInstanceCard'
-        title: Retrieved model instance card
-    title: |-
-      GetModelInstanceCardResponse represents a response to fetch a model
-      instance's README card
-  v1alphaGetModelInstanceResponse:
-    type: object
-    properties:
-      instance:
-        $ref: '#/definitions/v1alphaModelInstance'
-        title: Retrieved model instance
-    title: GetModelInstanceResponse represents a response for a model instance
   v1alphaGetModelOnlinePriceRequest:
     type: object
     properties:
@@ -5579,22 +5425,6 @@ definitions:
     title: |-
       ListModelDefinitionsResponse represents a response to list all supported model
       definitions
-  v1alphaListModelInstancesResponse:
-    type: object
-    properties:
-      instances:
-        type: array
-        items:
-          $ref: '#/definitions/v1alphaModelInstance'
-        title: a list of Model instances
-      next_page_token:
-        type: string
-        title: Next page token
-      total_size:
-        type: string
-        format: int64
-        title: Total count of model instances
-    title: ListModelInstancesResponse represents a response for a list of model instances
   v1alphaListModelOperationsResponse:
     type: object
     properties:
@@ -5787,21 +5617,14 @@ definitions:
       model:
         $ref: '#/definitions/v1alphaModel'
         title: A model resource
-    title: LookUpModelResponse represents a response for a model instance
-  v1alphaLookUpModelInstanceResponse:
-    type: object
-    properties:
-      instance:
-        $ref: '#/definitions/v1alphaModelInstance'
-        title: A model instance
-    title: LookUpModelInstanceResponse represents a response for a model instance
+    title: LookUpModelResponse represents a response for a model
   v1alphaLookUpModelResponse:
     type: object
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
         title: A model resource
-    title: LookUpModelResponse represents a response for a model instance
+    title: LookUpModelResponse represents a response for a model
   v1alphaLookUpPipelineAdminResponse:
     type: object
     properties:
@@ -5877,6 +5700,14 @@ definitions:
         title: |-
           Model configuration represents the configuration JSON that has been
           validated using the `model_spec` JSON schema of a ModelDefinition
+      task:
+        $ref: '#/definitions/ModelTask'
+        title: Model task
+        readOnly: true
+      state:
+        $ref: '#/definitions/v1alphaModelState'
+        title: Model state
+        readOnly: true
       visibility:
         $ref: '#/definitions/ModelVisibility'
         title: Model visibility including public or private
@@ -5900,6 +5731,36 @@ definitions:
         title: Model update time
         readOnly: true
     title: Model represents a model
+  v1alphaModelCard:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          Resource name. It must have the format of
+          "models/{model}/readme"
+        readOnly: true
+      size:
+        type: integer
+        format: int32
+        title: Size of the file
+        readOnly: true
+      type:
+        type: string
+        description: Type of the resource. Fixed to "file".
+        readOnly: true
+      content:
+        type: string
+        format: byte
+        title: Content of the README file in bytes and base64 format
+        readOnly: true
+      encoding:
+        type: string
+        description: Encoding type of the content. Fixed to "base64".
+        readOnly: true
+    description: |-
+      ModelCard represents the README card for a model. There
+      exists one and exactly one README card per model.
   v1alphaModelData:
     type: object
     properties:
@@ -5964,13 +5825,6 @@ definitions:
           source. Must be a valid JSON that includes what fields are needed to
           create/display a model.
         readOnly: true
-      model_instance_spec:
-        type: object
-        description: |-
-          ModelDefinition model instance specification represents the JSON schema
-          used to validate the JSON configurations of a model instance from a
-          specific model source. Must be a valid JSON that includes what fields are
-          needed to display a model instance.
       create_time:
         type: string
         format: date-time
@@ -5984,98 +5838,15 @@ definitions:
     title: |-
       /////////////////////////////////////////////////////////////////
       ModelDefinition represents the definition of a model
-    required:
-      - model_instance_spec
-  v1alphaModelInstance:
+  v1alphaModelOutput:
     type: object
     properties:
-      name:
+      model:
         type: string
-        title: |-
-          Resource name. It must have the format of
-          "models/{model}/instances/{instance}"
-        readOnly: true
-      uid:
-        type: string
-        title: Model instance ID in UUIDv4
-        readOnly: true
-      id:
-        type: string
-        description: |-
-          Model instance ID (the last segment of the resource name), used to
-          construct the resource name. This conforms to RFC-1034, which restricts to
-          letters, numbers, and hyphen, with the first character a letter, the last a
-          letter or a number, and a 63 character maximum.
-        readOnly: true
-      state:
-        $ref: '#/definitions/v1alphaModelInstanceState'
-        title: Model instance state
+        title: The model
         readOnly: true
       task:
-        $ref: '#/definitions/ModelInstanceTask'
-        title: Model instance task
-        readOnly: true
-      model_definition:
-        type: string
-        title: Model definition resource name
-        readOnly: true
-      configuration:
-        type: object
-        title: |-
-          Model instance configuration represents the configuration JSON that
-          has been validated using the `model_instance_spec` JSON schema of a
-          ModelDefinition
-        readOnly: true
-      create_time:
-        type: string
-        format: date-time
-        title: Model instance create time
-        readOnly: true
-      update_time:
-        type: string
-        format: date-time
-        title: Model instance update time
-        readOnly: true
-    title: ModelVersion represents one deployable instance of a model
-  v1alphaModelInstanceCard:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          Resource name. It must have the format of
-          "models/{model}/instances/{instance}/readme"
-        readOnly: true
-      size:
-        type: integer
-        format: int32
-        title: Size of the file
-        readOnly: true
-      type:
-        type: string
-        description: Type of the resource. Fixed to "file".
-        readOnly: true
-      content:
-        type: string
-        format: byte
-        title: Content of the README file in bytes and base64 format
-        readOnly: true
-      encoding:
-        type: string
-        description: Encoding type of the content. Fixed to "base64".
-        readOnly: true
-    description: |-
-      ModelInstanceCard represents the README card for a model instance. There
-      exists one and exactly one README card per model instance.
-  v1alphaModelInstanceOutput:
-    type: object
-    properties:
-      model_instance:
-        type: string
-        title: The model instance
-        readOnly: true
-      task:
-        $ref: '#/definitions/ModelInstanceTask'
+        $ref: '#/definitions/ModelTask'
         title: The task type
         readOnly: true
       task_outputs:
@@ -6083,11 +5854,11 @@ definitions:
         items:
           $ref: '#/definitions/vdppipelinev1alphaTaskOutput'
         title: |-
-          The extended task outputs based on the model instance inference (i.e.,
+          The extended task outputs based on the model inference (i.e.,
           from a trigger endpoint of model-backend)
         readOnly: true
-    title: ModelInstanceOutput represents one model instance inference result
-  v1alphaModelInstanceState:
+    title: ModelOutput represents one model inference result
+  v1alphaModelState:
     type: string
     enum:
       - STATE_UNSPECIFIED
@@ -6100,7 +5871,7 @@ definitions:
        - STATE_OFFLINE: State: OFFLINE
        - STATE_ONLINE: State: ONLINE
        - STATE_ERROR: State: ERROR
-    title: State enumerates a model instance state
+    title: State enumerates a model state
   v1alphaModelUsageData:
     type: object
     properties:
@@ -6119,44 +5890,34 @@ definitions:
       model_online_state_num:
         type: string
         format: int64
-        title: Number of models that have at least one 'online' instance
+        title: Number of 'online' models
       model_offline_state_num:
         type: string
         format: int64
-        title: Number of models that have no 'online' instances
-      instance_online_state_num:
-        type: string
-        format: int64
-        title: Number of model instances with 'online' state
-      instance_offline_state_num:
-        type: string
-        format: int64
-        title: Number of model instances with 'offline' state
+        title: Number of 'offline' models
       model_definition_ids:
         type: array
         items:
           type: string
         description: |-
-          Definition IDs of the model instances. Element in the list
+          Definition IDs of the model. Element in the list
           should not be duplicated.
       tasks:
         type: array
         items:
-          $ref: '#/definitions/ModelInstanceTask'
+          $ref: '#/definitions/ModelTask'
         description: |-
-          Tasks of the model instances. Element in the list should not be
+          Tasks of the models. Element in the list should not be
           duplicated.
       test_num:
         type: string
         format: int64
-        title: Number of model instance testing operations
+        title: Number of model testing operations
     title: Per user usage data in the model service
     required:
       - user_uid
       - model_online_state_num
       - model_offline_state_num
-      - instance_online_state_num
-      - instance_offline_state_num
       - model_definition_ids
       - tasks
       - test_num
@@ -6575,11 +6336,11 @@ definitions:
       destination:
         type: string
         title: A destination connector resource
-      model_instances:
+      model:
         type: array
         items:
           type: string
-        title: A list of model instance resources
+        title: A list of model resources
     title: Pipeline represents a pipeline recipe
   v1alphaRenameDestinationConnectorResponse:
     type: object
@@ -6679,9 +6440,9 @@ definitions:
       name:
         type: string
         description: Resource name.
-      model_instance_state:
-        $ref: '#/definitions/v1alphaModelInstanceState'
-        title: Model instance state
+      model_state:
+        $ref: '#/definitions/v1alphaModelState'
+        title: Model state
       pipeline_state:
         $ref: '#/definitions/v1alphaPipelineState'
         title: Pipeline state
@@ -7008,7 +6769,7 @@ definitions:
       unspecified:
         $ref: '#/definitions/v1alphaUnspecifiedInput'
         title: The unspecified task input
-    title: Input represents the input to trigger a model instance
+    title: Input represents the input to trigger a model
   v1alphaTaskInputStream:
     type: object
     properties:
@@ -7039,38 +6800,38 @@ definitions:
       unspecified:
         $ref: '#/definitions/v1alphaUnspecifiedInput'
         title: The unspecified task input
-    title: TaskInputStream represents the input to trigger a model instance with stream method
-  v1alphaTestModelInstanceBinaryFileUploadResponse:
+    title: TaskInputStream represents the input to trigger a model with stream method
+  v1alphaTestModelBinaryFileUploadResponse:
     type: object
     properties:
       task:
-        $ref: '#/definitions/ModelInstanceTask'
+        $ref: '#/definitions/ModelTask'
         title: The task type
       task_outputs:
         type: array
         items:
           $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
-        title: The task output from a model instance
+        title: The task output from a model
     title: |-
-      TestModelInstanceBinaryFileUploadResponse represents a response for the
-      output for testing a model instance
+      TestModelBinaryFileUploadResponse represents a response for the
+      output for testing a model
     required:
       - task
       - task_outputs
-  v1alphaTestModelInstanceResponse:
+  v1alphaTestModelResponse:
     type: object
     properties:
       task:
-        $ref: '#/definitions/ModelInstanceTask'
+        $ref: '#/definitions/ModelTask'
         title: The task type
       task_outputs:
         type: array
         items:
           $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
-        title: The task output from a model instance
+        title: The task output from a model
     title: |-
-      TestModelInstanceResponse represents a response for the output for
-      testing a model instance
+      TestModelResponse represents a response for the output for
+      testing a model
     required:
       - task
       - task_outputs
@@ -7159,37 +6920,37 @@ definitions:
     required:
       - start_time
       - end_time
-  v1alphaTriggerModelInstanceBinaryFileUploadResponse:
+  v1alphaTriggerModelBinaryFileUploadResponse:
     type: object
     properties:
       task:
-        $ref: '#/definitions/ModelInstanceTask'
+        $ref: '#/definitions/ModelTask'
         title: The task type
       task_outputs:
         type: array
         items:
           $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
-        title: The task output from a model instance
+        title: The task output from a model
     title: |-
-      TriggerModelInstanceBinaryFileUploadResponse represents a response for the
-      output for testing a model instance
+      TriggerModelBinaryFileUploadResponse represents a response for the
+      output for testing a model
     required:
       - task
       - task_outputs
-  v1alphaTriggerModelInstanceResponse:
+  v1alphaTriggerModelResponse:
     type: object
     properties:
       task:
-        $ref: '#/definitions/ModelInstanceTask'
+        $ref: '#/definitions/ModelTask'
         title: The task type
       task_outputs:
         type: array
         items:
           $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
-        title: The task output from a model instance
+        title: The task output from a model
     title: |-
-      TriggerModelInstanceResponse represents a response for the output for
-      triggering a model instance
+      TriggerModelResponse represents a response for the output for
+      triggering a model
   v1alphaTriggerPipelineBinaryFileUploadResponse:
     type: object
     properties:
@@ -7198,14 +6959,14 @@ definitions:
         items:
           type: string
         title: The data mapping indices stores UUID for each input
-      model_instance_outputs:
+      model_outputs:
         type: array
         items:
-          $ref: '#/definitions/v1alphaModelInstanceOutput'
-        title: The multiple model instance inference outputs
+          $ref: '#/definitions/v1alphaModelOutput'
+        title: The multiple model inference outputs
     title: |-
       TriggerPipelineBinaryFileUploadResponse represents a response for the output
-      of a pipeline, i.e., the multiple model instance inference outputs
+      of a pipeline, i.e., the multiple model inference outputs
   v1alphaTriggerPipelineResponse:
     type: object
     properties:
@@ -7214,23 +6975,21 @@ definitions:
         items:
           type: string
         title: The data mapping indices stores UUID for each input
-      model_instance_outputs:
+      model_outputs:
         type: array
         items:
-          $ref: '#/definitions/v1alphaModelInstanceOutput'
-        title: The multiple model instance inference outputs
+          $ref: '#/definitions/v1alphaModelOutput'
+        title: The multiple model inference outputs
     title: |-
       TriggerPipelineResponse represents a response for the output
-      of a pipeline, i.e., the multiple model instance inference outputs
-  v1alphaUndeployModelInstanceResponse:
+      of a pipeline, i.e., the multiple model inference outputs
+  v1alphaUndeployModelResponse:
     type: object
     properties:
       operation:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Undeploy operation message
-    title: |-
-      UndeployModelInstanceResponse represents a response for a undeployed model
-      instance
+    title: UndeployModelResponse represents a response for a undeployed model
   v1alphaUnpublishModelResponse:
     type: object
     properties:
@@ -7422,19 +7181,19 @@ definitions:
     title: |-
       WatchDestinationConnectorResponse represents a response to fetch a destination connector's
       current state
-  v1alphaWatchModelInstanceResponse:
+  v1alphaWatchModelResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaModelInstanceState'
-        title: Retrieved model instance state
+        $ref: '#/definitions/v1alphaModelState'
+        title: Retrieved model state
       progress:
         type: integer
         format: int32
-        title: Retrieved model instance logrunning progress
+        title: Retrieved model logrunning progress
     title: |-
-      WatchModelInstanceResponse represents a public response to
-      fetch a model instance's current state and longrunning progress
+      WatchModelResponse represents a public response to
+      fetch a model current state and longrunning progress
   v1alphaWatchSourceConnectorResponse:
     type: object
     properties:
@@ -7603,7 +7362,7 @@ definitions:
         $ref: '#/definitions/v1alphaUnspecifiedOutput'
         title: The unspecified task output
         readOnly: true
-    title: TaskOutput represents the output of a CV Task result from a model instance
+    title: TaskOutput represents the output of a CV Task result from a model
   vdpmodelv1alphaView:
     type: string
     enum:
@@ -7678,10 +7437,10 @@ definitions:
         readOnly: true
     description: |-
       TaskOutput represents the output of a CV Task result from a
-      model instance, extended from model.v1alpha.TaskOutput.
+      model, extended from model.v1alpha.TaskOutput.
       Here we don't use a model.v1alpha.TaskOutput type field but explicitly use
       the replicated oneof field because we want the CV Task output to be at the
-      same message layer like the trigger output of model instance.
+      same message layer like the trigger output of model.
   vdppipelinev1alphaView:
     type: string
     enum:
