@@ -1521,6 +1521,30 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
+  /v1alpha/{pipeline.name/watch}/watch:
+    get:
+      summary: |-
+        WatchPipeline method receives a WatchPipelineRequest message
+        and returns a WatchPipelineResponse
+      operationId: PipelinePublicService_WatchPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: pipeline.name/watch
+          description: Pipeline resource name. It must have the format of "pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+      tags:
+        - PipelinePublicService
   /v1alpha/{pipeline.name}:
     get:
       summary: |-
@@ -3980,10 +4004,6 @@ definitions:
           if (any.is(Foo.class)) {
             foo = any.unpack(Foo.class);
           }
-          // or ...
-          if (any.isSameTypeAs(Foo.getDefaultInstance())) {
-            foo = any.unpack(Foo.getDefaultInstance());
-          }
 
       Example 3: Pack and unpack a message in Python.
 
@@ -4013,6 +4033,7 @@ definitions:
       methods only use the fully qualified type name after the last '/'
       in the type URL, for example "foo.bar.com/x/y.z" will yield type
       name "y.z".
+
 
       JSON
 
@@ -4190,7 +4211,9 @@ definitions:
         readOnly: true
       access_token:
         type: string
-        description: "An opaque access token representing the API token string. \nTo validate the token, the recipient of the token needs to call the server that issued the token."
+        description: |-
+          An opaque access token representing the API token string.
+          To validate the token, the recipient of the token needs to call the server that issued the token.
         readOnly: true
       state:
         $ref: '#/definitions/v1alphaApiTokenState'
@@ -7194,6 +7217,15 @@ definitions:
     title: |-
       WatchModelResponse represents a public response to
       fetch a model current state and longrunning progress
+  v1alphaWatchPipelineResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaPipelineState'
+        title: Retrieved pipeline state
+    title: |-
+      WatchPipelineResponse represents a response to fetch a pipeline's
+      current state
   v1alphaWatchSourceConnectorResponse:
     type: object
     properties:
