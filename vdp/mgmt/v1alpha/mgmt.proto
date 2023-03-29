@@ -11,6 +11,18 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
+// View represents a view of any resource. The resource view is implemented by
+// adding a parameter to the method request which allows the client to specify
+// which view of the resource it wants to receive in the response.
+enum View {
+  // View: UNSPECIFIED, equivalent to BASIC.
+  VIEW_UNSPECIFIED = 0;
+  // View: BASIC
+  VIEW_BASIC = 1;
+  // View: FULL
+  VIEW_FULL = 2;
+}
+
 // OwnerType enumerates the owner type of any resource
 enum OwnerType {
   // OwnerType: UNSPECIFIED
@@ -72,18 +84,6 @@ message User {
   bool newsletter_subscription = 13 [ (google.api.field_behavior) = REQUIRED ];
   // User console cookie token
   optional string cookie_token = 14 [ (google.api.field_behavior) = OPTIONAL ];
-}
-
-// View represents a view of any resource. The resource view is implemented by
-// adding a parameter to the method request which allows the client to specify
-// which view of the resource it wants to receive in the response.
-enum View {
-  // View: UNSPECIFIED, equivalent to BASIC.
-  VIEW_UNSPECIFIED = 0;
-  // View: BASIC
-  VIEW_BASIC = 1;
-  // View: FULL
-  VIEW_FULL = 2;
 }
 
 // ListUsersAdminRequest represents a request to list all users by admin
@@ -227,7 +227,7 @@ message PatchAuthenticatedUserResponse {
 // ExistUsernameRequest represents a request to verify if
 // a username has been occupied
 message ExistUsernameRequest {
-  // The resource name of the user to be deleted,
+  // The resource name of the user to check,
   // for example: "users/local-user"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -243,4 +243,139 @@ message ExistUsernameRequest {
 message ExistUsernameResponse {
   // A boolean value indicating whether the username has been occupied
   bool exists = 1;
+}
+
+// ApiToken represents the content of a API token
+message ApiToken {
+  option (google.api.resource) = {
+    type : "api.instill.tech/ApiToken"
+    pattern : "tokens/{token}"
+  };
+
+  // google.protobuf.Timestamp last_use_time = 6;
+  reserved 6;
+
+  // State enumerates the state of an API token
+  enum State {
+    // State: UNSPECIFIED
+    STATE_UNSPECIFIED = 0;
+    // State: INACTIVE
+    STATE_INACTIVE = 1;
+    // State: ACTIVE
+    STATE_ACTIVE = 2;
+    // State: EXPIRED
+    STATE_EXPIRED = 3;
+  }
+  
+  // API token resource name. It must have the format of "tokens/*"
+  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // API token UUID
+  string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // API token resource ID (the last segment of the resource name) used to
+  // construct the resource name. This conforms to RFC-1034, which restricts to
+  // letters, numbers, and hyphen, with the first character a letter, the last a
+  // letter or a number, and a 63 character maximum.
+  // Use this field to define where it's being used. 
+  string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
+  // API token creation time
+  google.protobuf.Timestamp create_time = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // API token update time
+  google.protobuf.Timestamp update_time = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // An opaque access token representing the API token string. 
+  // To validate the token, the recipient of the token needs to call the server that issued the token.
+  string access_token = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // API token state
+  State state = 8  [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // API token type, value is fixed to "Bearer"
+  string token_type = 9  [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // The amount of time (in seconds) the API token will live. If set to -1, indicating a non-expire token
+  int64 lifetime = 10  [ (google.api.field_behavior) = INPUT_ONLY ];
+  // The amount of time (in seconds) the API token will expire. If value is -1, indicating a non-expire token
+  int64 expires_in = 11  [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// CreateTokenRequest represents a request to create a API token
+message CreateTokenRequest {
+  // A token resource to create
+  ApiToken token = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreateTokenResponse represents a response for a API token resource
+message CreateTokenResponse {
+  // The created API token resource
+  ApiToken token = 1;
+}
+
+// ListTokensRequest represents a request to list tokens
+message ListTokensRequest {
+  // The maximum number of API tokens to return. The service may return fewer
+  // than this value. If unspecified, at most 10 API tokens will be returned. The
+  // maximum value is 100; values above 100 will be coerced to 100.
+  optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListTokensResponse represents a response for a list of API tokens
+message ListTokensResponse {
+  // A list of API tokens resources
+  repeated ApiToken tokens = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of API tokens resources
+  int64 total_size = 3;
+}
+
+// GetTokenRequest represents a request to query an API token
+message GetTokenRequest {
+  // API tokens resource name. It must have the format of "tokens/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/ApiToken"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "token.name"}
+    }
+  ];
+}
+
+// GetTokenResponse represents a response for an API token resource
+message GetTokenResponse {
+  // An API token resource
+  ApiToken token = 1;
+}
+
+// DeleteTokenRequest represents a request to delete an API token resource
+message DeleteTokenRequest {
+  // API token resource name. It must have the format of "tokens/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type : "api.instill.tech/ApiToken"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "token.name"}
+    }
+  ];
+}
+
+// DeleteTokenResponse represents an empty response
+message DeleteTokenResponse {}
+
+// ValidateTokenRequest represents a request to validate whether
+// an API token is valid to be used for triggering pipelines
+message ValidateTokenRequest {
+  // The resource name of the API token to validate,
+  // for example: "tokens/test-token"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/ApiToken",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "token.name"}
+    }
+  ];
+}
+
+// ValidateTokenResponse represents a response about whether
+// the queried token is valid
+message ValidateTokenResponse {
+  // A boolean value indicating whether the token is valid
+  bool valid = 1;
 }
