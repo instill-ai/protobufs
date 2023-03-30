@@ -374,10 +374,10 @@ paths:
                 items:
                   type: string
                 title: Indices corresponds to each JSON data element
-              model_instance_outputs:
+              model_outputs:
                 type: array
                 items:
-                  $ref: '#/definitions/v1alphaModelInstanceOutput'
+                  $ref: '#/definitions/v1alphaModelOutput'
                 title: JSON data to write
             title: |-
               WriteDestinationConnectorRequest represents a request to perform write
@@ -388,7 +388,7 @@ paths:
               - pipeline
               - recipe
               - data_mapping_indices
-              - model_instance_outputs
+              - model_outputs
       tags:
         - ConnectorPublicService
   /v1alpha/{destination_connector.uid}/lookUp:
@@ -470,14 +470,12 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
-  /v1alpha/{model.name}:
+  /v1alpha/{model.name/readme}:
     get:
-      summary: Get a model resource in VDP with it's name.
-      description: |-
-        `GetModel` is a call with the method(s) `GET` within the `ModelPublicService`. This method returns a model resource in VDP with the quried name. It takes in `GetModelRequest` and returns `GetModelResponse`.
-
-        **NOTE**: The `model.name` field in `GetModelRequest` must has the format of `models/{model_name}`. For example: `models/yolov7`.
-      operationId: ModelPublicService_GetModel
+      summary: |-
+        GetModelCard method receives a GetModelCardRequest message
+        and returns a GetModelCardResponse
+      operationId: ModelPublicService_GetModelCard
       responses:
         "200":
           description: A successful response.
@@ -488,34 +486,36 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: model.name
-          description: 'Resource name of the model. It must has the format of `models/{model_name}`. For example: `models/yolov7`.'
+        - name: model.name/readme
+          description: |-
+            Resource name of the model card.
+            For example "models/{model}/readme"
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: models/[^/]+/readme
       tags:
         - ModelPublicService
-  /v1alpha/{model.name}:
+  /v1alpha/{model.name/watch}/watch:
     get:
-      summary: Get a model resource in VDP with it's name.
-      description: |-
-        `GetModel` is a call with the method(s) `GET` within the `ModelPublicService`. This method returns a model resource in VDP with the quried name. It takes in `GetModelRequest` and returns `GetModelResponse`.
-
-        **NOTE**: The `model.name` field in `GetModelRequest` must has the format of `models/{model_name}`. For example: `models/yolov7`.
-      operationId: ModelPublicService_GetModel
+      summary: |-
+        WatchModel method receives a WatchModelRequest message
+        and returns a WatchModelResponse
+      operationId: ModelPublicService_WatchModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetModelCardResponse'
+            $ref: '#/definitions/v1alphaWatchModelResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: model.name
-          description: 'Resource name of the model. It must has the format of `models/{model_name}`. For example: `models/yolov7`.'
+        - name: model.name/watch
+          description: |-
+            Resource name of the model.
+            For example "models/{model}"
           in: path
           required: true
           type: string
@@ -600,8 +600,8 @@ paths:
       parameters:
         - name: model.name
           description: |-
-            Model resource name. It must have the format of `models/{model_name}`.
-            For example, `models/yolov4`.
+            Resource name. It must have the format of "models/{model}".
+            For example: "models/yolov4"
           in: path
           required: true
           type: string
@@ -671,148 +671,6 @@ paths:
           in: query
           required: true
           type: string
-      tags:
-        - ModelPublicService
-  /v1alpha/{model.name}/instances:
-    get:
-      summary: |-
-        ListModelInstances method receives a ListModelInstancesRequest message and
-        returns a ListModelInstancesResponse
-      operationId: ModelPublicService_ListModelInstances
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListModelInstancesResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model.name
-          description: |-
-            The name of the model whose instances we'd like to list.
-            e.g., "models/yolov4"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: page_size
-          description: |-
-            Page size: the maximum number of resources to return. The service may
-            return fewer than this value. If unspecified, at most 10 model instances
-            will be returned. The maximum value is 100; values above 100 will be
-            coereced to 100.
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: page_token
-          description: Page token
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            Model instance view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelInstance.configuration`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
-  /v1alpha/{name_1}:
-    get:
-      summary: |-
-        GetModelOperation method receives a
-        GetModelOperationRequest message and returns a
-        GetModelOperationResponse message.
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `Model.configuration` VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
-  /v1alpha/{name_1}:
-    get:
-      summary: |-
-        GetModelOperation method receives a
-        GetModelOperationRequest message and returns a
-        GetModelOperationResponse message.
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `Model.configuration` VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
   /v1alpha/{model.name}/publish:
@@ -975,102 +833,7 @@ paths:
           description: |-
             Definition view (default is VIEW_BASIC)
             VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelDefinition.model_spec` and
-            `ModelDefinition.model_instance_spec`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
-  /v1alpha/{model_instance.name/readme}:
-    get:
-      summary: |-
-        GetModelInstanceCard method receives a GetModelInstanceCardRequest message
-        and returns a GetModelInstanceCardResponse
-      operationId: ModelPublicService_GetModelInstanceCard
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelInstanceCardResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model_instance.name/readme
-          description: |-
-            Resource name of the model instance card.
-            For example "models/{model}/instances/{instance}/readme"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+/readme
-      tags:
-        - ModelPublicService
-  /v1alpha/{model_instance.name/watch}/watch:
-    get:
-      summary: |-
-        WatchModelInstance method receives a WatchModelInstanceRequest message
-        and returns a WatchModelInstanceResponse
-      operationId: ModelPublicService_WatchModelInstance
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchModelInstanceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model_instance.name/watch
-          description: |-
-            Resource name of the model instance.
-            For example "models/{model}/instances/{instance}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+
-      tags:
-        - ModelPublicService
-  /v1alpha/{model_instance.name}:
-    get:
-      summary: |-
-        GetModelInstance method receives a GetModelInstanceRequest message and
-        returns a GetModelInstanceResponse
-      operationId: ModelPublicService_GetModelInstance
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelInstanceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model_instance.name
-          description: |-
-            Resource name of the model instance.
-            For example "models/{model}/instances/{instance}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+
-        - name: view
-          description: |-
-            Model instance view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelInstance.configuration`
+            `ModelDefinition.model_spec`
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
@@ -1118,13 +881,13 @@ paths:
         - ModelPublicService
   /v1alpha/{name}/deploy:
     post:
-      summary: DeployModelInstance deploy a model instance to online state
-      operationId: ModelPublicService_DeployModelInstance
+      summary: DeployModel deploy a model to online state
+      operationId: ModelPublicService_DeployModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeployModelInstanceResponse'
+            $ref: '#/definitions/v1alphaDeployModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1132,20 +895,18 @@ paths:
       parameters:
         - name: name
           description: |-
-            Resource name for the model instance to be deployed.
-            Format: models/{model}/instances/{instance}
+            Resource name for the model to be deployed.
+            Format: models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+
+          pattern: models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
-            title: |-
-              DeployModelInstanceRequest represents a request to deploy a model instance to
-              online state
+            title: DeployModelRequest represents a request to deploy a model to online state
       tags:
         - ModelPublicService
   /v1alpha/{name}/test:
@@ -1335,50 +1096,30 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
-  /v1alpha/{permalink}/lookUp:
+  /v1alpha/{pipeline.name/watch}/watch:
     get:
       summary: |-
-        LookUpModelInstance method receives a LookUpModelInstanceRequest message
-        and returns a
-        LookUpModelInstanceResponse
-      operationId: ModelPublicService_LookUpModelInstance
+        WatchPipeline method receives a WatchPipelineRequest message
+        and returns a WatchPipelineResponse
+      operationId: PipelinePublicService_WatchPipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpModelInstanceResponse'
+            $ref: '#/definitions/v1alphaWatchPipelineResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: permalink
-          description: |-
-            Permalink of a model instance. For example:
-            "models/{model_uid}/instances/{instance_uid}"
+        - name: pipeline.name/watch
+          description: Pipeline resource name. It must have the format of "pipelines/*"
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/instances/[^/]+
-        - name: view
-          description: |-
-            Model instance view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelInstance.configuration`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
+          pattern: pipelines/[^/]+
       tags:
-        - ModelPublicService
+        - PipelinePublicService
   /v1alpha/{pipeline.name}:
     get:
       summary: Get the detail of a pipeline with it's name.
@@ -2178,7 +1919,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaConnectSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaGetSourceConnectorDefinitionResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2189,53 +1930,105 @@ paths:
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: |-
-              DisconnectSourceConnectorRequest represents a request to disconnect a
-              source connector
+          pattern: source-connector-definitions/[^/]+
+        - name: view
+          description: |-
+            SourceConnectorDefinition resource view (default is DEFINITION_VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
-  /v1alpha/{source_connector.name}/read:
-    post:
-      summary: Read data with a SOURCE connector
-      description: |-
-        `ReadSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. This method performs a read operation with a source-connector resource and returns data in bytes. It takes in `ReadSourceConnectorRequest` and returns `ReadSourceConnectorResponse`.
-
-        NOTE: `source_connector.name` field in `ReadSourceConnectorRequest` must has the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
-      operationId: ConnectorPublicService_ReadSourceConnector
+  /v1alpha/{token.name}:
+    get:
+      summary: |-
+        GetToken method receives a GetTokenRequest message and returns a
+        GetTokenResponse message.
+      operationId: MgmtPublicService_GetToken
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaReadSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaGetTokenResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: source_connector.name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+        - name: token.name
+          description: API tokens resource name. It must have the format of "tokens/*"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: tokens/[^/]+
+      tags:
+        - MgmtPublicService
+    delete:
+      summary: |-
+        DeleteToken method receives a DeleteTokenRequest message and returns
+        a DeleteTokenResponse message.
+      operationId: MgmtPublicService_DeleteToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: token.name
+          description: API token resource name. It must have the format of "tokens/*"
+          in: path
+          required: true
+          type: string
+          pattern: tokens/[^/]+
+      tags:
+        - MgmtPublicService
+  /v1alpha/{token.name}/validate:
+    post:
+      summary: |-
+        ValidateToken method receives a ValidateTokenRequest message and
+        returns a ValidateTokenResponse
+      operationId: MgmtPrivateService_ValidateToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaValidateTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: token.name
+          description: |-
+            The resource name of the API token to validate,
+            for example: "tokens/test-token"
+          in: path
+          required: true
+          type: string
+          pattern: tokens/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             title: |-
-              ReadSourceConnectorRequest represents a request to perform read operation of
-              a SourceConnector given the resource name
+              ValidateTokenRequest represents a request to validate whether
+              an API token is valid to be used for triggering pipelines
       tags:
-        - ConnectorPublicService
+        - MgmtPrivateService
   /v1alpha/{user.name}/exist:
     get:
       summary: Check if an user exist with it's name.
@@ -2245,7 +2038,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaExistUsernameResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2258,27 +2051,10 @@ paths:
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              new_source_connector_id:
-                type: string
-                title: |-
-                  SourceConnector new resource id to replace with the
-                  SourceConnector resource name to be
-                  "source-connectors/{new_source_connector_id}"
-            title: |-
-              RenameSourceConnectorRequest represents a request to rename the
-              SourceConnector resource name
-            required:
-              - new_source_connector_id
+          pattern: users/[^/]+
       tags:
-        - ConnectorPublicService
-  /v1alpha/{source_connector.uid}/lookUp:
+        - MgmtPublicService
+  /v1alpha/admin/{destination_connector.name}:
     get:
       summary: Get a DESTINATION connector resource in VDP (admin only)
       description: |-
@@ -2294,7 +2070,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaGetDestinationConnectorAdminResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2366,7 +2142,7 @@ paths:
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: destination-connectors/[^/]+
         - name: view
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
@@ -2383,8 +2159,8 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
-  /v1alpha/{source_connector_definition.name}:
+        - ConnectorPrivateService
+  /v1alpha/admin/{model.name}:
     get:
       summary: Get a model resource with it's name (admin only)
       description: "`GetModelAdmin` is a call with the method(s) `GET` within the `ModelPrivateService`.\n\nThis is a *private* method that is only avaible for admins and internal backend services to get a model resource with it's name. \n\nIt takes in `GetModelAdminRequest` and returns `GetModelAdminResponse`.\n\n**NOTE**: The `model.name` field in `GetModelAdminRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
@@ -2393,25 +2169,27 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetSourceConnectorDefinitionResponse'
+            $ref: '#/definitions/v1alphaGetModelAdminResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: source_connector_definition.name
-          description: 'SourceConnectorDefinition resource name. It must have the format of `source-connector-definitions/{source_connector_name}`. For example: `source-connector-definitions/http`.'
+        - name: model.name
+          description: "Name of the model resource. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
           in: path
           required: true
           type: string
-          pattern: source-connector-definitions/[^/]+
+          pattern: models/[^/]+
         - name: view
           description: |-
-            SourceConnectorDefinition resource view (default is DEFINITION_VIEW_BASIC)
+            Model view (default is VIEW_BASIC)
+            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
+            VIEW_FULL: show full information
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
+             - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
           type: string
@@ -2469,72 +2247,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPrivateService
-  /v1alpha/admin/{name}/check:
-    get:
-      summary: Check the state of a existing model instance (admin only).
-      description: "`CheckModelInstance` is a call with the method(s) `GET` within the `ModelPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to check the states of a model instance deployed on VDP with model instance's name. \n\nIt takes in `CheckModelInstanceRequest` and returns `CheckModelInstanceResponse`.\n\n**NOTE**: The `name` field in `CheckModelInstanceRequest` is used to identify the model to update. Format: `models/{model}/instances/{instance}`. For example, `models/yolov7/instances/v1.0-cpu`\n\n**IMPORTANT**: model instance will be removed after **v0.9.0-alpha**."
-      operationId: ModelPrivateService_CheckModelInstance
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCheckModelInstanceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            Resource name of the model instance.
-            For example "models/{model}/instances/{instance}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/instances/[^/]+
-      tags:
-        - ModelPrivateService
-  /v1alpha/admin/{name}/check:
-    get:
-      summary: |-
-        CheckSourceConnector method receives a CheckSourceConnectorRequest message and returns a
-        CheckSourceConnectorResponse
-      operationId: ConnectorPrivateService_CheckSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCheckSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
   /v1alpha/admin/{pipeline.name}:
     get:
       summary: Get a pipeline resource in VDP with it's name (admin only).
@@ -2616,158 +2328,10 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePrivateService
-  /v1alpha/admin/{plan.name}:
-    get:
-      summary: |-
-        GetPlan method receives a GetPlanRequest message and returns
-        a GetPlanResponse message.
-      operationId: PlanService_GetPlan
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetPlanResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: plan.name
-          description: |-
-            Resource name of a plan. For example:
-            "plans/free"
-          in: path
-          required: true
-          type: string
-          pattern: plans/[^/]+
-        - name: view
-          description: |-
-            Plan resource view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - PlanService
-    delete:
-      summary: |-
-        DeletePlan method receives a DeletePlanRequest message and returns a
-        DeletePlanResponse
-      operationId: PlanService_DeletePlan
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeletePlanResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: plan.name
-          description: |-
-            The resource name of the plan to be deleted,
-            for example: "plans/free"
-          in: path
-          required: true
-          type: string
-          pattern: plans/[^/]+
-      tags:
-        - PlanService
-    patch:
-      summary: |-
-        UpdatePlan method receives a UpdatePlanRequest message and returns
-        a UpdatePlanResponse
-      operationId: PlanService_UpdatePlan
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaUpdatePlanResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: plan.name
-          description: |-
-            Resource name. It must have the format of "plans/*".
-            For example: "plans/free".
-          in: path
-          required: true
-          type: string
-          pattern: plans/[^/]+
-        - name: plan
-          description: |-
-            The plan to update
-
-            The plan's `name` field is used to identify the plan to update.
-            Format: plans/{plan}
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              uid:
-                type: string
-                title: Plan UUID
-                readOnly: true
-              id:
-                type: string
-                description: |-
-                  Plan resource ID (the last segment of the resource name) used to
-                  construct the resource name. This conforms to RFC-1034, which restricts to
-                  letters, numbers, and hyphen, with the first character a letter, the last a
-                  letter or a number, and a 63 character maximum.
-              create_time:
-                type: string
-                format: date-time
-                title: Plan creation time
-                readOnly: true
-              update_time:
-                type: string
-                format: date-time
-                title: Plan update time
-                readOnly: true
-              tier:
-                $ref: '#/definitions/PlanTier'
-                title: Plan tier
-              visibility:
-                $ref: '#/definitions/v1alphaPlanVisibility'
-                title: Plan visibility
-              spec:
-                type: object
-                title: Plan specification in JSON format
-            description: |-
-              The plan's `name` field is used to identify the plan to update.
-              Format: plans/{plan}
-            title: The plan to update
-            required:
-              - tier
-              - visibility
-              - spec
-        - name: update_mask
-          description: Update mask for a plan resource
-          in: query
-          required: true
-          type: string
-      tags:
-        - PlanService
   /v1alpha/admin/{source_connector.name}:
     get:
       summary: Get a SOURCE connector resource in VDP (admin only)
-      description: |-
-        `GetSourceConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. This is a *private* method that is only avaible for admins and other backend services get a *source* connector resource in VDP. Only admins with permission can call this method. It takes in `GetSourceConnectorAdminRequest` and returns `GetSourceConnectorAdminResponse`.
-
-        **NOTE**: The `source_connector.name` field in `GetSourceConnectorAdminRequest` must has the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
+      description: "`GetSourceConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services get a *source-connector* resource in VDP.\n\nIt takes in `GetSourceConnectorAdminRequest` and returns `GetSourceConnectorAdminResponse`.\n\n**NOTE**: The `source_connector.name` field in `GetSourceConnectorAdminRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`."
       operationId: ConnectorPrivateService_GetSourceConnectorAdmin
       responses:
         "200":
@@ -3637,10 +3201,7 @@ paths:
           type: string
         - name: view
           description: |-
-            Definition view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelDefinition.model_spec` and
-            `ModelDefinition.model_spec`
-            VIEW_FULL: show full information
+            Definition view (default is VIEW_UNSPECIFIED)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
@@ -3767,9 +3328,7 @@ paths:
           type: string
         - name: view
           description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `Model.configuration` VIEW_FULL: show full information
+            View (default is VIEW_UNSPECIFIED)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
@@ -4227,9 +3786,8 @@ paths:
         - MgmtPublicService
   /v1alpha/users/me:
     get:
-      summary: |-
-        QueryAuthenticatedUser method receives a QueryAuthenticatedUserRequest
-        message and returns a QueryAuthenticatedUserResponse message.
+      summary: Get user's own user information
+      description: "`QueryAuthenticatedUser` is a call with the method(s) `GET` within the `MgmtPrivateService`. \n\nThis method is for an authenticated user to query it's *own* user information. \n\nIt takes in `QueryAuthenticatedUserRequest` and returns a `QueryAuthenticatedUserResponse`."
       operationId: MgmtPublicService_QueryAuthenticatedUser
       responses:
         "200":
@@ -4742,15 +4300,6 @@ definitions:
     title: |-
       CheckDestinationConnectorResponse represents a response to fetch a destination connector's
       current state
-  v1alphaCheckModelResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/v1alphaModelState'
-        title: Retrieved model state
-    title: |-
-      CheckModelResponse represents a response to fetch a model's
-      current state and longrunning progress
   v1alphaCheckSourceConnectorResponse:
     type: object
     properties:
@@ -6152,9 +5701,9 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          Model resource name. It must have the format of `models/{model_name}`.
-          For example, `models/yolov4`.
+        title: |-
+          Resource name. It must have the format of "models/{model}".
+          For example: "models/yolov4"
         readOnly: true
       uid:
         type: string
@@ -6321,68 +5870,10 @@ definitions:
     properties:
       model:
         type: string
-        description: Resource name. It must have the format of `models/{model}/instances/{instance}`.
+        title: The model
         readOnly: true
       task:
-        $ref: '#/definitions/ModelInstanceTask'
-        title: Model instance task
-        readOnly: true
-      model_definition:
-        type: string
-        title: Model definition resource name
-        readOnly: true
-      configuration:
-        type: object
-        description: Model instance configuration represents the configuration JSON that has been validated using the `model_instance_spec` JSON schema of a ModelDefinition.
-        readOnly: true
-      create_time:
-        type: string
-        format: date-time
-        title: Model instance create time
-        readOnly: true
-      update_time:
-        type: string
-        format: date-time
-        title: Model instance update time
-        readOnly: true
-    title: ModelVersion represents one deployable instance of a model
-  v1alphaModelInstanceCard:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          Resource name. It must have the format of
-          "models/{model}/instances/{instance}/readme"
-        readOnly: true
-      size:
-        type: integer
-        format: int32
-        title: Size of the file
-        readOnly: true
-      type:
-        type: string
-        description: Type of the resource. Fixed to "file".
-        readOnly: true
-      content:
-        type: string
-        format: byte
-        title: Content of the README file in bytes and base64 format
-        readOnly: true
-      encoding:
-        type: string
-        description: Encoding type of the content. Fixed to "base64".
-        readOnly: true
-    description: ModelInstanceCard represents the README card for a model instance. There  exists one and exactly one README card per model instance.
-  v1alphaModelInstanceOutput:
-    type: object
-    properties:
-      model_instance:
-        type: string
-        title: The model instance
-        readOnly: true
-      task:
-        $ref: '#/definitions/ModelInstanceTask'
+        $ref: '#/definitions/ModelTask'
         title: The task type
         readOnly: true
       task_outputs:
@@ -6971,7 +6462,18 @@ definitions:
     properties:
       name:
         type: string
-        description: Resource name.
+        description: For example, when query for the state of a pipeline named `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
+        title: |-
+          Resource name is a string follows a specifit pattern: `resources/{resource_name}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+          ```
+          const (
+            RESOURCE_TYPE_MODEL     = "model"
+            RESOURCE_TYPE_SOURCE_CONNECTOR = "source-connectors"
+            RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
+            RESOURCE_TYPE_PIPELINE  = "pipeline"
+            RESOURCE_TYPE_SERVICE   = "service"
+          )
+          ```
       model_state:
         $ref: '#/definitions/v1alphaModelState'
         title: Model state
