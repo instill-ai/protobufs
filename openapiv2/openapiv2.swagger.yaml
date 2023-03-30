@@ -470,58 +470,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
-  /v1alpha/{model.name/readme}:
-    get:
-      summary: |-
-        GetModelCard method receives a GetModelCardRequest message
-        and returns a GetModelCardResponse
-      operationId: ModelPublicService_GetModelCard
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelCardResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model.name/readme
-          description: |-
-            Resource name of the model card.
-            For example "models/{model}/readme"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+/readme
-      tags:
-        - ModelPublicService
-  /v1alpha/{model.name/watch}/watch:
-    get:
-      summary: |-
-        WatchModel method receives a WatchModelRequest message
-        and returns a WatchModelResponse
-      operationId: ModelPublicService_WatchModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model.name/watch
-          description: |-
-            Resource name of the model.
-            For example "models/{model}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-      tags:
-        - ModelPublicService
   /v1alpha/{model.name}:
     get:
       summary: Get a model resource with it's name.
@@ -673,10 +621,41 @@ paths:
           type: string
       tags:
         - ModelPublicService
+  /v1alpha/{model.name}/deploy:
+    post:
+      summary: Deploy a model to ONLINE state.
+      description: "`DeployModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method deployes a model to ONLINE state and return a longrunning operation.\n\nIt takes in `DeployModelRequest` and returns `DeployModelResponse`.\n\n**NOTE**: `model.name` field in `DeployModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.\n\nSee [Core-Concepts - Model](https://www.instill.tech/docs/core-concepts/model) for further details."
+      operationId: ModelPublicService_DeployModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeployModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name
+          description: |-
+            Resource name for the model to be deployed. It must have the format of `models/{model_name}`.
+            For example, `models/yolov7`.
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: DeployModelRequest represents a request to deploy a model to online state
+      tags:
+        - ModelPublicService
   /v1alpha/{model.name}/publish:
     post:
       summary: Chanage the visibility of a model resource to *PUBLIC*.
-      description: "`PublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service.\n\nThis method changes the visibility of a model resource to *PUBLIC* allowing other users to access the model resource. It also returns the updated model resource. \n\nIt takes in `PublishModelRequest` and returns `PublishModelResponse`.\n\nNOTE: `model.name` field in `PublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      description: "`PublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service.\n\nThis method changes the visibility of a model resource to *PUBLIC* allowing other users to access the model resource. It also returns the updated model resource. \n\nIt takes in `PublishModelRequest` and returns `PublishModelResponse`.\n\n**NOTE**: `model.name` field in `PublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPublicService_PublishModel
       responses:
         "200":
@@ -704,10 +683,33 @@ paths:
             title: PublishModelRequest represents a request to publish a model
       tags:
         - ModelPublicService
+  /v1alpha/{model.name}/readme:
+    get:
+      summary: Get a model card (readme).
+      description: "`GetModelCard` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method get a model card (readme) of a existing model.\n\nIt takes in `GetModelCardRequest` and returns `GetModelCardResponse`.\n\n**NOTE**: `model.name` field in `GetModelCardRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      operationId: ModelPublicService_GetModelCard
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelCardResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name
+          description: "Name of the model resource. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+      tags:
+        - ModelPublicService
   /v1alpha/{model.name}/rename:
     post:
       summary: Rename a model resource in VDP
-      description: "`RenameModel` is a call with the method(s) `POST` within the `ModelPublicService` service.\n\nThis method changes the name of a model resource and returns the updated model resource. \n\nIt takes in `RenameModelRequest` and returns `RenameModelResponse`.\n\nNOTE: `model.name` field in `RenameModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      description: "`RenameModel` is a call with the method(s) `POST` within the `ModelPublicService` service.\n\nThis method changes the name of a model resource and returns the updated model resource. \n\nIt takes in `RenameModelRequest` and returns `RenameModelResponse`.\n\n**NOTE**: `model.name` field in `RenameModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPublicService_RenameModel
       responses:
         "200":
@@ -739,10 +741,113 @@ paths:
               - new_model_id
       tags:
         - ModelPublicService
+  /v1alpha/{model.name}/test:
+    post:
+      summary: Test a deployed model.
+      description: "`TestModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method tests a deployed model with task inputs.\n\nIt takes in `TestModelRequest` and return `TestModelResponse`.\n\n**NOTE**: `model.name` field in `TestModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      operationId: ModelPublicService_TestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTestModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name
+          description: "The resource name of the model to test. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              task_inputs:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaTaskInput'
+                title: Input to trigger the model
+            title: TestModelRequest represents a request to test a model
+            required:
+              - task_inputs
+      tags:
+        - ModelPublicService
+  /v1alpha/{model.name}/trigger:
+    post:
+      summary: Trigger a deployed model.
+      description: "`TriggerModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method triggers a deployed model with task inputs.\n\nIt takes in `TriggerModelRequest` and return `TriggerModelResponse`.\n\n**NOTE**: `model.name` field in `TriggerModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      operationId: ModelPublicService_TriggerModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name
+          description: "The resource name of the model to trigger. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              task_inputs:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaTaskInput'
+                title: Input to trigger the model
+            title: TriggerModelRequest represents a request to trigger a model
+            required:
+              - task_inputs
+      tags:
+        - ModelPublicService
+  /v1alpha/{model.name}/undeploy:
+    post:
+      summary: Undeploy a model to OFFLINE state.
+      description: "`UndeployModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method undeployes a model to UndeployModel state and return a longrunning operation.\n\nIt takes in `UndeployModelRequest` and returns `UndeployModelResponse`.\n\n**NOTE**: `model.name` field in `UndeployModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.\n\nSee [Core-Concepts - Model](https://www.instill.tech/docs/core-concepts/model) for further details."
+      operationId: ModelPublicService_UndeployModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUndeployModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name
+          description: "Resource name for the model to be undeployed. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: UndeployModelRequest represents a request to undeploy a model to offline state
+      tags:
+        - ModelPublicService
   /v1alpha/{model.name}/unpublish:
     post:
       summary: Change the visibility of a model resource to *PRIVATE*
-      description: "`UnpublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method changes the visibility of a model resource to *PRIVATE*, making it only visible to the authorsied user. It also returns the updated model resource. \n\nIt takes in `UnpublishModelRequest` and returns `UnpublishModelResponse`.\n\nNOTE: `model.name` field in `UnpublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      description: "`UnpublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method changes the visibility of a model resource to *PRIVATE*, making it only visible to the authorsied user. It also returns the updated model resource. \n\nIt takes in `UnpublishModelRequest` and returns `UnpublishModelResponse`.\n\n**NOTE**: `model.name` field in `UnpublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPublicService_UnpublishModel
       responses:
         "200":
@@ -766,6 +871,29 @@ paths:
           schema:
             type: object
             title: UnpublishModelRequest represents a request to unpublish a model
+      tags:
+        - ModelPublicService
+  /v1alpha/{model.name}/watch:
+    get:
+      summary: Query a model's current state and it's longrunning progress.
+      description: "`WatchModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method queries a model's current state and it's longrunning progress.\n\nIt takes in `WatchModelRequest` and return `WatchModelResponse`.\n\n**NOTE**: `model.name` field in `WatchModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      operationId: ModelPublicService_WatchModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name
+          description: "Resource name of the model. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
       tags:
         - ModelPublicService
   /v1alpha/{model.uid}/lookUp:
@@ -849,177 +977,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{name}/cancel:
-    post:
-      summary: |-
-        CancelModelOperation method receives a CancelModelOperationRequest message
-        and returns a CancelModelOperationResponse
-      operationId: ModelPublicService_CancelModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCancelModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: CancelModelOperationRequest represents a request to cancel a model operation
-      tags:
-        - ModelPublicService
-  /v1alpha/{name}/deploy:
-    post:
-      summary: DeployModel deploy a model to online state
-      operationId: ModelPublicService_DeployModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeployModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            Resource name for the model to be deployed.
-            Format: models/{model}
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: DeployModelRequest represents a request to deploy a model to online state
-      tags:
-        - ModelPublicService
-  /v1alpha/{name}/test:
-    post:
-      summary: |-
-        TestModel method receives a TestModelRequest message
-        and returns a TestModelResponse message.
-      operationId: ModelPublicService_TestModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaTestModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The resource name of the model to trigger.
-            For example "models/{model}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              task_inputs:
-                type: array
-                items:
-                  $ref: '#/definitions/v1alphaTaskInput'
-                title: Input to trigger the model
-            title: TestModelRequest represents a request to test a model
-            required:
-              - task_inputs
-      tags:
-        - ModelPublicService
-  /v1alpha/{name}/trigger:
-    post:
-      summary: Trigger a model instance.
-      description: |-
-        TriggerModel method receives a TriggerModelRequest message
-        and returns a TriggerModelResponse message.
-      operationId: ModelPublicService_TriggerModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaTriggerModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The resource name of the model to trigger.
-            For example "models/{model}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              task_inputs:
-                type: array
-                items:
-                  $ref: '#/definitions/v1alphaTaskInput'
-                title: Input to trigger the model
-            title: TriggerModelRequest represents a request to trigger a model
-            required:
-              - task_inputs
-      tags:
-        - ModelPublicService
-  /v1alpha/{name}/undeploy:
-    post:
-      summary: UndeployModel undeploy a model to offline state
-      operationId: ModelPublicService_UndeployModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaUndeployModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            Resource name for the model to be undeployed.
-            Format: models/{model}
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: UndeployModelRequest represents a request to undeploy a model to offline state
-      tags:
-        - ModelPublicService
   /v1alpha/{operation.name_1}:
     get:
       summary: Get a longrunning operation with it's name.
@@ -1096,6 +1053,35 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
+  /v1alpha/{operation.name}/cancel:
+    post:
+      summary: Cancel a longrunning operation with it's name.
+      description: "`CancelModelOperation` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method cancels a longrunning operation with it's name (i.e., `operations/{unique_id}`). \n\nIt takes in `CancelModelOperationRequest` and returns `CancelModelOperationResponse`.\n\n**NOTE**: `operation.uid` field in `CancelModelOperationRequest` must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation. See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details."
+      operationId: ModelPublicService_CancelModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCancelModelOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: operation.name
+          description: The name of the operation resource. It must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: CancelModelOperationRequest represents a request to cancel a model operation
+      tags:
+        - ModelPublicService
   /v1alpha/{pipeline.name/watch}/watch:
     get:
       summary: |-
@@ -2183,9 +2169,7 @@ paths:
           pattern: models/[^/]+
         - name: view
           description: |-
-            Model view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
-            VIEW_FULL: show full information
+            Model view (default is VIEW_UNSPECIFIED)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
@@ -2230,9 +2214,7 @@ paths:
           pattern: models/[^/]+
         - name: view
           description: |-
-            Model view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
-            VIEW_FULL: show full information
+            Model view (default is VIEW_UNSPECIFIED)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
@@ -2718,9 +2700,7 @@ paths:
           type: string
         - name: view
           description: |-
-            Model view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
-            VIEW_FULL: show full information
+            Model view (default is VIEW_UNSPECIFIED)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
