@@ -153,9 +153,7 @@ message ListModelsRequest {
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // Model view (default is VIEW_BASIC)
-  // - VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
-  // - VIEW_FULL: show full information
+  // Model view (default is VIEW_UNSPECIFIED)
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -173,7 +171,7 @@ message ListModelsResponse {
 message CreateModelRequest {
   // The model to be created
   //
-  // The model `name` field is used to identify the model to create.
+  // The `model.name` field is used to identify the model to create.
   // Format: models/{model}
   Model model = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
@@ -205,7 +203,8 @@ message CreateModelBinaryFileUploadResponse {
 
 // GetModelRequest represents a request to query a model
 message GetModelRequest {
-  // Resource name of the model. It must has the format of `models/{model_name}`. For example: `models/yolov7`.
+  // Resource name of the model. It must have the format of `models/{model_name}`. 
+  // For example, `models/yolov7`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
@@ -227,9 +226,7 @@ message GetModelResponse {
 
 // UpdateModelRequest represents a request to update a model
 message UpdateModelRequest {
-  // The model to update
-  //
-  // The `model.name` field is used to identify the model to update. Format: `models/{model}`.
+  // The model to update. `model.name` field is used to identify the model to update. Format: `models/{model}`.
   Model model = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Mask of fields to update.
   google.protobuf.FieldMask update_mask = 2
@@ -244,7 +241,8 @@ message UpdateModelResponse {
 
 // DeleteModelRequest represents a request to delete a model
 message DeleteModelRequest {
-  // Resource name of the model. For example `models/{model_name}`
+  // Resource name of the model. It must have the format of `models/{model_name}`. 
+  // For example, `models/yolov7`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
@@ -259,7 +257,7 @@ message DeleteModelResponse {}
 
 // LookUpModelRequest represents a request to query a model via permalink
 message LookUpModelRequest {
-  // Permalink of a model. It must has the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
+  // Permalink of a model. It must have the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
@@ -281,7 +279,8 @@ message LookUpModelResponse {
 
 // RenameModelRequest represents a request to rename a model
 message RenameModelRequest {
-  // Resource name for the model to be renamed. It must has the format of `models/{model_name}`. For example: `models/yolov7`.
+  // Resource name for the model to be renamed. It must have the format of `models/{model_name}`. 
+  // For example: `models/yolov7`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
@@ -302,7 +301,8 @@ message RenameModelResponse {
 
 // PublishModelRequest represents a request to publish a model
 message PublishModelRequest {
-  // Resource name of the model. It must has the format of `models/{model_name}`. For example: `models/yolov7`.
+  // Resource name of the model. It must have the format of `models/{model_name}`.
+  // For example, `models/yolov7`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
@@ -320,7 +320,8 @@ message PublishModelResponse {
 
 // UnpublishModelRequest represents a request to unpublish a model
 message UnpublishModelRequest {
-  // Resource name of the model. It must has the format of `models/{model_name}`. For example: `models/yolov7`.
+  // Resource name of the model. It must have the format of `models/{model_name}`. 
+  // For example, `models/yolov7`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
@@ -586,11 +587,17 @@ message TestModelBinaryFileUploadResponse {
 
 // GetModelOperationRequest represents a request to query a model operation
 message GetModelOperationRequest {
-  // The name of the operation resource.
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // View (default is VIEW_BASIC)
-  // VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-  // `Model.configuration` VIEW_FULL: show full information
+  // The name of the operation resource. It must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation.
+  string name = 1 [ 
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "library.googleapis.com/Operation"
+    },
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "operation.name"}
+    }
+  ];
+  // View (default is VIEW_UNSPECIFIED)
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -612,9 +619,7 @@ message ListModelOperationsRequest {
   string page_token = 2;
   // Filter expression to list operations
   optional string filter = 3 [ (google.api.field_behavior) = OPTIONAL ];
-  // View (default is VIEW_BASIC)
-  // VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-  // `Model.configuration` VIEW_FULL: show full information
+  // View (default is VIEW_UNSPECIFIED)
   optional View view = 4 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -668,8 +673,8 @@ message ListModelsAdminResponse {
 
 // GetModelAdminRequest represents a request to query a model by admin
 message GetModelAdminRequest {
-  // Resource name of the model.
-  // For example "models/{model}"
+  // Name of the model resource. It must have the format of `models/{model_name}`. 
+  // For example, `models/yolov7`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
@@ -692,7 +697,7 @@ message GetModelAdminResponse {
 // LookUpModelAdminRequest represents a request to query a model via
 // permalink by admin
 message LookUpModelAdminRequest {
-  // Permalink of a model. It must has the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
+  // Permalink of a model. It must have the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",

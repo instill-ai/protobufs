@@ -14,7 +14,11 @@ service ControllerPrivateService {
   
   // Check if the Controller service (private) is alive or dead.
   // 
-  // `Liveness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Liveness (alive or dead) of the controller service. Only admins with permission can call this method. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+  // `Liveness` is a call with the method(s) `GET within the `ControllerPrivateService` service.
+  //
+  // This is a *private* method that is only avaible for admins and internal backend services to check the Liveness (alive or dead) of the controller service. 
+  //
+  // It takes in `LivenessRequest` and returns a `LivenessResponse`.
   //
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   //
@@ -28,7 +32,11 @@ service ControllerPrivateService {
 
   // Check if the Controller service (private) is alive or dead.
   // 
-  // `Readiness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Readiness (ready or not ready) of the Controller service. Only admins with permission can call this method. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+  // `Readiness` is a call with the method(s) `GET within the `ControllerPrivateService` service.
+  //
+  // This is a *private* method that is only avaible for admins and internal backend services to check the Readiness (ready or not ready) of the Controller service.
+  //
+  // It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
   //
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   //
@@ -40,11 +48,15 @@ service ControllerPrivateService {
     };
   };
 
-  // Get resource state given resource name and type.
+  // Get resource state with it's name.
   //
-  // `GetResource` is a call with the method(s) `GET` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to get the current state of the queried resource. It takes in `GetResourceRequest` and returns a `GetResourceResponse`.
+  // `GetResource` is a call with the method(s) `GET` within the `ControllerPrivateService` service.
   //
-  // **NOTE**: The `resource.name` field in GetReourceRequest must has the format of `resources/{resource}/types/{type}`. For example: `resources/yolov7/types/model`. See parameter descriptions for further details.
+  // This is a *private* method that is only avaible for admin and internal backend services to get the current state of the queried resource. 
+  //
+  // It takes in `GetResourceRequest` and returns a `GetResourceResponse`.
+  //
+  // **NOTE**: The `resource.name` field in GetReourceRequest must has the format of `resources/{resource_name}/types/{type}`. For example: `resources/yolov7/types/model`. See parameter descriptions for further details.
   rpc GetResource(GetResourceRequest) returns (GetResourceResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=resources/*/types/*}"
@@ -54,9 +66,13 @@ service ControllerPrivateService {
 
   //  Update resource state.
   //
-  // `UpdateResource` is a call with the method(s) `PATCH` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to update the current state of the queried resource. It takes in `UpdateResourceRequest` and returns a `UpdateResourceResponse`.
+  // `UpdateResource` is a call with the method(s) `PATCH` within the `ControllerPrivateService` service.
   //
-  // **NOTE**: The `resource.name` field in `UpdateResourceRequest` is used to identify the resource to update. Format: `resources/{resource}/types/{type}`.  
+  // This is a *private* method that is only avaible for admin and internal backend services to update the current state of the queried resource. 
+  //
+  // It takes in `UpdateResourceRequest` and returns a `UpdateResourceResponse`.
+  //
+  // **NOTE**: The `resource.name` field in `UpdateResourceRequest` is used to identify the resource to update. Format: `resources/{resource_name}/types/{type}`.  
   rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
     option (google.api.http) = {
       patch : "/v1alpha/{resource.name=resources/*/types/*}"
@@ -64,11 +80,13 @@ service ControllerPrivateService {
     };
   };
 
-  // Delete a resource from the Controller Service.
+  // Delete a resource with it's name.
   //
-  // `DeleteResource` is a call with the method(s) `DELETE` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to delete a registered resource. It takes in `DeleteResourceRequest` and returns a `DeleteResourceResponse`.
+  // `DeleteResource` is a call with the method(s) `DELETE` within the `ControllerPrivateService` service.
   //
-  // **NOTE**: The `resource.name` field in `DeleteResourceRequest` is used to identify the resource to delete. Format: `resources/{resource}/types/{type}`.  
+  // This is a *private* method that is only avaible for admin and internal backend services to delete a registered resource. It takes in `DeleteResourceRequest` and returns a `DeleteResourceResponse`.
+  //
+  // **NOTE**: The `resource.name` field in `DeleteResourceRequest` is used to identify the resource to delete. Format: `resources/{resource_name}/types/{type}`.  
   rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
     option (google.api.http) = {
       delete : "/v1alpha/{name=resources/*/types/*}"

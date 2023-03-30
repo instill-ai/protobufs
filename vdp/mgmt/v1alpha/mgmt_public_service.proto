@@ -15,7 +15,11 @@ service MgmtPublicService {
 
   // Check if the Mgmt service is alive or dead.
   // 
-  // `Liveness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+  // `Liveness` is a call with the method(s) `GET` within the `MgmtPublicService` service. 
+  //
+  // This method returns the liveness (alive or dead) of the Mgmt service.
+  //
+  // It takes in `LivenessRequest` and returns a `LivenessResponse`.
   //
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   rpc Liveness(LivenessRequest) returns (LivenessResponse) {
@@ -27,7 +31,11 @@ service MgmtPublicService {
 
   // Check if the Mgmt service is ready to serve traffics
   //
-  // `Readiness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the Readiness (ready or not ready) of the pipeilne service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+  // `Readiness` is a call with the method(s) `GET` within the `MgmtPublicService` service. 
+  //
+  // This method returns the Readiness (ready or not ready) of the Mgmt service.
+  //
+  // It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
   // 
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
@@ -37,9 +45,13 @@ service MgmtPublicService {
     };
   }
 
-  // Query user's own user information
+  // Get user's own user information
   //
-  // `QueryAuthenticatedUser` is a call with the method(s) `GET` within the `MgmtPrivateService`. This method is for an authenticated user to query it's *own* user information. It takes in `QueryAuthenticatedUserRequest` and returns a `QueryAuthenticatedUserResponse`.
+  // `QueryAuthenticatedUser` is a call with the method(s) `GET` within the `MgmtPrivateService`. 
+  //
+  // This method is for an authenticated user to query it's *own* user information. 
+  //
+  // It takes in `QueryAuthenticatedUserRequest` and returns a `QueryAuthenticatedUserResponse`.
   rpc QueryAuthenticatedUser(QueryAuthenticatedUserRequest)
       returns (QueryAuthenticatedUserResponse) {
     option (google.api.http) = {
@@ -49,7 +61,11 @@ service MgmtPublicService {
 
   // Update user's own user information
   //
-  // `PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPrivateService`. This method is for an authenticated user to update it's *own* user information. It takes in `PatchAuthenticatedUserRequest` and returns a `PatchAuthenticatedUserResponse`.
+  // `PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPrivateService`. 
+  //
+  // This method is for an authenticated user to update it's *own* user information.
+  //
+  // It takes in `PatchAuthenticatedUserRequest` and returns a `PatchAuthenticatedUserResponse`.
   rpc PatchAuthenticatedUser(PatchAuthenticatedUserRequest)
       returns (PatchAuthenticatedUserResponse) {
     option (google.api.http) = {
@@ -59,11 +75,15 @@ service MgmtPublicService {
     option (google.api.method_signature) = "user,update_mask";
   }
 
-  // Check if an user exist given a username.
+  // Check if an user exist with it's name.
   //
-  // `ExistUsername` is a call with the method(s) `GET` within the `MgmtPrivateService`. This method return a boolean value indicating the existtance of an user given a username. It takes in `ExistUsernameRequest` and returns a `ExistUsernameResponse`.
+  // `ExistUsername` is a call with the method(s) `GET` within the `MgmtPrivateService`.
   //
-  // NOTE: username in `ExistUsernameRequest` must have the format of "users/*". For example: "users/{username}".
+  // This method return a boolean value indicating the existance of an user with `user.name`. 
+  //
+  // It takes in `ExistUsernameRequest` and returns a `ExistUsernameResponse`.
+  //
+  // NOTE: `user.name` in `ExistUsernameRequest` must have the format of `users/{user_name}`. For example, `users/local-user`.
   rpc ExistUsername(ExistUsernameRequest) returns (ExistUsernameResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=users/*}/exist"

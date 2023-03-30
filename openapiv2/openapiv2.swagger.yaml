@@ -68,39 +68,13 @@ paths:
           type: string
       tags:
         - UsageService
-  /v1alpha/{destination_connector.name/watch}/watch:
-    get:
-      summary: |-
-        WatchDestinationConnector method receives a WatchDestinationConnectorRequest message
-        and returns a WatchDestinationConnectorResponse
-      operationId: ConnectorPublicService_WatchDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: destination_connector.name/watch
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-      tags:
-        - ConnectorPublicService
   /v1alpha/{destination_connector.name}:
     get:
-      summary: Get a DESTINATION connector resource in VDP with it's name.
+      summary: Get a DESTINATION connector with it's name.
       description: |-
-        `GetDestinationConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a destination-connector resource in VDP with the quried name. It takes in `GetDestinationConnectorRequest` and returns `GetDestinationConnectorResponse`.
+        `GetDestinationConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a destination connector in VDP with the quried name. It takes in `GetDestinationConnectorRequest` and returns `GetDestinationConnectorResponse`.
 
-        **NOTE**: The `destination_connector.name` field in `GetDestinationConnectorRequest` must has the format of `destination-connectors/{connector_name}`. For example: `models/postgres-db`.
+        **NOTE**: The `destination_connector.name` field in `GetDestinationConnectorRequest` must have the format of `destination-connectors/{connector_name}`. For example: `destimation-connectors/postgres-db`.
       operationId: ConnectorPublicService_GetDestinationConnector
       responses:
         "200":
@@ -114,8 +88,8 @@ paths:
       parameters:
         - name: destination_connector.name
           description: |-
-            DestinationConnectorConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Destination-connector resource name. It must have the format of `destination-connectors/{connector_name}.`
+            For example, `destination-connectors/postgres-db`.
           in: path
           required: true
           type: string
@@ -124,9 +98,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -138,11 +112,8 @@ paths:
       tags:
         - ConnectorPublicService
     delete:
-      summary: Delete a DESTINATION connector resource in VDP with it's name.
-      description: |-
-        `DeleteDestinationConnector` is a call with the method(s) `DELETE` within the `ConnectorPublicService`. This method delete a model resource in VDP with the quried name. It takes in `DeleteDestinationConnectorRequest` and returns `DeleteDestinationConnectorResponse`.
-
-        **NOTE**: The `destination_connector.name` field in `DeleteSourceConnectorRequest` must has the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.
+      summary: Delete a DESTINATION connector with it's name.
+      description: "`DeleteDestinationConnector` is a call with the method(s) `DELETE` within the `ConnectorPublicService`. \n\nThis method **delete** a destination-connector in VDP with the quried name. \nIt takes in `DeleteDestinationConnectorRequest` and returns `DeleteDestinationConnectorResponse`.\n\n**NOTE**: The `destination_connector.name` field in `DeleteSourceConnectorRequest` must have the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`."
       operationId: ConnectorPublicService_DeleteDestinationConnector
       responses:
         "200":
@@ -156,8 +127,8 @@ paths:
       parameters:
         - name: destination_connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            DestinationConnector resource name. It must have the format of `destination-connectors/{connector_name}`.
+            For example, `destination-connectors/postgres-db`.
           in: path
           required: true
           type: string
@@ -165,11 +136,8 @@ paths:
       tags:
         - ConnectorPublicService
     patch:
-      summary: Update a DESTINATION connector resource in VDP
-      description: |-
-        `UpdateDestinationConnector` is a call with the method(s) `PATCH` within the `ConnectorPublicService`. This method updates a destination-connector resource. It takes in `UpdateDestinationConnectorRequest` and returns `UpdateDestinationConnectorResponse`.
-
-        **NOTE**: The `destination_connector.name` field in `UpdateDestinationConnectorRequest` is used to identify the destination-connector resource to update. Format: `destination-connectors/{connector_name}`.
+      summary: Update a DESTINATION connector.
+      description: "`UpdateDestinationConnector` is a call with the method(s) `PATCH` within the `ConnectorPublicService`. \n\nThis method updates a destination connector. \n\nIt takes in `UpdateDestinationConnectorRequest` and returns `UpdateDestinationConnectorResponse`.\n\n**NOTE**: The `destination_connector.name` field in `UpdateDestinationConnectorRequest` is used to identify the destination connector to update. Format: `destination-connectors/{connector_name}`."
       operationId: ConnectorPublicService_UpdateDestinationConnector
       responses:
         "200":
@@ -183,8 +151,8 @@ paths:
       parameters:
         - name: destination_connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+            For example, `destination-connectors/postgres-db`.
           in: path
           required: true
           type: string
@@ -198,21 +166,21 @@ paths:
             properties:
               uid:
                 type: string
-                title: DestinationConnector UUID
+                title: Destination connector UUID
                 readOnly: true
               id:
                 type: string
                 description: |-
-                  DestinationConnector resource ID (the last segment of the resource name)
+                  Destination connector resource ID (the last segment of the resource name)
                   used to construct the resource name. This conforms to RFC-1034, which
                   restricts to letters, numbers, and hyphen, with the first character a
                   letter, the last a letter or a number, and a 63 character maximum.
               destination_connector_definition:
                 type: string
-                title: DestinationConnectorDefinition resource
+                title: Destination connector definition resource
               connector:
                 $ref: '#/definitions/v1alphaConnector'
-                title: DestinationConnector's connector data structure
+                title: Destination connector's connector data structure
             title: DestinationConnector resource
             required:
               - connector
@@ -226,7 +194,7 @@ paths:
   /v1alpha/{destination_connector.name}/connect:
     post:
       summary: Connect a DESTINATION connector with it's name.
-      description: "`ConnectDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. This method connects a destination connector. The \"state\" of the connector after connecting is \"STATE_CONNECTED\". ConnectDestinationConnector can be called on DestinationConnector in the state `STATE_DISCONNECTED`; DestinationConnector in a different state (including `STATE_CONNECTED`) returns an error.  \nIt takes in `ConnectDestinationConnectorRequest` and returns `ConnectDestinationConnectorResponse`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
+      description: "`ConnectDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. \n\nThis method connects a destination connector. The \"state\" of the connector after connecting is \"STATE_CONNECTED\". ConnectDestinationConnector can be called on DestinationConnector in the state `STATE_DISCONNECTED`; DestinationConnector in a different state (including `STATE_CONNECTED`) returns an error. \n\nIt takes in `ConnectDestinationConnectorRequest` and returns `ConnectDestinationConnectorResponse`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
       operationId: ConnectorPublicService_ConnectDestinationConnector
       responses:
         "200":
@@ -240,8 +208,8 @@ paths:
       parameters:
         - name: destination_connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+            For example, `destination-connectors/postgres-db`.
           in: path
           required: true
           type: string
@@ -259,7 +227,7 @@ paths:
   /v1alpha/{destination_connector.name}/disconnect:
     post:
       summary: Disconnect a DESTINATION connector with it's name.
-      description: "`DisconnectDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. This method disconnects a destination connector. The \"state\" of the connector after disconnecting is \"STATE_DISCONNECTED\". ConnectDestinationConnector can be called on DestinationConnector in the state `STATE_CONNECTED`; DestinatinConnector in a different state (including `STATE_DISCONNECTED`) returns an error.  \nIt takes in `DisconnectDestinationConnectorRequest` and returns `DisconnectDestinationConnectorResponse`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
+      description: "`DisconnectDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. \n\nThis method disconnects a destination connector. The \"state\" of the connector after disconnecting is \"STATE_DISCONNECTED\". ConnectDestinationConnector can be called on DestinationConnector in the state `STATE_CONNECTED`; DestinatinConnector in a different state (including `STATE_DISCONNECTED`) returns an error. \n\nIt takes in `DisconnectDestinationConnectorRequest` and returns `DisconnectDestinationConnectorResponse`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
       operationId: ConnectorPublicService_DisconnectDestinationConnector
       responses:
         "200":
@@ -273,8 +241,8 @@ paths:
       parameters:
         - name: destination_connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            DestinationConnector resource name. It must have the format of `destination-connectors/{connector_name}`.
+            For example, `destination-connectors/postgres-db`.
           in: path
           required: true
           type: string
@@ -291,11 +259,8 @@ paths:
         - ConnectorPublicService
   /v1alpha/{destination_connector.name}/rename:
     post:
-      summary: Rename a DESTINATION connector resource in VDP
-      description: |-
-        `RenameDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. This method changes the name of a destination-connector resource and returns the updated destination-connector resource. It takes in `RenameDestinationConnectorRequest` and returns `RenameDestinationConnectorResponse`.
-
-        NOTE: `destination_connector.name` field in `RenameDestinationConnectorRequest` must has the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.
+      summary: Rename a DESTINATION connector.
+      description: "`RenameDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. \n\nThis method changes the name of a destination connector and returns the updated destination connector. \n\nIt takes in `RenameDestinationConnectorRequest` and returns `RenameDestinationConnectorResponse`.\n\nNOTE: `destination_connector.name` field in `RenameDestinationConnectorRequest` must have the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`."
       operationId: ConnectorPublicService_RenameDestinationConnector
       responses:
         "200":
@@ -309,8 +274,8 @@ paths:
       parameters:
         - name: destination_connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+            For example, `destination-connectors/postgres-db`.
           in: path
           required: true
           type: string
@@ -334,10 +299,35 @@ paths:
               - new_destination_connector_id
       tags:
         - ConnectorPublicService
+  /v1alpha/{destination_connector.name}/watch:
+    get:
+      summary: Get the state of a DESTINATION connector.
+      description: "`WatchDestinationConnector` is a call with the method(s) `GET` within the `ConnectorPublicService` service. \n\nThis method returns the state of a destination connector from the state server. \n\nIt takes in `WatchDestinationConnectorRequest` and returns `WatchDestinationConnectorResponse`.\n\nNOTE: `destination_connector.name` field in `WatchDestinationConnectorRequest` must have the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`."
+      operationId: ConnectorPublicService_WatchDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: destination_connector.name
+          description: |-
+            Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+            For example, `destination-connectors/postgres-db`.
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
+      tags:
+        - ConnectorPublicService
   /v1alpha/{destination_connector.name}/write:
     post:
-      summary: Write model outputs via a DESTINATION connector
-      description: "`WriteDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. This method performs a write operation with a destination-connector resource. It takes in `WriteDestinationConnectorRequest` and returns `WriteDestinationConnectorResponse`.\n\nNOTE: \n1. `destination_connector.name` field in `WriteDestinationConnectorRequest` must has the format of `detsination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.\n2. This method supports two differt modes: *sync* mode and *destination sync* mode. See [Understanding Airbyte Connections](https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes) for further details."
+      summary: Write model outputs via a DESTINATION connector.
+      description: "`WriteDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. \n\nThis method performs a write operation with a destination connector. \n\nIt takes in `WriteDestinationConnectorRequest` and returns `WriteDestinationConnectorResponse`.\n\n**NOTE**: \n1. `destination_connector.name` field in `WriteDestinationConnectorRequest` must have the format of `detsination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.\n2. This method supports two differt modes: **sync** mode and **destination sync** mode. See [Understanding Airbyte Connections](https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes) for further details."
       operationId: ConnectorPublicService_WriteDestinationConnector
       responses:
         "200":
@@ -351,8 +341,8 @@ paths:
       parameters:
         - name: destination_connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+            For example, `destination-connectors/postgres-db`.
           in: path
           required: true
           type: string
@@ -403,11 +393,8 @@ paths:
         - ConnectorPublicService
   /v1alpha/{destination_connector.uid}/lookUp:
     get:
-      summary: Get a DESTINATION connector resource in VDP with a permalink consisting of unique ID.
-      description: |-
-        `LookUpDestinationConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`. This methods returns a destination-connector resource in VDP with it's permalink (i.e., `destinatin_connector.uid`). It takes in `LookUpDestinationConnectorRequest` and returns `LookUpDestinationConnectorResponse`.
-
-        **NOTE**: permalink in `LookUpDestinationConnectorRequest` must has the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
+      summary: Get a DESTINATION connector with a permalink consisting of unique ID.
+      description: "`LookUpDestinationConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`. \n\nThis methods returns a destination connector in VDP with it's permalink (i.e., `destinatin_connector.uid`). \n\nIt takes in `LookUpDestinationConnectorRequest` and returns `LookUpDestinationConnectorResponse`.\n\n**NOTE**: permalink in `LookUpDestinationConnectorRequest` must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector."
       operationId: ConnectorPublicService_LookUpDestinationConnector
       responses:
         "200":
@@ -420,9 +407,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: destination_connector.uid
-          description: |-
-            Permalink of a destination connector. For example:
-            "destination-connectors/{uid}"
+          description: Permalink of a destination connector. It must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
           in: path
           required: true
           type: string
@@ -431,9 +416,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -446,11 +431,8 @@ paths:
         - ConnectorPublicService
   /v1alpha/{destination_connector_definition.name}:
     get:
-      summary: Get the difinition of a DESTINATION connector resource with it's name.
-      description: |-
-        `GetDestinationConnectorDefinition` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a model definition supported by VDP. It takes in `GetDestinationConnectorDefinitionRequest` and returns `GetDestinationConnectorDefinitionResponse`.
-
-        **NOTE**: `destination_connector_definition.name` field in `GetDestinationConnectorDefinitionRequest` must has the format of `destination-connector-definitions/{connector_name}`. For example: `destination-connector-definitions/http`.
+      summary: Get the difinition of a DESTINATION connector with it's name.
+      description: "`GetDestinationConnectorDefinition` is a call with the method(s) `GET` within the `ConnectorPublicService`. \n\nThis method returns a destination-connector definition supported by VDP. \n\nIt takes in `GetDestinationConnectorDefinitionRequest` and returns `GetDestinationConnectorDefinitionResponse`.\n\n**NOTE**: `destination_connector_definition.name` field in `GetDestinationConnectorDefinitionRequest` must have the format of `destination-connector-definitions/{connector_name}`. For example: `destination-connector-definitions/postgres-db`."
       operationId: ConnectorPublicService_GetDestinationConnectorDefinition
       responses:
         "200":
@@ -464,8 +446,8 @@ paths:
       parameters:
         - name: destination_connector_definition.name
           description: |-
-            DestinationConnectorDefinition resource name. It must have the format of
-            "source-connector-definitions/*"
+            Destination connector definition resource name. It must have the format of `destination-connector-definitions/{connector_name}`.
+            For example, `destination-connector-definitions/postgres-db`.
           in: path
           required: true
           type: string
@@ -475,9 +457,9 @@ paths:
             DestinationConnectorDefinition resource view (default is
             DEFINITION_VIEW_BASIC)
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -526,7 +508,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetModelResponse'
+            $ref: '#/definitions/v1alphaGetModelCardResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -538,6 +520,29 @@ paths:
           required: true
           type: string
           pattern: models/[^/]+
+      tags:
+        - ModelPublicService
+  /v1alpha/{model.name}:
+    get:
+      summary: Get a model resource with it's name.
+      description: "`GetModel` is a call with the method(s) `GET` within the `ModelPublicService`.\n\nThis method returns a model resource with the quried name. \n\nIt takes in `GetModelRequest` and returns `GetModelResponse`.\n\n**NOTE**: The `model.name` field in `GetModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
+      operationId: ModelPublicService_GetModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model.name
+          description: "Resource name of the model. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
         - name: view
           description: |-
             Model view (default is VIEW_BASIC)
@@ -545,7 +550,7 @@ paths:
             - VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -559,10 +564,7 @@ paths:
         - ModelPublicService
     delete:
       summary: Delete a model reource in VDP with it's name.
-      description: |-
-        `DeleteModel` is a call with the method(s) `DELETE` within the `ModelPublicService`. This method delete a model resource in VDP with the quried name. It takes in `DeleteModelRequest` and returns `DeleteModelResponse`.
-
-        **NOTE**: The `model.name` field in `GetModelRequest` must has the format of `models/{model_name}`. For example: `models/yolov7`.
+      description: "`DeleteModel` is a call with the method(s) `DELETE` within the `ModelPublicService`. \n\nThis method delete a model resource with the quried name. \n\nIt takes in `DeleteModelRequest` and returns `DeleteModelResponse`.\n\n**NOTE**: The `model.name` field in `DeleteModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPublicService_DeleteModel
       responses:
         "200":
@@ -575,7 +577,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.name
-          description: Resource name of the model. For example `models/{model_name}`
+          description: "Resource name of the model. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
           in: path
           required: true
           type: string
@@ -583,11 +585,8 @@ paths:
       tags:
         - ModelPublicService
     patch:
-      summary: Update a model resource avaible in VDP
-      description: |-
-        `UpdateModel` is a call with the method(s) `PATCH` within the `ModelPublicService`. This method updates a model resource. It takes in `UpdateModelRequest` and returns `UpdateModelResponse`.
-
-        **NOTE**: The `model.name` field in `UpdateModelRequest` is used to identify the model resource to update. Format: `models/{model_name}`.
+      summary: Update an existing model resource.
+      description: "`UpdateModel` is a call with the method(s) `PATCH` within the `ModelPublicService`.\n\nThis method updates an existing model resource. \n\nIt takes in `UpdateModelRequest` and returns `UpdateModelResponse`.\n\n**NOTE**: The `model.name` field in `UpdateModelRequest` is used to identify the model resource to update. Format: `models/{model_name}`."
       operationId: ModelPublicService_UpdateModel
       responses:
         "200":
@@ -600,16 +599,15 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.name
-          description: 'Resource name. It must have the format of "models/{model}". For example: "models/yolov4"'
+          description: |-
+            Model resource name. It must have the format of `models/{model_name}`.
+            For example, `models/yolov4`.
           in: path
           required: true
           type: string
           pattern: models/[^/]+
         - name: model
-          description: |-
-            The model to update
-
-            The `model.name` field is used to identify the model to update. Format: `models/{model}`.
+          description: 'The model to update. `model.name` field is used to identify the model to update. Format: `models/{model}`.'
           in: body
           required: true
           schema:
@@ -667,8 +665,7 @@ paths:
                 format: date-time
                 title: Model update time
                 readOnly: true
-            description: 'The `model.name` field is used to identify the model to update. Format: `models/{model}`.'
-            title: The model to update
+            title: 'The model to update. `model.name` field is used to identify the model to update. Format: `models/{model}`.'
         - name: update_mask
           description: Mask of fields to update.
           in: query
@@ -720,6 +717,48 @@ paths:
             Model instance view (default is VIEW_BASIC)
             VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelInstance.configuration`
             VIEW_FULL: show full information
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
+             - VIEW_FULL: View: FULL, full representation of the resource
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ModelPublicService
+  /v1alpha/{name_1}:
+    get:
+      summary: |-
+        GetModelOperation method receives a
+        GetModelOperationRequest message and returns a
+        GetModelOperationResponse message.
+      operationId: ModelPublicService_GetModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name_1
+          description: The name of the operation resource.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            View (default is VIEW_BASIC)
+            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
+            `Model.configuration` VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
@@ -779,10 +818,7 @@ paths:
   /v1alpha/{model.name}/publish:
     post:
       summary: Chanage the visibility of a model resource to *PUBLIC*.
-      description: |-
-        `PublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service. This method changes the visibility of a model resource to *PUBLIC* allowing other users to access the model resource. It also returns the updated model resource. It takes in `PublishModelRequest` and returns `PublishModelResponse`.
-
-        NOTE: `model.name` field in `PublishModelRequest` must has the format of `models/{model_name}`. For example: `models/yolov7`.
+      description: "`PublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service.\n\nThis method changes the visibility of a model resource to *PUBLIC* allowing other users to access the model resource. It also returns the updated model resource. \n\nIt takes in `PublishModelRequest` and returns `PublishModelResponse`.\n\nNOTE: `model.name` field in `PublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPublicService_PublishModel
       responses:
         "200":
@@ -795,7 +831,9 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.name
-          description: 'Resource name of the model. It must has the format of `models/{model_name}`. For example: `models/yolov7`.'
+          description: |-
+            Resource name of the model. It must have the format of `models/{model_name}`.
+            For example, `models/yolov7`.
           in: path
           required: true
           type: string
@@ -811,10 +849,7 @@ paths:
   /v1alpha/{model.name}/rename:
     post:
       summary: Rename a model resource in VDP
-      description: |-
-        `RenameModel` is a call with the method(s) `POST` within the `ModelPublicService` service. This method changes the name of a model resource and returns the updated model resource. It takes in `RenameModelRequest` and returns `RenameModelResponse`.
-
-        NOTE: `model.name` field in `RenameModelRequest` must has the format of `models/{model_name}`. For example: `models/yolov7`.
+      description: "`RenameModel` is a call with the method(s) `POST` within the `ModelPublicService` service.\n\nThis method changes the name of a model resource and returns the updated model resource. \n\nIt takes in `RenameModelRequest` and returns `RenameModelResponse`.\n\nNOTE: `model.name` field in `RenameModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPublicService_RenameModel
       responses:
         "200":
@@ -827,7 +862,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.name
-          description: 'Resource name for the model to be renamed. It must has the format of `models/{model_name}`. For example: `models/yolov7`.'
+          description: "Resource name for the model to be renamed. It must have the format of `models/{model_name}`. \nFor example: `models/yolov7`."
           in: path
           required: true
           type: string
@@ -849,13 +884,7 @@ paths:
   /v1alpha/{model.name}/unpublish:
     post:
       summary: Change the visibility of a model resource to *PRIVATE*
-      description: |-
-        `UnpublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service. This method changes the visibility of a model resource to *PRIVATE*, making it only visible to the user. It also returns the updated model resource. It takes in `UnpublishModelRequest` and returns `UnpublishModelResponse`.
-
-        NOTE: `model.name` field in `UnpublishModelRequest` must has the format of `models/{model_name}`. For example: `models/yolov7`.
-
-        UnpublishModel method receives a UnpublishModelRequest message and returns
-        a UnpublishModelResponse
+      description: "`UnpublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method changes the visibility of a model resource to *PRIVATE*, making it only visible to the authorsied user. It also returns the updated model resource. \n\nIt takes in `UnpublishModelRequest` and returns `UnpublishModelResponse`.\n\nNOTE: `model.name` field in `UnpublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPublicService_UnpublishModel
       responses:
         "200":
@@ -868,7 +897,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.name
-          description: 'Resource name of the model. It must has the format of `models/{model_name}`. For example: `models/yolov7`.'
+          description: "Resource name of the model. It must have the format of `models/{model_name}`. \nFor example, `models/yolov7`."
           in: path
           required: true
           type: string
@@ -883,11 +912,8 @@ paths:
         - ModelPublicService
   /v1alpha/{model.uid}/lookUp:
     get:
-      summary: Get a model resource in VDP with it's permalink.
-      description: |-
-        `LookUpModel` is a call with the method(s) `GET` within the `ModelPublicService`. This method gets a model resource in VDP with a permalink (i.e., `model.uid`). It takes in `LookUpModelRequest` and returns `LookUpModelResponse`.
-
-        **NOTE**: `model.uid` (permalink) in `LookUpModelRequest` must has the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
+      summary: Get a model resource with it's permalink.
+      description: "`LookUpModel` is a call with the method(s) `GET` within the `ModelPublicService`.\n\nThis method gets a model resource with a permalink (i.e., `model.uid`). \n\nIt takes in `LookUpModelRequest` and returns `LookUpModelResponse`.\n\n**NOTE**: `model.uid` (permalink) in `LookUpModelRequest` must have the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model."
       operationId: ModelPublicService_LookUpModel
       responses:
         "200":
@@ -900,7 +926,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.uid
-          description: Permalink of a model. It must has the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
+          description: Permalink of a model. It must have the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
           in: path
           required: true
           type: string
@@ -912,7 +938,7 @@ paths:
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -926,11 +952,8 @@ paths:
         - ModelPublicService
   /v1alpha/{model_definition.name}:
     get:
-      summary: Get the difinition of a model resource with a model-definition name.
-      description: |-
-        `GetModelDefinition` is a call with the method(s) `GET` within the `ModelPublicService`. This method returns a model definition supported by VDP. It takes in `GetModelDefinitionRequest` and returns `GetModelDefinitionResponse`.
-
-        **NOTE**: `model_definition.name` field in `GetModelDefinitionRequest` must has the format of `model-definitions/{model_difinition_name}`. For example: `model-definitions/yolov7`.
+      summary: Get the difinition of a model resource with it's name.
+      description: "`GetModelDefinition` is a call with the method(s) `GET` within the `ModelPublicService`. \n\nThis method returns a model definition of a model resource. \n\nIt takes in `GetModelDefinitionRequest` and returns `GetModelDefinitionResponse`.\n\n**NOTE**: `model_definition.name` field in `GetModelDefinitionRequest` must has the format of `model-definitions/{model_name}`. For example, `model-definitions/yolov7`."
       operationId: ModelPublicService_GetModelDefinition
       responses:
         "200":
@@ -943,7 +966,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model_definition.name
-          description: Resource name of the model definition. It must has the format of `model-definitions/{model_difinition.name}`. For example `model-definitions/yolov7`.
+          description: "Resource name of the model definition. It must has the format of `model-definitions/{model.name}`. \nFor example, `model-definitions/yolov7`."
           in: path
           required: true
           type: string
@@ -956,7 +979,7 @@ paths:
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -1051,7 +1074,7 @@ paths:
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -1063,88 +1086,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{name_1}:
-    get:
-      summary: |-
-        GetModelOperation method receives a
-        GetModelOperationRequest message and returns a
-        GetModelOperationResponse message.
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `ModelInstance.configuration` VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
-  /v1alpha/{name}:
-    get:
-      summary: |-
-        GetConnectorOperation method receives a
-        GetConnectorOperationRequest message and returns a
-        GetConnectorOperationResponse message.
-      operationId: ConnectorPublicService_GetConnectorOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
   /v1alpha/{name}/cancel:
     post:
       summary: |-
@@ -1318,6 +1259,82 @@ paths:
             title: UndeployModelRequest represents a request to undeploy a model to offline state
       tags:
         - ModelPublicService
+  /v1alpha/{operation.name_1}:
+    get:
+      summary: Get a longrunning operation with it's name.
+      description: "`GetModelOperation` is a call with the method(s) `GET` within the `ModelPublicService` service. \n\nThis method returns a longrunning operation with it's name (i.e., `operations/{unique_id}`). \n\nIt takes in `GetModelOperationRequest` and returns `GetModelOperationResponse`.\n\n**NOTE**: `operation.uid` field in `GetModelOperationRequest` must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation. See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details."
+      operationId: ModelPublicService_GetModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: operation.name_1
+          description: The name of the operation resource. It must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            View (default is VIEW_UNSPECIFIED)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
+             - VIEW_FULL: View: FULL, full representation of the resource
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ModelPublicService
+  /v1alpha/{operation.name}:
+    get:
+      summary: Get a longrunning operation with it's name.
+      description: "`GetConnectorOperation` is a call with the method(s) `GET` within the `ConnectorPublicService` service. \n\nThis method returns a longrunning operation with it's name (i.e., `operations/{unique_id}`). \n\nIt takes in `GetConnectorOperationRequest` and returns `GetConnectorOperationResponse`.\n\nNOTE: `operation.uid` field in `GetConnectorOperationRequest` must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation. See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details."
+      operationId: ConnectorPublicService_GetConnectorOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: operation.name
+          description: The name of the operation resource. It must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            SourceConnector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ConnectorPublicService
   /v1alpha/{permalink}/lookUp:
     get:
       summary: |-
@@ -1350,7 +1367,7 @@ paths:
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -1364,11 +1381,8 @@ paths:
         - ModelPublicService
   /v1alpha/{pipeline.name}:
     get:
-      summary: Get the detail of a pipeline resource with it's name.
-      description: |-
-        `GetPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method return a pipeline resource in VDP with a pipeline name. It takes in `GetPipelineRequest` and returns `GetPipelineResponse`.
-
-        NOTE: `pipeline.name` field in `GetPipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
+      summary: Get the detail of a pipeline with it's name.
+      description: "`GetPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service.\n\nThis method return a pipeline with it's name. \n\nIt takes in `GetPipelineRequest` and returns `GetPipelineResponse`.\n\nNOTE: `pipeline.name` field in `GetPipelineRequest` must have the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`."
       operationId: PipelinePublicService_GetPipeline
       responses:
         "200":
@@ -1381,7 +1395,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.name
-          description: Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`
+          description: "Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. \nFor example: `pipelines/pipeline-1`."
           in: path
           required: true
           type: string
@@ -1404,11 +1418,8 @@ paths:
       tags:
         - PipelinePublicService
     delete:
-      summary: Delete a pipeline resource in VDP.
-      description: |-
-        `DeletePipeline`is a call with the method(s) `DELETE` within the `PipelinePublicService` service. This method deletes a pipeline resource in VDP with it's name. It takes in `DeletePipelineRequest` and returns `DeletePipelineResponse`.
-
-        **NOTE**: The `pipeline.name` field in `UpdatePipelineRequest` is used to identify the pipeline to update. Format: `pipelines/{pipeline_name}`.
+      summary: Delete a pipeline in VDP.
+      description: "`DeletePipeline`is a call with the method(s) `DELETE` within the `PipelinePublicService` service.\n\nThis method deletes a pipeline with it's name. \n\nIt takes in `DeletePipelineRequest` and returns `DeletePipelineResponse`.\n\n**NOTE**: The `pipeline.name` field in `UpdatePipelineRequest` must have the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`."
       operationId: PipelinePublicService_DeletePipeline
       responses:
         "200":
@@ -1421,7 +1432,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.name
-          description: Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`
+          description: "Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. \nFor example: `pipelines/pipeline-1`."
           in: path
           required: true
           type: string
@@ -1429,11 +1440,8 @@ paths:
       tags:
         - PipelinePublicService
     patch:
-      summary: Update a pipeline resource in VDP.
-      description: |-
-        `UpdatePipeline` is a call with the method(s) `PATCH` within the `PipelinePublicService` service. This methods update an existing pipeline resource in VDP and return the updated pipeline resource. It takes in `UpdatePipelineRequest` and returns `UpdatePipelineResponse`.
-
-        **NOTE**: The `pipeline.name` field in `UpdatePipelineRequest` is used to identify the pipeline to update. Format: `pipelines/{pipeline_name}`.
+      summary: Update a pipeline in VDP.
+      description: "`UpdatePipeline` is a call with the method(s) `PATCH` within the `PipelinePublicService` service.\n\nThis methods update an existing pipeline and return the updated pipeline resource. \n\nIt takes in `UpdatePipelineRequest` and returns `UpdatePipelineResponse`.\n\n**NOTE**: The `pipeline.name` field in `UpdatePipelineRequest` is used to identify the pipeline to update. Format: `pipelines/{pipeline_name}`."
       operationId: PipelinePublicService_UpdatePipeline
       responses:
         "200":
@@ -1511,11 +1519,15 @@ paths:
         - PipelinePublicService
   /v1alpha/{pipeline.name}/activate:
     post:
-      summary: Activate a pipeline resource in VDP.
+      summary: Activate a pipeline in VDP.
       description: |-
-        `ActivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method activates a pipeline resource in VDP. The "state" of the pipeline after activating is "ACTIVE". It takes in `ActivatePipelineRequest` and returns `ActivatePipelineResponse`.
+        `ActivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service.
 
-        NOTE: `ActivatePipeline` can be called on Pipelines in the state "INACTIVE"; Pipelines in a different state (including "ACTIVE") returns an error. See [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details.
+        This method activates an existing pipeline. The "state" of the pipeline after activating is "ACTIVE". It can be called on Pipelines in the state "INACTIVE"; Pipelines in a different state (including "ACTIVE") returns an error.
+
+        It takes in `ActivatePipelineRequest` and returns `ActivatePipelineResponse`.
+
+        See [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details.
       operationId: PipelinePublicService_ActivatePipeline
       responses:
         "200":
@@ -1528,7 +1540,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.name
-          description: 'Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.'
+          description: "Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. \nFor example, `pipelines/pipeline-1`."
           in: path
           required: true
           type: string
@@ -1543,11 +1555,8 @@ paths:
         - PipelinePublicService
   /v1alpha/{pipeline.name}/deactivate:
     post:
-      summary: Deactivate a pipeline resource in VDP.
-      description: |-
-        `DeactivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method deactivates a pipeline resource in VDP. The "state" of the pipeline after inactivating is "INACTIVE". It takes in `DeactivatePipelineRequest` and returns `DeactivatePipelineResponse`.
-
-        NOTE: `DeactivatePipeline` can be called on Pipelines in the state "ACTIVE"; Pipelines in a different state (including "INACTIVE") returns an error. See [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details.
+      summary: Deactivate a pipeline in VDP.
+      description: "`DeactivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. It can be called on Pipelines in the state \"ACTIVE\"; Pipelines in a different state (including \"INACTIVE\") returns an error.\n\nThis method deactivates a pipeline resource in VDP. The \"state\" of the pipeline after inactivating is \"INACTIVE\". \n\nIt takes in `DeactivatePipelineRequest` and returns `DeactivatePipelineResponse`.\n\nSee [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details."
       operationId: PipelinePublicService_DeactivatePipeline
       responses:
         "200":
@@ -1575,11 +1584,8 @@ paths:
         - PipelinePublicService
   /v1alpha/{pipeline.name}/rename:
     post:
-      summary: Rename a pipeline resource in VDP.
-      description: |-
-        `RenamePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method changes the pipeline name and returns the updated pipeline resource. It takes in `RenamePipelineRequest` and returns `RenamePipelineResponse`.
-
-        NOTE: `pipeline.name` field in `RenamePipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
+      summary: Rename a pipeline in VDP.
+      description: "`RenamePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service.\n\nThis method changes the pipeline name and returns the updated pipeline resource. \n\nIt takes in `RenamePipelineRequest` and returns `RenamePipelineResponse`.\n\nNOTE: `pipeline.name` field in `RenamePipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example, `pipelines/pipeline-1`."
       operationId: PipelinePublicService_RenamePipeline
       responses:
         "200":
@@ -1592,7 +1598,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.name
-          description: 'Pipeline resource name. It must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.'
+          description: "Pipeline resource name. It must has the format of `pipelines/{pipeline_name}`. \nFor example, `pipelines/pipeline-1`."
           in: path
           required: true
           type: string
@@ -1616,11 +1622,7 @@ paths:
   /v1alpha/{pipeline.name}/trigger:
     post:
       summary: Trigger a pipeline resource in VDP.
-      description: |-
-        `TriggerPipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This methods tiggers a pipeline and returns 1) UUID for each input and 2) model instance inference outputs. It takes in `TriggerPipelineRequest` and returns a `TriggerPipelineResponse`.
-
-        NOTE: pipeline name must have the format of "pipelines/*".
-        → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP and [our tutorial](https://www.instill.tech/tutorials/vdp-101-4-how-to-trigger-a-sync-pipeline) for further details about triggering a pipeline.
+      description: "`TriggerPipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service.\n\nThis methods tiggers a pipeline and returns 1) UUID for each input and 2) model inference outputs. \n\nIt takes in `TriggerPipelineRequest` and returns a `TriggerPipelineResponse`.\n\nNOTE: `pipeline.name` field in `TriggerPipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example, `pipelines/pipeline-1`.\n\n→ See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP and [our tutorial](https://www.instill.tech/tutorials/vdp-101-4-how-to-trigger-a-sync-pipeline) for further details about triggering a pipeline."
       operationId: PipelinePublicService_TriggerPipeline
       responses:
         "200":
@@ -1633,7 +1635,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.name
-          description: 'Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`'
+          description: "Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. \nFor example: `pipelines/pipeline-1`."
           in: path
           required: true
           type: string
@@ -1656,11 +1658,8 @@ paths:
         - PipelinePublicService
   /v1alpha/{pipeline.uid}/lookUp:
     get:
-      summary: Get the detail of a pipeline resource in VDP with it's permalink.
-      description: |-
-        `LookUpPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method return a pipeline resource in VDP given a pipeline permalink. It takes in `LookUpPipelineRequest` and returns `LookUpPipelineResponse`.
-
-        NOTE: `pipeline.uid` (permalink) must has to format of `pipelines/{uid}`.
+      summary: Get the detail of a pipeline with it's permalink.
+      description: "`LookUpPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service.\n\nThis method return a pipeline resource in VDP given a pipeline permalink. \n\nIt takes in `LookUpPipelineRequest` and returns `LookUpPipelineResponse`.\n\nNOTE: `pipeline.uid` (permalink) in `LookUpPipelineRequest` must have to format of `pipelines/{uid}`, where `{uid}` denotes the unique ID of the pipeline."
       operationId: PipelinePublicService_LookUpPipeline
       responses:
         "200":
@@ -1673,7 +1672,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.uid
-          description: 'Permalink of a pipeline. For example: `pipelines/{uid}`'
+          description: Permalink of a pipeline. It must have to format of `pipelines/{uid}`, where `{uid}` denotes the unique ID of the pipeline.
           in: path
           required: true
           type: string
@@ -1697,11 +1696,8 @@ paths:
         - PipelinePublicService
   /v1alpha/{resource.name}:
     get:
-      summary: Get resource state given resource name and type.
-      description: |-
-        `GetResource` is a call with the method(s) `GET` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to get the current state of the queried resource. It takes in `GetResourceRequest` and returns a `GetResourceResponse`.
-
-        **NOTE**: The `resource.name` field in GetReourceRequest must has the format of `resources/{resource}/types/{type}`. For example: `resources/yolov7/types/model`. See parameter descriptions for further details.
+      summary: Get resource state with it's name.
+      description: "`GetResource` is a call with the method(s) `GET` within the `ControllerPrivateService` service.\n\nThis is a *private* method that is only avaible for admin and internal backend services to get the current state of the queried resource. \n\nIt takes in `GetResourceRequest` and returns a `GetResourceResponse`.\n\n**NOTE**: The `resource.name` field in GetReourceRequest must has the format of `resources/{resource_name}/types/{type}`. For example: `resources/yolov7/types/model`. See parameter descriptions for further details."
       operationId: ControllerPrivateService_GetResource
       responses:
         "200":
@@ -1715,7 +1711,7 @@ paths:
       parameters:
         - name: resource.name
           description: |-
-            Resource name is a string follows a specifit format: `resources/{resource}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+            Resource name is a string follows a specifit format: `resources/{resource_name}/types/{type}`, where `{resource_name}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
             ```
             const (
               RESOURCE_TYPE_MODEL     = "model"
@@ -1734,11 +1730,13 @@ paths:
       tags:
         - ControllerPrivateService
     delete:
-      summary: Delete a resource from the Controller Service.
+      summary: Delete a resource with it's name.
       description: |-
-        `DeleteResource` is a call with the method(s) `DELETE` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to delete a registered resource. It takes in `DeleteResourceRequest` and returns a `DeleteResourceResponse`.
+        `DeleteResource` is a call with the method(s) `DELETE` within the `ControllerPrivateService` service.
 
-        **NOTE**: The `resource.name` field in `DeleteResourceRequest` is used to identify the resource to delete. Format: `resources/{resource}/types/{type}`.
+        This is a *private* method that is only avaible for admin and internal backend services to delete a registered resource. It takes in `DeleteResourceRequest` and returns a `DeleteResourceResponse`.
+
+        **NOTE**: The `resource.name` field in `DeleteResourceRequest` is used to identify the resource to delete. Format: `resources/{resource_name}/types/{type}`.
       operationId: ControllerPrivateService_DeleteResource
       responses:
         "200":
@@ -1751,7 +1749,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: resource.name
-          description: 'Resource name. It must has the format of `resources/{resource}/types/{type}`. For example: `resources/yolov7/types/model`.'
+          description: "Resource name. It must has the format of `resources/{resource_name}/types/{type}`. \nFor example: `resources/yolov7/types/model`."
           in: path
           required: true
           type: string
@@ -1760,10 +1758,7 @@ paths:
         - ControllerPrivateService
     patch:
       summary: Update resource state.
-      description: |-
-        `UpdateResource` is a call with the method(s) `PATCH` within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admin and other backend services to update the current state of the queried resource. It takes in `UpdateResourceRequest` and returns a `UpdateResourceResponse`.
-
-        **NOTE**: The `resource.name` field in `UpdateResourceRequest` is used to identify the resource to update. Format: `resources/{resource}/types/{type}`.
+      description: "`UpdateResource` is a call with the method(s) `PATCH` within the `ControllerPrivateService` service.\n\nThis is a *private* method that is only avaible for admin and internal backend services to update the current state of the queried resource. \n\nIt takes in `UpdateResourceRequest` and returns a `UpdateResourceResponse`.\n\n**NOTE**: The `resource.name` field in `UpdateResourceRequest` is used to identify the resource to update. Format: `resources/{resource_name}/types/{type}`."
       operationId: ControllerPrivateService_UpdateResource
       responses:
         "200":
@@ -1777,7 +1772,7 @@ paths:
       parameters:
         - name: resource.name
           description: |-
-            Resource name is a string follows a specifit pattern: `resources/{resource}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+            Resource name is a string follows a specifit pattern: `resources/{resource_name}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
             ```
             const (
               RESOURCE_TYPE_MODEL     = "model"
@@ -1794,7 +1789,7 @@ paths:
           type: string
           pattern: resources/[^/]+/types/[^/]+
         - name: resource
-          description: "The resource to update. It uses `resource.name` to identify the resource to update. It follows a specifit format: `resources/{resource}/types/{type}`.\nFor **Model*, **Pipeline** and **Connector** services, the `resource.state` is one of the below:\n```\nenum State {\n  // State: UNSPECIFIED\n  STATE_UNSPECIFIED = 0;\n  // State INACTIVE indicates the pipeline is inactive\n  STATE_INACTIVE = 1;\n  // State ACTIVE indicates the pipeline is active\n  STATE_ACTIVE = 2;\n  // State ERROR indicates the pipeline has error\n  STATE_ERROR = 3;\n}\n```\n\nSee our documentation for further information: \n- [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline)\n- [Core Concepts - Connector](https://www.instill.tech/docs/core-concepts/connector)\n- [Core Concepts - Model](https://www.instill.tech/docs/core-concepts/model)\n\nFor **Backend** service, the `resource.state` is one of the below as:\n```\nenum ServingStatus {\n  // Serving status: UNSPECIFIED\n  SERVING_STATUS_UNSPECIFIED = 0;\n  // Serving status: SERVING\n  SERVING_STATUS_SERVING = 1;\n  // Serving status: NOT SERVING\n  SERVING_STATUS_NOT_SERVING = 2;\n}\n```"
+          description: "The resource to update. It uses `resource.name` to identify the resource to update. It follows a specifit format: `resources/{resource_name}/types/{type}`.\nFor **Model*, **Pipeline** and **Connector** services, the `resource.state` is one of the below:\n```\nenum State {\n  // State: UNSPECIFIED\n  STATE_UNSPECIFIED = 0;\n  // State INACTIVE indicates the pipeline is inactive\n  STATE_INACTIVE = 1;\n  // State ACTIVE indicates the pipeline is active\n  STATE_ACTIVE = 2;\n  // State ERROR indicates the pipeline has error\n  STATE_ERROR = 3;\n}\n```\n\nSee our documentation for further information: \n- [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline)\n- [Core Concepts - Connector](https://www.instill.tech/docs/core-concepts/connector)\n- [Core Concepts - Model](https://www.instill.tech/docs/core-concepts/model)\n\nFor **Backend** service, the `resource.state` is one of the below as:\n```\nenum ServingStatus {\n  // Serving status: UNSPECIFIED\n  SERVING_STATUS_UNSPECIFIED = 0;\n  // Serving status: SERVING\n  SERVING_STATUS_SERVING = 1;\n  // Serving status: NOT SERVING\n  SERVING_STATUS_NOT_SERVING = 2;\n}\n```"
           in: body
           required: true
           schema:
@@ -1818,7 +1813,7 @@ paths:
                 title: Resource longrunning progress
             description: "See our documentation for further information: \n- [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline)\n- [Core Concepts - Connector](https://www.instill.tech/docs/core-concepts/connector)\n- [Core Concepts - Model](https://www.instill.tech/docs/core-concepts/model)\n\nFor **Backend** service, the `resource.state` is one of the below as:\n```\nenum ServingStatus {\n  // Serving status: UNSPECIFIED\n  SERVING_STATUS_UNSPECIFIED = 0;\n  // Serving status: SERVING\n  SERVING_STATUS_SERVING = 1;\n  // Serving status: NOT SERVING\n  SERVING_STATUS_NOT_SERVING = 2;\n}\n```"
             title: |-
-              The resource to update. It uses `resource.name` to identify the resource to update. It follows a specifit format: `resources/{resource}/types/{type}`.
+              The resource to update. It uses `resource.name` to identify the resource to update. It follows a specifit format: `resources/{resource_name}/types/{type}`.
               For **Model*, **Pipeline** and **Connector** services, the `resource.state` is one of the below:
               ```
               enum State {
@@ -1839,39 +1834,13 @@ paths:
           type: string
       tags:
         - ControllerPrivateService
-  /v1alpha/{source_connector.name/watch}/watch:
-    get:
-      summary: |-
-        WatchSourceConnector method receives a WatchSourceConnectorRequest message
-        and returns a WatchSourceConnectorResponse
-      operationId: ConnectorPublicService_WatchSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name/watch
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-      tags:
-        - ConnectorPublicService
   /v1alpha/{source_connector.name}:
     get:
-      summary: Get a SOURCE connector resource in VDP with it's name.
+      summary: Get a SOURCE connector with it's name.
       description: |-
-        `GetSourceConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a source-connector resource in VDP with the quried name. It takes in `GetSourceConnectorRequest` and returns `GetSourceConnectorResponse`.
+        `GetSourceConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a source connector in VDP with the quried name. It takes in `GetSourceConnectorRequest` and returns `GetSourceConnectorResponse`.
 
-        **NOTE**: The `source_connector.name` field in `GetSourceConnectorRequest` must has the format of `source-connectors/{connector_name}`. For example: `models/http`.
+        **NOTE**: The `source_connector.name` field in `GetSourceConnectorRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
       operationId: ConnectorPublicService_GetSourceConnector
       responses:
         "200":
@@ -1884,7 +1853,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: source_connector.name
-          description: 'SourceConnectorConnector resource name. It must has the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`'
+          description: "SourceConnectorConnector resource name. It must have the format of `source-connectors/{connector_name}`. \nFor example, `source-connectors/http`."
           in: path
           required: true
           type: string
@@ -1893,9 +1862,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -1907,11 +1876,8 @@ paths:
       tags:
         - ConnectorPublicService
     delete:
-      summary: Delete a SOURCE connector resource in VDP with it's name.
-      description: |-
-        `DeleteSourceConnector` is a call with the method(s) `DELETE` within the `ConnectorPublicService`. This method delete a model resource in VDP with the quried name. It takes in `DeleteSourceConnectorRequest` and returns `DeleteSourceConnectorResponse`.
-
-        **NOTE**: The `source_connector.name` field in `DeleteSourceConnectorRequest` must has the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
+      summary: Delete a SOURCE connector with it's name.
+      description: "`DeleteSourceConnector` is a call with the method(s) `DELETE` within the `ConnectorPublicService`. \n\nThis method delete a source connector in VDP with the quried name. \n\nIt takes in `DeleteSourceConnectorRequest` and returns `DeleteSourceConnectorResponse`.\n\n**NOTE**: The `source_connector.name` field in `DeleteSourceConnectorRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`."
       operationId: ConnectorPublicService_DeleteSourceConnector
       responses:
         "200":
@@ -1925,8 +1891,8 @@ paths:
       parameters:
         - name: source_connector.name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+            For example: `source-connectors/http`.
           in: path
           required: true
           type: string
@@ -1934,11 +1900,8 @@ paths:
       tags:
         - ConnectorPublicService
     patch:
-      summary: Update a SOURCE connector resource in VDP
-      description: |-
-        `UpdateSourceConnector` is a call with the method(s) `PATCH` within the `ConnectorPublicService`. This method updates a source-connector resource. It takes in `UpdateSourceConnectorRequest` and returns `UpdateSourceConnectorResponse`.
-
-        **NOTE**: The `source_connector.name` field in `UpdateSourceConnectorRequest` is used to identify the model resource to update. Format: `source-connectors/{connector_name}`.
+      summary: Update a SOURCE connector.
+      description: "`UpdateSourceConnector` is a call with the method(s) `PATCH` within the `ConnectorPublicService`. This method updates a source connector. \n\nIt takes in `UpdateSourceConnectorRequest` and returns `UpdateSourceConnectorResponse`.\n\n**NOTE**: The `source_connector.name` field in `UpdateSourceConnectorRequest` is used to identify the source-connector to update. Format: `source-connectors/{connector_name}`."
       operationId: ConnectorPublicService_UpdateSourceConnector
       responses:
         "200":
@@ -1952,8 +1915,8 @@ paths:
       parameters:
         - name: source_connector.name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+            For example, `source-connectors/http`.
           in: path
           required: true
           type: string
@@ -1967,21 +1930,21 @@ paths:
             properties:
               uid:
                 type: string
-                title: SourceConnector UUID
+                title: Source connector UUID
                 readOnly: true
               id:
                 type: string
                 description: |-
-                  SourceConnector resource ID (the last segment of the resource name) used to
+                  Source connector resource ID (the last segment of the resource name) used to
                   construct the resource name. This conforms to RFC-1034, which restricts to
                   letters, numbers, and hyphen, with the first character a letter, the last a
                   letter or a number, and a 63 character maximum.
               source_connector_definition:
                 type: string
-                title: SourceConnectorDefinition resource
+                title: Source connector definition resource
               connector:
                 $ref: '#/definitions/v1alphaConnector'
-                title: SourceConnector's connector data structure
+                title: Source connector's connector data structure
             title: SourceConnector resource
             required:
               - connector
@@ -1995,7 +1958,7 @@ paths:
   /v1alpha/{source_connector.name}/connect:
     post:
       summary: Connect a SOURCE connector with it's name.
-      description: "`ConnectSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. This method connects a source connector. The \"state\" of the connector after connecting is \"STATE_CONNECTED\". ConnectSourceConnector can be called on SourceConnector in the state `STATE_DISCONNECTED`; SourceConnector in a different state (including `STATE_CONNECTED`) returns an error.  \nIt takes in `ConnectSourceConnectorRequest` and returns `ConnectSourceConnectorResponse`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
+      description: "`ConnectSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. \n\nThis method connects a source connector. The \"state\" of the connector after connecting is \"STATE_CONNECTED\". `ConnectSourceConnector` can be called on SourceConnector in the state `STATE_DISCONNECTED`; SourceConnector in a different state (including `STATE_CONNECTED`) returns an error.\n\nIt takes in `ConnectSourceConnectorRequest` and returns `ConnectSourceConnectorResponse`.\n\n**NOTE**: The `source_connector.name` field in `ConnectSourceConnectorRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
       operationId: ConnectorPublicService_ConnectSourceConnector
       responses:
         "200":
@@ -2008,7 +1971,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: source_connector.name
-          description: 'SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`'
+          description: "Source connector resource name. It must have the format of `source-connectors/{connector_name}`. \nFor example, `source-connectors/http`."
           in: path
           required: true
           type: string
@@ -2026,7 +1989,7 @@ paths:
   /v1alpha/{source_connector.name}/disconnect:
     post:
       summary: Disconnect a SOURCE connector with it's name.
-      description: "`DisconnectSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. This method disconnects a source connector. The \"state\" of the connector after disconnecting is \"STATE_DISCONNECTED\". ConnectSourceConnector can be called on SourceConnector in the state `STATE_CONNECTED`; SourceConnector in a different state (including `STATE_DISCONNECTED`) returns an error.  \nIt takes in `DisconnectSourceConnectorRequest` and returns `DisconnectSourceConnectorResponse`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
+      description: "`DisconnectSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. \n\nThis method disconnects a source connector. The \"state\" of the connector after disconnecting is \"STATE_DISCONNECTED\". `DisconnectSourceConnector` can be called on SourceConnector in the state `STATE_CONNECTED`; SourceConnector in a different state (including `STATE_DISCONNECTED`) returns an error. \n\nIt takes in `DisconnectSourceConnectorRequest` and returns `DisconnectSourceConnectorResponse`.\n\n**NOTE**: The `source_connector.name` field in `DisconnectSourceConnectorRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.\n\n→ See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for more information about Connectors and their States."
       operationId: ConnectorPublicService_DisconnectSourceConnector
       responses:
         "200":
@@ -2040,8 +2003,8 @@ paths:
       parameters:
         - name: source_connector.name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+            For example: `source-connectors/http`.
           in: path
           required: true
           type: string
@@ -2058,11 +2021,15 @@ paths:
         - ConnectorPublicService
   /v1alpha/{source_connector.name}/read:
     post:
-      summary: Read data with a SOURCE connector
+      summary: Read data with a SOURCE connector.
       description: |-
-        `ReadSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. This method performs a read operation with a source-connector resource and returns data in bytes. It takes in `ReadSourceConnectorRequest` and returns `ReadSourceConnectorResponse`.
+        `ReadSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service.
 
-        NOTE: `source_connector.name` field in `ReadSourceConnectorRequest` must has the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
+        This method performs a read operation with a source connector and returns data in bytes.
+
+        It takes in `ReadSourceConnectorRequest` and returns `ReadSourceConnectorResponse`.
+
+        NOTE: `source_connector.name` field in `ReadSourceConnectorRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
       operationId: ConnectorPublicService_ReadSourceConnector
       responses:
         "200":
@@ -2076,8 +2043,8 @@ paths:
       parameters:
         - name: source_connector.name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+            For example: `source-connectors/http`.
           in: path
           required: true
           type: string
@@ -2094,11 +2061,8 @@ paths:
         - ConnectorPublicService
   /v1alpha/{source_connector.name}/rename:
     post:
-      summary: Rename a SOURCE connector resource in VDP
-      description: |-
-        `RenameSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. This method changes the name of a source-connector resource and returns the updated source-connector resource. It takes in `RenameSourceConnectorRequest` and returns `RenameSourceConnectorResponse`.
-
-        NOTE: `source_connector.name` field in `RenameSourceConnectorRequest` must has the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
+      summary: Rename a SOURCE connector.
+      description: "`RenameSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService` service. \n\nThis method changes the name of a source connector and returns the updated source connector. \n\nIt takes in `RenameSourceConnectorRequest` and returns `RenameSourceConnectorResponse`.\n\nNOTE: `source_connector.name` field in `RenameSourceConnectorRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`."
       operationId: ConnectorPublicService_RenameSourceConnector
       responses:
         "200":
@@ -2112,8 +2076,8 @@ paths:
       parameters:
         - name: source_connector.name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+            For example: `source-connectors/http`.
           in: path
           required: true
           type: string
@@ -2137,13 +2101,40 @@ paths:
               - new_source_connector_id
       tags:
         - ConnectorPublicService
+  /v1alpha/{source_connector.name}/watch:
+    get:
+      summary: Get the state of a SOURCE connector.
+      description: "`WatchSourceConnector` is a call with the method(s) `GET` within the `ConnectorPublicService` service. \n\nThis method returns the state of a source connector from the state server. \n\nIt takes in `WatchSourceConnectorRequest` and returns `WatchSourceConnectorResponse`.\n\nNOTE: `source_connector.name` field in `WatchSourceConnectorRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`."
+      operationId: ConnectorPublicService_WatchSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: source_connector.name
+          description: |-
+            SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+            For example: `source-connectors/http`.
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+      tags:
+        - ConnectorPublicService
   /v1alpha/{source_connector.uid}/lookUp:
     get:
-      summary: Get a SOURECE connector resource in VDP with a permalink consisting of unique ID.
+      summary: Get a SOURECE connector with a permalink consisting of unique ID.
       description: |-
-        `LookUpSourceConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`. This methods returns a source-connector resource in VDP with it's permalink (i.e., `source_connector.uid`). It takes in `LookUpSourceConnectorRequest` and returns `LookUpSourceConnectorResponse`.
+        `LookUpSourceConnector` is a call with the method(s) `GET` within the `ConnectorPublicService`.
 
-        **NOTE**: permalink in `LookUpSourceConnectorRequest` must has the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
+        This methods returns a source connector in VDP with it's permalink (i.e., `source_connector.uid`). It takes in `LookUpSourceConnectorRequest` and returns `LookUpSourceConnectorResponse`.
+
+        **NOTE**: permalink in `LookUpSourceConnectorRequest` must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
       operationId: ConnectorPublicService_LookUpSourceConnector
       responses:
         "200":
@@ -2156,7 +2147,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: source_connector.uid
-          description: Permalink of a source connector. It must has the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
+          description: Permalink of a source connector. It must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
           in: path
           required: true
           type: string
@@ -2165,9 +2156,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -2180,11 +2171,8 @@ paths:
         - ConnectorPublicService
   /v1alpha/{source_connector_definition.name}:
     get:
-      summary: Get the difinition of a SOURCE connector resource with it's name.
-      description: |-
-        `GetSourceConnectorDefinition` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a model definition supported by VDP. It takes in `GetSourceConnectorDefinitionRequest` and returns `GetSourceConnectorDefinitionResponse`.
-
-        **NOTE**: `source_connector_definition.name` field in `GetSourceConnectorDefinitionRequest` must has the format of `source-connector-definitions/{connector_name}`. For example: `source-connector-definitions/http`.
+      summary: Get the difinition of a SOURCE connector with it's name.
+      description: "`GetSourceConnectorDefinition` is a call with the method(s) `GET` within the `ConnectorPublicService`. \n\nThis method returns a source-connector definition supported by VDP. \n\nIt takes in `GetSourceConnectorDefinitionRequest` and returns `GetSourceConnectorDefinitionResponse`.\n\n**NOTE**: `source_connector_definition.name` field in `GetSourceConnectorDefinitionRequest` must have the format of `source-connector-definitions/{connector_name}`. For example: `source-connector-definitions/http`."
       operationId: ConnectorPublicService_GetSourceConnectorDefinition
       responses:
         "200":
@@ -2250,11 +2238,8 @@ paths:
         - ConnectorPublicService
   /v1alpha/{user.name}/exist:
     get:
-      summary: Check if an user exist given a username.
-      description: |-
-        `ExistUsername` is a call with the method(s) `GET` within the `MgmtPrivateService`. This method return a boolean value indicating the existtance of an user given a username. It takes in `ExistUsernameRequest` and returns a `ExistUsernameResponse`.
-
-        NOTE: username in `ExistUsernameRequest` must have the format of "users/*". For example: "users/{username}".
+      summary: Check if an user exist with it's name.
+      description: "`ExistUsername` is a call with the method(s) `GET` within the `MgmtPrivateService`.\n\nThis method return a boolean value indicating the existance of an user with `user.name`. \n\nIt takes in `ExistUsernameRequest` and returns a `ExistUsernameResponse`.\n\nNOTE: `user.name` in `ExistUsernameRequest` must have the format of `users/{user_name}`. For example, `users/local-user`."
       operationId: MgmtPublicService_ExistUsername
       responses:
         "200":
@@ -2267,7 +2252,9 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user.name
-          description: 'The resource name of the user to be deleted. Format: `users/{username}`'
+          description: |-
+            User name. It must have the format of `users/{user_name}`.
+            For example, `users/local-user`.
           in: path
           required: true
           type: string
@@ -2295,9 +2282,13 @@ paths:
     get:
       summary: Get a DESTINATION connector resource in VDP (admin only)
       description: |-
-        `GetDestinationConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. This is a *private* method that is only avaible for admins and other backend services get a *destination* connector resource in VDP. Only admins with permission can call this method. It takes in `GetDestinationConnectorAdminRequest` and returns `GetDestinationConnectorAdminResponse`.
+        `GetDestinationConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`.
 
-        **NOTE**: The `destination_connector.name` field in `GetDestinationConnectorAdminRequest` must has the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.
+        This is a *private* method that is only avaible for admins and internal backend services to get a *destination-connector* resource in VDP.
+
+        It takes in `GetDestinationConnectorAdminRequest` and returns `GetDestinationConnectorAdminResponse`.
+
+        **NOTE**: The `destination_connector.name` field in `GetDestinationConnectorAdminRequest` must have the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.
       operationId: ConnectorPrivateService_GetDestinationConnectorAdmin
       responses:
         "200":
@@ -2310,7 +2301,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: destination_connector.name
-          description: 'DestinationConnectorConnector resource name. It must has the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.'
+          description: "Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`. \nFor example, `destination-connectors/postgres-db`."
           in: path
           required: true
           type: string
@@ -2319,9 +2310,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -2332,13 +2323,33 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPrivateService
+  /v1alpha/admin/{destination_connector.name}/check:
+    get:
+      summary: Trigger a longrunning operation checking the state of a Destination Connector (admin only).
+      description: "`CheckDestinationConnector` is a call with the method(s) `GET` within the `ConnectorPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to trigger a longrunning operation checking the state of a *destination-connector* resource in VDP with it's name (i.e., `destination-connector.name`). It returns a `workflow_id` with which internal services can check the results after the operation is done. Resutls are also used to update the state records in the state server.\n\nIt takes in `CheckDestinationConnectorRequest` and returns `CheckDestinationConnectorResponse`. \n\n**NOTE**: this methods triggers a longrunning operation. The state of the destination connector is only avaible when the operation is done."
+      operationId: ConnectorPrivateService_CheckDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCheckDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: destination_connector.name
+          description: "Destination Connector resource name. It must have the format of `destination-connectors/{connector_name}`. \nFor example, `destination-connectors/postgres-db`."
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
+      tags:
+        - ConnectorPrivateService
   /v1alpha/admin/{destination_connector.uid}/lookUp:
     get:
       summary: Get a DESTINATION connector resource in VDP with a permalink consisting of unique ID (admin only).
-      description: |-
-        `LookUpDestinationConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. This is a *private* method that is only avaible for admins and other backend services to get a *destination* connector resource in VDP with it's permalink (i.e., `destination-connector.uid`). Only admins with permission can call this method. It takes in `LookUpDestinationConnectorAdminRequest` and returns `LookUpDestinationConnectorAdminResponse`.
-
-        **NOTE**: permalink in `LookUpDestinationConnectorAdminRequest` must has the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the model.
+      description: "`LookUpDestinationConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to get a *destination-connector* resource in VDP with it's permalink (i.e., `destination-connector.uid`).\n\nIt takes in `LookUpDestinationConnectorAdminRequest` and returns `LookUpDestinationConnectorAdminResponse`.\n\n**NOTE**: permalink in `LookUpDestinationConnectorAdminRequest` must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the model."
       operationId: ConnectorPrivateService_LookUpDestinationConnectorAdmin
       responses:
         "200":
@@ -2351,7 +2362,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: destination_connector.uid
-          description: Permalink of a destination connector. It must has the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the model.
+          description: Permalink of a destination connector. It must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
           in: path
           required: true
           type: string
@@ -2360,9 +2371,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -2375,11 +2386,8 @@ paths:
         - ConnectorPublicService
   /v1alpha/{source_connector_definition.name}:
     get:
-      summary: Get a model resource in VDP with it's name (admin only)
-      description: |-
-        `GetModelAdmin` is a call with the method(s) `GET` within the `ModelPrivateService`. This is a *private* method that is only avaible for admins and other backend services get a model resource in VDP with a model name. Only admins with permission can call this method. It takes in `GetModelAdminRequest` and returns `GetModelAdminResponse`.
-
-        **NOTE**: The `model.name` field in `GetModelAdminRequest` must has the format of `models/{model_name}`. For example: `models/yolov7`.
+      summary: Get a model resource with it's name (admin only)
+      description: "`GetModelAdmin` is a call with the method(s) `GET` within the `ModelPrivateService`.\n\nThis is a *private* method that is only avaible for admins and internal backend services to get a model resource with it's name. \n\nIt takes in `GetModelAdminRequest` and returns `GetModelAdminResponse`.\n\n**NOTE**: The `model.name` field in `GetModelAdminRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`."
       operationId: ModelPrivateService_GetModelAdmin
       responses:
         "200":
@@ -2416,11 +2424,15 @@ paths:
         - ModelPrivateService
   /v1alpha/admin/{model.uid}/lookUp:
     get:
-      summary: Get a model resource in VDP with a permalink consisting of unique ID (admin only).
+      summary: Get a model resource with a permalink consisting of unique ID (admin only).
       description: |-
-        `LookUpModelAdmin` is a call with the method(s) `GET` within the `ModelPrivateService`. This is a *private* method that is only avaible for admins and other backend services to geta  model resource in VDP with it's permalink (i.e., `model.uid`). Only admins with permission can call this method. It takes in `LookUpModelAdminRequest` and returns `LookUpModelAdminResponse`.
+        `LookUpModelAdmin` is a call with the method(s) `GET` within the `ModelPrivateService`.
 
-        **NOTE**: permalink in `LookUpModelAdminRequest` must has the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
+        This is a *private* method that is only avaible for admins and internal backend services to get a model resource with it's permalink (i.e., `model.uid`).
+
+        It takes in `LookUpModelAdminRequest` and returns `LookUpModelAdminResponse`.
+
+        **NOTE**: The permalink in `LookUpModelAdminRequest` must have the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
       operationId: ModelPrivateService_LookUpModelAdmin
       responses:
         "200":
@@ -2433,7 +2445,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: model.uid
-          description: Permalink of a model. It must has the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
+          description: Permalink of a model. It must have the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
           in: path
           required: true
           type: string
@@ -2445,7 +2457,7 @@ paths:
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -2457,41 +2469,10 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPrivateService
-  /v1alpha/admin/{name_1}/check:
+  /v1alpha/admin/{name}/check:
     get:
-      summary: |-
-        CheckDestinationConnector method receives a CheckDestinationConnectorRequest message and returns a
-        CheckDestinationConnectorResponse
-      operationId: ConnectorPrivateService_CheckDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCheckDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-      tags:
-        - ConnectorPrivateService
-  /v1alpha/admin/{name_2}/check:
-    get:
-      summary: Check the state of a model instance deloyed on VDP (admin only).
-      description: |-
-        `CheckModelInstance` is a call with the method(s) `GET` within the `ModelPrivateService`. This is a *private* method that is only avaible for admins and other backend services to check the states of a model instance deployed on VDP with model instance's name (i.e., `model.name`). Only admins with permission can call this method. It takes in `CheckModelInstanceRequest` and returns `CheckModelInstanceResponse`.
-
-        **NOTE**: The `name` field in `CheckModelInstanceRequest` is used to identify the model to update. Format: `models/{model}/instances/{instance}`. For example, `models/yolov7/instances/v1.0-cpu`
-
-        **IMPORTANT**: model instance will be removed after **v0.9.0-alpha**.
+      summary: Check the state of a existing model instance (admin only).
+      description: "`CheckModelInstance` is a call with the method(s) `GET` within the `ModelPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to check the states of a model instance deployed on VDP with model instance's name. \n\nIt takes in `CheckModelInstanceRequest` and returns `CheckModelInstanceResponse`.\n\n**NOTE**: The `name` field in `CheckModelInstanceRequest` is used to identify the model to update. Format: `models/{model}/instances/{instance}`. For example, `models/yolov7/instances/v1.0-cpu`\n\n**IMPORTANT**: model instance will be removed after **v0.9.0-alpha**."
       operationId: ModelPrivateService_CheckModelInstance
       responses:
         "200":
@@ -2503,7 +2484,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: name_2
+        - name: name
           description: |-
             Resource name of the model instance.
             For example "models/{model}/instances/{instance}"
@@ -2557,10 +2538,7 @@ paths:
   /v1alpha/admin/{pipeline.name}:
     get:
       summary: Get a pipeline resource in VDP with it's name (admin only).
-      description: |-
-        `GetPipeLineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service. This is a *private* method that is only avaible for admins and other backend services to get a pipeline resource in VDP with it's name. Only admins with permission can call this method. It takes in `GetPipelineAdminRequest` and returns a `GetPipelineAdminResponse`.
-
-        **NOTE**: The `pipeline.name` field in `GetPipelineAdminRequest` must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
+      description: "`GetPipeLineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service.\n\nThis is a *private* method that is only avaible for admins and internal backend services to get a pipeline resource with it's name. \n\nIt takes in `GetPipelineAdminRequest` and returns a `GetPipelineAdminResponse`.\n\n**NOTE**: The `pipeline.name` field in `GetPipelineAdminRequest` must has the format of `pipelines/{pipeline_name}`. For example, `pipelines/pipeline-1`."
       operationId: PipelinePrivateService_GetPipelineAdmin
       responses:
         "200":
@@ -2573,7 +2551,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.name
-          description: Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. For example `pipelines/pipeline-1`
+          description: "Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. \nFor example, `pipelines/pipeline-1`."
           in: path
           required: true
           type: string
@@ -2599,7 +2577,9 @@ paths:
     get:
       summary: Get a pipeline resource with it's permalink (admin only).
       description: |-
-        `LookUpPipelineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service This is a *private* method that is only avaible for admins to get a pipeline resource in VDP with a permalink. Only admins with permission can call this method. It takes in `LookUpPipelineAdminRequest` and returns a `LookUpPipelineAdminResponse`.
+        `LookUpPipelineAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service This is a *private* method that is only avaible for admins to get a pipeline resource with a permalink.
+
+        It takes in `LookUpPipelineAdminRequest` and returns a `LookUpPipelineAdminResponse`.
 
         **NOTE**: the `pipeline.uid` (permalink) in `LookUpPipelineAdminRequest` must has the format of `pipelines/{uid}`, where `{uid}` denotes the unique ID of the pipeline.
       operationId: PipelinePrivateService_LookUpPipelineAdmin
@@ -2614,7 +2594,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: pipeline.uid
-          description: 'Permalink of a pipeline. For example: `pipelines/{uid}`.'
+          description: Permalink of a pipeline. It must has the format of `pipelines/{uid}`, where `{uid}` denotes the unique ID of the pipeline.
           in: path
           required: true
           type: string
@@ -2800,9 +2780,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: source_connector.name
-          description: |-
-            SourceConnectorConnector resource name. It must have the format of
-            "source-connectors/*"
+          description: "Source connector resource name. It must have the format of `source-connectors/{connector_name}`. \nFor example, `source-connectors/http`."
           in: path
           required: true
           type: string
@@ -2811,9 +2789,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -2824,13 +2802,33 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPrivateService
+  /v1alpha/admin/{source_connector.name}/check:
+    get:
+      summary: Trigger a longrunning operation checking the state of a Source Connector.
+      description: "`CheckSourceConnector` is a call with the method(s) `GET` within the `ConnectorPrivateService`. \n\nThis is a *private* method that is only avaible for admins and other internal backend services to trigger a longrunning operation checking the state of a *source-connector* resource in VDP with it's name (i.e., `source-connector.name`). It returns a `workflow_id` with which internal services can check the results after the operation is done. Resutls are also used to update the state records in the state server.\n\nIt takes in `CheckSourceConnectorRequest` and returns `CheckSourceConnectorResponse`. \n\n**NOTE**: this methods triggers a longrunning operation. The state of the source connector is only avaible when the operation is done."
+      operationId: ConnectorPrivateService_CheckSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCheckSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: source_connector.name
+          description: "Source connector resource name. It must have the format of `source-connectors/{connector_name}`. \nFor example, `source-connectors/http`."
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+      tags:
+        - ConnectorPrivateService
   /v1alpha/admin/{source_connector.uid}/lookUp:
     get:
       summary: Get a SOURCEconnector resource in VDP with a permalink consisting of unique ID (admin only).
-      description: |-
-        `LookUpSourceConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. This is a *private* method that is only avaible for admins and other backend services to get a *source* connector resource in VDP with it's permalink (i.e., `source-connector.uid`). Only admins with permission can call this method. It takes in `LookUpSourceConnectorAdminRequest` and returns `LookUpSourceConnectorAdminResponse`.
-
-        **NOTE**: permalink in `LookUpSourceConnectorAdminRequest` must has the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the model.
+      description: "`LookUpSourceConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to get a *source-connector* resource in VDP with it's permalink (i.e., `source-connector.uid`). \n\nIt takes in `LookUpSourceConnectorAdminRequest` and returns `LookUpSourceConnectorAdminResponse`.\n\n**NOTE**: permalink in `LookUpSourceConnectorAdminRequest` must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the model."
       operationId: ConnectorPrivateService_LookUpSourceConnectorAdmin
       responses:
         "200":
@@ -2843,7 +2841,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: source_connector.uid
-          description: Permalink of a source connector. It must has the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
+          description: Permalink of a source connector. It must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
           in: path
           required: true
           type: string
@@ -2852,9 +2850,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -2869,9 +2867,13 @@ paths:
     get:
       summary: Get a existing user with user's name (admin only).
       description: |-
-        `GetUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to get a new user created in VDP with user's name. Only admins with permission can call this method. It takes in `GetUserAdminRequest` and returns `GetUserAdminResponse`.
+        `GetUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService`.
 
-        **NOTE**: The `user.name` field in `GetUserAdminRequest` must has the format of `users/{username}`. For example: `users/local-user`.
+        This is a *private* method that is only avaible for admins and internal backend services to get a new user created in VDP with user's name.
+
+        It takes in `GetUserAdminRequest` and returns `GetUserAdminResponse`.
+
+        **NOTE**: The `user.name` field in `GetUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`.
       operationId: MgmtPrivateService_GetUserAdmin
       responses:
         "200":
@@ -2884,7 +2886,9 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user.name
-          description: 'Resource name of a user. Format: `users/{username}`.'
+          description: |-
+            User name. It must have the format of `users/{user_name}`.
+            For example, `users/local-user`.
           in: path
           required: true
           type: string
@@ -2909,9 +2913,13 @@ paths:
     delete:
       summary: Delete an existing user (admin only)
       description: |-
-        `DeleteUserAdmin` is a call with the method(s) `DELETE` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to delete existing users in VDP. Only admins with permission can call this method. It takes in `DeleteUserAdminRequest` and returns `DeleteUserAdminResponse`.
+        `DeleteUserAdmin` is a call with the method(s) `DELETE` within the `MgmtPrivateService`.
 
-        **NOTE**: The `user.name` field in `DeleteUserAdminRequest` is used to identify the user to update. Format: `users/{username}`.
+        This is a *private* method that is only avaible for admins and internal backend services to delete existing users.
+
+        It takes in `DeleteUserAdminRequest` and returns `DeleteUserAdminResponse`.
+
+        **NOTE**: The `user.name` field in `DeleteUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`.
       operationId: MgmtPrivateService_DeleteUserAdmin
       responses:
         "200":
@@ -2924,7 +2932,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user.name
-          description: 'The resource name of the user to be deleted. Format: `users/{username}`'
+          description: "User name. It must have the format of `users/{user_name}`. \nFor example, `users/local-user`."
           in: path
           required: true
           type: string
@@ -2933,10 +2941,7 @@ paths:
         - MgmtPrivateService
     patch:
       summary: Update an existing user (admin only)
-      description: |-
-        `UpdateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to udpate existing users in VDP. Only admins with permission can call this method. It takes in `UpdateUserAdminRequest` and returns `UpdateUserAdminResponse`.
-
-        **NOTE**: The `user.name` field in `UpdateUserAdminRequest` is used to identify the user to update. Format: `users/{username}`.
+      description: "`UpdateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to udpate existing users. \n\nIt takes in `UpdateUserAdminRequest` and returns `UpdateUserAdminResponse`.\n\n**NOTE**: The `user.name` field in `UpdateUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`."
       operationId: MgmtPrivateService_UpdateUserAdmin
       responses:
         "200":
@@ -2956,9 +2961,8 @@ paths:
           pattern: users/[^/]+
         - name: user
           description: |-
-            The user to update
-
-            The `user.name` field is used to identify the user to update. Format: `users/{username}`
+            User name. It must have the format of `users/{user_name}`.
+            For example, `users/local-user`.
           in: body
           required: true
           schema:
@@ -3020,8 +3024,9 @@ paths:
               cookie_token:
                 type: string
                 title: User console cookie token
-            description: 'The `user.name` field is used to identify the user to update. Format: `users/{username}`'
-            title: The user to update
+            title: |-
+              User name. It must have the format of `users/{user_name}`.
+              For example, `users/local-user`.
             required:
               - id
               - email
@@ -3036,10 +3041,7 @@ paths:
   /v1alpha/admin/{user.uid}/lookUp:
     get:
       summary: Get a existing user with a permalink consisting of unique ID (admin only).
-      description: |-
-        `LookUpUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to get existing users in VDP with user's unique ID (i.e., `user.uid`). Only admins with permission can call this method. It takes in `LookUpUserAdminRequest` and returns `LookUpUserAdminResponse`.
-
-        **NOTE**: permalink in `GetUesrAdminRequest` must has the format of `users/{uid}`, where `{uid}` denotes the unique ID of the user.
+      description: "`LookUpUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to get an existing user with a unique ID (i.e., `user.uid`). \n\nIt takes in `LookUpUserAdminRequest` and returns `LookUpUserAdminResponse`.\n\n**NOTE**: permalink in `LookUpUserAdminRequest` must has the format of `users/{uid}`, where `{uid}` denotes the unique ID of the user."
       operationId: MgmtPrivateService_LookUpUserAdmin
       responses:
         "200":
@@ -3052,7 +3054,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user.uid
-          description: 'Permalink of a user. Format: `users/{uid}`'
+          description: Permalink of a user. It must has the format of `users/{uid}`, where `{uid}` denotes the unique ID of the user.
           in: path
           required: true
           type: string
@@ -3077,10 +3079,7 @@ paths:
   /v1alpha/admin/destination-connectors:
     get:
       summary: List all DESTINATION connector resources in VDP (admin only)
-      description: |-
-        `ListDestinationConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. This is a *private* method that is only avaible for admins and other backend services get a list of *destination* connector resources avaiable in VDP. Only admins with permission can call this method. It takes in `ListDestinationConnectorsAdminRequest` and returns `ListDestinationConnectorsAdminResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of connector resources this method can return is set to 100.
+      description: "`ListDestinationConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. \n\nThis is a *private* method that is only avaible for admins and other internal backend services get a list of *destination-connector* resources avaiable in VDP. Only admins with permission can call this method. \n\nIt takes in `ListDestinationConnectorsAdminRequest` and returns `ListDestinationConnectorsAdminResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of connector resources this method can return is set to 100."
       operationId: ConnectorPrivateService_ListDestinationConnectorsAdmin
       responses:
         "200":
@@ -3110,9 +3109,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -3126,10 +3125,7 @@ paths:
   /v1alpha/admin/models:
     get:
       summary: List all model resources in VDP (admin only)
-      description: |-
-        `ListModelsAdmin` is a call with the method(s) `GET` within the `ModelPrivateService`. This is a *private* method that is only avaible for admins and other backend services get a list of model resources avaiable in VDP. Only admins with permission can call this method. It takes in `ListModelsAdminRequest` and returns `ListModelsAdminResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 model resources. The maxumum number of model resources this method can return is set to 100.
+      description: "`ListModelsAdmin` is a call with the method(s) `GET` within the `ModelPrivateService`.\n\nThis is a *private* method that is only avaible for admins and internal backend services to get a list of model resources avaiable in VDP. \n\nIt takes in `ListModelsAdminRequest` and returns `ListModelsAdminResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 model resources. The maxumum number of model resources this method can return is set to 100."
       operationId: ModelPrivateService_ListModelsAdmin
       responses:
         "200":
@@ -3163,7 +3159,7 @@ paths:
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -3178,10 +3174,7 @@ paths:
   /v1alpha/admin/pipelines:
     get:
       summary: List all pipelines resources in VDP (admin only).
-      description: |-
-        `ListPipelinesAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service This is a *private* method that is only avaible for admins and other backend services to list *all* pipeline resourcesin VDP. Only admins with permission can call this method. It takes in `ListPipelinesAdminRequest` and returns a `ListPipelinesAdminResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 pipeline resources. The maxumum number of pipeline resources this method can return is set to 100.
+      description: "`ListPipelinesAdmin` is a call with the method(s) `GET` within the `PipelinePrivateService` service.\n\nThis is a *private* method that is only avaible for admins and internal backend services to list *all* pipeline resources. \n\nIt takes in `ListPipelinesAdminRequest` and returns a `ListPipelinesAdminResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 pipeline resources. The maxumum number of pipeline resources this method can return is set to 100."
       operationId: PipelinePrivateService_ListPipelinesAdmin
       responses:
         "200":
@@ -3232,10 +3225,7 @@ paths:
   /v1alpha/admin/source-connectors:
     get:
       summary: List all SOURCE connector resources in VDP (admin only)
-      description: |-
-        `ListSourceConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. This is a *private* method that is only avaible for admins and other backend services get a list of *source* connector resources avaiable in VDP. Only admins with permission can call this method. It takes in `ListSourceConnectorsAdminRequest` and returns `ListSourceConnectorsAdminResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of connector resources this method can return is set to 100.
+      description: "`ListSourceConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services get a list of *source-connector* resources avaiable in VDP. \n\nIt takes in `ListSourceConnectorsAdminRequest` and returns `ListSourceConnectorsAdminResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of connector resources this method can return is set to 100."
       operationId: ConnectorPrivateService_ListSourceConnectorsAdmin
       responses:
         "200":
@@ -3265,9 +3255,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -3281,10 +3271,7 @@ paths:
   /v1alpha/admin/users:
     get:
       summary: List all users created in VDP (admin only).
-      description: |-
-        `ListUsersAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService` service. This is a *private* method that is only avaible for admins and backend sercices to list *all* users created in VDP. Only admins with root permission can call this method. It takes in `ListUsersAdminRequest` and returns a `ListUsersAdminResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100.
+      description: "`ListUsersAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService` service. \n\nThis is a *private* method that is only avaible for admins and internal backend services to list *all* users created in VDP. \n\nIt takes in `ListUsersAdminRequest` and returns a `ListUsersAdminResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100."
       operationId: MgmtPrivateService_ListUsersAdmin
       responses:
         "200":
@@ -3297,7 +3284,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: page_size
-          description: 'Page size: the maximum number of resources to return. The service may return fewer than this value. If unspecified, at most 10 users will be returned. The maximum value is 100; values above 100 will be coereced to 100.'
+          description: "Page size: the maximum number of resources to return. \nThe service may return fewer than this value. If unspecified,\nat most 10 users will be returned. The maximum value is 100;\nvalues above 100 will be coereced to 100."
           in: query
           required: false
           type: string
@@ -3331,10 +3318,7 @@ paths:
         - MgmtPrivateService
     post:
       summary: Create a new user (admin only).
-      description: |-
-        `CreateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateService`. This is a *private* method that is only avaible for admins and backend sercices to create a new user in VDP. Only admins with root permission can call this method. It takes in `CreateUserAdminRequest` and returns a `CreateUserAdminResponse`.
-
-        **NOTE**: The `user.name` field in `CreateUserAdminRequest` must has the format of `users/{username}`. For example: `users/local-user`.
+      description: "`CreateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateService`. \n\nThis is a *private* method that is only avaible for admins and internal backend services to create a new user. \n\nIt takes in `CreateUserAdminRequest` and returns a `CreateUserAdminResponse`.\n\n**NOTE**: The `user.name` field in `CreateUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`."
       operationId: MgmtPrivateService_CreateUserAdmin
       responses:
         "200":
@@ -3347,10 +3331,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: user
-          description: |-
-            The user to be created
-
-            The `user.name` field is used to identify the user to create. Format: `users/{username}`
+          description: "User name. It must have the format of `users/{user_name}`. \nFor example, `users/local-user`."
           in: body
           required: true
           schema:
@@ -3361,11 +3342,8 @@ paths:
         - MgmtPrivateService
   /v1alpha/destination-connector-definitions:
     get:
-      summary: List the definition of all supported DESINATION connector resources
-      description: |-
-        `ListDestinationConnectorDefinitions` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns *all* destination connector definitions supported by VDP. It takes in `ListDestinationConnectorDefinitionsRequest` and returns `ListDestinationConnectorDefinitionsResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 destination-connector definitions. The maxumum number of model definitions this method can return is set to 100.
+      summary: List the definition of all supported DESINATION connectors
+      description: "`ListDestinationConnectorDefinitions` is a call with the method(s) `GET` within the `ConnectorPublicService`.\n\nThis method returns *all* destination-connector definitions supported by VDP. \n\nIt takes in `ListDestinationConnectorDefinitionsRequest` and returns `ListDestinationConnectorDefinitionsResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 destination-connector definitions. The maxumum number of destination-connector definitions this method can return is set to 100."
       operationId: ConnectorPublicService_ListDestinationConnectorDefinitions
       responses:
         "200":
@@ -3396,9 +3374,9 @@ paths:
           description: |-
             Definition view (default is DEFINITION_VIEW_BASIC)
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -3411,11 +3389,15 @@ paths:
         - ConnectorPublicService
   /v1alpha/destination-connectors:
     get:
-      summary: List all DESTINATION connector resources avaiable in VDP.
+      summary: List all DESTINATION connectors avaiable.
       description: |-
-        `ListDestinationConnectors` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a list of destination-connector resources in VDP. It takes in `ListDestinationConnectorsRequest` and returns `ListDestinationConnectorsResponse`.
+        `ListDestinationConnectors` is a call with the method(s) `GET` within the `ConnectorPublicService`.
 
-        **NOTE**: if unspecified, this method returns at most 10 models. The maxumum number of destination-connector resources this method can return is set to 100.
+        This method returns a list of destination connectors in VDP.
+
+        It takes in `ListDestinationConnectorsRequest` and returns `ListDestinationConnectorsResponse`.
+
+        **NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of destination-connector resources this method can return is set to 100.
       operationId: ConnectorPublicService_ListDestinationConnectors
       responses:
         "200":
@@ -3445,9 +3427,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -3459,9 +3441,13 @@ paths:
       tags:
         - ConnectorPublicService
     post:
-      summary: Create a new DESTINATION connector resource in VDP.
+      summary: Create a new DESTINATION connector.
       description: |-
-        `CreateDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. This method creates a new destination-connector resource in VDP. It takes in `CreateDestinationConnectorRequest` and returns `CreateDestinationConnectorResponse`.
+        `CreateDestinationConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`.
+
+        This method creates a new destination connector in VDP.
+
+        It takes in `CreateDestinationConnectorRequest` and returns `CreateDestinationConnectorResponse`.
 
         → See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for an introduction to Connectors in VDP.
       operationId: ConnectorPublicService_CreateDestinationConnector
@@ -3488,10 +3474,7 @@ paths:
   /v1alpha/health/connector:
     get:
       summary: Check if the Connector service is alive or dead.
-      description: |-
-        `Liveness` is a call with the method(s) `GET` within the `ConnectorPublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+      description: "`Liveness` is a call with the method(s) `GET` within the `ConnectorPublicService` service. \n\nThis method returns the liveness (alive or dead) of the pipeilne service. \n\nIt takes in `LivenessRequest` and returns a `LivenessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details."
       operationId: ConnectorPublicService_Liveness2
       responses:
         "200":
@@ -3513,12 +3496,7 @@ paths:
   /v1alpha/health/controller:
     get:
       summary: Check if the Controller service (private) is alive or dead.
-      description: |-
-        `Liveness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Liveness (alive or dead) of the controller service. Only admins with permission can call this method. It takes in `LivenessRequest` and returns a `LivenessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
-
-        **NOTE**: Controller Service is a private service that is not avaiable to publics. This method is therefore implemented as a private method instead of a public.
+      description: "`Liveness` is a call with the method(s) `GET within the `ControllerPrivateService` service.\n\nThis is a *private* method that is only avaible for admins and internal backend services to check the Liveness (alive or dead) of the controller service. \n\nIt takes in `LivenessRequest` and returns a `LivenessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.\n\n**NOTE**: Controller Service is a private service that is not avaiable to publics. This method is therefore implemented as a private method instead of a public."
       operationId: ControllerPrivateService_Liveness2
       responses:
         "200":
@@ -3540,10 +3518,7 @@ paths:
   /v1alpha/health/mgmt:
     get:
       summary: Check if the Mgmt service is alive or dead.
-      description: |-
-        `Liveness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+      description: "`Liveness` is a call with the method(s) `GET` within the `MgmtPublicService` service. \n\nThis method returns the liveness (alive or dead) of the Mgmt service.\n\nIt takes in `LivenessRequest` and returns a `LivenessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details."
       operationId: MgmtPublicService_Liveness2
       responses:
         "200":
@@ -3565,10 +3540,7 @@ paths:
   /v1alpha/health/model:
     get:
       summary: Check if the Model service is alive or dead.
-      description: |-
-        `Liveness` is a call with the method(s) `GET within the `ModelPublicService` service. This method returns the liveness (alive or dead) of the Model service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+      description: "`Liveness` is a call with the method(s) `GET within the `ModelPublicService` service.\n\nThis method returns the liveness (alive or dead) of the Model service. \n\nIt takes in `LivenessRequest` and returns a `LivenessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details."
       operationId: ModelPublicService_Liveness2
       responses:
         "200":
@@ -3590,10 +3562,7 @@ paths:
   /v1alpha/health/pipeline:
     get:
       summary: Check if the Pipeline service is alive or dead.
-      description: |-
-        `Liveness` is a call with the method(s) `GET within the `PipelinePublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+      description: "`Liveness` is a call with the method(s) `GET within the `PipelinePublicService` service.\n\nThis method returns the liveness (alive or dead) of the pipeilne service. \n\nIt takes in `LivenessRequest` and returns a `LivenessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details."
       operationId: PipelinePublicService_Liveness2
       responses:
         "200":
@@ -3639,10 +3608,7 @@ paths:
   /v1alpha/model-definitions:
     get:
       summary: List the definition of all supported model resources
-      description: |-
-        `ListModelDefinitions` is a call with the method(s) `GET` within the `ModelPublicService`. This method returns *all* model definitions supported by VDP. It takes in `ListModelDefinitionsRequest` and returns `ListModelDefinitionsResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 model definitions. The maxumum number of model definitions this method can return is set to 100.
+      description: "`ListModelDefinitions` is a call with the method(s) `GET` within the `ModelPublicService`. \n\nThis method returns *all* model definitions supported. \n\nIt takes in `ListModelDefinitionsRequest` and returns `ListModelDefinitionsResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 model definitions. The maxumum number of model definitions this method can return is set to 100."
       operationId: ModelPublicService_ListModelDefinitions
       responses:
         "200":
@@ -3677,7 +3643,7 @@ paths:
             VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -3692,10 +3658,7 @@ paths:
   /v1alpha/models:
     get:
       summary: List all model resources avaiable in VDP.
-      description: |-
-        `ListModels` is a call with the method(s) `GET` within the `ModelPublicService`. This method returns a list of model resources in VDP. It takes in `ListModelsRequest` and returns `ListModelsResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 models. The maxumum number of models this method can return is set to 100.
+      description: "`ListModels` is a call with the method(s) `GET` within the `ModelPublicService`.\n\nThis method returns a list of all existing model resources in VDP. \n\nIt takes in `ListModelsRequest` and returns `ListModelsResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 models. The maxumum number of models this method can return is set to 100."
       operationId: ModelPublicService_ListModels
       responses:
         "200":
@@ -3724,12 +3687,10 @@ paths:
           type: string
         - name: view
           description: |-
-            Model view (default is VIEW_BASIC)
-            - VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
-            - VIEW_FULL: show full information
+            Model view (default is VIEW_UNSPECIFIED)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -3743,10 +3704,7 @@ paths:
         - ModelPublicService
     post:
       summary: Create a new model resource in VDP.
-      description: |-
-        `CreateModel` is a call with the method(s) `POST` within the `ModelPublicService`. This method creates a new model resource in VDP. It takes in `CreateModelRequest` and returns `CreateModelResponse`.
-
-        → See [Core concept - Model](https://www.instill.tech/docs/core-concepts/model) for an introduction to Model in VDP.
+      description: "`CreateModel` is a call with the method(s) `POST` within the `ModelPublicService`.\n\nThis method creates a new model resource. \n\nIt takes in `CreateModelRequest` and returns `CreateModelResponse`.\n\n→ See [Core concept - Model](https://www.instill.tech/docs/core-concepts/model) for an introduction to Model in VDP."
       operationId: ModelPublicService_CreateModel
       responses:
         "200":
@@ -3762,7 +3720,7 @@ paths:
           description: |-
             The model to be created
 
-            The model `name` field is used to identify the model to create.
+            The `model.name` field is used to identify the model to create.
             Format: models/{model}
           in: body
           required: true
@@ -3774,9 +3732,8 @@ paths:
         - ModelPublicService
   /v1alpha/operations:
     get:
-      summary: |-
-        ListModelOperations method receives a ListModelOperationsRequest message
-        and returns a ListModelOperationsResponse
+      summary: List all longrunning operations.
+      description: "`ListModelOperations` is a call with the method(s) `GET` within the `ModelPublicService` service. \n\nThis method returns a list of longrunning operations. \n\nIt takes in `ListModelOperationsRequest` and returns `ListModelOperationsResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 models. The maxumum number of models this method can return is set to 100."
       operationId: ModelPublicService_ListModelOperations
       responses:
         "200":
@@ -3815,7 +3772,7 @@ paths:
             `Model.configuration` VIEW_FULL: show full information
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
              - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
@@ -3829,11 +3786,8 @@ paths:
         - ModelPublicService
   /v1alpha/pipelines:
     get:
-      summary: List all pipeline resources in VDP.
-      description: |-
-        `ListPipelines` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method returns a list consisiting of all pipelines deployed on VDP. It takes in `ListPipelinesRequest` and returns `ListPipelinesResponse`.
-
-        NOTE: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100.
+      summary: List all existing pipelines.
+      description: "`ListPipelines` is a call with the method(s) `GET` within the `PipelinePublicService` service.\n\nThis method returns a list consisiting of all existing pipelines. \n\nIt takes in `ListPipelinesRequest` and returns `ListPipelinesResponse`.\n\nNOTE: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100."
       operationId: PipelinePublicService_ListPipelines
       responses:
         "200":
@@ -3882,11 +3836,8 @@ paths:
       tags:
         - PipelinePublicService
     post:
-      summary: Create a new pipeline resource.
-      description: |-
-        `CreatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method creates a new pipelines resource (given a recipie consisting of *source*, *model instance* and *destination*) on VDP. It takes in `CreatePipelineRequest` and returns `CreatePipelineResponse`.
-
-        → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP.
+      summary: Create a new pipeline.
+      description: "`CreatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. \n\nThis method creates a new pipelines (given a recipie consisting of *source*, *model instance* and *destination*). \n\nIt takes in `CreatePipelineRequest` and returns `CreatePipelineResponse`.\n\n→ See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP."
       operationId: PipelinePublicService_CreatePipeline
       responses:
         "200":
@@ -3911,10 +3862,7 @@ paths:
   /v1alpha/ready/connector:
     get:
       summary: Check if the Connector service is ready to serve traffics
-      description: |-
-        `Readiness` is a call with the method(s) `GET` within the `ConnectorPublicService` service. This method returns the Readiness (ready or not ready) of the pipeilne service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+      description: "`Readiness` is a call with the method(s) `GET` within the `ConnectorPublicService` service. \n\nThis method returns the Readiness (ready or not ready) of the pipeilne service. \n\nIt takes in `ReadinessRequest` and returns a `ReadinessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details."
       operationId: ConnectorPublicService_Readiness2
       responses:
         "200":
@@ -3937,7 +3885,11 @@ paths:
     get:
       summary: Check if the Controller service (private) is alive or dead.
       description: |-
-        `Readiness` is a call with the method(s) `GET within the `ControllerPrivateService` service. This is a *private* method that is only avaible for admins to check the Readiness (ready or not ready) of the Controller service. Only admins with permission can call this method. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+        `Readiness` is a call with the method(s) `GET within the `ControllerPrivateService` service.
+
+        This is a *private* method that is only avaible for admins and internal backend services to check the Readiness (ready or not ready) of the Controller service.
+
+        It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
 
         → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
 
@@ -3963,10 +3915,7 @@ paths:
   /v1alpha/ready/mgmt:
     get:
       summary: Check if the Mgmt service is ready to serve traffics
-      description: |-
-        `Readiness` is a call with the method(s) `GET` within the `MgmtPublicService` service. This method returns the Readiness (ready or not ready) of the pipeilne service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+      description: "`Readiness` is a call with the method(s) `GET` within the `MgmtPublicService` service. \n\nThis method returns the Readiness (ready or not ready) of the Mgmt service.\n\nIt takes in `ReadinessRequest` and returns a `ReadinessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details."
       operationId: MgmtPublicService_Readiness2
       responses:
         "200":
@@ -3988,10 +3937,7 @@ paths:
   /v1alpha/ready/model:
     get:
       summary: Check if the Model service is ready to serve traffics
-      description: |-
-        `Readiness` is a call with the method(s) `GET` within the `ModelPublicService` service. This method returns the Readiness (ready or not ready) of the Model service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
-
-        → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+      description: "`Readiness` is a call with the method(s) `GET` within the `ModelPublicService` service. \n\nThis method returns the Readiness (ready or not ready) of the Model service.\n\nIt takes in `ReadinessRequest` and returns a `ReadinessResponse`.\n\n→ See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details."
       operationId: ModelPublicService_Readiness2
       responses:
         "200":
@@ -4014,7 +3960,11 @@ paths:
     get:
       summary: Check if the Pipeline service is ready to serve traffics
       description: |-
-        `Readiness` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method returns the Readiness (ready or not ready) of the pipeilne service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+        `Readiness` is a call with the method(s) `GET` within the `PipelinePublicService` service.
+
+        This method returns the Readiness (ready or not ready) of the pipeilne service.
+
+         It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
 
         → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
       operationId: PipelinePublicService_Readiness2
@@ -4089,11 +4039,8 @@ paths:
         - UsageService
   /v1alpha/source-connector-definitions:
     get:
-      summary: List the definition of all supported SOURCE connector resources
-      description: |-
-        `ListSourceConnectorDefinitions` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns *all* source connector definitions supported by VDP. It takes in `ListSourceConnectorDefinitionsRequest` and returns `ListSourceConnectorDefinitionsResponse`.
-
-        **NOTE**: if unspecified, this method returns at most 10 source-connector definitions. The maxumum number of model definitions this method can return is set to 100.
+      summary: List the definition of all supported SOURCE connectors
+      description: "`ListSourceConnectorDefinitions` is a call with the method(s) `GET` within the `ConnectorPublicService`. \n\nThis method returns *all* source connector definitions supported by VDP. \n\nIt takes in `ListSourceConnectorDefinitionsRequest` and returns `ListSourceConnectorDefinitionsResponse`.\n\n**NOTE**: if unspecified, this method returns at most 10 source-connector definitions. The maxumum number of source-connector definitions this method can return is set to 100."
       operationId: ConnectorPublicService_ListSourceConnectorDefinitions
       responses:
         "200":
@@ -4124,9 +4071,9 @@ paths:
           description: |-
             Definition view (default is DEFINITION_VIEW_BASIC)
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -4139,11 +4086,15 @@ paths:
         - ConnectorPublicService
   /v1alpha/source-connectors:
     get:
-      summary: List all SOURCE connector resources avaiable in VDP.
+      summary: List all SOURCE connectors avaiable.
       description: |-
-        `ListSourceConnectors` is a call with the method(s) `GET` within the `ConnectorPublicService`. This method returns a list of source-connector resources in VDP. It takes in `ListSourceConnectorsRequest` and returns `ListSourceConnectorsResponse`.
+        `ListSourceConnectors` is a call with the method(s) `GET` within the `ConnectorPublicService`.
 
-        **NOTE**: if unspecified, this method returns at most 10 models. The maxumum number of source-connector resources this method can return is set to 100.
+        This method returns a list of source connectors in VDP.
+
+        It takes in `ListSourceConnectorsRequest` and returns `ListSourceConnectorsResponse`.
+
+        **NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of connector resources this method can return is set to 100.
       operationId: ConnectorPublicService_ListSourceConnectors
       responses:
         "200":
@@ -4173,9 +4124,9 @@ paths:
           description: |-
             View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
           in: query
           required: false
           type: string
@@ -4187,9 +4138,13 @@ paths:
       tags:
         - ConnectorPublicService
     post:
-      summary: Create a new SOURCE connector resource in VDP.
+      summary: Create a new SOURCE connector.
       description: |-
-        `CreateSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`. This method creates a new source-connector resource in VDP. It takes in `CreateSourceConnectorRequest` and returns `CreateSourceConnectorResponse`.
+        `CreateSourceConnector` is a call with the method(s) `POST` within the `ConnectorPublicService`.
+
+        This method creates a new source connector in VDP.
+
+        It takes in `CreateSourceConnectorRequest` and returns `CreateSourceConnectorResponse`.
 
         → See [Core concept - Connector](https://www.instill.tech/docs/core-concepts/connector) for an introduction to Connectors in VDP.
       operationId: ConnectorPublicService_CreateSourceConnector
@@ -4289,7 +4244,7 @@ paths:
         - MgmtPublicService
     patch:
       summary: Update user's own user information
-      description: '`PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPrivateService`. This method is for an authenticated user to update it''s *own* user information. It takes in `PatchAuthenticatedUserRequest` and returns a `PatchAuthenticatedUserResponse`.'
+      description: "`PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPrivateService`. \n\nThis method is for an authenticated user to update it's *own* user information.\n\nIt takes in `PatchAuthenticatedUserRequest` and returns a `PatchAuthenticatedUserResponse`."
       operationId: MgmtPublicService_PatchAuthenticatedUser
       responses:
         "200":
@@ -4896,7 +4851,7 @@ definitions:
         format: date-time
         title: Connector update time
         readOnly: true
-    title: Connector represents a connector data model
+    description: Connector represents a connector resource.
     required:
       - configuration
   v1alphaConnectorDefinition:
@@ -5140,27 +5095,27 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          DestinationConnector resource name. It must have the format of
-          "destination-connectors/*"
+        description: |-
+          Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+          For example, `destination-connectors/postgres-db`.
         readOnly: true
       uid:
         type: string
-        title: DestinationConnector UUID
+        title: Destination connector UUID
         readOnly: true
       id:
         type: string
         description: |-
-          DestinationConnector resource ID (the last segment of the resource name)
+          Destination connector resource ID (the last segment of the resource name)
           used to construct the resource name. This conforms to RFC-1034, which
           restricts to letters, numbers, and hyphen, with the first character a
           letter, the last a letter or a number, and a 63 character maximum.
       destination_connector_definition:
         type: string
-        title: DestinationConnectorDefinition resource
+        title: Destination connector definition resource
       connector:
         $ref: '#/definitions/v1alphaConnector'
-        title: DestinationConnector's connector data structure
+        title: Destination connector's connector data structure
     title: DestinationConnector represents a destination connector resource
     required:
       - connector
@@ -6197,7 +6152,9 @@ definitions:
     properties:
       name:
         type: string
-        title: 'Resource name. It must have the format of "models/{model}". For example: "models/yolov4"'
+        description: |-
+          Model resource name. It must have the format of `models/{model_name}`.
+          For example, `models/yolov4`.
         readOnly: true
       uid:
         type: string
@@ -7190,27 +7147,27 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          SourceConnector resource name. It must have the format of
-          "source-connectors/*"
+        description: |-
+          Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+          For example, `source-connectors/http`.
         readOnly: true
       uid:
         type: string
-        title: SourceConnector UUID
+        title: Source connector UUID
         readOnly: true
       id:
         type: string
         description: |-
-          SourceConnector resource ID (the last segment of the resource name) used to
+          Source connector resource ID (the last segment of the resource name) used to
           construct the resource name. This conforms to RFC-1034, which restricts to
           letters, numbers, and hyphen, with the first character a letter, the last a
           letter or a number, and a 63 character maximum.
       source_connector_definition:
         type: string
-        title: SourceConnectorDefinition resource
+        title: Source connector definition resource
       connector:
         $ref: '#/definitions/v1alphaConnector'
-        title: SourceConnector's connector data structure
+        title: Source connector's connector data structure
     title: SourceConnector represents a source connector resource
     required:
       - connector
@@ -7824,9 +7781,9 @@ definitions:
       - VIEW_FULL
     default: VIEW_UNSPECIFIED
     description: |-
-      - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+       - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+       - VIEW_FULL: View: FULL, full representation of the resource.
     title: View enumerates the definition views
   vdpcontrollerv1alphaLivenessResponse:
     type: object
@@ -7952,7 +7909,7 @@ definitions:
       which view of the resource it wants to receive in the response.
 
        - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-       - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+       - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
        - VIEW_FULL: View: FULL, full representation of the resource
   vdppipelinev1alphaLivenessResponse:
     type: object

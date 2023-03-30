@@ -15,7 +15,11 @@ service PipelinePublicService {
 
   // Check if the Pipeline service is alive or dead.
   // 
-  // `Liveness` is a call with the method(s) `GET within the `PipelinePublicService` service. This method returns the liveness (alive or dead) of the pipeilne service. It takes in `LivenessRequest` and returns a `LivenessResponse`.
+  // `Liveness` is a call with the method(s) `GET within the `PipelinePublicService` service.
+  //
+  // This method returns the liveness (alive or dead) of the pipeilne service. 
+  //
+  // It takes in `LivenessRequest` and returns a `LivenessResponse`.
   //
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   rpc Liveness(LivenessRequest) returns (LivenessResponse) {
@@ -27,7 +31,11 @@ service PipelinePublicService {
 
   // Check if the Pipeline service is ready to serve traffics
   //
-  // `Readiness` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method returns the Readiness (ready or not ready) of the pipeilne service. It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+  // `Readiness` is a call with the method(s) `GET` within the `PipelinePublicService` service.
+  //
+  // This method returns the Readiness (ready or not ready) of the pipeilne service.
+  //
+  //  It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
   // 
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
@@ -37,9 +45,13 @@ service PipelinePublicService {
     };
   }
 
-  // Create a new pipeline resource.
+  // Create a new pipeline.
   // 
-  // `CreatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method creates a new pipelines resource (given a recipie consisting of *source*, *model instance* and *destination*) on VDP. It takes in `CreatePipelineRequest` and returns `CreatePipelineResponse`.
+  // `CreatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. 
+  //
+  // This method creates a new pipelines (given a recipie consisting of *source*, *model instance* and *destination*). 
+  //
+  // It takes in `CreatePipelineRequest` and returns `CreatePipelineResponse`.
   //
   // → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP.
   rpc CreatePipeline(CreatePipelineRequest) returns (CreatePipelineResponse) {
@@ -50,9 +62,13 @@ service PipelinePublicService {
     option (google.api.method_signature) = "pipeline";
   }
 
-  // List all pipeline resources in VDP.
+  // List all existing pipelines.
   //
-  // `ListPipelines` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method returns a list consisiting of all pipelines deployed on VDP. It takes in `ListPipelinesRequest` and returns `ListPipelinesResponse`.
+  // `ListPipelines` is a call with the method(s) `GET` within the `PipelinePublicService` service.
+  //
+  // This method returns a list consisiting of all existing pipelines. 
+  //
+  // It takes in `ListPipelinesRequest` and returns `ListPipelinesResponse`.
   //
   // NOTE: if unspecified, this method returns at most 10 pipelines. The maxumum number of pipelines this method can return is set to 100. 
   rpc ListPipelines(ListPipelinesRequest) returns (ListPipelinesResponse) {
@@ -61,11 +77,15 @@ service PipelinePublicService {
     };
   }
 
-  // Get the detail of a pipeline resource with it's name.
+  // Get the detail of a pipeline with it's name.
   //
-  // `GetPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method return a pipeline resource in VDP with a pipeline name. It takes in `GetPipelineRequest` and returns `GetPipelineResponse`.
+  // `GetPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service.
   //
-  // NOTE: `pipeline.name` field in `GetPipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
+  // This method return a pipeline with it's name. 
+  //
+  // It takes in `GetPipelineRequest` and returns `GetPipelineResponse`.
+  //
+  // NOTE: `pipeline.name` field in `GetPipelineRequest` must have the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
   rpc GetPipeline(GetPipelineRequest) returns (GetPipelineResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=pipelines/*}"
@@ -73,9 +93,13 @@ service PipelinePublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Update a pipeline resource in VDP.
+  // Update a pipeline in VDP.
   //
-  // `UpdatePipeline` is a call with the method(s) `PATCH` within the `PipelinePublicService` service. This methods update an existing pipeline resource in VDP and return the updated pipeline resource. It takes in `UpdatePipelineRequest` and returns `UpdatePipelineResponse`.
+  // `UpdatePipeline` is a call with the method(s) `PATCH` within the `PipelinePublicService` service.
+  //
+  // This methods update an existing pipeline and return the updated pipeline resource. 
+  //
+  // It takes in `UpdatePipelineRequest` and returns `UpdatePipelineResponse`.
   //
   // **NOTE**: The `pipeline.name` field in `UpdatePipelineRequest` is used to identify the pipeline to update. Format: `pipelines/{pipeline_name}`.
   rpc UpdatePipeline(UpdatePipelineRequest) returns (UpdatePipelineResponse) {
@@ -86,11 +110,15 @@ service PipelinePublicService {
     option (google.api.method_signature) = "pipeline,update_mask";
   }
 
-  // Delete a pipeline resource in VDP.
+  // Delete a pipeline in VDP.
   //
-  // `DeletePipeline`is a call with the method(s) `DELETE` within the `PipelinePublicService` service. This method deletes a pipeline resource in VDP with it's name. It takes in `DeletePipelineRequest` and returns `DeletePipelineResponse`.
+  // `DeletePipeline`is a call with the method(s) `DELETE` within the `PipelinePublicService` service.
   //
-  // **NOTE**: The `pipeline.name` field in `UpdatePipelineRequest` is used to identify the pipeline to update. Format: `pipelines/{pipeline_name}`.
+  // This method deletes a pipeline with it's name. 
+  //
+  // It takes in `DeletePipelineRequest` and returns `DeletePipelineResponse`.
+  //
+  // **NOTE**: The `pipeline.name` field in `UpdatePipelineRequest` must have the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
   rpc DeletePipeline(DeletePipelineRequest) returns (DeletePipelineResponse) {
     option (google.api.http) = {
       delete : "/v1alpha/{name=pipelines/*}"
@@ -98,11 +126,15 @@ service PipelinePublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Get the detail of a pipeline resource in VDP with it's permalink.
+  // Get the detail of a pipeline with it's permalink.
   //
-  // `LookUpPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service. This method return a pipeline resource in VDP given a pipeline permalink. It takes in `LookUpPipelineRequest` and returns `LookUpPipelineResponse`.
+  // `LookUpPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service.
   //
-  // NOTE: `pipeline.uid` (permalink) must has to format of `pipelines/{uid}`.
+  // This method return a pipeline resource in VDP given a pipeline permalink. 
+  //
+  // It takes in `LookUpPipelineRequest` and returns `LookUpPipelineResponse`.
+  //
+  // NOTE: `pipeline.uid` (permalink) in `LookUpPipelineRequest` must have to format of `pipelines/{uid}`, where `{uid}` denotes the unique ID of the pipeline.
   rpc LookUpPipeline(LookUpPipelineRequest) returns (LookUpPipelineResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{permalink=pipelines/*}/lookUp"
@@ -110,11 +142,15 @@ service PipelinePublicService {
     option (google.api.method_signature) = "permalink";
   }
 
-  // Activate a pipeline resource in VDP.
+  // Activate a pipeline in VDP.
   // 
-  // `ActivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method activates a pipeline resource in VDP. The "state" of the pipeline after activating is "ACTIVE". It takes in `ActivatePipelineRequest` and returns `ActivatePipelineResponse`.
+  // `ActivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service.
   //
-  // NOTE: `ActivatePipeline` can be called on Pipelines in the state "INACTIVE"; Pipelines in a different state (including "ACTIVE") returns an error. See [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details.
+  // This method activates an existing pipeline. The "state" of the pipeline after activating is "ACTIVE". It can be called on Pipelines in the state "INACTIVE"; Pipelines in a different state (including "ACTIVE") returns an error.
+  //
+  // It takes in `ActivatePipelineRequest` and returns `ActivatePipelineResponse`.
+  //
+  // See [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details.
   rpc ActivatePipeline(ActivatePipelineRequest)
       returns (ActivatePipelineResponse) {
     option (google.api.http) = {
@@ -124,11 +160,15 @@ service PipelinePublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Deactivate a pipeline resource in VDP.
+  // Deactivate a pipeline in VDP.
   //
-  // `DeactivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method deactivates a pipeline resource in VDP. The "state" of the pipeline after inactivating is "INACTIVE". It takes in `DeactivatePipelineRequest` and returns `DeactivatePipelineResponse`.
+  // `DeactivatePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. It can be called on Pipelines in the state "ACTIVE"; Pipelines in a different state (including "INACTIVE") returns an error.
   //
-  // NOTE: `DeactivatePipeline` can be called on Pipelines in the state "ACTIVE"; Pipelines in a different state (including "INACTIVE") returns an error. See [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details.
+  // This method deactivates a pipeline resource in VDP. The "state" of the pipeline after inactivating is "INACTIVE". 
+  //
+  // It takes in `DeactivatePipelineRequest` and returns `DeactivatePipelineResponse`.
+  //
+  // See [Core Concepts - Pipeline](https://www.instill.tech/docs/core-concepts/pipeline) for further details.
   rpc DeactivatePipeline(DeactivatePipelineRequest)
       returns (DeactivatePipelineResponse) {
     option (google.api.http) = {
@@ -138,11 +178,15 @@ service PipelinePublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Rename a pipeline resource in VDP.
+  // Rename a pipeline in VDP.
   //
-  // `RenamePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This method changes the pipeline name and returns the updated pipeline resource. It takes in `RenamePipelineRequest` and returns `RenamePipelineResponse`.
+  // `RenamePipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service.
   //
-  // NOTE: `pipeline.name` field in `RenamePipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
+  // This method changes the pipeline name and returns the updated pipeline resource. 
+  //
+  // It takes in `RenamePipelineRequest` and returns `RenamePipelineResponse`.
+  //
+  // NOTE: `pipeline.name` field in `RenamePipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example, `pipelines/pipeline-1`.
   rpc RenamePipeline(RenamePipelineRequest) returns (RenamePipelineResponse) {
     option (google.api.http) = {
       post : "/v1alpha/{name=pipelines/*}/rename"
@@ -153,9 +197,14 @@ service PipelinePublicService {
 
   // Trigger a pipeline resource in VDP.
   //
-  // `TriggerPipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service. This methods tiggers a pipeline and returns 1) UUID for each input and 2) model instance inference outputs. It takes in `TriggerPipelineRequest` and returns a `TriggerPipelineResponse`.
+  // `TriggerPipeline` is a call with the method(s) `POST` within the `PipelinePublicService` service.
   //
-  // NOTE: pipeline name must have the format of "pipelines/*".
+  // This methods tiggers a pipeline and returns 1) UUID for each input and 2) model inference outputs. 
+  //
+  // It takes in `TriggerPipelineRequest` and returns a `TriggerPipelineResponse`.
+  //
+  // NOTE: `pipeline.name` field in `TriggerPipelineRequest` must has the format of `pipelines/{pipeline_name}`. For example, `pipelines/pipeline-1`.
+  // 
   // → See [Core concept](https://www.instill.tech/docs/core-concepts/overview) for an introduction to Pipeline in VDP and [our tutorial](https://www.instill.tech/tutorials/vdp-101-4-how-to-trigger-a-sync-pipeline) for further details about triggering a pipeline.
   rpc TriggerPipeline(TriggerPipelineRequest)
       returns (TriggerPipelineResponse) {

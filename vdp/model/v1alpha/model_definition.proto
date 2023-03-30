@@ -74,7 +74,7 @@ message ModelDefinition {
 enum View {
   // View: UNSPECIFIED, equivalent to BASIC.
   VIEW_UNSPECIFIED = 0;
-  // View: BASIC, server response only include basic information of the resource
+  // View: BASIC, omit `Model.configuration` and `ModelInstance.configuration` 
   VIEW_BASIC = 1;
   // View: FULL, full representation of the resource
   VIEW_FULL = 2;
@@ -90,10 +90,7 @@ message ListModelDefinitionsRequest {
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // Definition view (default is VIEW_BASIC)
-  // VIEW_UNSPECIFIED/VIEW_BASIC: omit `ModelDefinition.model_spec` and
-  // `ModelDefinition.model_spec`
-  // VIEW_FULL: show full information
+  // Definition view (default is VIEW_UNSPECIFIED)
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -110,7 +107,8 @@ message ListModelDefinitionsResponse {
 
 // GetModelDefinitionRequest represents a request to query a model definition
 message GetModelDefinitionRequest {
-  // Resource name of the model definition. It must has the format of `model-definitions/{model_difinition.name}`. For example `model-definitions/yolov7`.
+  // Resource name of the model definition. It must has the format of `model-definitions/{model.name}`. 
+  // For example, `model-definitions/yolov7`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/ModelDefinition",

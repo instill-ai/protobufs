@@ -17,7 +17,7 @@ import "vdp/pipeline/v1alpha/pipeline.proto";
 import "vdp/connector/v1alpha/connector_definition.proto";
 import "vdp/connector/v1alpha/spec.proto";
 
-// Connector represents a connector data model
+// Connector represents a connector resource.
 message Connector {
 
   // State enumerates the connector state
@@ -69,24 +69,24 @@ message SourceConnector {
     pattern : "source-connectors/{source-connector}"
   };
 
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // For example, `source-connectors/http`.
   string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // SourceConnector UUID
+  // Source connector UUID
   string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // SourceConnector resource ID (the last segment of the resource name) used to
+  // Source connector resource ID (the last segment of the resource name) used to
   // construct the resource name. This conforms to RFC-1034, which restricts to
   // letters, numbers, and hyphen, with the first character a letter, the last a
   // letter or a number, and a 63 character maximum.
   string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
-  // SourceConnectorDefinition resource
+  // Source connector definition resource
   string source_connector_definition = 4 [
     (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnectorDefinition"
     }
   ];
-  // SourceConnector's connector data structure
+  // Source connector's connector data structure
   Connector connector = 5 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -97,24 +97,24 @@ message DestinationConnector {
     pattern : "destination-connectors/{destination-connector}"
   };
 
-  // DestinationConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // DestinationConnector UUID
+  // Destination connector UUID
   string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // DestinationConnector resource ID (the last segment of the resource name)
+  // Destination connector resource ID (the last segment of the resource name)
   // used to construct the resource name. This conforms to RFC-1034, which
   // restricts to letters, numbers, and hyphen, with the first character a
   // letter, the last a letter or a number, and a 63 character maximum.
   string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
-  // DestinationConnectorDefinition resource
+  // Destination connector definition resource
   string destination_connector_definition = 4 [
     (google.api.field_behavior) = IMMUTABLE,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnectorDefinition"
     }
   ];
-  // DestinationConnector's connector data structure
+  // Destination connector's connector data structure
   Connector connector = 5 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -166,7 +166,8 @@ message ListSourceConnectorsResponse {
 // GetSourceConnectorRequest represents a request to query a
 // SourceConnector resource
 message GetSourceConnectorRequest {
-  // SourceConnectorConnector resource name. It must has the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`
+  // SourceConnectorConnector resource name. It must have the format of `source-connectors/{connector_name}`. 
+  // For example, `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -208,8 +209,8 @@ message UpdateSourceConnectorResponse {
 // DeleteSourceConnectorRequest represents a request to delete a
 // SourceConnector resource
 message DeleteSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -227,7 +228,7 @@ message DeleteSourceConnectorResponse {}
 // LookUpSourceConnectorRequest represents a request to query a source connector
 // via permalink
 message LookUpSourceConnectorRequest {
-  // Permalink of a source connector. It must has the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
+  // Permalink of a source connector. It must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -250,7 +251,8 @@ message LookUpSourceConnectorResponse {
 // ConnectSourceConnectorRequest represents a request to connect a
 // source connector
 message ConnectSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`
+  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`. 
+  // For example, `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -271,8 +273,8 @@ message ConnectSourceConnectorResponse {
 // DisconnectSourceConnectorRequest represents a request to disconnect a
 // source connector
 message DisconnectSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -293,8 +295,8 @@ message DisconnectSourceConnectorResponse {
 // RenameSourceConnectorRequest represents a request to rename the
 // SourceConnector resource name
 message RenameSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -319,8 +321,8 @@ message RenameSourceConnectorResponse {
 // ReadSourceConnectorRequest represents a request to perform read operation of
 // a SourceConnector given the resource name
 message ReadSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -383,8 +385,8 @@ message ListDestinationConnectorsResponse {
 // GetDestinationConnectorRequest represents a request to query a
 // DestinationConnector resource
 message GetDestinationConnectorRequest {
-  // DestinationConnectorConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // Destination-connector resource name. It must have the format of `destination-connectors/{connector_name}.`
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -426,8 +428,8 @@ message UpdateDestinationConnectorResponse {
 // DeleteDestinationConnectorRequest represents a request to delete a
 // DestinationConnector resource
 message DeleteDestinationConnectorRequest {
-  // DestinationConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // DestinationConnector resource name. It must have the format of `destination-connectors/{connector_name}`.
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -445,8 +447,7 @@ message DeleteDestinationConnectorResponse {}
 // LookUpDestinationConnectorRequest represents a request to query a destination
 // connector via permalink
 message LookUpDestinationConnectorRequest {
-  // Permalink of a destination connector. For example:
-  // "destination-connectors/{uid}"
+  // Permalink of a destination connector. It must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -470,8 +471,8 @@ message LookUpDestinationConnectorResponse {
 // ConnectDestinationConnectorRequest represents a request to connect a
 // destination connector
 message ConnectDestinationConnectorRequest {
-  // DestinationConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -493,8 +494,8 @@ message ConnectDestinationConnectorResponse {
 // DisconnectDestinationConnectorRequest represents a request to disconnect a
 // destination connector
 message DisconnectDestinationConnectorRequest {
-  // DestinationConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // DestinationConnector resource name. It must have the format of `destination-connectors/{connector_name}`.
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -516,8 +517,8 @@ message DisconnectDestinationConnectorResponse {
 // RenameDestinationConnectorRequest represents a request to rename the
 // DestinationConnector resource name
 message RenameDestinationConnectorRequest {
-  // DestinationConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -544,8 +545,8 @@ message RenameDestinationConnectorResponse {
 // WriteDestinationConnectorRequest represents a request to perform write
 // operation of a DestinationConnector given the resource name
 message WriteDestinationConnectorRequest {
-  // DestinationConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -610,8 +611,8 @@ message ListSourceConnectorsAdminResponse {
 // GetSourceConnectorAdminRequest represents a request to query a
 // SourceConnector resource by admin
 message GetSourceConnectorAdminRequest {
-  // SourceConnectorConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`. 
+  // For example, `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -635,7 +636,7 @@ message GetSourceConnectorAdminResponse {
 // LookUpSourceConnectorAdminRequest represents a request to query a source connector
 // via permalink by admin
 message LookUpSourceConnectorAdminRequest {
-  // Permalink of a source connector. It must has the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
+  // Permalink of a source connector. It must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -658,13 +659,13 @@ message LookUpSourceConnectorAdminResponse {
 // WatchSourceConnectorRequest represents a public request to query
 // a source connector's current state
 message WatchSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
+  // SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/SourceConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name/watch"}
+      field_configuration : {path_param_name : "source_connector.name"}
     }
   ];
 }
@@ -679,9 +680,15 @@ message WatchSourceConnectorResponse {
 // CheckSourceConnectorRequest represents a private request to query
 // a source connector's current state
 message CheckSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`. 
+  // For example, `source-connectors/http`.
+  string name = 1 [ 
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/SourceConnector",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "source_connector.name"}
+    }
+  ];
 }
 
 // CheckSourceConnectorResponse represents a response to fetch a source connector's
@@ -718,7 +725,8 @@ message ListDestinationConnectorsAdminResponse {
 // GetDestinationConnectorAdminRequest represents a request to query a
 // DestinationConnector resource by admin
 message GetDestinationConnectorAdminRequest {
-  // DestinationConnectorConnector resource name. It must has the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.
+  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`. 
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -742,7 +750,7 @@ message GetDestinationConnectorAdminResponse {
 // LookUpDestinationConnectorAdminRequest represents a request to query a destination
 // connector via permalink by admin
 message LookUpDestinationConnectorAdminRequest {
-  // Permalink of a destination connector. It must has the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the model.
+  // Permalink of a destination connector. It must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
@@ -766,13 +774,13 @@ message LookUpDestinationConnectorAdminResponse {
 // WatchDestinationConnectorRequest represents a public request to query
 // a destination connector's current state
 message WatchDestinationConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "destination-connectors/*"
+  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
+  // For example, `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/DestinationConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name/watch"}
+      field_configuration : {path_param_name : "destination_connector.name"}
     }
   ];
 }
@@ -787,9 +795,15 @@ message WatchDestinationConnectorResponse {
 // CheckDestinationConnectorRequest represents a private request to query
 // a destination connector's current state
 message CheckDestinationConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "destination-connectors/*"
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // Destination Connector resource name. It must have the format of `destination-connectors/{connector_name}`. 
+  // For example, `destination-connectors/postgres-db`.
+  string name = 1 [ 
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/DestinationConnector",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "destination_connector.name"}
+    } 
+  ];
 }
 
 // CheckDestinationConnectorResponse represents a response to fetch a destination connector's
@@ -801,8 +815,16 @@ message CheckDestinationConnectorResponse {
 
 // GetConnectorOperationRequest represents a request to query a longrunning operation
 message GetConnectorOperationRequest {
-  // The name of the operation resource.
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // The name of the operation resource. It must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation.
+  string name = 1 [ 
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type: "library.googleapis.com/Operation"
+    },
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "operation.name"}
+    }
+  ];
   // SourceConnector view (default is VIEW_BASIC)
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
