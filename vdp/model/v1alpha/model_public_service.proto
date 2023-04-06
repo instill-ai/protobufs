@@ -1,3 +1,4 @@
+
 syntax = "proto3";
 
 package vdp.model.v1alpha;
@@ -18,11 +19,11 @@ service ModelPublicService {
   // 
   // `Liveness` is a call with the method(s) `GET within the `ModelPublicService` service.
   //
-  // This method returns the liveness (alive or dead) of the Model service. 
-  //
-  //It takes in `LivenessRequest` and returns a `LivenessResponse`.
+  // This method returns the Model service's liveness (alive or dead). 
   //
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+  //
+  //It takes in `LivenessRequest` and returns a `LivenessResponse`.
   rpc Liveness(LivenessRequest) returns (LivenessResponse) {
     option (google.api.http) = {
       get : "/v1alpha/__liveness"
@@ -30,15 +31,15 @@ service ModelPublicService {
     };
   }
 
-  // Check if the Model service is ready to serve traffics
+  // Check if the Model service is ready to serve traffic
   //
   // `Readiness` is a call with the method(s) `GET` within the `ModelPublicService` service. 
   //
-  // This method returns the Readiness (ready or not ready) of the Model service.
-  //
-  // It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
+  // This method returns the Model service's Readiness (ready or not ready).
   // 
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+  //
+  // It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
     option (google.api.http) = {
       get : "/v1alpha/__readiness"
@@ -46,7 +47,7 @@ service ModelPublicService {
     };
   }
 
-  // List the definition of all supported model resources
+  // List the definition of all model resources in VDP
   //
   // `ListModelDefinitions` is a call with the method(s) `GET` within the `ModelPublicService`. 
   //
@@ -54,7 +55,7 @@ service ModelPublicService {
   //
   //It takes in `ListModelDefinitionsRequest` and returns `ListModelDefinitionsResponse`.
   //
-  // **NOTE**: if unspecified, this method returns at most 10 model definitions. The maxumum number of model definitions this method can return is set to 100.
+  // **NOTE**: if unspecified, this method returns at most 10 model definitions. The maximum number of model definitions this method can return is set to 100.
   rpc ListModelDefinitions(ListModelDefinitionsRequest)
       returns (ListModelDefinitionsResponse) {
     option (google.api.http) = {
@@ -62,15 +63,15 @@ service ModelPublicService {
     };
   }
 
-  // Get the difinition of a model resource with it's name.
+  // Get the definition of a model resource in VDP with its ID.
   //
   // `GetModelDefinition` is a call with the method(s) `GET` within the `ModelPublicService`. 
   //
-  // This method returns a model definition of a model resource. 
+  // This method returns a model definition of a model resource with its ID. 
   //
   // It takes in `GetModelDefinitionRequest` and returns `GetModelDefinitionResponse`.
   //
-  // **NOTE**: `model_definition.name` field in `GetModelDefinitionRequest` must has the format of `model-definitions/{model_name}`. For example, `model-definitions/yolov7`.
+  // **NOTE**: The parameter `modelDefinitionName` is extracted from the endpoint path. It must have the format of `model-definitions/{id}`. For example: `model-definitions/yolov7`.
   rpc GetModelDefinition(GetModelDefinitionRequest)
       returns (GetModelDefinitionResponse) {
     option (google.api.http) = {
@@ -79,15 +80,15 @@ service ModelPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // List all model resources avaiable in VDP.
+  // List all model resources available in VDP.
   //
   // `ListModels` is a call with the method(s) `GET` within the `ModelPublicService`.
   //
-  // This method returns a list of all existing model resources in VDP. 
+  // This method lists all existing model resources in VDP. 
   //
   // It takes in `ListModelsRequest` and returns `ListModelsResponse`.
   //
-  // **NOTE**: if unspecified, this method returns at most 10 models. The maxumum number of models this method can return is set to 100.
+  // **NOTE**: This method returns, at most 10 models if unspecified. The maximum number of models this method can return is set to 100.
   rpc ListModels(ListModelsRequest) returns (ListModelsResponse) {
     option (google.api.http) = {
       get : "/v1alpha/models"
@@ -99,10 +100,10 @@ service ModelPublicService {
   // `CreateModel` is a call with the method(s) `POST` within the `ModelPublicService`.
   //
   // This method creates a new model resource. 
+  // 
+  // → See [Core concept - Model](https://www.instill.tech/docs/core-concepts/model) for an introduction to Model in VDP.
   //
   // It takes in `CreateModelRequest` and returns `CreateModelResponse`.
-  //
-  // → See [Core concept - Model](https://www.instill.tech/docs/core-concepts/model) for an introduction to Model in VDP.
   rpc CreateModel(CreateModelRequest) returns (CreateModelResponse) {
     option (google.api.http) = {
       post : "/v1alpha/models"
@@ -113,23 +114,25 @@ service ModelPublicService {
 
   // Create a new model resource in VDP with a multipart request.
   //
-  // `CreateModelBinaryFileUpload` is a call with the method(s) `POST` within the `ModelPublicService` service. This method create a new model resource of which model contents are uploaded as multipart binaries. It takes in `CreateModelBinaryFileUploadRequest` message and returns a `CreateModelBinaryFileUploadResponse`.
+  // `CreateModelBinaryFileUpload` is a call with the method(s) `POST` within the `ModelPublicService` service. This method creates a new model resource in which model contents are uploaded as multipart binaries. 
   //
   // Endpoint: "POST /v1alpha/models:multipart"
+  //
+  // It takes in `CreateModelBinaryFileUploadRequest` message and returns a `CreateModelBinaryFileUploadResponse`.
   rpc CreateModelBinaryFileUpload(stream CreateModelBinaryFileUploadRequest)
       returns (CreateModelBinaryFileUploadResponse) {
     option (google.api.method_signature) = "id,model_definition,content";
   }
 
-  // Get a model resource with it's name. 
+  // Get a model in VDP with its ID. 
   //
   // `GetModel` is a call with the method(s) `GET` within the `ModelPublicService`.
   //
-  // This method returns a model resource with the quried name. 
+  // This method returns a model resource with the queried ID. 
   //
   // It takes in `GetModelRequest` and returns `GetModelResponse`.
   //
-  // **NOTE**: The `model.name` field in `GetModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc GetModel(GetModelRequest) returns (GetModelResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=models/*}"
@@ -137,15 +140,15 @@ service ModelPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Update an existing model resource.
+  // Update an existing model in VDP with its ID.
   //
   // `UpdateModel` is a call with the method(s) `PATCH` within the `ModelPublicService`.
   //
-  // This method updates an existing model resource. 
+  // This method updates an existing model resource with its ID and returns the updated model. 
   //
   // It takes in `UpdateModelRequest` and returns `UpdateModelResponse`.
   //
-  // **NOTE**: The `model.name` field in `UpdateModelRequest` is used to identify the model resource to update. Format: `models/{model_name}`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc UpdateModel(UpdateModelRequest) returns (UpdateModelResponse) {
     option (google.api.http) = {
       patch : "/v1alpha/{model.name=models/*}"
@@ -154,15 +157,15 @@ service ModelPublicService {
     option (google.api.method_signature) = "model,update_mask";
   }
 
-  // Delete a model reource in VDP with it's name.
+  // Delete a model in VDP with its ID.
   //
   // `DeleteModel` is a call with the method(s) `DELETE` within the `ModelPublicService`. 
   //
-  // This method delete a model resource with the quried name. 
+  // This method delete a model resource with the queried ID. 
   //
   // It takes in `DeleteModelRequest` and returns `DeleteModelResponse`.
   //
-  // **NOTE**: The `model.name` field in `DeleteModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc DeleteModel(DeleteModelRequest) returns (DeleteModelResponse) {
     option (google.api.http) = {
       delete : "/v1alpha/{name=models/*}"
@@ -170,15 +173,15 @@ service ModelPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Get a model resource with it's permalink.
+  // Get a model resource with its unique ID.
   //
   // `LookUpModel` is a call with the method(s) `GET` within the `ModelPublicService`.
   //
-  // This method gets a model resource with a permalink (i.e., `model.uid`). 
+  // This method gets a model resource with its unique ID. 
   //
   // It takes in `LookUpModelRequest` and returns `LookUpModelResponse`.
   //
-  // **NOTE**: `model.uid` (permalink) in `LookUpModelRequest` must have the format of `models/{uid}`, where `{uid}` denotes the unique ID of the model.
+  // **NOTE**: The parameter `modelPermalink` is extracted from the endpoint path. It must have the format of `models/{uid}`.
   rpc LookUpModel(LookUpModelRequest) returns (LookUpModelResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{permalink=models/*}/lookUp"
@@ -190,11 +193,11 @@ service ModelPublicService {
   //
   // `RenameModel` is a call with the method(s) `POST` within the `ModelPublicService` service.
   //
-  // This method changes the name of a model resource and returns the updated model resource. 
+  // This method changes the ID of a model resource and returns the updated model resource. 
   //
   //It takes in `RenameModelRequest` and returns `RenameModelResponse`.
   //
-  // **NOTE**: `model.name` field in `RenameModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc RenameModel(RenameModelRequest) returns (RenameModelResponse) {
     option (google.api.http) = {
       post : "/v1alpha/{name=models/*}/rename"
@@ -203,15 +206,15 @@ service ModelPublicService {
     option (google.api.method_signature) = "name,new_model_id";
   }
 
-  // Chanage the visibility of a model resource to *PUBLIC*.
+  // Change the visibility of a model resource to *PUBLIC*.
   //
   // `PublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service.
   //
-  // This method changes the visibility of a model resource to *PUBLIC* allowing other users to access the model resource. It also returns the updated model resource. 
+  // This method changes the visibility of a model resource to *PUBLIC*, allowing other users to access the model resource. It also returns the updated model resource. 
   //
   // It takes in `PublishModelRequest` and returns `PublishModelResponse`.
   //
-  // **NOTE**: `model.name` field in `PublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc PublishModel(PublishModelRequest) returns (PublishModelResponse) {
     option (google.api.http) = {
       post : "/v1alpha/{name=models/*}/publish"
@@ -224,11 +227,11 @@ service ModelPublicService {
   //
   // `UnpublishModel` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method changes the visibility of a model resource to *PRIVATE*, making it only visible to the authorsied user. It also returns the updated model resource. 
+  // This method changes the visibility of a model resource to *PRIVATE*, making it only visible to the authorised user. It also returns the updated model resource. 
   //
   // It takes in `UnpublishModelRequest` and returns `UnpublishModelResponse`.
   //
-  // **NOTE**: `model.name` field in `UnpublishModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc UnpublishModel(UnpublishModelRequest) returns (UnpublishModelResponse) {
     option (google.api.http) = {
       post : "/v1alpha/{name=models/*}/unpublish"
@@ -237,17 +240,17 @@ service ModelPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Deploy a model to ONLINE state.
+  // Deploy a model to the ONLINE state.
   //
   // `DeployModel` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method deployes a model to ONLINE state and return a longrunning operation.
+  // This method deploys a model to the ONLINE state and returns a longrunning operation.
+  //
+  // See [Core-Concepts - Model](https://www.instill.tech/docs/core-concepts/model) for further details.
   //
   // It takes in `DeployModelRequest` and returns `DeployModelResponse`.
   //
-  // **NOTE**: `model.name` field in `DeployModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
-  //
-  // See [Core-Concepts - Model](https://www.instill.tech/docs/core-concepts/model) for further details.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc DeployModel(DeployModelRequest)
       returns (DeployModelResponse) {
     option (google.api.http) = {
@@ -257,17 +260,17 @@ service ModelPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Undeploy a model to OFFLINE state.
+  // Undeploy a model to the OFFLINE state.
   //
   // `UndeployModel` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method undeployes a model to UndeployModel state and return a longrunning operation.
+  // This method undeploys a model to OFFLINE state and returns a longrunning operation.
+  //
+  // See [Core-Concepts - Model](https://www.instill.tech/docs/core-concepts/model) for further details.
   //
   // It takes in `UndeployModelRequest` and returns `UndeployModelResponse`.
   //
-  // **NOTE**: `model.name` field in `UndeployModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
-  //
-  // See [Core-Concepts - Model](https://www.instill.tech/docs/core-concepts/model) for further details.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc UndeployModel(UndeployModelRequest)
       returns (UndeployModelResponse) {
     option (google.api.http) = {
@@ -277,32 +280,32 @@ service ModelPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Get a model card (readme).
+  // Get a model card (readme) with its ID.
   //
   // `GetModelCard` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method get a model card (readme) of a existing model.
+  // This method get a model card (readme) of a model with its ID.
   //
   // It takes in `GetModelCardRequest` and returns `GetModelCardResponse`.
   //
-  // **NOTE**: `model.name` field in `GetModelCardRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelCardName` is extracted from the endpoint path. It must have the format of `models/{id}/readme`. For example: `models/yolov7/readme`.
   rpc GetModelCard(GetModelCardRequest)
       returns (GetModelCardResponse) {
     option (google.api.http) = {
-      get : "/v1alpha/{name=models/*}/readme"
+      get : "/v1alpha/{name=models/*/readme}"
     };
     option (google.api.method_signature) = "name";
   }
 
-  // Query a model's current state and it's longrunning progress.
+  // Get the state of a model with its ID.
   //
   // `WatchModel` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method queries a model's current state and it's longrunning progress.
+  // This method returns the state of a model from the state server.
   //
-  // It takes in `WatchModelRequest` and return `WatchModelResponse`.
+  // It takes in `WatchModelRequest` and returs `WatchModelResponse`.
   //
-  // **NOTE**: `model.name` field in `WatchModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc WatchModel(WatchModelRequest)
       returns (WatchModelResponse) {
     option (google.api.http) = {
@@ -311,15 +314,15 @@ service ModelPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // Trigger a deployed model.
+  // Trigger a deployed model in VDP with its ID.
   //
   // `TriggerModel` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method triggers a deployed model with task inputs.
+  // This method triggers a deployed model with its ID and task inputs.
   //
-  // It takes in `TriggerModelRequest` and return `TriggerModelResponse`.
+  // It takes in `TriggerModelRequest` and returns `TriggerModelResponse`.
   //
-  // **NOTE**: `model.name` field in `TriggerModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc TriggerModel(TriggerModelRequest)
       returns (TriggerModelResponse) {
     option (google.api.http) = {
@@ -329,32 +332,32 @@ service ModelPublicService {
     option (google.api.method_signature) = "name,inputs";
   }
 
-  // Trigger a deployed model with multipart.
+  // Trigger a deployed model with its ID and multipart.
   //
   // `TriggerModelBinaryFileUpload` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method triggers a deployed model with a task input stream.
-  //
-  // It takes in `TriggerModelBinaryFileUploadRequest` and return `TriggerModelBinaryFileUploadResponse`.
-  //
-  // **NOTE**: `model.name` field in `TriggerModelBinaryFileUploadRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // This method triggers a deployed model in VDP with a task input stream.
   //
   // Endpoint: "POST/v1alpha/{name=models/*}/trigger-multipart"
+  //
+  // It takes in `TriggerModelBinaryFileUploadRequest` and returns `TriggerModelBinaryFileUploadResponse`.
+  //
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc TriggerModelBinaryFileUpload(
       stream TriggerModelBinaryFileUploadRequest)
       returns (TriggerModelBinaryFileUploadResponse) {
     option (google.api.method_signature) = "name,file";
   }
 
-  // Test a deployed model.
+  // Test a deployed model in VDP with its ID.
   //
   // `TestModel` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method tests a deployed model with task inputs.
+  // This method tests a deployed model in VDP with its ID and task inputs.
   //
-  // It takes in `TestModelRequest` and return `TestModelResponse`.
+  // It takes in `TestModelRequest` and returns `TestModelResponse`.
   //
-  // **NOTE**: `model.name` field in `TestModelRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc TestModel(TestModelRequest)
       returns (TestModelResponse) {
     option (google.api.http) = {
@@ -364,32 +367,34 @@ service ModelPublicService {
     option (google.api.method_signature) = "name,inputs";
   }
 
-  // Test a deployed model with multipart.
+  // Test a deployed model with its ID and multipart.
   //
   // `TestModelBinaryFileUpload` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
   // This method tests a deployed model with a task input stream.
   //
-  // It takes in `TestModelBinaryFileUploadRequest` and return `TestModelBinaryFileUploadResponse`.
-  //
-  // **NOTE**: `model.name` field in `TestModelBinaryFileUploadRequest` must have the format of `models/{model_name}`. For example, `models/yolov7`.
-  //
   // Endpoint: "POST/v1alpha/{name=models/*}/test-multipart"
+  //
+  // It takes in `TestModelBinaryFileUploadRequest` and returns `TestModelBinaryFileUploadResponse`.
+  //
+  // **NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`.
   rpc TestModelBinaryFileUpload(
       stream TestModelBinaryFileUploadRequest)
       returns (TestModelBinaryFileUploadResponse) {
     option (google.api.method_signature) = "name,file";
   }
 
-  // Get a longrunning operation with it's name.
+  // Get a longrunning operation with its unique ID.
   //
   // `GetModelOperation` is a call with the method(s) `GET` within the `ModelPublicService` service. 
   //
-  // This method returns a longrunning operation with it's name (i.e., `operations/{unique_id}`). 
+  // This method returns a longrunning operation with its unique ID.
+  //
+  // → See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.
   //
   // It takes in `GetModelOperationRequest` and returns `GetModelOperationResponse`.
   //
-  // **NOTE**: `operation.uid` field in `GetModelOperationRequest` must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation. See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.
+  // **NOTE**: The parameter `operationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`.
   rpc GetModelOperation(GetModelOperationRequest)
       returns (GetModelOperationResponse) {
     option (google.api.http) = {
@@ -406,22 +411,24 @@ service ModelPublicService {
   //
   // It takes in `ListModelOperationsRequest` and returns `ListModelOperationsResponse`.
   //
-  // **NOTE**: if unspecified, this method returns at most 10 models. The maxumum number of models this method can return is set to 100.
+  // **NOTE**: This method returns, at most 10 models if unspecified. The maximum number of models this method can return is set to 100.
   rpc ListModelOperations(ListModelOperationsRequest) returns (ListModelOperationsResponse) {
     option (google.api.http) = {
       get : "/v1alpha/operations"
     };
   }
 
-  // Cancel a longrunning operation with it's name.
+  // Cancel a longrunning operation with its unique ID.
   //
   // `CancelModelOperation` is a call with the method(s) `POST` within the `ModelPublicService` service. 
   //
-  // This method cancels a longrunning operation with it's name (i.e., `operations/{unique_id}`). 
+  // This method cancels a longrunning operation with its unique ID.
+  //
+  // → See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.
   //
   // It takes in `CancelModelOperationRequest` and returns `CancelModelOperationResponse`.
   //
-  // **NOTE**: `operation.uid` field in `CancelModelOperationRequest` must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation. See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.
+  // **NOTE**: The parameter `operationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`.
   rpc CancelModelOperation(CancelModelOperationRequest)
       returns (CancelModelOperationResponse) {
     option (google.api.http) = {

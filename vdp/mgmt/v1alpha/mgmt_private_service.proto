@@ -15,7 +15,7 @@ service MgmtPrivateService {
   //
   // `ListUsersAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService` service. 
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to list *all* users created in VDP. 
+  // This is a *private* method that is only available for admins and internal backend services to list *all* users created in VDP. 
   //
   // It takes in `ListUsersAdminRequest` and returns a `ListUsersAdminResponse`.
   //
@@ -34,7 +34,7 @@ service MgmtPrivateService {
   //
   // It takes in `CreateUserAdminRequest` and returns a `CreateUserAdminResponse`.
   //
-  // **NOTE**: The `user.name` field in `CreateUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`.
+  // **NOTE**: The `userName` field in `CreateUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`.
   rpc CreateUserAdmin(CreateUserAdminRequest)
       returns (CreateUserAdminResponse) {
     option (google.api.http) = {
@@ -44,15 +44,15 @@ service MgmtPrivateService {
     option (google.api.method_signature) = "user";
   }
 
-  // Get a existing user with user's name (admin only).
+  // Get an existing user with its ID (admin only).
   // 
   // `GetUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService`.
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to get a new user created in VDP with user's name.
+  // This is a *private* method only available for admins and internal backend services to get a user with its ID.
   //
   // It takes in `GetUserAdminRequest` and returns `GetUserAdminResponse`.
   //
-  // **NOTE**: The `user.name` field in `GetUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`.
+  // **NOTE**: The parameter `userName` is extracted from the endpoint path. It must have the format of `users/{id}`. For example: `users/harry-potter`.
   rpc GetUserAdmin(GetUserAdminRequest) returns (GetUserAdminResponse) {
     option (google.api.http) = {
       get : "/v1alpha/admin/{name=users/*}"
@@ -60,15 +60,15 @@ service MgmtPrivateService {
     option (google.api.method_signature) = "name";
   }
 
-  // Update an existing user (admin only)
+  // Update an existing user with its ID(admin only)
   // 
   // `UpdateUserAdmin` is a call with the method(s) `POST` within the `MgmtPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to udpate existing users. 
+  // This is a *private* method that is only available for admins and internal backend services to update existing users. 
   //
   // It takes in `UpdateUserAdminRequest` and returns `UpdateUserAdminResponse`.
   //
-  // **NOTE**: The `user.name` field in `UpdateUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`. 
+  // **NOTE**: The parameter `userName` is extracted from the endpoint path. It must have the format of `users/{id}`. For example: `users/harry-potter`.
   rpc UpdateUserAdmin(UpdateUserAdminRequest)
       returns (UpdateUserAdminResponse) {
     option (google.api.http) = {
@@ -78,7 +78,7 @@ service MgmtPrivateService {
     option (google.api.method_signature) = "user,update_mask";
   }
 
-  // Delete an existing user (admin only)
+  // Delete an existing user with its ID (admin only)
   //
   // `DeleteUserAdmin` is a call with the method(s) `DELETE` within the `MgmtPrivateService`.
   //
@@ -86,7 +86,7 @@ service MgmtPrivateService {
   //
   // It takes in `DeleteUserAdminRequest` and returns `DeleteUserAdminResponse`.
   //
-  // **NOTE**: The `user.name` field in `DeleteUserAdminRequest` must have the format of `users/{user_name}`. For example, `users/local-user`. 
+  // **NOTE**: The parameter `userName` is extracted from the endpoint path. It must have the format of `users/{id}`. For example: `users/harry-potter`.
   rpc DeleteUserAdmin(DeleteUserAdminRequest)
       returns (DeleteUserAdminResponse) {
     option (google.api.http) = {
@@ -95,15 +95,15 @@ service MgmtPrivateService {
     option (google.api.method_signature) = "name";
   }
 
-  // Get a existing user with a permalink consisting of unique ID (admin only).
+  // Get a user with its unique ID (admin only).
   //
   // `LookUpUserAdmin` is a call with the method(s) `GET` within the `MgmtPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to get an existing user with a unique ID (i.e., `user.uid`). 
+  // This is a *private* method only available for admins and internal backend services to get an existing user with a unique ID. 
   //
   // It takes in `LookUpUserAdminRequest` and returns `LookUpUserAdminResponse`.
   //
-  // **NOTE**: permalink in `LookUpUserAdminRequest` must has the format of `users/{uid}`, where `{uid}` denotes the unique ID of the user.
+  // **NOTE**: The parameter `userPermalink` is extracted from the endpoint path. It must have the format of `users/{uid}`.
   rpc LookUpUserAdmin(LookUpUserAdminRequest)
       returns (LookUpUserAdminResponse) {
     option (google.api.http) = {
@@ -112,8 +112,15 @@ service MgmtPrivateService {
     option (google.api.method_signature) = "permalink";
   }
 
-  // ValidateToken method receives a ValidateTokenRequest message and
-  // returns a ValidateTokenResponse
+  // Validate an API token with its ID.
+  //
+  // `DeleteToken` is a call with the method(s) `GET` within the `MgmtPrivateService`.
+  //
+  // This method validate an API token with the ID specified. 
+  //
+  // It takes in `ValidateTokenRequest` and returns `ValidateTokenResponse`.
+  //
+  // **NOTE**: The parameter `tokenName` is extracted from the endpoint path. It must have the format of `tokens/{id}`. For example: `tokens/token-1`.
   rpc ValidateToken(ValidateTokenRequest)
       returns (ValidateTokenResponse) {
     option (google.api.http) = {

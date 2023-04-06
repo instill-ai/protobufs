@@ -28,8 +28,16 @@ message User {
     pattern : "users/{user}"
   };
 
-  // Resource name. It must have the format of `users/{username}`. For example: `users/local-user`.
-  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // The name of the user to update. 
+  // Format: `users/{id}`. 
+  // For example: `users/harry-potter`.
+  string name = 1 [ 
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference).type = "api.instill.tech/User",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "userName"}
+    }
+  ];
   // User ID in UUIDv4. This field is optionally set by users (optional on resource creation, server-generated if unset).
   optional string uid = 2 [ (google.api.field_behavior) = IMMUTABLE ];
   // Resource ID (the last segment of the resource name), also the user username. This conforms to RFC-1034, which restricts to letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.
@@ -107,8 +115,7 @@ message ListUsersAdminResponse {
 
 // CreateUserAdminRequest represents a request to create a user by admin
 message CreateUserAdminRequest {
-  // User name. It must have the format of `users/{user_name}`. 
-  // For example, `users/local-user`.
+  // A user resource
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -120,16 +127,17 @@ message CreateUserAdminResponse {
 
 // GetUserAdminRequest represents a request to query a user by admin
 message GetUserAdminRequest {
-  // User name. It must have the format of `users/{user_name}`.
-  // For example, `users/local-user`.
+  // The name of the user to retrieve. 
+  // Format: `users/{id}`. 
+  // For example: `users/harry-potter`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/User",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "user.name"}
+      field_configuration : {path_param_name : "userName"}
     }
   ];
-  // View view (default is VIEW_BASIC)
+  // View (default is VIEW_BASIC) represents a view of any resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -141,8 +149,9 @@ message GetUserAdminResponse {
 
 // UpdateUserAdminRequest represents a request to update a user by admin
 message UpdateUserAdminRequest {
-  // User name. It must have the format of `users/{user_name}`.
-  // For example, `users/local-user`. 
+  // The name of the user to update. 
+  // Format: `users/{id}`. 
+  // For example: `users/harry-potter`.
   User user = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Update mask for a user resource
   google.protobuf.FieldMask update_mask = 2
@@ -157,13 +166,14 @@ message UpdateUserAdminResponse {
 
 // DeleteUserAdminRequest represents a request to delete a user by admin
 message DeleteUserAdminRequest {
-  // User name. It must have the format of `users/{user_name}`. 
-  // For example, `users/local-user`. 
+  // The name of the user to update. 
+  // Format: `users/{id}`. 
+  // For example: `users/harry-potter`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/User",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "user.name"}
+      field_configuration : {path_param_name : "userName"}
     }
   ];
 }
@@ -173,15 +183,16 @@ message DeleteUserAdminResponse {}
 
 // LookUpUserAdminRequest represents a request to query a user via permalink by admin
 message LookUpUserAdminRequest {
-  // Permalink of a user. It must has the format of `users/{uid}`, where `{uid}` denotes the unique ID of the user.
+  // The permalink of the user to retrieve. 
+  // Format: `users/{uid}`. 
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/User",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "user.uid"}
+      field_configuration : {path_param_name : "userPermalink"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response.
+  // View (default is VIEW_BASIC) represents a view of any resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -217,13 +228,14 @@ message PatchAuthenticatedUserResponse {
 
 // ExistUsernameRequest represents a request to verify if a username has been occupied
 message ExistUsernameRequest{
-  // User name. It must have the format of `users/{user_name}`.
-  // For example, `users/local-user`.
+  // The name of the user to check its existence. 
+  // Format: `users/{name}`. 
+  // For example: `users/harry-potter`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/User",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "user.name"}
+      field_configuration : {path_param_name : "userName"}
     }
   ];
 }
@@ -299,7 +311,7 @@ message CreateTokenResponse {
 message ListTokensRequest {
   // The maximum number of API tokens to return. The service may return fewer
   // than this value. If unspecified, at most 10 API tokens will be returned. The
-  // maximum value is 100; values above 100 will be coerced to 100.
+  // maximum value is 100; values above 100 will become 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -317,12 +329,14 @@ message ListTokensResponse {
 
 // GetTokenRequest represents a request to query an API token
 message GetTokenRequest {
-  // API tokens resource name. It must have the format of "tokens/*"
+  // The name of the API token to retrieve. 
+  // Format: `tokens/{id}`. 
+  // For example: `tokens/token-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type : "api.instill.tech/ApiToken"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "token.name"}
+      field_configuration : {path_param_name : "tokenName"}
     }
   ];
 }
@@ -335,12 +349,14 @@ message GetTokenResponse {
 
 // DeleteTokenRequest represents a request to delete an API token resource
 message DeleteTokenRequest {
-  // API token resource name. It must have the format of "tokens/*"
+  // The name of the API token to delete. 
+  // Format: `tokens/{id}`. 
+  // For example: `tokens/token-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type : "api.instill.tech/ApiToken"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "token.name"}
+      field_configuration : {path_param_name : "tokenName"}
     }
   ];
 }
@@ -351,19 +367,19 @@ message DeleteTokenResponse {}
 // ValidateTokenRequest represents a request to validate whether
 // an API token is valid to be used for triggering pipelines
 message ValidateTokenRequest {
-  // The resource name of the API token to validate,
-  // for example: "tokens/test-token"
+  // The name of the API token to validate. 
+  // Format: `tokens/{id}`. 
+  // For example: `tokens/token-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/ApiToken",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "token.name"}
+      field_configuration : {path_param_name : "tokenName"}
     }
   ];
 }
 
-// ValidateTokenResponse represents a response about whether
-// the queried token is valid
+// ValidateTokenResponse represents a response about whether the queried token is valid.
 message ValidateTokenResponse {
   // A boolean value indicating whether the token is valid
   bool valid = 1;

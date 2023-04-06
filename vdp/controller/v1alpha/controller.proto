@@ -21,31 +21,37 @@ message Resource {
       pattern : "resources/{resource}/types/{type}"
     };
 
-    // Resource name is a string follows a specifit pattern: `resources/{resource_name}/types/{type}`, where `{resource}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+    // Resource name is a string that follows a specific pattern: `resources/{id}/types/{type}`, where `{id}` represents an arbitrary ID user defined when creating, and `{type}` falls inside the scope of:
     // ```
     // const (
-	  //   RESOURCE_TYPE_MODEL     = "model"
-	  //   RESOURCE_TYPE_SOURCE_CONNECTOR = "source-connectors"
-	  //   RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
-	  //   RESOURCE_TYPE_PIPELINE  = "pipeline"
-	  //   RESOURCE_TYPE_SERVICE   = "service"
+	  //   RESOURCE_TYPE_MODEL                  = "model"
+	  //   RESOURCE_TYPE_SOURCE_CONNECTOR       = "source-connectors"
+	  //   RESOURCE_TYPE_DESTINATION_CONNECTOR  = "destination-connectors"
+	  //   RESOURCE_TYPE_PIPELINE               = "pipeline"
+	  //   RESOURCE_TYPE_SERVICE                = "service"
     // )
     // ```
     // 
-    // For example, when query for the state of a pipeline named `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
-    string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+    // For example, when querying for the state of a pipeline with ID `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
+    string name = 1 [ 
+      (google.api.field_behavior) = REQUIRED,
+      (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        field_configuration : {path_param_name : "resourceName"}
+      }
+    ];;
 
-    // Resource state. For Model, Pipeline and Conector, the states are defied as:
+    // Resource state. For Model, Pipeline and Connector, the states are defined as:
     // ```
     // enum State {
     //   // State: UNSPECIFIED
-    //   STATE_UNSPECIFIED = 0;
+    //   STATE_UNSPECIFIED  = 0;
     //   // State INACTIVE indicates the pipeline is inactive
-    //   STATE_INACTIVE = 1;
+    //   STATE_INACTIVE     = 1;
     //   // State ACTIVE indicates the pipeline is active
-    //   STATE_ACTIVE = 2;
-    //   // State ERROR indicates the pipeline has error
-    //   STATE_ERROR = 3;
+    //   STATE_ACTIVE       = 2;
+    //   // State ERROR indicates the pipeline has an error
+    //   STATE_ERROR        = 3;
     // }
     // ```
     //
@@ -54,13 +60,13 @@ message Resource {
     // - [Core Concepts/Connector](https://www.instill.tech/docs/core-concepts/connector)
     // - [Core Concepts/Model](https://www.instill.tech/docs/core-concepts/model)
     //
-    // For Backend service, the states are defeined as:
+    // For Backend service, the states are defined as:
     // ```
     // enum ServingStatus {
     //   // Serving status: UNSPECIFIED
     //   SERVING_STATUS_UNSPECIFIED = 0;
     //   // Serving status: SERVING
-    //   SERVING_STATUS_SERVING = 1;
+    //   SERVING_STATUS_SERVING     = 1;
     //   // Serving status: NOT SERVING
     //   SERVING_STATUS_NOT_SERVING = 2;
     // }
@@ -82,23 +88,24 @@ message Resource {
 
 // GetResourceRequest represents a request to query a resource's state.
 message GetResourceRequest {
-    // Resource name is a string follows a specifit format: `resources/{resource_name}/types/{type}`, where `{resource_name}` represents an arbitrary name user defined when creating, and `{type}` falls inside the scope of:
+    // The name of the resource to retrieve. 
+    // Format: `resources/{id}/types/{type}`, where `{id}` represents an arbitrary ID user defined when creating, and `{type}` falls inside the scope of:
     //```
     // const (
-	  //   RESOURCE_TYPE_MODEL     = "model"
-	  //   RESOURCE_TYPE_SOURCE_CONNECTOR = "source-connectors"
+	  //   RESOURCE_TYPE_MODEL                 = "model"
+	  //   RESOURCE_TYPE_SOURCE_CONNECTOR      = "source-connectors"
 	  //   RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
-	  //   RESOURCE_TYPE_PIPELINE  = "pipeline"
-	  //   RESOURCE_TYPE_SERVICE   = "service"
+	  //   RESOURCE_TYPE_PIPELINE              = "pipeline"
+	  //   RESOURCE_TYPE_SERVICE               = "service"
     // )
     // ```
     // 
-    // For example, when query for the state of a pipeline named `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
+    // For example, when querying for the state of a pipeline with ID `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
     string name = 1 [
       (google.api.field_behavior) = REQUIRED,
       (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
       (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        field_configuration : {path_param_name : "resource.name"}
+        field_configuration : {path_param_name : "resourceName"}
       }
     ];
 }
@@ -112,18 +119,18 @@ message GetResourceResponse {
 // UpdateResourceRequest represents a request to update a resource's state
 message UpdateResourceRequest {
 
-    // The resource to update. It uses `resource.name` to identify the resource to update. It follows a specifit format: `resources/{resource_name}/types/{type}`.
+    // The resource to update. It uses `resourceName` to identify the resource to update. It follows a specific format: `resources/{id}/types/{type}`.
     // For **Model*, **Pipeline** and **Connector** services, the `resource.state` is one of the below:
     // ```
     // enum State {
     //   // State: UNSPECIFIED
     //   STATE_UNSPECIFIED = 0;
     //   // State INACTIVE indicates the pipeline is inactive
-    //   STATE_INACTIVE = 1;
+    //   STATE_INACTIVE    = 1;
     //   // State ACTIVE indicates the pipeline is active
-    //   STATE_ACTIVE = 2;
-    //   // State ERROR indicates the pipeline has error
-    //   STATE_ERROR = 3;
+    //   STATE_ACTIVE      = 2;
+    //   // State ERROR indicates the pipeline has an error
+    //   STATE_ERROR       = 3;
     // }
     // ```
     //
@@ -138,14 +145,14 @@ message UpdateResourceRequest {
     //   // Serving status: UNSPECIFIED
     //   SERVING_STATUS_UNSPECIFIED = 0;
     //   // Serving status: SERVING
-    //   SERVING_STATUS_SERVING = 1;
+    //   SERVING_STATUS_SERVING     = 1;
     //   // Serving status: NOT SERVING
     //   SERVING_STATUS_NOT_SERVING = 2;
     // }
     // ```
     //
     Resource resource = 1 [ (google.api.field_behavior) = REQUIRED ];
-    // Resource longrunnning workflow id
+    // Resource longrunning workflow id
     optional string workflow_id = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -157,13 +164,24 @@ message UpdateResourceResponse {
 
 // DeleteResourceRequest represents a request to delete a resource's state
 message DeleteResourceRequest {
-    // Resource name. It must has the format of `resources/{resource_name}/types/{type}`. 
-    // For example: `resources/yolov7/types/model`.
+    // The name of the resource to retrieve. 
+    // Format: `resources/{id}/types/{type}`, where `{id}` represents an arbitrary ID user defined when creating, and `{type}` falls inside the scope of:
+    //```
+    // const (
+	  //   RESOURCE_TYPE_MODEL                 = "model"
+	  //   RESOURCE_TYPE_SOURCE_CONNECTOR      = "source-connectors"
+	  //   RESOURCE_TYPE_DESTINATION_CONNECTOR = "destination-connectors"
+	  //   RESOURCE_TYPE_PIPELINE              = "pipeline"
+	  //   RESOURCE_TYPE_SERVICE               = "service"
+    // )
+    // ```
+    // 
+    // For example, when querying for the state of a pipeline with ID `pipeline-1`, the resource name is `resources/pipeline-1/types/RESOURCE_TYPE_PIPELINE`
     string name = 1 [
       (google.api.field_behavior) = REQUIRED,
       (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
       (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        field_configuration : {path_param_name : "resource.name"}
+        field_configuration : {path_param_name : "resourceName"}
       }
     ];
 }

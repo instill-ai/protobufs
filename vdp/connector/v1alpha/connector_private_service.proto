@@ -15,11 +15,11 @@ service ConnectorPrivateService {
   //
   // `ListSourceConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. 
   // 
-  // This is a *private* method that is only avaible for admins and internal backend services get a list of *source-connector* resources avaiable in VDP. 
+  // This is a *private* method only available for admins and internal backend services to get a list of *source-connector* resources available in VDP. 
   // 
   // It takes in `ListSourceConnectorsAdminRequest` and returns `ListSourceConnectorsAdminResponse`.
   //
-  // **NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of connector resources this method can return is set to 100.
+  // **NOTE**: if unspecified, this method returns at most 10 connector resources. The maximum number of connector resources this method can return is set to 100.
   rpc ListSourceConnectorsAdmin(ListSourceConnectorsAdminRequest)
       returns (ListSourceConnectorsAdminResponse) {
     option (google.api.http) = {
@@ -27,15 +27,15 @@ service ConnectorPrivateService {
     };
   }
 
-  // Get a SOURCE connector resource in VDP (admin only)
+  // Get a SOURCE connector resource in VDP with its ID(admin only)
   //
   // `GetSourceConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and internal backend services get a *source-connector* resource in VDP.
+  // This is a *private* method only available for admins, and internal backend services get a *source-connector* resource in VDP with its ID.
   //
   // It takes in `GetSourceConnectorAdminRequest` and returns `GetSourceConnectorAdminResponse`.
   //
-  // **NOTE**: The `source_connector.name` field in `GetSourceConnectorAdminRequest` must have the format of `source-connectors/{connector_name}`. For example: `source-connectors/http`.
+  // **NOTE**: The parameter `sourceConnectorName` is extracted from the endpoint path. It must have the format of `source-connectors/{id}`. For example: `source-connectors/http`.
   rpc GetSourceConnectorAdmin(GetSourceConnectorAdminRequest)
       returns (GetSourceConnectorAdminResponse) {
     option (google.api.http) = {
@@ -44,15 +44,15 @@ service ConnectorPrivateService {
     option (google.api.method_signature) = "name";
   }
 
-  // Get a SOURCEconnector resource in VDP with a permalink consisting of unique ID (admin only).
+  // Get a SOURCE connector in VDP with its unique ID (admin only).
   //
   // `LookUpSourceConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to get a *source-connector* resource in VDP with it's permalink (i.e., `source-connector.uid`). 
+  // This is a *private* method only available for admins and internal backend services to get a *source-connector* resource in VDP with its unique ID. 
   //
   // It takes in `LookUpSourceConnectorAdminRequest` and returns `LookUpSourceConnectorAdminResponse`.
   //
-  // **NOTE**: permalink in `LookUpSourceConnectorAdminRequest` must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the model.
+  // **NOTE**: The parameter `sourceConnectorPermalink` is extracted from the endpoint path. It must have the format of `source-connectors/{uid}`.
   rpc LookUpSourceConnectorAdmin(LookUpSourceConnectorAdminRequest)
       returns (LookUpSourceConnectorAdminResponse) {
     option (google.api.http) = {
@@ -61,15 +61,17 @@ service ConnectorPrivateService {
     option (google.api.method_signature) = "permalink";
   }
 
-  // Trigger a longrunning operation checking the state of a Source Connector.
+  // Trigger a longrunning operation checking the state of a Source Connector with its ID (admin only).
   //
   // `CheckSourceConnector` is a call with the method(s) `GET` within the `ConnectorPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and other internal backend services to trigger a longrunning operation checking the state of a *source-connector* resource in VDP with it's name (i.e., `source-connector.name`). It returns a `workflow_id` with which internal services can check the results after the operation is done. Resutls are also used to update the state records in the state server.
+  // This is a *private* method only available for admins and other internal backend services to trigger a longrunning operation checking the state of a *source-connector* resource in VDP with its ID. It returns a `workflow_id` with which internal services can check the results after the operation completes. The Results will be used to update the state records in the state server.
   //
   // It takes in `CheckSourceConnectorRequest` and returns `CheckSourceConnectorResponse`. 
   //
-  // **NOTE**: this methods triggers a longrunning operation. The state of the source connector is only avaible when the operation is done.
+  // **NOTE**: 
+  // - This method triggers a longrunning operation. The state of the source connector is only available when the operation completes.
+  // - The parameter `sourceConnectorName` is extracted from the endpoint path. It must have the format of `source-connectors/{id}`. For example: `source-connectors/http`.
   rpc CheckSourceConnector(CheckSourceConnectorRequest) returns (CheckSourceConnectorResponse) {
     option (google.api.http) = {
       get : "/v1alpha/admin/{name=source-connectors/*}/check"
@@ -83,11 +85,11 @@ service ConnectorPrivateService {
   //
   // `ListDestinationConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and other internal backend services get a list of *destination-connector* resources avaiable in VDP. Only admins with permission can call this method. 
+  // This is a *private* method only available for admins and other internal backend services to get a list of *destination-connector* resources available in VDP.
   //
   // It takes in `ListDestinationConnectorsAdminRequest` and returns `ListDestinationConnectorsAdminResponse`.
   //
-  // **NOTE**: if unspecified, this method returns at most 10 connector resources. The maxumum number of connector resources this method can return is set to 100.
+  // **NOTE**: if unspecified, this method returns at most 10 connector resources. The maximum number of connector resources this method can return is set to 100.
   rpc ListDestinationConnectorsAdmin(ListDestinationConnectorsAdminRequest)
       returns (ListDestinationConnectorsAdminResponse) {
     option (google.api.http) = {
@@ -95,15 +97,15 @@ service ConnectorPrivateService {
     };
   }
 
-  // Get a DESTINATION connector resource in VDP (admin only)
+  // Get a DESTINATION connector resource in VDP with its ID (admin only)
   //
   // `GetDestinationConnectorsAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`.
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to get a *destination-connector* resource in VDP.
+  // This is a *private* method only available for admins and internal backend services to get a *destination-connector* resource in VDP with its ID.
   //
   // It takes in `GetDestinationConnectorAdminRequest` and returns `GetDestinationConnectorAdminResponse`.
   //
-  // **NOTE**: The `destination_connector.name` field in `GetDestinationConnectorAdminRequest` must have the format of `destination-connectors/{connector_name}`. For example: `destination-connectors/postgres-db`.
+  // - The parameter `destinationConnectorName` is extracted from the endpoint path. It must have the format of `destination-connectors/{id}`. For example: `destination-connectors/postgres-db`.
   rpc GetDestinationConnectorAdmin(GetDestinationConnectorAdminRequest)
       returns (GetDestinationConnectorAdminResponse) {
     option (google.api.http) = {
@@ -112,15 +114,15 @@ service ConnectorPrivateService {
     option (google.api.method_signature) = "name";
   }
 
-  // Get a DESTINATION connector resource in VDP with a permalink consisting of unique ID (admin only).
+  // Get a DESTINATION connector resource in VDP with its unique ID (admin only).
   //
   // `LookUpDestinationConnectorAdmin` is a call with the method(s) `GET` within the `ConnectorPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to get a *destination-connector* resource in VDP with it's permalink (i.e., `destination-connector.uid`).
+  // This is a *private* method only available for admins and internal backend services to get a *destination-connector* resource in VDP with its unique ID.
   // 
   // It takes in `LookUpDestinationConnectorAdminRequest` and returns `LookUpDestinationConnectorAdminResponse`.
   //
-  // **NOTE**: permalink in `LookUpDestinationConnectorAdminRequest` must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the model.
+  // **NOTE**: The parameter `destinationConnectorPermalink` is extracted from the endpoint path. It must have the format of `destination-connectors/{uid}`.
   rpc LookUpDestinationConnectorAdmin(LookUpDestinationConnectorAdminRequest)
       returns (LookUpDestinationConnectorAdminResponse) {
     option (google.api.http) = {
@@ -129,15 +131,17 @@ service ConnectorPrivateService {
     option (google.api.method_signature) = "permalink";
   }
 
-  // Trigger a longrunning operation checking the state of a Destination Connector (admin only).
+  // Trigger a longrunning operation checking the state of a Destination Connector with its ID (admin only).
   //
   // `CheckDestinationConnector` is a call with the method(s) `GET` within the `ConnectorPrivateService`. 
   //
-  // This is a *private* method that is only avaible for admins and internal backend services to trigger a longrunning operation checking the state of a *destination-connector* resource in VDP with it's name (i.e., `destination-connector.name`). It returns a `workflow_id` with which internal services can check the results after the operation is done. Resutls are also used to update the state records in the state server.
+  // This is a *private* method only available for admins and other internal backend services to trigger a longrunning operation checking the state of a *destination-connector* resource in VDP with its ID. It returns a `workflow_id` with which internal services can check the results after the operation completes. The Results will be used to update the state records in the state server.
   //
   // It takes in `CheckDestinationConnectorRequest` and returns `CheckDestinationConnectorResponse`. 
   //
-  // **NOTE**: this methods triggers a longrunning operation. The state of the destination connector is only avaible when the operation is done.
+  // **NOTE**: 
+  // - This method triggers a longrunning operation. The state of the destination connector is only available when the operation completes.
+  // - The parameter `destinationConnectorName` is extracted from the endpoint path. It must have the format of `destination-connectors/{id}`. For example: `destination-connectors/postgres-db`.
   rpc CheckDestinationConnector(CheckDestinationConnectorRequest) returns (CheckDestinationConnectorResponse) {
     option (google.api.http) = {
       get : "/v1alpha/admin/{name=destination-connectors/*}/check"

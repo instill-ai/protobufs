@@ -19,9 +19,9 @@ service MgmtPublicService {
   //
   // This method returns the liveness (alive or dead) of the Mgmt service.
   //
-  // It takes in `LivenessRequest` and returns a `LivenessResponse`.
-  //
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+  //
+  // It takes in `LivenessRequest` and returns a `LivenessResponse`.
   rpc Liveness(LivenessRequest) returns (LivenessResponse) {
     option (google.api.http) = {
       get : "/v1alpha/__liveness"
@@ -34,10 +34,10 @@ service MgmtPublicService {
   // `Readiness` is a call with the method(s) `GET` within the `MgmtPublicService` service. 
   //
   // This method returns the Readiness (ready or not ready) of the Mgmt service.
-  //
-  // It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
   // 
   // → See [Kubernetes best practices](https://cloud.google.com/blog/products/containers-kubernetes/kubernetes-best-practices-setting-up-health-checks-with-readiness-and-liveness-probes) and [GRPC Health Checking](https://github.com/grpc/grpc/blob/master/doc/health-checking.md) for further details.
+  //
+  // It takes in `ReadinessRequest` and returns a `ReadinessResponse`.
   rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
     option (google.api.http) = {
       get : "/v1alpha/__readiness"
@@ -47,9 +47,9 @@ service MgmtPublicService {
 
   // Get user's own user information
   //
-  // `QueryAuthenticatedUser` is a call with the method(s) `GET` within the `MgmtPrivateService`. 
+  // `QueryAuthenticatedUser` is a call with the method(s) `GET` within the `MgmtPublicService`. 
   //
-  // This method is for an authenticated user to query it's *own* user information. 
+  // This method is for an authenticated user to query its *own* user information. 
   //
   // It takes in `QueryAuthenticatedUserRequest` and returns a `QueryAuthenticatedUserResponse`.
   rpc QueryAuthenticatedUser(QueryAuthenticatedUserRequest)
@@ -59,11 +59,11 @@ service MgmtPublicService {
     };
   }
 
-  // Update user's own user information
+  // Update user information
   //
-  // `PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPrivateService`. 
+  // `PatchAuthenticatedUser` is a call with the method(s) `PATCH` within the `MgmtPublicService`. 
   //
-  // This method is for an authenticated user to update it's *own* user information.
+  // This method allows authenticated users to update their user information.
   //
   // It takes in `PatchAuthenticatedUserRequest` and returns a `PatchAuthenticatedUserResponse`.
   rpc PatchAuthenticatedUser(PatchAuthenticatedUserRequest)
@@ -75,15 +75,15 @@ service MgmtPublicService {
     option (google.api.method_signature) = "user,update_mask";
   }
 
-  // Check if an user exist with it's name.
+  // Check if a user exists with its name.
   //
-  // `ExistUsername` is a call with the method(s) `GET` within the `MgmtPrivateService`.
+  // `ExistUsername` is a call with the method(s) `GET` within the `MgmtPublicService`.
   //
-  // This method return a boolean value indicating the existance of an user with `user.name`. 
+  // This method returns a boolean value indicating the existence of a user with its name. 
   //
-  // It takes in `ExistUsernameRequest` and returns a `ExistUsernameResponse`.
+  // It takes in `ExistUsernameRequest` and returns `ExistUsernameResponse`.
   //
-  // NOTE: `user.name` in `ExistUsernameRequest` must have the format of `users/{user_name}`. For example, `users/local-user`.
+  // **NOTE**: The parameter `userName` is extracted from the endpoint path. It must have the format of `users/{name}`. For example: `users/harry-potter`.
   rpc ExistUsername(ExistUsernameRequest) returns (ExistUsernameResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=users/*}/exist"
@@ -91,8 +91,13 @@ service MgmtPublicService {
     option (google.api.method_signature) = "name";
   }
 
-// CreateToken method receives a CreateTokenRequest message and returns
-  // a CreateTokenResponse message.
+  // Create a new API token
+  //
+  // `CreateToken` is a call with the method(s) `POST` within the `MgmtPublicService`.
+  //
+  // This method creates an API token for users securely access VDP resources and services.
+  //
+  // It takes in `CreateTokenRequest` and returns `CreateTokenResponse`.
   rpc CreateToken(CreateTokenRequest) returns (CreateTokenResponse) {
     option (google.api.http) = {
       post : "/v1alpha/tokens"
@@ -101,16 +106,28 @@ service MgmtPublicService {
     option (google.api.method_signature) = "token";
   }
 
-  // ListTokens method receives a ListTokensRequest message and returns a
-  // ListTokensResponse message.
+  // List all available tokens
+  //
+  // `ListTokens` is a call with the method(s) `GET` within the `MgmtPublicService`.
+  //
+  // This method returns a list of all the available API tokens.
+  //
+  // It takes in `ListTokensRequest` and returns `ListTokensResponse`.
   rpc ListTokens(ListTokensRequest) returns (ListTokensResponse) {
     option (google.api.http) = {
       get : "/v1alpha/tokens"
     };
   }
 
-  // GetToken method receives a GetTokenRequest message and returns a
-  // GetTokenResponse message.
+  // Get an API token with its ID.
+  //
+  // `GetToken` is a call with the method(s) `GET` within the `MgmtPublicService`.
+  //
+  // This method returns an API token with the ID specified. 
+  //
+  // It takes in `GetTokenRequest` and returns `GetTokenResponse`.
+  //
+  // **NOTE**: The parameter `tokenName` is extracted from the endpoint path. It must have the format of `tokens/{id}`. For example: `tokens/token-1`.
   rpc GetToken(GetTokenRequest) returns (GetTokenResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=tokens/*}"
@@ -118,8 +135,15 @@ service MgmtPublicService {
     option (google.api.method_signature) = "name";
   }
 
-  // DeleteToken method receives a DeleteTokenRequest message and returns
-  // a DeleteTokenResponse message.
+  // Delete an API token with its ID.
+  //
+  // `DeleteToken` is a call with the method(s) `GET` within the `MgmtPublicService`.
+  //
+  // This method deletes an API token with the ID specified. 
+  //
+  // It takes in `DeleteTokenRequest` and returns `DeleteTokenResponse`.
+  //
+  // **NOTE**: The parameter `tokenName` is extracted from the endpoint path. It must have the format of `tokens/{id}`. For example: `tokens/token-1`.
   rpc DeleteToken(DeleteTokenRequest) returns (DeleteTokenResponse) {
     option (google.api.http) = {
       delete : "/v1alpha/{name=tokens/*}"

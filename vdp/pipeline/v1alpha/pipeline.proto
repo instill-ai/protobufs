@@ -70,12 +70,28 @@ message Pipeline {
     STATE_ERROR = 3;
   }
 
-  // Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`
-  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // The name of the pipeline. 
+  // Format: `pipelines/{id}`. 
+  // For example: `pipelines/pipeline-1`.
+  string name = 1 [ 
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "pipeline.name"}
+    }
+  ];
   // Pipeline UUID
-  string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // Pipeline resource ID (the last segment of the resource name) used to
-  // construct the resource name. This conforms to RFC-1034, which restricts to
+  string uid = 2 [ 
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "pipelinePermalink"}
+    }
+  ];
+  // Pipeline resource ID (the last segment of the resource id) used to
+  // construct the resource id. This conforms to RFC-1034, which restricts to
   // letters, numbers, and hyphen, with the first character a letter, the last a
   // letter or a number, and a 63 character maximum.
   string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
@@ -89,12 +105,12 @@ message Pipeline {
   State state = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Pipeline owner
   oneof owner {
-    // The resource name of a user, e.g., "users/local-user".
+    // The resource id of a user, e.g., "users/local-user".
     string user = 8 [
       (google.api.resource_reference).type = "api.instill.tech/User",
       (google.api.field_behavior) = OUTPUT_ONLY
     ];
-    // The resource name of an organization
+    // The resource id of an organization
     string org = 9 [
       (google.api.resource_reference).type = "api.instill.tech/Organization",
       (google.api.field_behavior) = OUTPUT_ONLY
@@ -136,7 +152,7 @@ enum View {
 message ListPipelinesRequest {
   // The maximum number of pipelines to return. The service may return fewer
   // than this value. If unspecified, at most 10 pipelines will be returned. The
-  // maximum value is 100; values above 100 will be coerced to 100.
+  // maximum value is 100; values above 100 will become 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
@@ -158,13 +174,16 @@ message ListPipelinesResponse {
 
 // GetPipelineRequest represents a request to query a pipeline
 message GetPipelineRequest {
-  // Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. 
+  // The name of the pipeline to retrieve. 
+  // Format: `pipelines/{id}`. 
   // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
   // Pipeline resource view (default is VIEW_BASIC)
@@ -194,13 +213,16 @@ message UpdatePipelineResponse {
 
 // DeletePipelineRequest represents a request to delete a pipeline resource
 message DeletePipelineRequest {
-  // Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. 
+  // The name of the pipeline to delete. 
+  // Format: `pipelines/{id}`. 
   // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
 }
@@ -208,17 +230,20 @@ message DeletePipelineRequest {
 // DeletePipelineResponse represents an empty response
 message DeletePipelineResponse {}
 
-// LookUpPipelineRequest represents a request to query a pipeline via permalink
+// LookUpPipelineRequest represents a request to query a pipeline via permalink.
 message LookUpPipelineRequest {
-  // Permalink of a pipeline. It must have to format of `pipelines/{uid}`, where `{uid}` denotes the unique ID of the pipeline.
+  // The permalink of the pipeline to retrieve. 
+  // Format: `pipelines/{uid}`. 
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.uid"}
-    } 
+      field_configuration : {path_param_name : "pipelinePermalink"}
+    }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of any resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -230,13 +255,16 @@ message LookUpPipelineResponse {
 
 // ActivatePipelineRequest represents a request to activate a pipeline
 message ActivatePipelineRequest {
-  // Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. 
-  // For example, `pipelines/pipeline-1`.
+  // The name of the pipeline to activate. 
+  // Format: `pipelines/{id}`. 
+  // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
 }
@@ -249,12 +277,16 @@ message ActivatePipelineResponse {
 
 // DeactivatePipelineRequest represents a request to deactivate a pipeline
 message DeactivatePipelineRequest {
-  // Pipeline resource name. It must has the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
+  // The name of the pipeline to activate. 
+  // Format: `pipelines/{id}`. 
+  // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
 }
@@ -268,17 +300,20 @@ message DeactivatePipelineResponse {
 // RenamePipelineRequest represents a request to rename the pipeline resource
 // name
 message RenamePipelineRequest {
-  // Pipeline resource name. It must has the format of `pipelines/{pipeline_name}`. 
-  // For example, `pipelines/pipeline-1`.
+  // The name of the pipeline to rename. 
+  // Format: `pipelines/{id}`. 
+  // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
 
-  // Pipeline new resource id to replace with the pipeline resource name to be `pipelines/{new_pipeline_id}`
+  // Pipeline new resource ID. The `pipelineName` after update becomes `pipelines/{new_id}`.
   string new_pipeline_id = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -350,13 +385,16 @@ message ModelOutput {
 
 // TriggerPipelineRequest represents a request to trigger a pipeline
 message TriggerPipelineRequest {
-  // Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. 
+  // The name of the pipeline to trigger. 
+  // Format: `pipelines/{id}`. 
   // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
   // Input to the pipeline
@@ -376,12 +414,16 @@ message TriggerPipelineResponse {
 // TriggerPipelineBinaryFileUploadRequest represents a request to trigger a
 // pipeline
 message TriggerPipelineBinaryFileUploadRequest {
-  // Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. For example: `pipelines/pipeline-1`.
+  // The name of the pipeline to trigger. 
+  // Format: `pipelines/{id}`. 
+  // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
   // Input to the pipeline
@@ -400,12 +442,16 @@ message TriggerPipelineBinaryFileUploadResponse {
 // WatchPipelineRequest represents a public request to query
 // a pipeline's current state
 message WatchPipelineRequest {
-  // Pipeline resource name. It must have the format of "pipelines/*"
+  // The name of the pipeline to retrieve. 
+  // Format: `pipelines/{id}`. 
+  // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name/watch"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
 }
@@ -423,11 +469,11 @@ message WatchPipelineResponse {
 message ListPipelinesAdminRequest {
   // The maximum number of pipelines to return. The service may return fewer
   // than this value. If unspecified, at most 10 pipelines will be returned. The
-  // maximum value is 100; values above 100 will be coerced to 100.
+  // maximum value is 100; values above 100 will be forced to 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of any resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
   // Filter expression to list pipelines
   optional string filter = 4 [ (google.api.field_behavior) = OPTIONAL ];
@@ -445,16 +491,19 @@ message ListPipelinesAdminResponse {
 
 // GetPipelineAdminRequest represents a request to query a user's pipeline by admin
 message GetPipelineAdminRequest {
-  // Pipeline resource name. It must have the format of `pipelines/{pipeline_name}`. 
-  // For example, `pipelines/pipeline-1`.
+  // The name of the pipeline to retrieve. 
+  // Format: `pipelines/{id}`. 
+  // For example: `pipelines/pipeline-1`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/Pipeline"
+    },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.name"}
+      field_configuration : {path_param_name : "pipelineName"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of any resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -466,15 +515,16 @@ message GetPipelineAdminResponse {
 
 // LookUpPipelineAdminRequest represents a request to query a user's pipeline via permalink by admin
 message LookUpPipelineAdminRequest {
-  // Permalink of a pipeline. It must has the format of `pipelines/{uid}`, where `{uid}` denotes the unique ID of the pipeline.
+  // The permalink of the pipeline to retrieve. 
+  // Format: `pipelines/{uid}`. 
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "pipeline.uid"}
+      field_configuration : {path_param_name : "pipelinePermalink"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of any resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 

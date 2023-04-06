@@ -69,9 +69,18 @@ message SourceConnector {
     pattern : "source-connectors/{source-connector}"
   };
 
-  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
-  // For example, `source-connectors/http`.
-  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // The name of the source connector. 
+  // Format: `source-connectors/{id}`. 
+  // For example: `source-connectors/http`.
+  string name = 1 [ 
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/SourceConnector"
+    },
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "sourceConnectorName"}
+    }
+  ];
   // Source connector UUID
   string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Source connector resource ID (the last segment of the resource name) used to
@@ -97,15 +106,24 @@ message DestinationConnector {
     pattern : "destination-connectors/{destination-connector}"
   };
 
-  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
-  // For example, `destination-connectors/postgres-db`.
-  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // The name of the destination connector. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
+  string name = 1 [ 
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/DestinationConnector"
+    },
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "destinationConnectorName"}
+    }
+  ];
   // Destination connector UUID
   string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Destination connector resource ID (the last segment of the resource name)
   // used to construct the resource name. This conforms to RFC-1034, which
-  // restricts to letters, numbers, and hyphen, with the first character a
-  // letter, the last a letter or a number, and a 63 character maximum.
+  // restricts to letters, numbers, and hyphens, with the first character a
+  // letter, the last letter or a number, and a 63-character maximum.
   string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
   // Destination connector definition resource
   string destination_connector_definition = 4 [
@@ -144,11 +162,11 @@ message CreateSourceConnectorResponse {
 message ListSourceConnectorsRequest {
   // The maximum number of connectors to return. The service may return fewer
   // than this value. If unspecified, at most 10 connectors will be returned.
-  // The maximum value is 100; values above 100 will be coerced to 100.
+  // The maximum value is 100; values above 100 will become to 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -166,18 +184,19 @@ message ListSourceConnectorsResponse {
 // GetSourceConnectorRequest represents a request to query a
 // SourceConnector resource
 message GetSourceConnectorRequest {
-  // SourceConnectorConnector resource name. It must have the format of `source-connectors/{connector_name}`. 
-  // For example, `source-connectors/http`.
+  // The name of the source connector to retrieve. 
+  // Format: `source-connectors/{id}`. 
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -209,7 +228,8 @@ message UpdateSourceConnectorResponse {
 // DeleteSourceConnectorRequest represents a request to delete a
 // SourceConnector resource
 message DeleteSourceConnectorRequest {
-  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // The name of the source connector to delete. 
+  // Format: `source-connectors/{id}`. 
   // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -217,7 +237,7 @@ message DeleteSourceConnectorRequest {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
 }
@@ -228,17 +248,18 @@ message DeleteSourceConnectorResponse {}
 // LookUpSourceConnectorRequest represents a request to query a source connector
 // via permalink
 message LookUpSourceConnectorRequest {
-  // Permalink of a source connector. It must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
+  // The permalink of the source connector to retrieve. 
+  // Format: `source-connectors/{uid}`. 
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.uid"}
+      field_configuration : {path_param_name : "sourceConnectorPermalink"}
     }
   ]; 
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -251,15 +272,16 @@ message LookUpSourceConnectorResponse {
 // ConnectSourceConnectorRequest represents a request to connect a
 // source connector
 message ConnectSourceConnectorRequest {
-  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`. 
-  // For example, `source-connectors/http`.
+  // The name of the source connector to connect. 
+  // Format: `source-connectors/{id}`. 
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
 }
@@ -273,7 +295,8 @@ message ConnectSourceConnectorResponse {
 // DisconnectSourceConnectorRequest represents a request to disconnect a
 // source connector
 message DisconnectSourceConnectorRequest {
-  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // The name of the source connector to disconnect. 
+  // Format: `source-connectors/{id}`. 
   // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -281,7 +304,7 @@ message DisconnectSourceConnectorRequest {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
 }
@@ -295,7 +318,8 @@ message DisconnectSourceConnectorResponse {
 // RenameSourceConnectorRequest represents a request to rename the
 // SourceConnector resource name
 message RenameSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // The name of the source connector to update. 
+  // Format: `source-connectors/{id}`. 
   // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -303,12 +327,10 @@ message RenameSourceConnectorRequest {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
-  // SourceConnector new resource id to replace with the
-  // SourceConnector resource name to be
-  // "source-connectors/{new_source_connector_id}"
+  // Source connector's new ID.
   string new_source_connector_id = 2 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -318,10 +340,11 @@ message RenameSourceConnectorResponse {
   SourceConnector source_connector = 1;
 }
 
-// ReadSourceConnectorRequest represents a request to perform read operation of
+// ReadSourceConnectorRequest represents a request to perform the read operation of
 // a SourceConnector given the resource name
 message ReadSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // The name of the source connector for reading operations. 
+  // Format: `source-connectors/{id}`. 
   // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -329,7 +352,7 @@ message ReadSourceConnectorRequest {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
 }
@@ -363,11 +386,11 @@ message CreateDestinationConnectorResponse {
 message ListDestinationConnectorsRequest {
   // The maximum number of connectors to return. The service may return fewer
   // than this value. If unspecified, at most 10 connectors will be returned.
-  // The maximum value is 100; values above 100 will be coerced to 100.
+  // The maximum value is 100; values above 100 will become to 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -385,18 +408,19 @@ message ListDestinationConnectorsResponse {
 // GetDestinationConnectorRequest represents a request to query a
 // DestinationConnector resource
 message GetDestinationConnectorRequest {
-  // Destination-connector resource name. It must have the format of `destination-connectors/{connector_name}.`
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector to retrieve. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -428,15 +452,16 @@ message UpdateDestinationConnectorResponse {
 // DeleteDestinationConnectorRequest represents a request to delete a
 // DestinationConnector resource
 message DeleteDestinationConnectorRequest {
-  // DestinationConnector resource name. It must have the format of `destination-connectors/{connector_name}`.
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector to delete. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
 }
@@ -447,17 +472,18 @@ message DeleteDestinationConnectorResponse {}
 // LookUpDestinationConnectorRequest represents a request to query a destination
 // connector via permalink
 message LookUpDestinationConnectorRequest {
-  // Permalink of a destination connector. It must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
+  // The permalink of the destination connector to retrieve. 
+  // Format: `destination-connectors/{uid}`. 
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.uid"}
+      field_configuration : {path_param_name : "destinationConnectorPermalink"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -471,15 +497,16 @@ message LookUpDestinationConnectorResponse {
 // ConnectDestinationConnectorRequest represents a request to connect a
 // destination connector
 message ConnectDestinationConnectorRequest {
-  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector to connect. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
 }
@@ -502,7 +529,7 @@ message DisconnectDestinationConnectorRequest {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
 }
@@ -517,15 +544,16 @@ message DisconnectDestinationConnectorResponse {
 // RenameDestinationConnectorRequest represents a request to rename the
 // DestinationConnector resource name
 message RenameDestinationConnectorRequest {
-  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector to update. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
   // DestinationConnector new resource id to replace with the
@@ -545,15 +573,16 @@ message RenameDestinationConnectorResponse {
 // WriteDestinationConnectorRequest represents a request to perform write
 // operation of a DestinationConnector given the resource name
 message WriteDestinationConnectorRequest {
-  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector for writing operations. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
   // Sync mode:
@@ -589,11 +618,11 @@ message WriteDestinationConnectorResponse {}
 message ListSourceConnectorsAdminRequest {
   // The maximum number of connectors to return. The service may return fewer
   // than this value. If unspecified, at most 10 connectors will be returned.
-  // The maximum value is 100; values above 100 will be coerced to 100.
+  // The maximum value is 100; values above 100 will become to 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -611,18 +640,19 @@ message ListSourceConnectorsAdminResponse {
 // GetSourceConnectorAdminRequest represents a request to query a
 // SourceConnector resource by admin
 message GetSourceConnectorAdminRequest {
-  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`. 
-  // For example, `source-connectors/http`.
+  // The name of the source connector to retrieve. 
+  // Format: `source-connectors/{id}`.
+  // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -636,17 +666,18 @@ message GetSourceConnectorAdminResponse {
 // LookUpSourceConnectorAdminRequest represents a request to query a source connector
 // via permalink by admin
 message LookUpSourceConnectorAdminRequest {
-  // Permalink of a source connector. It must have the format of `source-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector resource.
+  // The permalink of the source connector to retrieve. 
+  // Format: `source-connectors/{uid}`. 
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.uid"}
+      field_configuration : {path_param_name : "sourceConnectorPermalink"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -659,13 +690,14 @@ message LookUpSourceConnectorAdminResponse {
 // WatchSourceConnectorRequest represents a public request to query
 // a source connector's current state
 message WatchSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of `source-connectors/{connector_name}`.
+  // The name of the source connector to watch. 
+  // Format: `source-connectors/{id}`. 
   // For example: `source-connectors/http`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/SourceConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
 }
@@ -680,13 +712,14 @@ message WatchSourceConnectorResponse {
 // CheckSourceConnectorRequest represents a private request to query
 // a source connector's current state
 message CheckSourceConnectorRequest {
-  // Source connector resource name. It must have the format of `source-connectors/{connector_name}`. 
-  // For example, `source-connectors/http`.
+  // The name of the source connector to check. 
+  // Format: `source-connectors/{id}`.
+  // For example: `source-connectors/http`.
   string name = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/SourceConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "source_connector.name"}
+      field_configuration : {path_param_name : "sourceConnectorName"}
     }
   ];
 }
@@ -703,11 +736,11 @@ message CheckSourceConnectorResponse {
 message ListDestinationConnectorsAdminRequest {
   // The maximum number of connectors to return. The service may return fewer
   // than this value. If unspecified, at most 10 connectors will be returned.
-  // The maximum value is 100; values above 100 will be coerced to 100.
+  // The maximum value is 100; values above 100 will become to 100.
   optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
   // Page token
   optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -725,18 +758,19 @@ message ListDestinationConnectorsAdminResponse {
 // GetDestinationConnectorAdminRequest represents a request to query a
 // DestinationConnector resource by admin
 message GetDestinationConnectorAdminRequest {
-  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`. 
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector to retrieve. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/DestinationConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -750,17 +784,18 @@ message GetDestinationConnectorAdminResponse {
 // LookUpDestinationConnectorAdminRequest represents a request to query a destination
 // connector via permalink by admin
 message LookUpDestinationConnectorAdminRequest {
-  // Permalink of a destination connector. It must have the format of `destination-connectors/{uid}`, where `{uid}` denotes the unique ID of the connector.
+  // The permalink of the destination connector to retrieve. 
+  // Format: `destination-connectors/{uid}`. 
   string permalink = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type : "api.instill.tech/SourceConnector"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.uid"}
+      field_configuration : {path_param_name : "destinationConnectorPermalink"}
     }
   ];
-  // View (default is VIEW_BASIC) represents a view of any resource. The resource view is implemented by adding a parameter to the method request which allows the client to specify which view of the resource it wants to receive in the response. 
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -774,13 +809,14 @@ message LookUpDestinationConnectorAdminResponse {
 // WatchDestinationConnectorRequest represents a public request to query
 // a destination connector's current state
 message WatchDestinationConnectorRequest {
-  // Destination connector resource name. It must have the format of `destination-connectors/{connector_name}`.
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector to watch. 
+  // Format: `destination-connectors/{id}`. 
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/DestinationConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     }
   ];
 }
@@ -795,13 +831,14 @@ message WatchDestinationConnectorResponse {
 // CheckDestinationConnectorRequest represents a private request to query
 // a destination connector's current state
 message CheckDestinationConnectorRequest {
-  // Destination Connector resource name. It must have the format of `destination-connectors/{connector_name}`. 
-  // For example, `destination-connectors/postgres-db`.
+  // The name of the destination connector to check. 
+  // Format: `destination-connectors/{id}`.
+  // For example: `destination-connectors/postgres-db`.
   string name = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/DestinationConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "destination_connector.name"}
+      field_configuration : {path_param_name : "destinationConnectorName"}
     } 
   ];
 }
@@ -815,17 +852,18 @@ message CheckDestinationConnectorResponse {
 
 // GetConnectorOperationRequest represents a request to query a longrunning operation
 message GetConnectorOperationRequest {
-  // The name of the operation resource. It must have the format of `operations/{unique_id}`, where `{unique_id}` denotes the unique ID of the longrunning operation.
+  // The name of the longrunning operation to retrieve. 
+  // Format: `operations/{uid}`. 
   string name = 1 [ 
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {
       type: "library.googleapis.com/Operation"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "operation.name"}
+      field_configuration : {path_param_name : "operationName"}
     }
   ];
-  // SourceConnector view (default is VIEW_BASIC)
+  // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
