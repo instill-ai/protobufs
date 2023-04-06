@@ -68,6 +68,44 @@ paths:
           type: string
       tags:
         - UsageService
+  /v1alpha/connector-operations/{uid}:
+    get:
+      summary: Get a longrunning operation with its unique ID.
+      description: "`GetConnectorOperation` is a call with the method(s) `GET` within the `ConnectorPublicService` service. \n\nThis method returns a longrunning operation with its unique ID.\n\n→ See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.\n\nIt takes in `GetConnectorOperationRequest` and returns `GetConnectorOperationResponse`.\n\n**NOTE**: The parameter `connectorOperationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`."
+      operationId: ConnectorPublicService_GetConnectorOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: connectorOperationName
+          description: "The name of the longrunning operation to retrieve. \nFormat: `operations/{uid}`."
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response.
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
+             - VIEW_FULL: View: FULL, full representation of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ConnectorPublicService
   /v1alpha/destination-connector-definitions/{id}:
     get:
       summary: Get the definition of a DESTINATION connector with its ID.
@@ -450,95 +488,7 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
-  /v1alpha/{model.name}:
-    patch:
-      summary: Update an existing model in VDP with its ID.
-      description: "`UpdateModel` is a call with the method(s) `PATCH` within the `ModelPublicService`.\n\nThis method updates an existing model resource with its ID and returns the updated model. \n\nIt takes in `UpdateModelRequest` and returns `UpdateModelResponse`.\n\n**NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`."
-      operationId: ModelPublicService_UpdateModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaUpdateModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model.name
-          description: "The name of the model resource. \nFormat: `models/{id}`.\nFor example: `models/yolov7`."
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: model
-          description: The model resource to update.
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              uid:
-                type: string
-                title: Model ID in UUIDv4
-                readOnly: true
-              id:
-                type: string
-                description: |-
-                  Resource ID (the last segment of the resource name) used to construct the
-                  resource name. This conforms to RFC-1034, which restricts to letters,
-                  numbers, and hyphen, with the first character a letter, the last a letter
-                  or a number, and a 63 character maximum.
-              description:
-                type: string
-                title: Model description
-              model_definition:
-                type: string
-                title: Model definition resource name
-              configuration:
-                type: object
-                title: |-
-                  Model configuration represents the configuration JSON that has been
-                  validated using the `model_spec` JSON schema of a ModelDefinition
-              task:
-                $ref: '#/definitions/ModelTask'
-                title: Model task
-                readOnly: true
-              state:
-                $ref: '#/definitions/v1alphaModelState'
-                title: Model state
-                readOnly: true
-              visibility:
-                $ref: '#/definitions/ModelVisibility'
-                title: Model visibility including public or private
-                readOnly: true
-              user:
-                type: string
-                description: The resource name of a user, e.g., "users/local-user".
-                readOnly: true
-              org:
-                type: string
-                title: The resource name of an organization
-                readOnly: true
-              create_time:
-                type: string
-                format: date-time
-                title: Model create time
-                readOnly: true
-              update_time:
-                type: string
-                format: date-time
-                title: Model update time
-                readOnly: true
-            title: The model resource to update.
-        - name: update_mask
-          description: Mask of fields to update.
-          in: query
-          required: true
-          type: string
-      tags:
-        - ModelPublicService
-  /v1alpha/modelss/{id}/readme:
+  /v1alpha/models/{id}/readme:
     get:
       summary: Get a model card (readme) with its ID.
       description: "`GetModelCard` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method get a model card (readme) of a model with its ID.\n\nIt takes in `GetModelCardRequest` and returns `GetModelCardResponse`.\n\n**NOTE**: The parameter `modelCardName` is extracted from the endpoint path. It must have the format of `models/{id}/readme`. For example: `models/yolov7/readme`."
@@ -662,6 +612,93 @@ paths:
           required: true
           type: string
           pattern: models/[^/]+
+      tags:
+        - ModelPublicService
+    patch:
+      summary: Update an existing model in VDP with its ID.
+      description: "`UpdateModel` is a call with the method(s) `PATCH` within the `ModelPublicService`.\n\nThis method updates an existing model resource with its ID and returns the updated model. \n\nIt takes in `UpdateModelRequest` and returns `UpdateModelResponse`.\n\n**NOTE**: The parameter `modelName` is extracted from the endpoint path. It must have the format of `models/{id}`. For example: `models/yolov7`."
+      operationId: ModelPublicService_UpdateModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: modelName
+          description: "The name of the model resource. \nFormat: `models/{id}`.\nFor example: `models/yolov7`."
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: model
+          description: The model resource to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                title: Model ID in UUIDv4
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Resource ID (the last segment of the resource name) used to construct the
+                  resource name. This conforms to RFC-1034, which restricts to letters,
+                  numbers, and hyphen, with the first character a letter, the last a letter
+                  or a number, and a 63 character maximum.
+              description:
+                type: string
+                title: Model description
+              model_definition:
+                type: string
+                title: Model definition resource name
+              configuration:
+                type: object
+                title: |-
+                  Model configuration represents the configuration JSON that has been
+                  validated using the `model_spec` JSON schema of a ModelDefinition
+              task:
+                $ref: '#/definitions/ModelTask'
+                title: Model task
+                readOnly: true
+              state:
+                $ref: '#/definitions/v1alphaModelState'
+                title: Model state
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/ModelVisibility'
+                title: Model visibility including public or private
+                readOnly: true
+              user:
+                type: string
+                description: The resource name of a user, e.g., "users/local-user".
+                readOnly: true
+              org:
+                type: string
+                title: The resource name of an organization
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                title: Model create time
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Model update time
+                readOnly: true
+            title: The model resource to update.
+        - name: update_mask
+          description: Mask of fields to update.
+          in: query
+          required: true
+          type: string
       tags:
         - ModelPublicService
   /v1alpha/models/{id}/deploy:
@@ -912,6 +949,73 @@ paths:
           pattern: models/[^/]+
       tags:
         - ModelPublicService
+  /v1alpha/model-operations/{uid}:
+    get:
+      summary: Get a longrunning operation with its unique ID.
+      description: "`GetModelOperation` is a call with the method(s) `GET` within the `ModelPublicService` service. \n\nThis method returns a longrunning operation with its unique ID.\n\n→ See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.\n\nIt takes in `GetModelOperationRequest` and returns `GetModelOperationResponse`.\n\n**NOTE**: The parameter `modelOperationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`."
+      operationId: ModelPublicService_GetModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: modelOperationName
+          description: "The name of the longrunning operation to retrieve. \nFormat: `operations/{uid}`."
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response.
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
+             - VIEW_FULL: View: FULL, full representation of the resource
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ModelPublicService
+  /v1alpha/model-operations/{uid}/cancel:
+    post:
+      summary: Cancel a longrunning operation with its unique ID.
+      description: "`CancelModelOperation` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method cancels a longrunning operation with its unique ID.\n\n→ See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.\n\nIt takes in `CancelModelOperationRequest` and returns `CancelModelOperationResponse`.\n\n**NOTE**: The parameter `modelOperationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`."
+      operationId: ModelPublicService_CancelModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCancelModelOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: modelOperationName
+          description: "The name of the longrunning operation to retrieve. \nFormat: `operations/{uid}`."
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: CancelModelOperationRequest represents a request to cancel a model operation
+      tags:
+        - ModelPublicService
   /v1alpha/models/{uid}/lookUp:
     get:
       summary: Get a model resource with its unique ID.
@@ -952,111 +1056,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{operation.name}/cancel:
-    post:
-      summary: Cancel a longrunning operation with its unique ID.
-      description: "`CancelModelOperation` is a call with the method(s) `POST` within the `ModelPublicService` service. \n\nThis method cancels a longrunning operation with its unique ID.\n\n→ See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.\n\nIt takes in `CancelModelOperationRequest` and returns `CancelModelOperationResponse`.\n\n**NOTE**: The parameter `operationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`."
-      operationId: ModelPublicService_CancelModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCancelModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: operation.name
-          description: "The name of the longrunning operation to retrieve. \nFormat: `operations/{uid}`."
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: CancelModelOperationRequest represents a request to cancel a model operation
-      tags:
-        - ModelPublicService
-  /v1alpha/{operationName_1}:
-    get:
-      summary: Get a longrunning operation with its unique ID.
-      description: "`GetModelOperation` is a call with the method(s) `GET` within the `ModelPublicService` service. \n\nThis method returns a longrunning operation with its unique ID.\n\n→ See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.\n\nIt takes in `GetModelOperationRequest` and returns `GetModelOperationResponse`.\n\n**NOTE**: The parameter `operationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`."
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: operationName_1
-          description: "The name of the longrunning operation to retrieve. \nFormat: `operations/{uid}`."
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response.
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, omit `Model.configuration` and `ModelInstance.configuration`
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
-  /v1alpha/operations/{id}:
-    get:
-      summary: Get a longrunning operation with its unique ID.
-      description: "`GetConnectorOperation` is a call with the method(s) `GET` within the `ConnectorPublicService` service. \n\nThis method returns a longrunning operation with its unique ID.\n\n→ See [Google RPC reference](https://cloud.google.com/service-infrastructure/docs/service-management/reference/rpc/google.longrunning#google.longrunning.Operations) for further details.\n\nIt takes in `GetConnectorOperationRequest` and returns `GetConnectorOperationResponse`.\n\n**NOTE**: The parameter `operationName` is extracted from the endpoint path. It must have the format of `operations/{uid}`."
-      operationId: ConnectorPublicService_GetConnectorOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: operationName
-          description: "The name of the longrunning operation to retrieve. \nFormat: `operations/{uid}`."
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response.
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource.
-             - VIEW_FULL: View: FULL, full representation of the resource.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
   /v1alpha/{pipeline.name}:
     patch:
       summary: Update a pipeline in VDP with its ID.
@@ -1372,7 +1371,7 @@ paths:
   /v1alpha/pipelines/{uid}/lookUp:
     get:
       summary: Get the a pipeline in VDP with its unique ID.
-      description: "`LookUpPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service.\n\nThis method return a pipeline resource in VDP given a pipeline permalink. \n\nIt takes in `LookUpPipelineRequest` and returns `LookUpPipelineResponse`.\n\n**NOTE**: The parameter `pipelinePermalink` is extracted from the endpoint path. It must have the format of `pipelines/{uid}`."
+      description: "`LookUpPipeline` is a call with the method(s) `GET` within the `PipelinePublicService` service.\n\nThis method return a pipeline resource in VDP with its unique ID. \n\nIt takes in `LookUpPipelineRequest` and returns `LookUpPipelineResponse`.\n\n**NOTE**: The parameter `pipelinePermalink` is extracted from the endpoint path. It must have the format of `pipelines/{uid}`."
       operationId: PipelinePublicService_LookUpPipeline
       responses:
         "200":
@@ -1989,7 +1988,7 @@ paths:
 
         It takes in `GetDestinationConnectorAdminRequest` and returns `GetDestinationConnectorAdminResponse`.
 
-        - The parameter `destinationConnectorName` is extracted from the endpoint path. It must have the format of `destination-connectors/{id}`. For example: `destination-connectors/postgres-db`.
+        **NOTE**: The parameter `destinationConnectorName` is extracted from the endpoint path. It must have the format of `destination-connectors/{id}`. For example: `destination-connectors/postgres-db`.
       operationId: ConnectorPrivateService_GetDestinationConnectorAdmin
       responses:
         "200":

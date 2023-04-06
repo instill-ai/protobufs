@@ -78,7 +78,13 @@ message Model {
   // The name of the model resource. 
   // Format: `models/{id}`.
   // For example: `models/yolov7`.
-  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  string name = 1 [ 
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "modelName"}
+    }
+  ];
   // Model ID in UUIDv4
   string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Resource ID (the last segment of the resource name) used to construct the
@@ -628,7 +634,7 @@ message GetModelOperationRequest {
       type: "library.googleapis.com/Operation"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "operationName"}
+      field_configuration : {path_param_name : "modelOperationName"}
     }
   ];
   // View (default is VIEW_BASIC) represents a view of a resource. Clients can specify the resource view it wants to receive in the response. 
@@ -676,7 +682,7 @@ message CancelModelOperationRequest {
       type: "library.googleapis.com/Operation"
     },
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "operation.name"}
+      field_configuration : {path_param_name : "modelOperationName"}
     }
   ];
 }
