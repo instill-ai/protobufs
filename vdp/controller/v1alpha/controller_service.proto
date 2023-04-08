@@ -14,12 +14,21 @@ service ControllerPrivateService {
   // Liveness method receives a LivenessRequest message and returns a
   // LivenessResponse message.
   // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Liveness(LivenessRequest) returns (LivenessResponse);
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__liveness"
+      additional_bindings : [ {get : "/v1alpha/health/controller"} ]
+    };
+  }
 
   // Readiness method receives a ReadinessRequest message and returns a
   // ReadinessResponse message.
   // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-  rpc Readiness(ReadinessRequest) returns (ReadinessResponse);
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/__readiness"
+    };
+  }
 
   // GetResource method receives a GetResourceRequest message
   // and returns a GetResourceResponse
@@ -28,7 +37,7 @@ service ControllerPrivateService {
       get : "/v1alpha/{name=resources/*/types/*}"
     };
     option (google.api.method_signature) = "name";
-  };
+  }
 
   // UpdateResource method receives a UpdateResourceRequest message
   // and returns a UpdateResourceResponse
@@ -37,7 +46,7 @@ service ControllerPrivateService {
       patch : "/v1alpha/{resource.name=resources/*/types/*}"
       body : "resource"
     };
-  };
+  }
 
   // DeleteResource method receives a DeleteResourceRequest message
   // and returns a DeleteResourceResponse
@@ -46,5 +55,5 @@ service ControllerPrivateService {
       delete : "/v1alpha/{name=resources/*/types/*}"
     };
     option (google.api.method_signature) = "name";
-  };
+  }
 }
