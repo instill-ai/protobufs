@@ -523,48 +523,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{name_1}:
-    get:
-      summary: |-
-        GetModelOperation method receives a
-        GetModelOperationRequest message and returns a
-        GetModelOperationResponse message.
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `Model.configuration` VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
   /v1alpha/{name_1}/connect:
     post:
       summary: |-
@@ -867,36 +825,6 @@ paths:
             title: ActivatePipelineRequest represents a request to activate a pipeline
       tags:
         - PipelinePublicService
-  /v1alpha/{name}/cancel:
-    post:
-      summary: |-
-        CancelModelOperation method receives a CancelModelOperationRequest message
-        and returns a CancelModelOperationResponse
-      operationId: ModelPublicService_CancelModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCancelModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: CancelModelOperationRequest represents a request to cancel a model operation
-      tags:
-        - ModelPublicService
   /v1alpha/{name}/connect:
     post:
       summary: |-
@@ -3384,61 +3312,6 @@ paths:
               - model
       tags:
         - ModelPublicService
-  /v1alpha/operations:
-    get:
-      summary: |-
-        ListModelOperations method receives a ListModelOperationsRequest message
-        and returns a ListModelOperationsResponse
-      operationId: ModelPublicService_ListModelOperations
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListModelOperationsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: page_size
-          description: |-
-            Page size: the maximum number of resources to return. The service may
-            return fewer than this value. If unspecified, at most 10 operations will be
-            returned. The maximum value is 100; values above 100 will be coereced to
-            100.
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: page_token
-          description: Page token
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: Filter expression to list operations
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `Model.configuration` VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
   /v1alpha/pipelines:
     get:
       summary: |-
@@ -4295,11 +4168,6 @@ definitions:
         title: Bounding box height value
         readOnly: true
     title: BoundingBox represents the bounding box data structure
-  v1alphaCancelModelOperationResponse:
-    type: object
-    title: |-
-      CancelModelOperationResponse represents a response for canceling a model
-      operation
   v1alphaCheckDestinationConnectorResponse:
     type: object
     properties:
@@ -5073,13 +4941,6 @@ definitions:
     title: GetModelOnlineSummaryResponse represents a response to GetModelOnlineSummaryRequest
     required:
       - summary
-  v1alphaGetModelOperationResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: The retrieved model operation
-    title: GetModelOperationResponse represents a response for a model operation
   v1alphaGetModelResponse:
     type: object
     properties:
@@ -5472,24 +5333,6 @@ definitions:
     title: |-
       ListModelDefinitionsResponse represents a response to list all supported model
       definitions
-  v1alphaListModelOperationsResponse:
-    type: object
-    properties:
-      operations:
-        type: array
-        items:
-          $ref: '#/definitions/googlelongrunningOperation'
-        title: a list of model operations
-      next_page_token:
-        type: string
-        title: Next page token
-      total_size:
-        type: string
-        format: int64
-        title: Total count of operations
-    title: |-
-      ListModelOperationsResponse represents a response for a list of model
-      operations including deploy and undeploy
   v1alphaListModelsAdminResponse:
     type: object
     properties:
