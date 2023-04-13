@@ -523,48 +523,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{name_1}:
-    get:
-      summary: |-
-        GetModelOperation method receives a
-        GetModelOperationRequest message and returns a
-        GetModelOperationResponse message.
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `Model.configuration` VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
   /v1alpha/{name_1}/connect:
     post:
       summary: |-
@@ -798,15 +756,15 @@ paths:
   /v1alpha/{name}:
     get:
       summary: |-
-        GetConnectorOperation method receives a
-        GetConnectorOperationRequest message and returns a
-        GetConnectorOperationResponse message.
-      operationId: ConnectorPublicService_GetConnectorOperation
+        GetModelOperation method receives a
+        GetModelOperationRequest message and returns a
+        GetModelOperationResponse message.
+      operationId: ModelPublicService_GetModelOperation
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -820,11 +778,13 @@ paths:
           pattern: operations/[^/]+
         - name: view
           description: |-
-            SourceConnector view (default is VIEW_BASIC)
+            View (default is VIEW_BASIC)
+            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
+            `Model.configuration` VIEW_FULL: show full information
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
           type: string
@@ -834,7 +794,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
+        - ModelPublicService
   /v1alpha/{name}/activate:
     post:
       summary: |-
@@ -4028,6 +3988,10 @@ definitions:
           if (any.is(Foo.class)) {
             foo = any.unpack(Foo.class);
           }
+          // or ...
+          if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+            foo = any.unpack(Foo.getDefaultInstance());
+          }
 
       Example 3: Pack and unpack a message in Python.
 
@@ -4057,7 +4021,6 @@ definitions:
       methods only use the fully qualified type name after the last '/'
       in the type URL, for example "foo.bar.com/x/y.z" will yield type
       name "y.z".
-
 
       JSON
 
@@ -4303,9 +4266,9 @@ definitions:
   v1alphaCheckDestinationConnectorResponse:
     type: object
     properties:
-      workflow_id:
-        type: string
-        title: Retrieved longrunning workflow id
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state by checking connection
     title: |-
       CheckDestinationConnectorResponse represents a response to fetch a destination connector's
       current state
@@ -4321,9 +4284,9 @@ definitions:
   v1alphaCheckSourceConnectorResponse:
     type: object
     properties:
-      workflow_id:
-        type: string
-        title: Retrieved longrunning workflow id
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state by checking connection
     title: |-
       CheckSourceConnectorResponse represents a response to fetch a source connector's
       current state
@@ -4881,13 +4844,6 @@ definitions:
     title: GetBulkPipelineTriggerSummariesResponse represents a response to GetBulkPipelineTriggerSummariesRequest
     required:
       - bulk_summaries
-  v1alphaGetConnectorOperationResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: The retrieved longrunning operation
-    title: GetConnectorOperationResponse represents a response for a longrunning operation
   v1alphaGetCumulativeModelOnlineRecordsRequest:
     type: object
     properties:
