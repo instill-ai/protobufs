@@ -523,6 +523,48 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
+  /v1alpha/{name_1}:
+    get:
+      summary: |-
+        GetModelOperation method receives a
+        GetModelOperationRequest message and returns a
+        GetModelOperationResponse message.
+      operationId: ModelPublicService_GetModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name_1
+          description: The name of the operation resource.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            View (default is VIEW_BASIC)
+            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
+            `Model.configuration` VIEW_FULL: show full information
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_FULL: View: FULL, full representation of the resource
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ModelPublicService
   /v1alpha/{name_1}/connect:
     post:
       summary: |-
@@ -4941,6 +4983,13 @@ definitions:
     title: GetModelOnlineSummaryResponse represents a response to GetModelOnlineSummaryRequest
     required:
       - summary
+  v1alphaGetModelOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: The retrieved model operation
+    title: GetModelOperationResponse represents a response for a model operation
   v1alphaGetModelResponse:
     type: object
     properties:
