@@ -1953,40 +1953,6 @@ paths:
           pattern: tokens/[^/]+
       tags:
         - MgmtPublicService
-  /v1alpha/{token.name}/validate:
-    post:
-      summary: |-
-        ValidateToken method receives a ValidateTokenRequest message and
-        returns a ValidateTokenResponse
-      operationId: MgmtPrivateService_ValidateToken
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaValidateTokenResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: token.name
-          description: |-
-            The resource name of the API token to validate,
-            for example: "tokens/test-token"
-          in: path
-          required: true
-          type: string
-          pattern: tokens/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: |-
-              ValidateTokenRequest represents a request to validate whether
-              an API token is valid to be used for triggering pipelines
-      tags:
-        - MgmtPrivateService
   /v1alpha/{user.name}/exist:
     get:
       summary: |-
@@ -4129,10 +4095,10 @@ definitions:
         type: string
         format: int64
         title: The amount of time (in seconds) the API token will live. If set to -1, indicating a non-expire token
-      expires_in:
+      expires_at:
         type: string
-        format: int64
-        title: The amount of time (in seconds) the API token will expire. If value is -1, indicating a non-expire token
+        format: date-time
+        title: API token expire time
         readOnly: true
     title: ApiToken represents the content of a API token
   v1alphaApiTokenState:
@@ -7058,15 +7024,6 @@ definitions:
     title: User records definition
     required:
       - uid
-  v1alphaValidateTokenResponse:
-    type: object
-    properties:
-      valid:
-        type: boolean
-        title: A boolean value indicating whether the token is valid
-    title: |-
-      ValidateTokenResponse represents a response about whether
-      the queried token is valid
   v1alphaWatchDestinationConnectorResponse:
     type: object
     properties:
