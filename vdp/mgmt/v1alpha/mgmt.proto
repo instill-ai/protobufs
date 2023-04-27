@@ -288,10 +288,14 @@ message ApiToken {
   State state = 8  [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // API token type, value is fixed to "Bearer"
   string token_type = 9  [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // The amount of time (in seconds) the API token will live. If set to -1, indicating a non-expire token
-  int64 lifetime = 10  [ (google.api.field_behavior) = INPUT_ONLY ];
-  // API token expire time
-  google.protobuf.Timestamp expires_at = 11  [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // API token expiration
+  oneof expiration {
+    // Input only. The TTL in seconds for this resource.
+    int64 ttl = 10 [(google.api.field_behavior) = INPUT_ONLY];
+
+    // API token expire time
+    google.protobuf.Timestamp expire_time = 11;
+  }
 }
 
 // CreateTokenRequest represents a request to create a API token
