@@ -1656,7 +1656,7 @@ paths:
           type: string
       tags:
         - PipelinePublicService
-  /v1alpha/{resource.name}:
+  /v1alpha/{resource.resource_permalink}:
     get:
       summary: |-
         GetResource method receives a GetResourceRequest message
@@ -1672,8 +1672,10 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: resource.name
-          description: Resource name
+        - name: resource.resource_permalink
+          description: |-
+            Permalink of a resouce. For example:
+            "resources/{resource_uuid}/types/{type}"
           in: path
           required: true
           type: string
@@ -1695,8 +1697,10 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: resource.name
-          description: Resource name
+        - name: resource.resource_permalink
+          description: |-
+            Permalink of a resouce. For example:
+            "resources/{resource_uuid}/types/{type}"
           in: path
           required: true
           type: string
@@ -1718,8 +1722,10 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: resource.name
-          description: Resource name.
+        - name: resource.resource_permalink
+          description: |-
+            Permalink of a resouce. For example:
+            "resources/{resource_uuid}/types/{type}"
           in: path
           required: true
           type: string
@@ -2019,92 +2025,7 @@ paths:
           pattern: users/[^/]+
       tags:
         - MgmtPublicService
-  /v1alpha/admin/{destination_connector.name}:
-    get:
-      summary: |-
-        GetDestinationConnectorAdmin method receives a
-        GetDestinationConnectorAdminRequest message and returns a
-        GetDestinationConnectorAdminResponse message.
-      operationId: ConnectorPrivateService_GetDestinationConnectorAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetDestinationConnectorAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: destination_connector.name
-          description: |-
-            DestinationConnectorConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: view
-          description: |-
-            DestinationConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
-  /v1alpha/admin/{model.name}:
-    get:
-      summary: |-
-        GetModelAdmin method receives a GetModelAdminRequest message and returns a
-        GetModelAdminResponse
-      operationId: ModelPrivateService_GetModelAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: model.name
-          description: |-
-            Resource name of the model.
-            For example "models/{model}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: view
-          description: |-
-            Model view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPrivateService
-  /v1alpha/admin/{name_1}/check:
+  /v1alpha/admin/{destination_connector_permalink}/check:
     get:
       summary: |-
         CheckDestinationConnector method receives a CheckDestinationConnectorRequest message and returns a
@@ -2120,17 +2041,17 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: name_1
+        - name: destination_connector_permalink
           description: |-
-            SourceConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Permalink of a destination connector. For example:
+            "destination-connectors/{uid}"
           in: path
           required: true
           type: string
           pattern: destination-connectors/[^/]+
       tags:
         - ConnectorPrivateService
-  /v1alpha/admin/{name_2}/check:
+  /v1alpha/admin/{model_permalink}/check:
     get:
       summary: |-
         CheckModel method receives a CheckModelRequest message and returns a
@@ -2146,42 +2067,16 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: name_2
+        - name: model_permalink
           description: |-
-            Resource name of the model.
-            For example "models/{model}"
+            Permalink of a model. For example:
+            "models/{uid}"
           in: path
           required: true
           type: string
           pattern: models/[^/]+
       tags:
         - ModelPrivateService
-  /v1alpha/admin/{name}/check:
-    get:
-      summary: |-
-        CheckSourceConnector method receives a CheckSourceConnectorRequest message and returns a
-        CheckSourceConnectorResponse
-      operationId: ConnectorPrivateService_CheckSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCheckSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-      tags:
-        - ConnectorPrivateService
   /v1alpha/admin/{permalink_1}/lookUp:
     get:
       summary: |-
@@ -2391,84 +2286,30 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPrivateService
-  /v1alpha/admin/{pipeline.name}:
+  /v1alpha/admin/{source_connector_permalink}/check:
     get:
       summary: |-
-        GetPipelineAdmin method receives a GetPipelineAdminRequest message and
-        returns a GetPipelineAdminResponse message.
-      operationId: PipelinePrivateService_GetPipelineAdmin
+        CheckSourceConnector method receives a CheckSourceConnectorRequest message and returns a
+        CheckSourceConnectorResponse
+      operationId: ConnectorPrivateService_CheckSourceConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetPipelineAdminResponse'
+            $ref: '#/definitions/v1alphaCheckSourceConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: pipeline.name
-          description: Pipeline resource name. It must have the format of "pipelines/*"
-          in: path
-          required: true
-          type: string
-          pattern: pipelines/[^/]+
-        - name: view
+        - name: source_connector_permalink
           description: |-
-            Pipeline resource view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - PipelinePrivateService
-  /v1alpha/admin/{source_connector.name}:
-    get:
-      summary: |-
-        GetSourceConnectorAdmin method receives a GetSourceConnectorAdminRequest
-        message and returns a GetSourceConnectorAdminResponse message.
-      operationId: ConnectorPrivateService_GetSourceConnectorAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetSourceConnectorAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name
-          description: |-
-            SourceConnectorConnector resource name. It must have the format of
-            "source-connectors/*"
+            Permalink of a source connector. For example:
+            "source-connectors/{uid}"
           in: path
           required: true
           type: string
           pattern: source-connectors/[^/]+
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPrivateService
   /v1alpha/admin/{user.name}:
@@ -3909,6 +3750,10 @@ definitions:
           if (any.is(Foo.class)) {
             foo = any.unpack(Foo.class);
           }
+          // or ...
+          if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+            foo = any.unpack(Foo.getDefaultInstance());
+          }
 
       Example 3: Pack and unpack a message in Python.
 
@@ -3938,7 +3783,6 @@ definitions:
       methods only use the fully qualified type name after the last '/'
       in the type URL, for example "foo.bar.com/x/y.z" will yield type
       name "y.z".
-
 
       JSON
 
@@ -4818,15 +4662,6 @@ definitions:
     title: GetCumulativePipelineTriggerRecordsResponse represents a response to GetCumulativePipelineTriggerRecordsRequest
     required:
       - cumulative_records
-  v1alphaGetDestinationConnectorAdminResponse:
-    type: object
-    properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: DestinationConnector resource
-    title: |-
-      GetDestinationConnectorAdminResponse represents a response for a
-      DestinationConnector resource
   v1alphaGetDestinationConnectorDefinitionResponse:
     type: object
     properties:
@@ -4845,13 +4680,6 @@ definitions:
     title: |-
       GetDestinationConnectorResponse represents a response for a
       DestinationConnector resource
-  v1alphaGetModelAdminResponse:
-    type: object
-    properties:
-      model:
-        $ref: '#/definitions/v1alphaModel'
-        title: The retrieved model
-    title: GetModelAdminResponse represents a response for a model
   v1alphaGetModelCardResponse:
     type: object
     properties:
@@ -4973,13 +4801,6 @@ definitions:
     title: GetPipelinesResponse represents a respond to GetModelsRequest
     required:
       - models
-  v1alphaGetPipelineAdminResponse:
-    type: object
-    properties:
-      pipeline:
-        $ref: '#/definitions/v1alphaPipeline'
-        title: A pipeline resource
-    title: GetPipelineAdminResponse represents a response for a pipeline resource
   v1alphaGetPipelineResponse:
     type: object
     properties:
@@ -5085,15 +4906,6 @@ definitions:
         $ref: '#/definitions/v1alphaResource'
         title: Retrieved resource state
     title: GetResourceResponse represents a response to fetch a resource's state
-  v1alphaGetSourceConnectorAdminResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: SourceConnector resource
-    title: |-
-      GetSourceConnectorAdminResponse represents a response for a
-      SourceConnector resource
   v1alphaGetSourceConnectorDefinitionResponse:
     type: object
     properties:
@@ -5394,7 +5206,10 @@ definitions:
         type: string
         format: int64
         title: Total count of pipeline resources
-    title: ListPipelinesAdminResponse represents a response for a list of pipelines
+    title: |-
+      ListPipelinesAdminResponse represents a response for a list of pipelines
+      The recipe returned will be permaLinks instead of resourceName temporary,
+      this will be refactored soon
   v1alphaListPipelinesResponse:
     type: object
     properties:
@@ -6341,9 +6156,11 @@ definitions:
   v1alphaResource:
     type: object
     properties:
-      name:
+      resource_permalink:
         type: string
-        description: Resource name.
+        title: |-
+          Permalink of a resouce. For example:
+          "resources/{resource_uuid}/types/{type}"
       model_state:
         $ref: '#/definitions/v1alphaModelState'
         title: Model state
@@ -6362,7 +6179,7 @@ definitions:
         title: Resource longrunning progress
     title: Resource represents the current information of a resource
     required:
-      - name
+      - resource_permalink
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
