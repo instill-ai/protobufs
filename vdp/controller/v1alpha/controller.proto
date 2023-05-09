@@ -18,11 +18,12 @@ import "vdp/healthcheck/v1alpha/healthcheck.proto";
 message Resource {
     option (google.api.resource) = {
       type : "api.instill.tech/Resource"
-      pattern : "resources/{resource}/types/{type}"
+      pattern : "resources/{resource_uuid}/types/{type}"
     };
 
-    // Resource name.
-    string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+    // Permalink of a resouce. For example:
+    // "resources/{resource_uuid}/types/{type}"
+    string resource_permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
     // Resource state
     oneof state {
         // Model state
@@ -40,12 +41,13 @@ message Resource {
 
 // GetResourceRequest represents a request to query a resource's state
 message GetResourceRequest {
-    // Resource name
-    string name = 1 [
+    // Permalink of a resouce. For example:
+    // "resources/{resource_uuid}/types/{type}"
+    string resource_permalink = 1 [
       (google.api.field_behavior) = REQUIRED,
       (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
       (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        field_configuration : {path_param_name : "resource.name"}
+        field_configuration : {path_param_name : "resource.resource_permalink"}
       }
     ];
 }
@@ -72,12 +74,13 @@ message UpdateResourceResponse {
 
 // DeleteResourceRequest represents a request to delete a resource's state
 message DeleteResourceRequest {
-    // Resource name
-    string name = 1 [
+    // Permalink of a resouce. For example:
+    // "resources/{resource_uuid}/types/{type}"
+    string resource_permalink = 1 [
       (google.api.field_behavior) = REQUIRED,
       (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
       (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        field_configuration : {path_param_name : "resource.name"}
+        field_configuration : {path_param_name : "resource.resource_permalink"}
       }
     ];
 }
