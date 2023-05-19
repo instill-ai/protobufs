@@ -667,44 +667,6 @@ paths:
               - new_destination_connector_id
       tags:
         - ConnectorPublicService
-  /v1alpha/{name_1}/trigger:
-    post:
-      summary: |-
-        TriggerPipeline method receives a TriggerPipelineRequest message and
-        returns a TriggerPipelineResponse.
-      operationId: PipelinePublicService_TriggerPipeline
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaTriggerPipelineResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: Pipeline resource name. It must have the format of "pipelines/*"
-          in: path
-          required: true
-          type: string
-          pattern: pipelines/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              task_inputs:
-                type: array
-                items:
-                  $ref: '#/definitions/v1alphaTaskInput'
-                title: Input to the pipeline
-            title: TriggerPipelineRequest represents a request to trigger a pipeline
-            required:
-              - task_inputs
-      tags:
-        - PipelinePublicService
   /v1alpha/{name_2}/rename:
     post:
       summary: RenameModel method rename a model
@@ -1179,6 +1141,44 @@ paths:
               - task_inputs
       tags:
         - ModelPublicService
+  /v1alpha/{name}/trigger-sync:
+    post:
+      summary: |-
+        TriggerSyncPipeline method receives a TriggerSyncPipelineRequest message and
+        returns a TriggerSyncPipelineResponse.
+      operationId: PipelinePublicService_TriggerSyncPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerSyncPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: Pipeline resource name. It must have the format of "pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              task_inputs:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaTaskInput'
+                title: Input to the pipeline
+            title: TriggerSyncPipelineRequest represents a request to trigger a pipeline
+            required:
+              - task_inputs
+      tags:
+        - PipelinePublicService
   /v1alpha/{name}/undeploy:
     post:
       summary: UndeployModel undeploy a model to offline state
@@ -6717,7 +6717,7 @@ definitions:
     title: |-
       TriggerModelResponse represents a response for the output for
       triggering a model
-  v1alphaTriggerPipelineBinaryFileUploadResponse:
+  v1alphaTriggerSyncPipelineBinaryFileUploadResponse:
     type: object
     properties:
       data_mapping_indices:
@@ -6731,9 +6731,9 @@ definitions:
           $ref: '#/definitions/v1alphaModelOutput'
         title: The multiple model inference outputs
     title: |-
-      TriggerPipelineBinaryFileUploadResponse represents a response for the output
+      TriggerSyncPipelineBinaryFileUploadResponse represents a response for the output
       of a pipeline, i.e., the multiple model inference outputs
-  v1alphaTriggerPipelineResponse:
+  v1alphaTriggerSyncPipelineResponse:
     type: object
     properties:
       data_mapping_indices:
@@ -6747,7 +6747,7 @@ definitions:
           $ref: '#/definitions/v1alphaModelOutput'
         title: The multiple model inference outputs
     title: |-
-      TriggerPipelineResponse represents a response for the output
+      TriggerSyncPipelineResponse represents a response for the output
       of a pipeline, i.e., the multiple model inference outputs
   v1alphaUndeployModelResponse:
     type: object
