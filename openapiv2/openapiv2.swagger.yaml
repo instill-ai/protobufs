@@ -1141,6 +1141,75 @@ paths:
               - task_inputs
       tags:
         - ModelPublicService
+  /v1alpha/{name}/trigger-async:
+    post:
+      summary: |-
+        TriggerAsyncPipeline method receives a TriggerPipelineRequest message and
+        returns a TriggerAsyncPipelineResponse.
+      operationId: PipelinePublicService_TriggerAsyncPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: Pipeline resource name. It must have the format of "pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              task_inputs:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaTaskInput'
+                title: Input to the pipeline
+            title: TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
+            required:
+              - task_inputs
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name}/trigger-async/{name}:
+    get:
+      summary: |-
+        GetPipelineOperation method receives a
+        GetPipelineOperationRequest message and returns a
+        GetPipelineOperationResponse message.
+      operationId: PipelinePublicService_GetPipelineOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetPipelineOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: The name of the operation resource.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: name
+          description: The name of the operation resource.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+      tags:
+        - PipelinePublicService
   /v1alpha/{name}/trigger-sync:
     post:
       summary: |-
@@ -4831,6 +4900,14 @@ definitions:
     title: GetPipelinesResponse represents a respond to GetModelsRequest
     required:
       - models
+  v1alphaGetPipelineOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: The retrieved longrunning operation
+        readOnly: true
+    title: GetPipelineOperationResponse represents a response for a longrunning operation
   v1alphaGetPipelineResponse:
     type: object
     properties:
@@ -6686,6 +6763,38 @@ definitions:
     required:
       - start_time
       - end_time
+  v1alphaTriggerAsyncPipelineBinaryFileUploadResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Trigger async pipeline operation message
+        readOnly: true
+      data_mapping_indices:
+        type: array
+        items:
+          type: string
+        title: The data mapping indices for each input
+        readOnly: true
+    title: |-
+      TriggerAsyncPipelineBinaryFileUploadResponse represents a response for the longrunning operation
+      of a pipeline
+  v1alphaTriggerAsyncPipelineResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Trigger async pipeline operation message
+        readOnly: true
+      data_mapping_indices:
+        type: array
+        items:
+          type: string
+        title: The data mapping indices for each input
+        readOnly: true
+    title: |-
+      TriggerAsyncPipelineResponse represents a response for the longrunning operation
+      of a pipeline
   v1alphaTriggerModelBinaryFileUploadResponse:
     type: object
     properties:
