@@ -68,32 +68,6 @@ paths:
           type: string
       tags:
         - UsageService
-  /v1alpha/{destination_connector.name/watch}/watch:
-    get:
-      summary: |-
-        WatchDestinationConnector method receives a WatchDestinationConnectorRequest message
-        and returns a WatchDestinationConnectorResponse
-      operationId: ConnectorPublicService_WatchDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: destination_connector.name/watch
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-      tags:
-        - ConnectorPublicService
   /v1alpha/{destination_connector.name}:
     get:
       summary: |-
@@ -217,6 +191,58 @@ paths:
           in: query
           required: true
           type: string
+      tags:
+        - ConnectorPublicService
+  /v1alpha/{destination_connector.name}/test:
+    get:
+      summary: |-
+        TestDestinationConnector method receives a TestDestinationConnectorRequest message
+        and returns a TestDestinationConnectorResponse
+      operationId: ConnectorPublicService_TestDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTestDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: destination_connector.name
+          description: |-
+            DestinationConnector resource name. It must have the format of
+            "destination-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
+      tags:
+        - ConnectorPublicService
+  /v1alpha/{destination_connector.name}/watch:
+    get:
+      summary: |-
+        WatchDestinationConnector method receives a WatchDestinationConnectorRequest message
+        and returns a WatchDestinationConnectorResponse
+      operationId: ConnectorPublicService_WatchDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: destination_connector.name
+          description: |-
+            SourceConnector resource name. It must have the format of
+            "destination-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
       tags:
         - ConnectorPublicService
   /v1alpha/{destination_connector_definition.name}:
@@ -523,48 +549,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{name_1}:
-    get:
-      summary: |-
-        GetModelOperation method receives a
-        GetModelOperationRequest message and returns a
-        GetModelOperationResponse message.
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: The name of the operation resource.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
-            `Model.configuration` VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
   /v1alpha/{name_1}/connect:
     post:
       summary: |-
@@ -798,15 +782,15 @@ paths:
   /v1alpha/{name}:
     get:
       summary: |-
-        GetConnectorOperation method receives a
-        GetConnectorOperationRequest message and returns a
-        GetConnectorOperationResponse message.
-      operationId: ConnectorPublicService_GetConnectorOperation
+        GetModelOperation method receives a
+        GetModelOperationRequest message and returns a
+        GetModelOperationResponse message.
+      operationId: ModelPublicService_GetModelOperation
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetConnectorOperationResponse'
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -820,11 +804,13 @@ paths:
           pattern: operations/[^/]+
         - name: view
           description: |-
-            SourceConnector view (default is VIEW_BASIC)
+            View (default is VIEW_BASIC)
+            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`,
+            `Model.configuration` VIEW_FULL: show full information
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
           type: string
@@ -834,7 +820,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
+        - ModelPublicService
   /v1alpha/{name}/activate:
     post:
       summary: |-
@@ -1761,32 +1747,6 @@ paths:
           type: string
       tags:
         - ControllerPrivateService
-  /v1alpha/{source_connector.name/watch}/watch:
-    get:
-      summary: |-
-        WatchSourceConnector method receives a WatchSourceConnectorRequest message
-        and returns a WatchSourceConnectorResponse
-      operationId: ConnectorPublicService_WatchSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name/watch
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-      tags:
-        - ConnectorPublicService
   /v1alpha/{source_connector.name}:
     get:
       summary: |-
@@ -1908,6 +1868,58 @@ paths:
           in: query
           required: true
           type: string
+      tags:
+        - ConnectorPublicService
+  /v1alpha/{source_connector.name}/test:
+    get:
+      summary: |-
+        TestSourceConnector method receives a TestSourceConnectorRequest message
+        and returns a TestSourceConnectorResponse
+      operationId: ConnectorPublicService_TestSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTestSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: source_connector.name
+          description: |-
+            SourceConnector resource name. It must have the format of
+            "source-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+      tags:
+        - ConnectorPublicService
+  /v1alpha/{source_connector.name}/watch:
+    get:
+      summary: |-
+        WatchSourceConnector method receives a WatchSourceConnectorRequest message
+        and returns a WatchSourceConnectorResponse
+      operationId: ConnectorPublicService_WatchSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: source_connector.name
+          description: |-
+            SourceConnector resource name. It must have the format of
+            "source-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
       tags:
         - ConnectorPublicService
   /v1alpha/{source_connector_definition.name}:
@@ -4022,9 +4034,9 @@ definitions:
   v1alphaCheckDestinationConnectorResponse:
     type: object
     properties:
-      workflow_id:
-        type: string
-        title: Retrieved longrunning workflow id
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
     title: |-
       CheckDestinationConnectorResponse represents a response to fetch a destination connector's
       current state
@@ -4040,9 +4052,9 @@ definitions:
   v1alphaCheckSourceConnectorResponse:
     type: object
     properties:
-      workflow_id:
-        type: string
-        title: Retrieved longrunning workflow id
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
     title: |-
       CheckSourceConnectorResponse represents a response to fetch a source connector's
       current state
@@ -4625,13 +4637,6 @@ definitions:
     title: GetBulkPipelineTriggerSummariesResponse represents a response to GetBulkPipelineTriggerSummariesRequest
     required:
       - bulk_summaries
-  v1alphaGetConnectorOperationResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: The retrieved longrunning operation
-    title: GetConnectorOperationResponse represents a response for a longrunning operation
   v1alphaGetCumulativeModelOnlineRecordsRequest:
     type: object
     properties:
@@ -6544,6 +6549,15 @@ definitions:
         $ref: '#/definitions/v1alphaUnspecifiedInput'
         title: The unspecified task input
     title: TaskInputStream represents the input to trigger a model with stream method
+  v1alphaTestDestinationConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
+    title: |-
+      TestDestinationConnectorResponse represents a response containing a destination
+      connector's current state
   v1alphaTestModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -6578,6 +6592,15 @@ definitions:
     required:
       - task
       - task_outputs
+  v1alphaTestSourceConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
+    title: |-
+      TestSourceConnectorResponse represents a response containing a source connector's
+      current state
   v1alphaTextGenerationInput:
     type: object
     properties:
