@@ -549,6 +549,31 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
+  /v1alpha/{name_1}:
+    get:
+      summary: |-
+        GetTriggerAsyncOperation method receives a
+        GetTriggerAsyncOperationRequest message and returns a
+        GetTriggerAsyncOperationResponse message.
+      operationId: PipelinePublicService_GetTriggerAsyncOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetTriggerAsyncOperationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name_1
+          description: The name of the operation resource.
+          in: path
+          required: true
+          type: string
+          pattern: triggerAsyncOperations/[^/]+
+      tags:
+        - PipelinePublicService
   /v1alpha/{name_1}/connect:
     post:
       summary: |-
@@ -667,44 +692,6 @@ paths:
               - new_destination_connector_id
       tags:
         - ConnectorPublicService
-  /v1alpha/{name_1}/trigger:
-    post:
-      summary: |-
-        TriggerPipeline method receives a TriggerPipelineRequest message and
-        returns a TriggerPipelineResponse.
-      operationId: PipelinePublicService_TriggerPipeline
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaTriggerPipelineResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: Pipeline resource name. It must have the format of "pipelines/*"
-          in: path
-          required: true
-          type: string
-          pattern: pipelines/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              task_inputs:
-                type: array
-                items:
-                  $ref: '#/definitions/v1alphaTaskInput'
-                title: Input to the pipeline
-            title: TriggerPipelineRequest represents a request to trigger a pipeline
-            required:
-              - task_inputs
-      tags:
-        - PipelinePublicService
   /v1alpha/{name_2}/rename:
     post:
       summary: RenameModel method rename a model
@@ -1179,6 +1166,82 @@ paths:
               - task_inputs
       tags:
         - ModelPublicService
+  /v1alpha/{name}/triggerAsync:
+    post:
+      summary: |-
+        TriggerAsyncPipeline method receives a TriggerPipelineRequest message and
+        returns a TriggerAsyncPipelineResponse.
+      operationId: PipelinePublicService_TriggerAsyncPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: Pipeline resource name. It must have the format of "pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              task_inputs:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaTaskInput'
+                title: Input to the pipeline
+            title: TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
+            required:
+              - task_inputs
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name}/triggerSync:
+    post:
+      summary: |-
+        TriggerSyncPipeline method receives a TriggerSyncPipelineRequest message and
+        returns a TriggerSyncPipelineResponse.
+      operationId: PipelinePublicService_TriggerSyncPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerSyncPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: Pipeline resource name. It must have the format of "pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              task_inputs:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaTaskInput'
+                title: Input to the pipeline
+            title: TriggerSyncPipelineRequest represents a request to trigger a pipeline
+            required:
+              - task_inputs
+      tags:
+        - PipelinePublicService
   /v1alpha/{name}/undeploy:
     post:
       summary: UndeployModel undeploy a model to offline state
@@ -4961,6 +5024,14 @@ definitions:
         $ref: '#/definitions/v1alphaApiToken'
         title: An API token resource
     title: GetTokenResponse represents a response for an API token resource
+  v1alphaGetTriggerAsyncOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: The retrieved longrunning operation
+        readOnly: true
+    title: GetTriggerAsyncOperationResponse represents a response for a longrunning operation
   v1alphaGetUserAdminResponse:
     type: object
     properties:
@@ -6686,6 +6757,38 @@ definitions:
     required:
       - start_time
       - end_time
+  v1alphaTriggerAsyncPipelineBinaryFileUploadResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Trigger async pipeline operation message
+        readOnly: true
+      data_mapping_indices:
+        type: array
+        items:
+          type: string
+        title: The data mapping indices for each input
+        readOnly: true
+    title: |-
+      TriggerAsyncPipelineBinaryFileUploadResponse represents a response for the longrunning operation
+      of a pipeline
+  v1alphaTriggerAsyncPipelineResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Trigger async pipeline operation message
+        readOnly: true
+      data_mapping_indices:
+        type: array
+        items:
+          type: string
+        title: The data mapping indices for each input
+        readOnly: true
+    title: |-
+      TriggerAsyncPipelineResponse represents a response for the longrunning operation
+      of a pipeline
   v1alphaTriggerModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -6717,7 +6820,7 @@ definitions:
     title: |-
       TriggerModelResponse represents a response for the output for
       triggering a model
-  v1alphaTriggerPipelineBinaryFileUploadResponse:
+  v1alphaTriggerSyncPipelineBinaryFileUploadResponse:
     type: object
     properties:
       data_mapping_indices:
@@ -6731,9 +6834,9 @@ definitions:
           $ref: '#/definitions/v1alphaModelOutput'
         title: The multiple model inference outputs
     title: |-
-      TriggerPipelineBinaryFileUploadResponse represents a response for the output
+      TriggerSyncPipelineBinaryFileUploadResponse represents a response for the output
       of a pipeline, i.e., the multiple model inference outputs
-  v1alphaTriggerPipelineResponse:
+  v1alphaTriggerSyncPipelineResponse:
     type: object
     properties:
       data_mapping_indices:
@@ -6747,7 +6850,7 @@ definitions:
           $ref: '#/definitions/v1alphaModelOutput'
         title: The multiple model inference outputs
     title: |-
-      TriggerPipelineResponse represents a response for the output
+      TriggerSyncPipelineResponse represents a response for the output
       of a pipeline, i.e., the multiple model inference outputs
   v1alphaUndeployModelResponse:
     type: object
