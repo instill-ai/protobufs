@@ -12,9 +12,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
-import "vdp/pipeline/v1alpha/pipeline.proto";
 import "vdp/connector/v1alpha/connector_definition.proto";
-import "vdp/connector/v1alpha/spec.proto";
 
 // Connector represents a connector data model
 message Connector {
@@ -301,26 +299,6 @@ message RenameSourceConnectorResponse {
   SourceConnector source_connector = 1;
 }
 
-// ReadSourceConnectorRequest represents a request to perform read operation of
-// a SourceConnector given the resource name
-message ReadSourceConnectorRequest {
-  // SourceConnector resource name. It must have the format of
-  // "source-connectors/*"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {
-      type : "api.instill.tech/SourceConnector"
-    }
-  ];
-}
-
-// ReadSourceConnectorResponse represents the read data from a SourceConnector
-// resource
-message ReadSourceConnectorResponse {
-  // Read data in bytes
-  bytes data = 1;
-}
-
 // DestinationConnector
 //
 // CreateDestinationConnectorRequest represents a request to create a
@@ -505,43 +483,6 @@ message RenameDestinationConnectorResponse {
   // A DestinationConnector resource
   DestinationConnector destination_connector = 1;
 }
-
-// WriteDestinationConnectorRequest represents a request to perform write
-// operation of a DestinationConnector given the resource name
-message WriteDestinationConnectorRequest {
-  // DestinationConnector resource name. It must have the format of
-  // "destination-connectors/*"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {
-      type : "api.instill.tech/DestinationConnector"
-    }
-  ];
-  // Sync mode:
-  // https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
-  SupportedSyncModes sync_mode = 2 [ (google.api.field_behavior) = REQUIRED ];
-  // Destination sync mode:
-  // https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
-  SupportedDestinationSyncModes destination_sync_mode = 3
-      [ (google.api.field_behavior) = REQUIRED ];
-  // Pipeline resource name
-  string pipeline = 4 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
-  ];
-  // Pipeline recipe
-  pipeline.v1alpha.Recipe recipe = 5 [ (google.api.field_behavior) = REQUIRED ];
-  // Indices corresponds to each JSON data element
-  repeated string data_mapping_indices = 6
-      [ (google.api.field_behavior) = REQUIRED ];
-  // JSON data to write
-  repeated pipeline.v1alpha.ModelOutput model_outputs = 7
-      [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// WriteDestinationConnectorResponse represents the read data from a
-// DestinationConnector resource
-message WriteDestinationConnectorResponse {}
 
 // ========== Private endpoints
 
@@ -738,4 +679,60 @@ message TestDestinationConnectorRequest {
 message TestDestinationConnectorResponse {
   // Retrieved connector state
   Connector.State state = 1;
+}
+
+// DataPayload is a data structure trasferring data in pipeline
+message DataPayload {
+
+  // Data index corresponds to each data element
+  string data_mapping_index = 1
+      [ (google.api.field_behavior) = REQUIRED ];
+
+  // Unstructured: text field
+  repeated string texts = 2;
+  // Unstructured: image field
+  repeated bytes images = 3;
+
+  // repeated bytes audios = 4;
+  // repeated bytes videos = 5;
+
+  // [semi-]structured data: json field
+  google.protobuf.Struct json = 6;
+
+  // Metadata
+  google.protobuf.Struct metadata = 7;
+}
+
+// ExecuteSourceConnectorRequest represents a private request to execution connector
+message ExecuteSourceConnectorRequest {
+  // Name of a source connector. For example:
+  // "source-connectors/{name}"
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+
+  // Input
+  repeated DataPayload input = 2;
+
+}
+
+// ExecuteSourceConnectorResponse represents a response for execution output
+message ExecuteSourceConnectorResponse {
+  // Output
+  repeated DataPayload output = 1;
+}
+
+// ExecuteDestinationConnectorRequest represents a private request to execution connector
+message ExecuteDestinationConnectorRequest {
+  // Name of a destination connector. For example:
+  // "destination-connectors/{name}"
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+
+  // Input
+  repeated DataPayload input = 2;
+
+}
+
+// ExecuteDestinationConnectorResponse represents a response for execution output
+message ExecuteDestinationConnectorResponse {
+  // Output
+  repeated DataPayload output = 1;
 }
