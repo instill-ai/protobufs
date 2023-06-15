@@ -648,6 +648,45 @@ paths:
               destination connector
       tags:
         - ConnectorPublicService
+  /v1alpha/{name_1}/execute:
+    post:
+      summary: |-
+        ExecuteDestinationConnector method receives a
+        ExecuteDestinationConnectorRequest message and returns a
+        ExecuteDestinationConnectorResponse message.
+      operationId: ConnectorPublicService_ExecuteDestinationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaExecuteDestinationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            Name of a destination connector. For example:
+            "destination-connectors/{name}"
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              input:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaDataPayload'
+                title: Input
+            title: ExecuteDestinationConnectorRequest represents a private request to execution connector
+      tags:
+        - ConnectorPublicService
   /v1alpha/{name_1}/rename:
     post:
       summary: |-
@@ -976,6 +1015,42 @@ paths:
               source connector
       tags:
         - ConnectorPublicService
+  /v1alpha/{name}/execute:
+    post:
+      summary: "ExecuteSourceConnector method receives a ExecuteSourceConnectorRequest \nmessage and returns a ExecuteSourceConnectorResponse message."
+      operationId: ConnectorPublicService_ExecuteSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaExecuteSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            Name of a source connector. For example:
+            "source-connectors/{name}"
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              input:
+                type: array
+                items:
+                  $ref: '#/definitions/v1alphaDataPayload'
+                title: Input
+            title: ExecuteSourceConnectorRequest represents a private request to execution connector
+      tags:
+        - ConnectorPublicService
   /v1alpha/{name}/publish:
     post:
       summary: |-
@@ -1008,40 +1083,6 @@ paths:
             title: PublishModelRequest represents a request to publish a model
       tags:
         - ModelPublicService
-  /v1alpha/{name}/read:
-    post:
-      summary: |-
-        ReadSourceConnector method receives a ReadSourceConnectorRequest
-        message and returns a ReadSourceConnectorResponse message.
-      operationId: ConnectorPublicService_ReadSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaReadSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: |-
-              ReadSourceConnectorRequest represents a request to perform read operation of
-              a SourceConnector given the resource name
-      tags:
-        - ConnectorPublicService
   /v1alpha/{name}/rename:
     post:
       summary: |-
@@ -1304,75 +1345,6 @@ paths:
             title: UnpublishModelRequest represents a request to unpublish a model
       tags:
         - ModelPublicService
-  /v1alpha/{name}/write:
-    post:
-      summary: |-
-        WriteDestinationConnector method receives a
-        WriteDestinationConnectorRequest message and returns a
-        WriteDestinationConnectorResponse message.
-      operationId: ConnectorPublicService_WriteDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWriteDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              sync_mode:
-                $ref: '#/definitions/v1alphaSupportedSyncModes'
-                title: |-
-                  Sync mode:
-                  https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
-              destination_sync_mode:
-                $ref: '#/definitions/v1alphaSupportedDestinationSyncModes'
-                title: |-
-                  Destination sync mode:
-                  https://docs.airbyte.com/understanding-airbyte/connections/#sync-modes
-              pipeline:
-                type: string
-                title: Pipeline resource name
-              recipe:
-                $ref: '#/definitions/v1alphaRecipe'
-                title: Pipeline recipe
-              data_mapping_indices:
-                type: array
-                items:
-                  type: string
-                title: Indices corresponds to each JSON data element
-              model_outputs:
-                type: array
-                items:
-                  $ref: '#/definitions/v1alphaModelOutput'
-                title: JSON data to write
-            title: |-
-              WriteDestinationConnectorRequest represents a request to perform write
-              operation of a DestinationConnector given the resource name
-            required:
-              - sync_mode
-              - destination_sync_mode
-              - pipeline
-              - recipe
-              - data_mapping_indices
-              - model_outputs
-      tags:
-        - ConnectorPublicService
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
@@ -4441,6 +4413,32 @@ definitions:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
     title: CreateUserAdminResponse represents a response for a user response
+  v1alphaDataPayload:
+    type: object
+    properties:
+      data_mapping_index:
+        type: string
+        title: Data index corresponds to each data element
+      texts:
+        type: array
+        items:
+          type: string
+        title: 'Unstructured: text field'
+      images:
+        type: array
+        items:
+          type: string
+          format: byte
+        title: 'Unstructured: image field'
+      json:
+        type: object
+        title: '[semi-]structured data: json field'
+      metadata:
+        type: object
+        title: Metadata
+    title: DataPayload is a data structure trasferring data in pipeline
+    required:
+      - data_mapping_index
   v1alphaDeactivatePipelineResponse:
     type: object
     properties:
@@ -4603,6 +4601,24 @@ definitions:
         $ref: '#/definitions/v1alphaSourceConnector'
         title: A SourceConnector resource
     title: DisconnectSourceConnectorResponse represents a disconnected source connector
+  v1alphaExecuteDestinationConnectorResponse:
+    type: object
+    properties:
+      output:
+        type: array
+        items:
+          $ref: '#/definitions/v1alphaDataPayload'
+        title: Output
+    title: ExecuteDestinationConnectorResponse represents a response for execution output
+  v1alphaExecuteSourceConnectorResponse:
+    type: object
+    properties:
+      output:
+        type: array
+        items:
+          $ref: '#/definitions/v1alphaDataPayload'
+        title: Output
+    title: ExecuteSourceConnectorResponse represents a response for execution output
   v1alphaExistUsernameResponse:
     type: object
     properties:
@@ -6137,16 +6153,6 @@ definitions:
     title: |-
       QueryAuthenticatedUserResponse represents a response for
       the authenticated user resource
-  v1alphaReadSourceConnectorResponse:
-    type: object
-    properties:
-      data:
-        type: string
-        format: byte
-        title: Read data in bytes
-    title: |-
-      ReadSourceConnectorResponse represents the read data from a SourceConnector
-      resource
   v1alphaRecipe:
     type: object
     properties:
@@ -6544,20 +6550,6 @@ definitions:
     title: |-
       SupportedDestinationSyncModes enumerates destination sync mode (this needs to
       be in plural form to match with Airbyte protocol)
-  v1alphaSupportedSyncModes:
-    type: string
-    enum:
-      - SUPPORTED_SYNC_MODES_UNSPECIFIED
-      - SUPPORTED_SYNC_MODES_FULL_REFRESH
-      - SUPPORTED_SYNC_MODES_INCREMENTAL
-    default: SUPPORTED_SYNC_MODES_UNSPECIFIED
-    description: |-
-      - SUPPORTED_SYNC_MODES_UNSPECIFIED: SupportedSyncModes: SUPPORTED_SYNC_MODES_UNSPECIFIED
-       - SUPPORTED_SYNC_MODES_FULL_REFRESH: SupportedSyncModes: SUPPORTED_SYNC_MODES_FULL_REFRESH
-       - SUPPORTED_SYNC_MODES_INCREMENTAL: SupportedSyncModes: SUPPORTED_SYNC_MODES_INCREMENTAL
-    title: |-
-      SupportedSyncModes enumerates sync mode (this needs to be in plural form to
-      match with Airbyte protocol)
   v1alphaTaskInput:
     type: object
     properties:
@@ -7072,11 +7064,6 @@ definitions:
     title: |-
       WatchSourceConnectorResponse represents a response to fetch a source connector's
       current state
-  v1alphaWriteDestinationConnectorResponse:
-    type: object
-    title: |-
-      WriteDestinationConnectorResponse represents the read data from a
-      DestinationConnector resource
   vdpconnectorv1alphaLivenessResponse:
     type: object
     properties:
