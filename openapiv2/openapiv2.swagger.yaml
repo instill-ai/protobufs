@@ -1,6 +1,6 @@
 swagger: "2.0"
 info:
-  title: vdp/connector/v1alpha/auth.proto
+  title: vdp/connector/v1alpha/spec.proto
   version: version not set
 tags:
   - name: ConnectorPrivateService
@@ -3611,18 +3611,6 @@ paths:
       tags:
         - MgmtPublicService
 definitions:
-  AdvancedAuthAuthFlowType:
-    type: string
-    enum:
-      - AUTH_FLOW_TYPE_UNSPECIFIED
-      - AUTH_FLOW_TYPE_OAUTH2_0
-      - AUTH_FLOW_TYPE_OAUTH1_0
-    default: AUTH_FLOW_TYPE_UNSPECIFIED
-    description: |-
-      - AUTH_FLOW_TYPE_UNSPECIFIED: AuthFlowType: AUTH_TYPE_UNSPECIFIED
-       - AUTH_FLOW_TYPE_OAUTH2_0: AuthFlowType: AUTH_TYPE_OAUTH2_0
-       - AUTH_FLOW_TYPE_OAUTH1_0: AuthFlowType: AUTH_TYPE_OAUTH1_0
-    title: AuthFlowType enumerates the type of auth
   HealthCheckResponseServingStatus:
     type: string
     enum:
@@ -3901,42 +3889,6 @@ definitions:
 
       You can find out more about this error model and how to work with it in the
       [API Design Guide](https://cloud.google.com/apis/design/errors).
-  typeDate:
-    type: object
-    properties:
-      year:
-        type: integer
-        format: int32
-        description: |-
-          Year of the date. Must be from 1 to 9999, or 0 to specify a date without
-          a year.
-      month:
-        type: integer
-        format: int32
-        description: |-
-          Month of a year. Must be from 1 to 12, or 0 to specify a year without a
-          month and day.
-      day:
-        type: integer
-        format: int32
-        description: |-
-          Day of a month. Must be from 1 to 31 and valid for the year and month, or 0
-          to specify a year by itself or a year and month where the day isn't
-          significant.
-    description: |-
-      * A full date, with non-zero year, month, and day values
-      * A month and day value, with a zero year, such as an anniversary
-      * A year on its own, with zero month and day values
-      * A year and month value, with a zero day, such as a credit card expiration
-      date
-
-      Related types are [google.type.TimeOfDay][google.type.TimeOfDay] and
-      `google.protobuf.Timestamp`.
-    title: |-
-      Represents a whole or partial calendar date, such as a birthday. The time of
-      day and time zone are either specified elsewhere or are insignificant. The
-      date is relative to the Gregorian Calendar. This can represent one of the
-      following:
   v1alphaActivatePipelineResponse:
     type: object
     properties:
@@ -3944,38 +3896,6 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: ActivatePipelineResponse represents an activated pipeline
-  v1alphaAdvancedAuth:
-    type: object
-    properties:
-      auth_flow_type:
-        $ref: '#/definitions/AdvancedAuthAuthFlowType'
-        title: AdvancedAuth auth flow type
-      predicate_key:
-        type: array
-        items:
-          type: string
-        title: |-
-          AdvancedAuth predicate key, i.e., the JSON Path to a field in the
-          connectorSpecification that should exist for the advanced auth to be
-          applicable
-      predicate_value:
-        type: string
-        title: |-
-          AdvancedAuth predicate value, i.e., the value of the predicate key fields
-          for the advanced auth to be applicable
-      oauth_config_specification:
-        $ref: '#/definitions/v1alphaOauthConfigSpecification'
-        title: OauthConfigSpecification represents OAuth config specification
-    description: |-
-      Additional and optional specification object to describe what an 'advanced'
-      Auth flow would need to function.
-      - A connector should be able to fully function with the configuration as
-      described by the ConnectorSpecification in a 'basic' mode.
-      - The 'advanced' mode provides easier UX for the user with UI improvements
-      and automations. However, this requires further setup on the server side by
-      instance or workspace admins beforehand. The trade-off is that the user does
-      not have to provide as many technical inputs anymore and the auth process is
-      faster and easier to complete.
   v1alphaApiToken:
     type: object
     properties:
@@ -4219,14 +4139,6 @@ definitions:
         type: string
         title: ConnectorDefinition title
         readOnly: true
-      docker_repository:
-        type: string
-        title: ConnectorDefinition Docker repository
-        readOnly: true
-      docker_image_tag:
-        type: string
-        title: ConnectorDefinition Docker image tag
-        readOnly: true
       documentation_url:
         type: string
         title: ConnectorDefinition documentation URL
@@ -4258,29 +4170,17 @@ definitions:
           ConnectorDefinition custom flag, i.e., whether this is a custom
           connector definition
         readOnly: true
-      release_stage:
-        $ref: '#/definitions/vdpconnectorv1alphaReleaseStage'
-        title: ConnectorDefinition release stage
+      icon_url:
+        type: string
+        title: ConnectorDefinition iconUrl
         readOnly: true
-      release_date:
-        $ref: '#/definitions/typeDate'
-        description: |-
-          ConnectorDefinition release date, i.e., the date when this connector
-          was first released, in yyyy-mm-dd format.
+      vendor:
+        type: string
+        title: ConnectorDefinition vendor name
         readOnly: true
-      resource_requirements:
+      vendor_attributes:
         type: object
-        title: ConnectorDefinition resource requirements
-        readOnly: true
-      create_time:
-        type: string
-        format: date-time
-        title: ConnectorDefinition creation time
-        readOnly: true
-      update_time:
-        type: string
-        format: date-time
-        title: ConnectorDefinition update time
+        title: ConnectorDefinition vendorAttributes, i.e. the vendor-specific attributes
         readOnly: true
     title: ConnectorDefinition represents the connector definition data model
   v1alphaConnectorState:
@@ -5650,7 +5550,7 @@ definitions:
         title: ModelDefinition icon
         readOnly: true
       release_stage:
-        $ref: '#/definitions/vdpmodelv1alphaReleaseStage'
+        $ref: '#/definitions/v1alphaReleaseStage'
         title: ModelDefinition release stage
         readOnly: true
       model_spec:
@@ -5780,113 +5680,6 @@ definitions:
   v1alphaNullMessage:
     type: object
     title: Nul Message for gRPC REQ/RES
-  v1alphaOauthConfigSpecification:
-    type: object
-    properties:
-      oauth_user_input_from_connector_config_specification:
-        type: object
-        description: |-
-          OAuth specific blob. This is a Json Schema used to validate Json
-          configurations used as input to OAuth. Must be a valid non-nested JSON that
-          refers to properties from ConnectorSpecification.connectionSpecification
-          using special annotation 'path_in_connector_config'.
-          These are input values the user is entering through the UI to authenticate
-          to the connector, that might also shared as inputs for syncing data via the
-          connector.
-
-          Examples:
-
-          if no connector values is shared during oauth flow,
-          oauth_user_input_from_connector_config_specification=[] if connector values
-          such as 'app_id' inside the top level are used to generate the API url for
-          the oauth flow,
-            oauth_user_input_from_connector_config_specification={
-              app_id: {
-                type: string
-                path_in_connector_config: ['app_id']
-              }
-            }
-          if connector values such as 'info.app_id' nested inside another object are
-          used to generate the API url for the oauth flow,
-           oauth_user_input_from_connector_config_specification={
-             app_id: {
-               type: string
-               path_in_connector_config: ['info', 'app_id']
-             }
-           }
-        readOnly: true
-      complete_oauth_output_specification:
-        type: object
-        description: |-
-          Examples:
-
-              complete_oauth_output_specification={
-                refresh_token: {
-                  type: string,
-                  path_in_connector_config: ['credentials', 'refresh_token']
-                }
-              }
-        title: |-
-          OAuth specific blob. This is a Json Schema used to validate Json
-          configurations produced by the OAuth flows as they are returned by the
-          distant OAuth APIs. Must be a valid JSON describing the fields to merge
-          back to `ConnectorSpecification.connectionSpecification`. For each field, a
-          special annotation `path_in_connector_config` can be specified to determine
-          where to merge it,
-        readOnly: true
-      complete_oauth_server_input_specification:
-        type: object
-        description: |-
-          OAuth specific blob. This is a Json Schema used to validate Json
-          configurations persisted as Airbyte Server configurations. Must be a valid
-          non-nested JSON describing additional fields configured by the Airbyte
-          Instance or Workspace Admins to be used by the server when completing an
-          OAuth flow (typically exchanging an auth code for refresh token).
-
-          Examples:
-
-              complete_oauth_server_input_specification={
-                client_id: {
-                  type: string
-                },
-                client_secret: {
-                  type: string
-                }
-              }
-        readOnly: true
-      complete_oauth_server_output_specification:
-        type: object
-        description: |-
-          Examples:
-
-                complete_oauth_server_output_specification={
-                  client_id: {
-                    type: string,
-                    path_in_connector_config: ['credentials', 'client_id']
-                  },
-                  client_secret: {
-                    type: string,
-                    path_in_connector_config: ['credentials', 'client_secret']
-                  }
-                }
-        title: |-
-          OAuth specific blob. This is a Json Schema used to validate Json
-          configurations persisted as Airbyte Server configurations that also need to
-          be merged back into the connector configuration at runtime. This is a
-          subset configuration of `complete_oauth_server_input_specification` that
-          filters fields out to retain only the ones that are necessary for the
-          connector to function with OAuth. (some fields could be used during oauth
-          flows but not needed afterwards, therefore they would be listed in the
-          `complete_oauth_server_input_specification` but not
-          `complete_oauth_server_output_specification`) Must be a valid non-nested
-          JSON describing additional fields configured by the Airbyte Instance or
-          Workspace Admins to be used by the connector when using OAuth flow APIs.
-          These fields are to be merged back to
-          `ConnectorSpecification.connectionSpecification`. For each field, a special
-          annotation `path_in_connector_config` can be specified to determine where
-          to merge it,
-        readOnly: true
-    title: OauthConfigSpecification represents oauth config specification
   v1alphaOcrInput:
     type: object
     properties:
@@ -6165,6 +5958,22 @@ definitions:
           $ref: '#/definitions/v1alphaComponent'
         title: List of pipeline components
     title: Pipeline represents a pipeline recipe
+  v1alphaReleaseStage:
+    type: string
+    enum:
+      - RELEASE_STAGE_UNSPECIFIED
+      - RELEASE_STAGE_ALPHA
+      - RELEASE_STAGE_BETA
+      - RELEASE_STAGE_GENERALLY_AVAILABLE
+      - RELEASE_STAGE_CUSTOM
+    default: RELEASE_STAGE_UNSPECIFIED
+    description: |-
+      - RELEASE_STAGE_UNSPECIFIED: ReleaseStage: UNSPECIFIED
+       - RELEASE_STAGE_ALPHA: ReleaseStage: ALPHA
+       - RELEASE_STAGE_BETA: ReleaseStage: BETA
+       - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
+       - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
+    title: ReleaseStage enumerates the release stages
   v1alphaRenameDestinationConnectorResponse:
     type: object
     properties:
@@ -6499,57 +6308,11 @@ definitions:
       connection_specification:
         type: object
         title: Spec connection specification
-      supports_incremental:
-        type: boolean
-        title: |-
-          Spec supports incremental flag, i.e., if the connector supports incremental
-          mode or not
-        readOnly: true
-      supports_normalization:
-        type: boolean
-        title: |-
-          Spec supports normalization flag, i.e., if the connector supports
-          normalization or not
-        readOnly: true
-      supports_dbt:
-        type: boolean
-        title: Spec supports dbt flag, i.e., if the connector supports DBT or not
-        readOnly: true
-      supported_destination_sync_modes:
-        type: array
-        items:
-          $ref: '#/definitions/v1alphaSupportedDestinationSyncModes'
-        title: |-
-          Spec destination sync mode, i.e., a list of destination sync modes
-          supported by the connector
-        readOnly: true
-      advanced_auth:
-        $ref: '#/definitions/v1alphaAdvancedAuth'
-        title: |-
-          Spec advanced auth, i.e., additional and optional specification object to
-          describe what an 'advanced' Auth flow would need to function
-        readOnly: true
     title: |-
       //////////////////////////////////
       Spec represents a spec data model
     required:
       - connection_specification
-  v1alphaSupportedDestinationSyncModes:
-    type: string
-    enum:
-      - SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED
-      - SUPPORTED_DESTINATION_SYNC_MODES_APPEND
-      - SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE
-      - SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP
-    default: SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED
-    description: |-
-      - SUPPORTED_DESTINATION_SYNC_MODES_UNSPECIFIED: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_UNSPECIFIED
-       - SUPPORTED_DESTINATION_SYNC_MODES_APPEND: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_APPEND
-       - SUPPORTED_DESTINATION_SYNC_MODES_OVERWRITE: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_OVERWRITE
-       - SUPPORTED_DESTINATION_SYNC_MODES_APPEND_DEDUP: SupportedDestinationSyncModes: DESTINATION_SYNC_MODES_APPEND_DEDUP
-    title: |-
-      SupportedDestinationSyncModes enumerates destination sync mode (this needs to
-      be in plural form to match with Airbyte protocol)
   v1alphaTaskInput:
     type: object
     properties:
@@ -7078,22 +6841,6 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  vdpconnectorv1alphaReleaseStage:
-    type: string
-    enum:
-      - RELEASE_STAGE_UNSPECIFIED
-      - RELEASE_STAGE_ALPHA
-      - RELEASE_STAGE_BETA
-      - RELEASE_STAGE_GENERALLY_AVAILABLE
-      - RELEASE_STAGE_CUSTOM
-    default: RELEASE_STAGE_UNSPECIFIED
-    description: |-
-      - RELEASE_STAGE_UNSPECIFIED: ReleaseStage: UNSPECIFIED
-       - RELEASE_STAGE_ALPHA: ReleaseStage: ALPHA
-       - RELEASE_STAGE_BETA: ReleaseStage: BETA
-       - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
-       - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
-    title: ReleaseStage enumerates the release stages
   vdpconnectorv1alphaView:
     type: string
     enum:
@@ -7163,22 +6910,6 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  vdpmodelv1alphaReleaseStage:
-    type: string
-    enum:
-      - RELEASE_STAGE_UNSPECIFIED
-      - RELEASE_STAGE_ALPHA
-      - RELEASE_STAGE_BETA
-      - RELEASE_STAGE_GENERALLY_AVAILABLE
-      - RELEASE_STAGE_CUSTOM
-    default: RELEASE_STAGE_UNSPECIFIED
-    description: |-
-      - RELEASE_STAGE_UNSPECIFIED: ReleaseStage: UNSPECIFIED
-       - RELEASE_STAGE_ALPHA: ReleaseStage: ALPHA
-       - RELEASE_STAGE_BETA: ReleaseStage: BETA
-       - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
-       - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
-    title: ReleaseStage enumerates the release stages
   vdpmodelv1alphaTaskOutput:
     type: object
     properties:
