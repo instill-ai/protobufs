@@ -13,6 +13,7 @@ import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
 import "vdp/connector/v1alpha/connector_definition.proto";
+import "vdp/connector/v1alpha/data_payload.proto";
 
 // Connector represents a connector data model
 message Connector {
@@ -112,6 +113,34 @@ message DestinationConnector {
     }
   ];
   // DestinationConnector's connector data structure
+  Connector connector = 5 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// BlockchainConnector represents a blockchain connector resource
+message BlockchainConnector {
+  option (google.api.resource) = {
+    type : "api.instill.tech/BlockchainConnector"
+    pattern : "blockchain-connectors/{blockchain-connector}"
+  };
+
+  // BlockchainConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // BlockchainConnector UUID
+  string uid = 2 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+  // BlockchainConnector resource ID (the last segment of the resource name)
+  // used to construct the resource name. This conforms to RFC-1034, which
+  // restricts to letters, numbers, and hyphen, with the first character a
+  // letter, the last a letter or a number, and a 63 character maximum.
+  string id = 3 [ (google.api.field_behavior) = IMMUTABLE ];
+  // BlockchainConnectorDefinition resource
+  string blockchain_connector_definition = 4 [
+    (google.api.field_behavior) = IMMUTABLE,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/BlockchainConnectorDefinition"
+    }
+  ];
+  // BlockchainConnector's connector data structure
   Connector connector = 5 [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -299,6 +328,23 @@ message RenameSourceConnectorResponse {
   SourceConnector source_connector = 1;
 }
 
+// ExecuteSourceConnectorRequest represents a private request to execution connector
+message ExecuteSourceConnectorRequest {
+  // Name of a source connector. For example:
+  // "source-connectors/{name}"
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+
+  // Input
+  repeated DataPayload input = 2;
+
+}
+
+// ExecuteSourceConnectorResponse represents a response for execution output
+message ExecuteSourceConnectorResponse {
+  // Output
+  repeated DataPayload output = 1;
+}
+
 // DestinationConnector
 //
 // CreateDestinationConnectorRequest represents a request to create a
@@ -482,6 +528,191 @@ message RenameDestinationConnectorRequest {
 message RenameDestinationConnectorResponse {
   // A DestinationConnector resource
   DestinationConnector destination_connector = 1;
+}
+
+// BlockchainConnector
+//
+// CreateBlockchainConnectorRequest represents a request to create a
+// BlockchainConnector resource
+message CreateBlockchainConnectorRequest {
+  // BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CreateBlockchainConnectorResponse represents a response for a
+// BlockchainConnector resource
+message CreateBlockchainConnectorResponse {
+  // BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
+}
+
+// ListBlockchainConnectorsRequest represents a request to list
+// BlockchainConnector resources
+message ListBlockchainConnectorsRequest {
+  // The maximum number of connectors to return. The service may return fewer
+  // than this value. If unspecified, at most 10 connectors will be returned.
+  // The maximum value is 100; values above 100 will be coerced to 100.
+  optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // BlockchainConnector view (default is VIEW_BASIC)
+  optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListBlockchainConnectorsResponse represents a response for a list of
+// BlockchainConnector resources
+message ListBlockchainConnectorsResponse {
+  // A list of BlockchainConnector resources
+  repeated BlockchainConnector blockchain_connectors = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of connector resources
+  int64 total_size = 3;
+}
+
+// GetBlockchainConnectorRequest represents a request to query a
+// BlockchainConnector resource
+message GetBlockchainConnectorRequest {
+  // BlockchainConnectorConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/BlockchainConnector"
+    },
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "blockchain_connector.name"}
+    }
+  ];
+  // BlockchainConnector view (default is VIEW_BASIC)
+  optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// GetBlockchainConnectorResponse represents a response for a
+// BlockchainConnector resource
+message GetBlockchainConnectorResponse {
+  // BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
+}
+
+// UpdateBlockchainConnectorRequest represents a request to update a
+// BlockchainConnector resource
+message UpdateBlockchainConnectorRequest {
+  // BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1
+      [ (google.api.field_behavior) = REQUIRED ];
+  // Update mask for a BlockchainConnector resource
+  google.protobuf.FieldMask update_mask = 2
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// UpdateBlockchainConnectorResponse represents a response for a
+// BlockchainConnector resource
+message UpdateBlockchainConnectorResponse {
+  // BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
+}
+
+// DeleteBlockchainConnectorRequest represents a request to delete a
+// BlockchainConnector resource
+message DeleteBlockchainConnectorRequest {
+  // BlockchainConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/BlockchainConnector"
+    },
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "blockchain_connector.name"}
+    }
+  ];
+}
+
+// DeleteBlockchainConnectorResponse represents an empty response
+message DeleteBlockchainConnectorResponse {}
+
+// LookUpBlockchainConnectorRequest represents a request to query a blockchain
+// connector via permalink
+message LookUpBlockchainConnectorRequest {
+  // Permalink of a blockchain connector. For example:
+  // "blockchain-connectors/{uid}"
+  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // SourceConnector view (default is VIEW_BASIC)
+  optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// LookUpBlockchainConnectorResponse represents a response for a blockchain
+// connector
+message LookUpBlockchainConnectorResponse {
+  // BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
+}
+
+// ConnectBlockchainConnectorRequest represents a request to connect a
+// blockchain connector
+message ConnectBlockchainConnectorRequest {
+  // BlockchainConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/BlockchainConnector"
+    }
+  ];
+}
+
+// ConnectBlockchainConnectorResponse represents a connected blockchain
+// connector
+message ConnectBlockchainConnectorResponse {
+  // A BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
+}
+
+// DisconnectBlockchainConnectorRequest represents a request to disconnect a
+// blockchain connector
+message DisconnectBlockchainConnectorRequest {
+  // BlockchainConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/BlockchainConnector"
+    }
+  ];
+}
+
+// DisconnectBlockchainConnectorResponse represents a disconnected blockchain
+// connector
+message DisconnectBlockchainConnectorResponse {
+  // A BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
+}
+
+// RenameBlockchainConnectorRequest represents a request to rename the
+// BlockchainConnector resource name
+message RenameBlockchainConnectorRequest {
+  // BlockchainConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {
+      type : "api.instill.tech/BlockchainConnector"
+    }
+  ];
+  // BlockchainConnector new resource id to replace with the
+  // BlockchainConnector resource name to be
+  // "blockchain-connectors/{new_blockchain_connector_id}"
+  string new_blockchain_connector_id = 2
+      [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// RenameBlockchainConnectorResponse represents a renamed BlockchainConnector
+// resource
+message RenameBlockchainConnectorResponse {
+  // A BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
 }
 
 // ========== Private endpoints
@@ -681,45 +912,6 @@ message TestDestinationConnectorResponse {
   Connector.State state = 1;
 }
 
-// DataPayload is a data structure trasferring data in pipeline
-message DataPayload {
-
-  // Data index corresponds to each data element
-  string data_mapping_index = 1
-      [ (google.api.field_behavior) = REQUIRED ];
-
-  // Unstructured: text field
-  repeated string texts = 2;
-  // Unstructured: image field
-  repeated bytes images = 3;
-
-  // repeated bytes audios = 4;
-  // repeated bytes videos = 5;
-
-  // [semi-]structured data: json field
-  google.protobuf.Struct json = 6;
-
-  // Metadata
-  google.protobuf.Struct metadata = 7;
-}
-
-// ExecuteSourceConnectorRequest represents a private request to execution connector
-message ExecuteSourceConnectorRequest {
-  // Name of a source connector. For example:
-  // "source-connectors/{name}"
-  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
-
-  // Input
-  repeated DataPayload input = 2;
-
-}
-
-// ExecuteSourceConnectorResponse represents a response for execution output
-message ExecuteSourceConnectorResponse {
-  // Output
-  repeated DataPayload output = 1;
-}
-
 // ExecuteDestinationConnectorRequest represents a private request to execution connector
 message ExecuteDestinationConnectorRequest {
   // Name of a destination connector. For example:
@@ -733,6 +925,123 @@ message ExecuteDestinationConnectorRequest {
 
 // ExecuteDestinationConnectorResponse represents a response for execution output
 message ExecuteDestinationConnectorResponse {
+  // Output
+  repeated DataPayload output = 1;
+}
+
+
+
+// ListBlockchainConnectorsAdminRequest represents a request to list
+// BlockchainConnector resources from all users by admin
+message ListBlockchainConnectorsAdminRequest {
+  // The maximum number of connectors to return. The service may return fewer
+  // than this value. If unspecified, at most 10 connectors will be returned.
+  // The maximum value is 100; values above 100 will be coerced to 100.
+  optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+  // Page token
+  optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  // BlockchainConnector view (default is VIEW_BASIC)
+  optional View view = 3 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListBlockchainConnectorsAdminResponse represents a response for a list of
+// BlockchainConnector resources
+message ListBlockchainConnectorsAdminResponse {
+  // A list of BlockchainConnector resources
+  repeated BlockchainConnector blockchain_connectors = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of connector resources
+  int64 total_size = 3;
+}
+
+// LookUpBlockchainConnectorAdminRequest represents a request to query a blockchain
+// connector via permalink by admin
+message LookUpBlockchainConnectorAdminRequest {
+  // Permalink of a blockchain connector. For example:
+  // "blockchain-connectors/{uid}"
+  string permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  // SourceConnector view (default is VIEW_BASIC)
+  optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// LookUpBlockchainConnectorAdminResponse represents a response for a blockchain
+// connector
+message LookUpBlockchainConnectorAdminResponse {
+  // BlockchainConnector resource
+  BlockchainConnector blockchain_connector = 1;
+}
+
+// WatchBlockchainConnectorRequest represents a public request to query
+// a blockchain connector's current state
+message WatchBlockchainConnectorRequest {
+  // SourceConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/BlockchainConnector",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "blockchain_connector.name"}
+    }
+  ];
+}
+
+// WatchBlockchainConnectorResponse represents a response to fetch a blockchain connector's
+// current state
+message WatchBlockchainConnectorResponse {
+  // Retrieved connector state
+  Connector.State state = 1;
+}
+
+// CheckBlockchainConnectorRequest represents a private request to query
+// a blockchain connector's current state
+message CheckBlockchainConnectorRequest {
+  // Permalink of a blockchain connector. For example:
+  // "blockchain-connectors/{uid}"
+  string blockchain_connector_permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+}
+
+// CheckBlockchainConnectorResponse represents a response to fetch a blockchain connector's
+// current state
+message CheckBlockchainConnectorResponse {
+  // Retrieved connector state
+  Connector.State state = 1;
+}
+
+// TestBlockchainConnectorRequest represents a public request to trigger check
+// action on a blockchain connector
+message TestBlockchainConnectorRequest {
+  // BlockchainConnector resource name. It must have the format of
+  // "blockchain-connectors/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/BlockchainConnector",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration : {path_param_name : "blockchain_connector.name"}
+    }
+  ];
+}
+
+// TestBlockchainConnectorResponse represents a response containing a blockchain
+// connector's current state
+message TestBlockchainConnectorResponse {
+  // Retrieved connector state
+  Connector.State state = 1;
+}
+
+// ExecuteBlockchainConnectorRequest represents a private request to execution connector
+message ExecuteBlockchainConnectorRequest {
+  // Name of a blockchain connector. For example:
+  // "blockchain-connectors/{name}"
+  string name = 1 [ (google.api.field_behavior) = REQUIRED ];
+
+  // Input
+  repeated DataPayload input = 2;
+
+}
+
+// ExecuteBlockchainConnectorResponse represents a response for execution output
+message ExecuteBlockchainConnectorResponse {
   // Output
   repeated DataPayload output = 1;
 }

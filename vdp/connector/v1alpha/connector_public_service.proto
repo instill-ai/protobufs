@@ -49,7 +49,7 @@ service ConnectorPublicService {
 
   // GetSourceConnectorDefinition method receives a
   // GetSourceConnectorDefinitionRequest message and returns a
-  // GetGetSourceConnectorDefinitionResponse message.
+  // GetSourceConnectorDefinitionResponse message.
   rpc GetSourceConnectorDefinition(GetSourceConnectorDefinitionRequest)
       returns (GetSourceConnectorDefinitionResponse) {
     option (google.api.http) = {
@@ -71,12 +71,35 @@ service ConnectorPublicService {
 
   // GetDestinationConnectorDefinition method receives a
   // GetDestinationConnectorDefinitionRequest message and returns a
-  // GetGetDestinationConnectorDefinitionResponse message.
+  // GetDestinationConnectorDefinitionResponse message.
   rpc GetDestinationConnectorDefinition(
       GetDestinationConnectorDefinitionRequest)
       returns (GetDestinationConnectorDefinitionResponse) {
     option (google.api.http) = {
       get : "/v1alpha/{name=destination-connector-definitions/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListBlockchainConnectorDefinitions method receives a
+  // ListBlockchainConnectorDefinitionsRequest message and returns a
+  // ListBlockchainConnectorDefinitionsResponse message.
+  rpc ListBlockchainConnectorDefinitions(
+      ListBlockchainConnectorDefinitionsRequest)
+      returns (ListBlockchainConnectorDefinitionsResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/blockchain-connector-definitions"
+    };
+  }
+
+  // GetBlockchainConnectorDefinition method receives a
+  // GetBlockchainConnectorDefinitionRequest message and returns a
+  // GetBlockchainConnectorDefinitionResponse message.
+  rpc GetBlockchainConnectorDefinition(
+      GetBlockchainConnectorDefinitionRequest)
+      returns (GetBlockchainConnectorDefinitionResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=blockchain-connector-definitions/*}"
     };
     option (google.api.method_signature) = "name";
   }
@@ -356,4 +379,138 @@ service ConnectorPublicService {
     };
     option (google.api.method_signature) = "name";
   }
+
+  // *BlockchainConnector methods
+
+  // CreateBlockchainConnector method receives a CreateBlockchainConnectorRequest
+  // message and returns a CreateBlockchaineConnectorResponse message.
+  rpc CreateBlockchainConnector(CreateBlockchainConnectorRequest)
+      returns (CreateBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/blockchain-connectors"
+      body : "blockchain_connector"
+    };
+    option (google.api.method_signature) = "blockchain_connector";
+  }
+
+  // ListBlockchainConnectors method receives a ListBlockchainConnectorsRequest message
+  // and returns a ListBlockchainConnectorsResponse message.
+  rpc ListBlockchainConnectors(ListBlockchainConnectorsRequest)
+      returns (ListBlockchainConnectorsResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/blockchain-connectors"
+    };
+  }
+
+  // GetBlockchainConnector method receives a GetBlockchainConnectorRequest message and
+  // returns a GetBlockchainConnectorResponse message.
+  rpc GetBlockchainConnector(GetBlockchainConnectorRequest)
+      returns (GetBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=blockchain-connectors/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdateBlockchainConnector method receives a UpdateBlockchainConnectorRequest
+  // message and returns a UpdateBlockchainConnectorResponse message.
+  rpc UpdateBlockchainConnector(UpdateBlockchainConnectorRequest)
+      returns (UpdateBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/{blockchain_connector.name=blockchain-connectors/*}"
+      body : "blockchain_connector"
+    };
+    option (google.api.method_signature) = "blockchain_connector,update_mask";
+  }
+
+  // DeleteBlockchainConnector method receives a DeleteBlockchainConnectorRequest
+  // message and returns a DeleteBlockchainConnectorResponse message.
+  rpc DeleteBlockchainConnector(DeleteBlockchainConnectorRequest)
+      returns (DeleteBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      delete : "/v1alpha/{name=blockchain-connectors/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // LookUpBlockchainConnector method receives a LookUpBlockchainConnectorRequest
+  // message and returns a LookUpBlockchainConnectorResponse
+  rpc LookUpBlockchainConnector(LookUpBlockchainConnectorRequest)
+      returns (LookUpBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{permalink=blockchain-connectors/*}/lookUp"
+    };
+    option (google.api.method_signature) = "permalink";
+  }
+
+  // Connect a blockchain connector.
+  // The "state" of the connector after connecting is "CONNECTED".
+  // ConnectBlockchainConnector can be called on BlockchainConnector in the state
+  // `DISCONNECTED`; BlockchainConnector in a different state (including
+  // `CONNECTED`) returns an error.
+  rpc ConnectBlockchainConnector(ConnectBlockchainConnectorRequest)
+      returns (ConnectBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=blockchain-connectors/*}/connect"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Disconnect a blockchain connector.
+  // The "state" of the connector after disconnecting is "DISCONNECTED".
+  // DisconnectBlockchainConnector can be called on BlockchainConnector in the state
+  // `CONNECTED`; BlockchainConnector in a different state (including
+  // `DISCONNECTED`) returns an error.
+  rpc DisconnectBlockchainConnector(DisconnectBlockchainConnectorRequest)
+      returns (DisconnectBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=blockchain-connectors/*}/disconnect"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // RenameBlockchainConnector method receives a RenameBlockchainConnectorRequest
+  // message and returns a RenameBlockchainConnectorResponse message.
+  rpc RenameBlockchainConnector(RenameBlockchainConnectorRequest)
+      returns (RenameBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=blockchain-connectors/*}/rename"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name,new_blockchain_connector_id";
+  }
+
+  // ExecuteBlockchainConnector method receives a ExecuteBlockchainConnectorRequest 
+  // message and returns a ExecuteBlockchainConnectorResponse message.
+  rpc ExecuteBlockchainConnector(ExecuteBlockchainConnectorRequest)
+      returns (ExecuteBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=blockchain-connectors/*}/execute"
+      body : "*"
+    };
+    option (google.api.method_signature) = "name";
+  };
+
+  // WatchBlockchainConnector method receives a WatchBlockchainConnectorRequest message
+  // and returns a WatchBlockchainConnectorResponse
+  rpc WatchBlockchainConnector(WatchBlockchainConnectorRequest)
+      returns (WatchBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/{name=blockchain-connectors/*}/watch"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // TestBlockchainConnector method receives a TestBlockchainConnectorRequest message
+  // and returns a TestBlockchainConnectorResponse
+  rpc TestBlockchainConnector(TestBlockchainConnectorRequest)
+      returns (TestBlockchainConnectorResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/{name=blockchain-connectors/*}/testConnection"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
 }
