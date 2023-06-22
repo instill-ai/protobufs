@@ -12,7 +12,34 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
 
+import "common/healthcheck/v1alpha/healthcheck.proto";
 import "vdp/connector/v1alpha/connector_definition.proto";
+
+// LivenessRequest represents a request to check a service liveness status
+message LivenessRequest {
+  // HealthCheckRequest message
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
+      1 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// LivenessResponse represents a response for a service liveness status
+message LivenessResponse {
+  // HealthCheckResponse message
+  common.healthcheck.v1alpha.HealthCheckResponse health_check_response = 1;
+}
+
+// ReadinessRequest represents a request to check a service readiness status
+message ReadinessRequest {
+  // HealthCheckRequest message
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
+      1 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ReadinessResponse represents a response for a service readiness status
+message ReadinessResponse {
+  // HealthCheckResponse message
+  common.healthcheck.v1alpha.HealthCheckResponse health_check_response = 1;
+}
 
 // Connector represents a connector data model
 message Connector {
@@ -40,7 +67,8 @@ message Connector {
   bool tombstone = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
   // Connector owner
   oneof owner {
-    // The resource name with UUID of a user, e.g., "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+    // The resource name with UUID of a user, e.g.,
+    // "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
     string user = 5 [
       (google.api.resource_reference).type = "api.instill.tech/User",
       (google.api.field_behavior) = OUTPUT_ONLY
@@ -510,8 +538,8 @@ message ListSourceConnectorsAdminResponse {
   int64 total_size = 3;
 }
 
-// LookUpSourceConnectorAdminRequest represents a request to query a source connector
-// via permalink by admin
+// LookUpSourceConnectorAdminRequest represents a request to query a source
+// connector via permalink by admin
 message LookUpSourceConnectorAdminRequest {
   // Permalink of a source connector. For example:
   // "source-connectors/{uid}"
@@ -520,7 +548,8 @@ message LookUpSourceConnectorAdminRequest {
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
-// LookUpSourceConnectorAdminResponse represents a response for a source connector
+// LookUpSourceConnectorAdminResponse represents a response for a source
+// connector
 message LookUpSourceConnectorAdminResponse {
   // SourceConnector resource
   SourceConnector source_connector = 1;
@@ -540,8 +569,8 @@ message WatchSourceConnectorRequest {
   ];
 }
 
-// WatchSourceConnectorResponse represents a response to fetch a source connector's
-// current state
+// WatchSourceConnectorResponse represents a response to fetch a source
+// connector's current state
 message WatchSourceConnectorResponse {
   // Retrieved connector state
   Connector.State state = 1;
@@ -552,11 +581,12 @@ message WatchSourceConnectorResponse {
 message CheckSourceConnectorRequest {
   // Permalink of a source connector. For example:
   // "source-connectors/{uid}"
-  string source_connector_permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string source_connector_permalink = 1
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// CheckSourceConnectorResponse represents a response to fetch a source connector's
-// current state
+// CheckSourceConnectorResponse represents a response to fetch a source
+// connector's current state
 message CheckSourceConnectorResponse {
   // Retrieved connector state
   Connector.State state = 1;
@@ -576,8 +606,8 @@ message TestSourceConnectorRequest {
   ];
 }
 
-// TestSourceConnectorResponse represents a response containing a source connector's
-// current state
+// TestSourceConnectorResponse represents a response containing a source
+// connector's current state
 message TestSourceConnectorResponse {
   // Retrieved connector state
   Connector.State state = 1;
@@ -607,8 +637,8 @@ message ListDestinationConnectorsAdminResponse {
   int64 total_size = 3;
 }
 
-// LookUpDestinationConnectorAdminRequest represents a request to query a destination
-// connector via permalink by admin
+// LookUpDestinationConnectorAdminRequest represents a request to query a
+// destination connector via permalink by admin
 message LookUpDestinationConnectorAdminRequest {
   // Permalink of a destination connector. For example:
   // "destination-connectors/{uid}"
@@ -617,8 +647,8 @@ message LookUpDestinationConnectorAdminRequest {
   optional View view = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
-// LookUpDestinationConnectorAdminResponse represents a response for a destination
-// connector
+// LookUpDestinationConnectorAdminResponse represents a response for a
+// destination connector
 message LookUpDestinationConnectorAdminResponse {
   // DestinationConnector resource
   DestinationConnector destination_connector = 1;
@@ -631,15 +661,16 @@ message WatchDestinationConnectorRequest {
   // "destination-connectors/*"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/DestinationConnector",
+    (google.api.resource_reference).type =
+        "api.instill.tech/DestinationConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       field_configuration : {path_param_name : "destination_connector.name"}
     }
   ];
 }
 
-// WatchDestinationConnectorResponse represents a response to fetch a destination connector's
-// current state
+// WatchDestinationConnectorResponse represents a response to fetch a
+// destination connector's current state
 message WatchDestinationConnectorResponse {
   // Retrieved connector state
   Connector.State state = 1;
@@ -650,11 +681,12 @@ message WatchDestinationConnectorResponse {
 message CheckDestinationConnectorRequest {
   // Permalink of a destination connector. For example:
   // "destination-connectors/{uid}"
-  string destination_connector_permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string destination_connector_permalink = 1
+      [ (google.api.field_behavior) = REQUIRED ];
 }
 
-// CheckDestinationConnectorResponse represents a response to fetch a destination connector's
-// current state
+// CheckDestinationConnectorResponse represents a response to fetch a
+// destination connector's current state
 message CheckDestinationConnectorResponse {
   // Retrieved connector state
   Connector.State state = 1;
@@ -667,15 +699,16 @@ message TestDestinationConnectorRequest {
   // "destination-connectors/*"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/DestinationConnector",
+    (google.api.resource_reference).type =
+        "api.instill.tech/DestinationConnector",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
       field_configuration : {path_param_name : "destination_connector.name"}
     }
   ];
 }
 
-// TestDestinationConnectorResponse represents a response containing a destination
-// connector's current state
+// TestDestinationConnectorResponse represents a response containing a
+// destination connector's current state
 message TestDestinationConnectorResponse {
   // Retrieved connector state
   Connector.State state = 1;
@@ -685,8 +718,7 @@ message TestDestinationConnectorResponse {
 message DataPayload {
 
   // Data index corresponds to each data element
-  string data_mapping_index = 1
-      [ (google.api.field_behavior) = REQUIRED ];
+  string data_mapping_index = 1 [ (google.api.field_behavior) = REQUIRED ];
 
   // Unstructured: text field
   repeated string texts = 2;
@@ -703,7 +735,8 @@ message DataPayload {
   google.protobuf.Struct metadata = 7;
 }
 
-// ExecuteSourceConnectorRequest represents a private request to execution connector
+// ExecuteSourceConnectorRequest represents a private request to execution
+// connector
 message ExecuteSourceConnectorRequest {
   // Name of a source connector. For example:
   // "source-connectors/{name}"
@@ -711,7 +744,6 @@ message ExecuteSourceConnectorRequest {
 
   // Input
   repeated DataPayload input = 2;
-
 }
 
 // ExecuteSourceConnectorResponse represents a response for execution output
@@ -720,7 +752,8 @@ message ExecuteSourceConnectorResponse {
   repeated DataPayload output = 1;
 }
 
-// ExecuteDestinationConnectorRequest represents a private request to execution connector
+// ExecuteDestinationConnectorRequest represents a private request to execution
+// connector
 message ExecuteDestinationConnectorRequest {
   // Name of a destination connector. For example:
   // "destination-connectors/{name}"
@@ -728,10 +761,10 @@ message ExecuteDestinationConnectorRequest {
 
   // Input
   repeated DataPayload input = 2;
-
 }
 
-// ExecuteDestinationConnectorResponse represents a response for execution output
+// ExecuteDestinationConnectorResponse represents a response for execution
+// output
 message ExecuteDestinationConnectorResponse {
   // Output
   repeated DataPayload output = 1;

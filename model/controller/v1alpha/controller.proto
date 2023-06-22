@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package vdp.controller.v1alpha;
+package model.controller.v1alpha;
 
 // Protobuf standard
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -10,8 +10,7 @@ import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 
 import "common/healthcheck/v1alpha/healthcheck.proto";
-import "vdp/pipeline/v1alpha/pipeline.proto";
-import "vdp/connector/v1alpha/connector.proto";
+import "model/model/v1alpha/model.proto";
 
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
@@ -46,15 +45,13 @@ message Resource {
     pattern : "resources/{resource_uuid}/types/{type}"
   };
 
-  // Permalink of a resouce. For example:
+  // Permalink of a resource. For example:
   // "resources/{resource_uuid}/types/{type}"
   string resource_permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
   // Resource state
   oneof state {
-    // Pipeline state
-    vdp.pipeline.v1alpha.Pipeline.State pipeline_state = 3;
-    // Connector state
-    vdp.connector.v1alpha.Connector.State connector_state = 4;
+    // Model state
+    model.v1alpha.Model.State model_state = 2;
     // Backend service state
     common.healthcheck.v1alpha.HealthCheckResponse.ServingStatus backend_state =
         5;
@@ -65,7 +62,7 @@ message Resource {
 
 // GetResourceRequest represents a request to query a resource's state
 message GetResourceRequest {
-  // Permalink of a resouce. For example:
+  // Permalink of a resource. For example:
   // "resources/{resource_uuid}/types/{type}"
   string resource_permalink = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -86,7 +83,7 @@ message GetResourceResponse {
 message UpdateResourceRequest {
   // Resource state
   Resource resource = 1 [ (google.api.field_behavior) = REQUIRED ];
-  // Resource longrunnning workflow id
+  // Resource long-running workflow id
   optional string workflow_id = 2 [ (google.api.field_behavior) = OPTIONAL ];
 }
 
@@ -98,7 +95,7 @@ message UpdateResourceResponse {
 
 // DeleteResourceRequest represents a request to delete a resource's state
 message DeleteResourceRequest {
-  // Permalink of a resouce. For example:
+  // Permalink of a resource. For example:
   // "resources/{resource_uuid}/types/{type}"
   string resource_permalink = 1 [
     (google.api.field_behavior) = REQUIRED,

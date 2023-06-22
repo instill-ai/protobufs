@@ -1,20 +1,21 @@
 swagger: "2.0"
 info:
-  title: vdp/connector/v1alpha/spec.proto
+  title: base/metric/v1alpha/metric.proto
   version: version not set
 tags:
-  - name: ConnectorPrivateService
-  - name: ConnectorPublicService
-  - name: ControllerPrivateService
   - name: PipelineService
   - name: ModelService
   - name: MgmtPrivateService
   - name: MgmtPublicService
+  - name: UsageService
+  - name: ControllerPrivateService
   - name: ModelPrivateService
   - name: ModelPublicService
+  - name: ConnectorPrivateService
+  - name: ConnectorPublicService
+  - name: ControllerPrivateService
   - name: PipelinePrivateService
   - name: PipelinePublicService
-  - name: UsageService
 consumes:
   - application/json
 produces:
@@ -26,12 +27,12 @@ paths:
         Liveness method receives a LivenessRequest message and returns a
         LivenessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: UsageService_Liveness
+      operationId: PipelinePublicService_Liveness
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/vdpusagev1alphaLivenessResponse'
+            $ref: '#/definitions/vdppipelinev1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -43,19 +44,19 @@ paths:
           required: false
           type: string
       tags:
-        - UsageService
+        - PipelinePublicService
   /v1alpha/__readiness:
     get:
       summary: |-
         Readiness method receives a ReadinessRequest message and returns a
         ReadinessResponse message.
         See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: UsageService_Readiness
+      operationId: PipelinePublicService_Readiness
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/vdpusagev1alphaReadinessResponse'
+            $ref: '#/definitions/vdppipelinev1alphaReadinessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -67,7 +68,7 @@ paths:
           required: false
           type: string
       tags:
-        - UsageService
+        - PipelinePublicService
   /v1alpha/{destination_connector.name}:
     get:
       summary: |-
@@ -186,18 +187,13 @@ paths:
             title: DestinationConnector resource
             required:
               - connector
-        - name: update_mask
-          description: Update mask for a DestinationConnector resource
-          in: query
-          required: true
-          type: string
       tags:
         - ConnectorPublicService
   /v1alpha/{destination_connector.name}/testConnection:
     post:
       summary: |-
-        TestDestinationConnector method receives a TestDestinationConnectorRequest message
-        and returns a TestDestinationConnectorResponse
+        TestDestinationConnector method receives a TestDestinationConnectorRequest
+        message and returns a TestDestinationConnectorResponse
       operationId: ConnectorPublicService_TestDestinationConnector
       responses:
         "200":
@@ -222,8 +218,9 @@ paths:
   /v1alpha/{destination_connector.name}/watch:
     get:
       summary: |-
-        WatchDestinationConnector method receives a WatchDestinationConnectorRequest message
-        and returns a WatchDestinationConnectorResponse
+        WatchDestinationConnector method receives a
+        WatchDestinationConnectorRequest message and returns a
+        WatchDestinationConnectorResponse
       operationId: ConnectorPublicService_WatchDestinationConnector
       responses:
         "200":
@@ -478,7 +475,9 @@ paths:
                 readOnly: true
               user:
                 type: string
-                description: The resource name with UUID of a user, e.g., "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+                description: |-
+                  The resource name with UUID of a user, e.g.,
+                  "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
                 readOnly: true
               org:
                 type: string
@@ -498,11 +497,6 @@ paths:
               The model `name` field is used to identify the model to update.
               Format: models/{model}
             title: The model to update
-        - name: update_mask
-          description: Mask of fields to update.
-          in: query
-          required: true
-          type: string
       tags:
         - ModelPublicService
   /v1alpha/{model_definition.name}:
@@ -682,12 +676,58 @@ paths:
               input:
                 type: array
                 items:
+                  type: object
                   $ref: '#/definitions/v1alphaDataPayload'
                 title: Input
-            title: ExecuteDestinationConnectorRequest represents a private request to execution connector
+            title: |-
+              ExecuteDestinationConnectorRequest represents a private request to execution
+              connector
       tags:
         - ConnectorPublicService
   /v1alpha/{name_1}/rename:
+    post:
+      summary: |-
+        RenameSourceConnector method receives a RenameSourceConnectorRequest
+        message and returns a RenameSourceConnectorResponse message.
+      operationId: ConnectorPublicService_RenameSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            SourceConnector resource name. It must have the format of
+            "source-connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_source_connector_id:
+                type: string
+                title: |-
+                  SourceConnector new resource id to replace with the
+                  SourceConnector resource name to be
+                  "source-connectors/{new_source_connector_id}"
+            title: |-
+              RenameSourceConnectorRequest represents a request to rename the
+              SourceConnector resource name
+            required:
+              - new_source_connector_id
+      tags:
+        - ConnectorPublicService
+  /v1alpha/{name_2}/rename:
     post:
       summary: |-
         RenameDestinationConnector method receives a
@@ -704,7 +744,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: name_1
+        - name: name_2
           description: |-
             DestinationConnector resource name. It must have the format of
             "destination-connectors/*"
@@ -731,40 +771,6 @@ paths:
               - new_destination_connector_id
       tags:
         - ConnectorPublicService
-  /v1alpha/{name_2}/rename:
-    post:
-      summary: RenameModel method rename a model
-      operationId: ModelPublicService_RenameModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaRenameModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_2
-          description: Resource name for the model to be renamed.
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              new_model_id:
-                type: string
-                title: New ID of this model
-            title: RenameModelRequest represents a request to rename a model
-            required:
-              - new_model_id
-      tags:
-        - ModelPublicService
   /v1alpha/{name_3}/rename:
     post:
       summary: |-
@@ -1017,7 +1023,9 @@ paths:
         - ConnectorPublicService
   /v1alpha/{name}/execute:
     post:
-      summary: "ExecuteSourceConnector method receives a ExecuteSourceConnectorRequest \nmessage and returns a ExecuteSourceConnectorResponse message."
+      summary: |-
+        ExecuteSourceConnector method receives a ExecuteSourceConnectorRequest
+        message and returns a ExecuteSourceConnectorResponse message.
       operationId: ConnectorPublicService_ExecuteSourceConnector
       responses:
         "200":
@@ -1046,9 +1054,12 @@ paths:
               input:
                 type: array
                 items:
+                  type: object
                   $ref: '#/definitions/v1alphaDataPayload'
                 title: Input
-            title: ExecuteSourceConnectorRequest represents a private request to execution connector
+            title: |-
+              ExecuteSourceConnectorRequest represents a private request to execution
+              connector
       tags:
         - ConnectorPublicService
   /v1alpha/{name}/publish:
@@ -1085,47 +1096,38 @@ paths:
         - ModelPublicService
   /v1alpha/{name}/rename:
     post:
-      summary: |-
-        RenameSourceConnector method receives a RenameSourceConnectorRequest
-        message and returns a RenameSourceConnectorResponse message.
-      operationId: ConnectorPublicService_RenameSourceConnector
+      summary: RenameModel method rename a model
+      operationId: ModelPublicService_RenameModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaRenameModelResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+          description: Resource name for the model to be renamed.
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             properties:
-              new_source_connector_id:
+              new_model_id:
                 type: string
-                title: |-
-                  SourceConnector new resource id to replace with the
-                  SourceConnector resource name to be
-                  "source-connectors/{new_source_connector_id}"
-            title: |-
-              RenameSourceConnectorRequest represents a request to rename the
-              SourceConnector resource name
+                title: New ID of this model
+            title: RenameModelRequest represents a request to rename a model
             required:
-              - new_source_connector_id
+              - new_model_id
       tags:
-        - ConnectorPublicService
+        - ModelPublicService
   /v1alpha/{name}/test:
     post:
       summary: |-
@@ -1159,6 +1161,7 @@ paths:
               task_inputs:
                 type: array
                 items:
+                  type: object
                   $ref: '#/definitions/v1alphaTaskInput'
                 title: Input to trigger the model
             title: TestModelRequest represents a request to test a model
@@ -1200,6 +1203,7 @@ paths:
               task_inputs:
                 type: array
                 items:
+                  type: object
                   $ref: '#/definitions/v1alphaTaskInput'
                 title: Input to trigger the model
             title: TriggerModelRequest represents a request to trigger a model
@@ -1238,6 +1242,7 @@ paths:
               task_inputs:
                 type: array
                 items:
+                  type: object
                   $ref: '#/definitions/v1alphaTaskInput'
                 title: Input to the pipeline
             title: TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
@@ -1248,8 +1253,8 @@ paths:
   /v1alpha/{name}/triggerSync:
     post:
       summary: |-
-        TriggerSyncPipeline method receives a TriggerSyncPipelineRequest message and
-        returns a TriggerSyncPipelineResponse.
+        TriggerSyncPipeline method receives a TriggerSyncPipelineRequest message
+        and returns a TriggerSyncPipelineResponse.
       operationId: PipelinePublicService_TriggerSyncPipeline
       responses:
         "200":
@@ -1276,6 +1281,7 @@ paths:
               task_inputs:
                 type: array
                 items:
+                  type: object
                   $ref: '#/definitions/v1alphaTaskInput'
                 title: Input to the pipeline
             title: TriggerSyncPipelineRequest represents a request to trigger a pipeline
@@ -1310,7 +1316,9 @@ paths:
           required: true
           schema:
             type: object
-            title: UndeployModelRequest represents a request to undeploy a model to offline state
+            title: |-
+              UndeployModelRequest represents a request to undeploy a model to offline
+              state
       tags:
         - ModelPublicService
   /v1alpha/{name}/unpublish:
@@ -1348,6 +1356,47 @@ paths:
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
+        LookUpSourceConnector method receives a LookUpSourceConnectorRequest
+        message and returns a LookUpSourceConnectorResponse
+      operationId: ConnectorPublicService_LookUpSourceConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpSourceConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: permalink_1
+          description: |-
+            Permalink of a source connector. For example:
+            "source-connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+        - name: view
+          description: |-
+            SourceConnector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ConnectorPublicService
+  /v1alpha/{permalink_2}/lookUp:
+    get:
+      summary: |-
         LookUpDestinationConnector method receives a
         LookUpDestinationConnectorRequest message and returns a
         LookUpDestinationConnectorResponse
@@ -1362,7 +1411,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: permalink_1
+        - name: permalink_2
           description: |-
             Permalink of a destination connector. For example:
             "destination-connectors/{uid}"
@@ -1387,49 +1436,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPublicService
-  /v1alpha/{permalink_2}/lookUp:
-    get:
-      summary: |-
-        LookUpModel method receives a LookUpModelRequest message and returns a
-        LookUpModelResponse
-      operationId: ModelPublicService_LookUpModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: permalink_2
-          description: |-
-            Permalink of a model. For example:
-            "models/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: models/[^/]+
-        - name: view
-          description: |-
-            Model view (default is VIEW_BASIC)
-            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
-            VIEW_FULL: show full information
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-             - VIEW_FULL: View: FULL, full representation of the resource
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ModelPublicService
   /v1alpha/{permalink_3}/lookUp:
     get:
       summary: |-
@@ -1474,14 +1480,14 @@ paths:
   /v1alpha/{permalink}/lookUp:
     get:
       summary: |-
-        LookUpSourceConnector method receives a LookUpSourceConnectorRequest
-        message and returns a LookUpSourceConnectorResponse
-      operationId: ConnectorPublicService_LookUpSourceConnector
+        LookUpModel method receives a LookUpModelRequest message and returns a
+        LookUpModelResponse
+      operationId: ModelPublicService_LookUpModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaLookUpModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1489,19 +1495,21 @@ paths:
       parameters:
         - name: permalink
           description: |-
-            Permalink of a source connector. For example:
-            "source-connectors/{uid}"
+            Permalink of a model. For example:
+            "models/{uid}"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: models/[^/]+
         - name: view
           description: |-
-            SourceConnector view (default is VIEW_BASIC)
+            Model view (default is VIEW_BASIC)
+            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
+            VIEW_FULL: show full information
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_FULL: View: FULL, full representation of the resource
           in: query
           required: false
           type: string
@@ -1511,7 +1519,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
+        - ModelPublicService
   /v1alpha/{pipeline.name/watch}/watch:
     get:
       summary: |-
@@ -1653,7 +1661,9 @@ paths:
                 readOnly: true
               user:
                 type: string
-                description: The resource name with UUID of a user, e.g., "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+                description: |-
+                  The resource name with UUID of a user, e.g.,
+                  "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
                 readOnly: true
               org:
                 type: string
@@ -1670,14 +1680,9 @@ paths:
                 title: Pipeline update time
                 readOnly: true
             title: A pipeline resource to update
-        - name: update_mask
-          description: Update mask for a pipeline resource
-          in: query
-          required: true
-          type: string
       tags:
         - PipelinePublicService
-  /v1alpha/{resource.resource_permalink}:
+  /v1alpha/{resource.resource_permalink_1}:
     get:
       summary: |-
         GetResource method receives a GetResourceRequest message
@@ -1687,13 +1692,13 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetResourceResponse'
+            $ref: '#/definitions/vdpcontrollerv1alphaGetResourceResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: resource.resource_permalink
+        - name: resource.resource_permalink_1
           description: |-
             Permalink of a resouce. For example:
             "resources/{resource_uuid}/types/{type}"
@@ -1712,13 +1717,13 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeleteResourceResponse'
+            $ref: '#/definitions/vdpcontrollerv1alphaDeleteResourceResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: resource.resource_permalink
+        - name: resource.resource_permalink_1
           description: |-
             Permalink of a resouce. For example:
             "resources/{resource_uuid}/types/{type}"
@@ -1737,13 +1742,13 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUpdateResourceResponse'
+            $ref: '#/definitions/vdpcontrollerv1alphaUpdateResourceResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: resource.resource_permalink
+        - name: resource.resource_permalink_1
           description: |-
             Permalink of a resouce. For example:
             "resources/{resource_uuid}/types/{type}"
@@ -1758,9 +1763,6 @@ paths:
           schema:
             type: object
             properties:
-              model_state:
-                $ref: '#/definitions/v1alphaModelState'
-                title: Model state
               pipeline_state:
                 $ref: '#/definitions/v1alphaPipelineState'
                 title: Pipeline state
@@ -1777,6 +1779,105 @@ paths:
             title: Resource state
         - name: workflow_id
           description: Resource longrunnning workflow id
+          in: query
+          required: false
+          type: string
+      tags:
+        - ControllerPrivateService
+  /v1alpha/{resource.resource_permalink}:
+    get:
+      summary: |-
+        GetResource method receives a GetResourceRequest message
+        and returns a GetResourceResponse
+      operationId: ControllerPrivateService_GetResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/modelcontrollerv1alphaGetResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.resource_permalink
+          description: |-
+            Permalink of a resource. For example:
+            "resources/{resource_uuid}/types/{type}"
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+/types/[^/]+
+      tags:
+        - ControllerPrivateService
+    delete:
+      summary: |-
+        DeleteResource method receives a DeleteResourceRequest message
+        and returns a DeleteResourceResponse
+      operationId: ControllerPrivateService_DeleteResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/modelcontrollerv1alphaDeleteResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.resource_permalink
+          description: |-
+            Permalink of a resource. For example:
+            "resources/{resource_uuid}/types/{type}"
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+/types/[^/]+
+      tags:
+        - ControllerPrivateService
+    patch:
+      summary: |-
+        UpdateResource method receives a UpdateResourceRequest message
+        and returns a UpdateResourceResponse
+      operationId: ControllerPrivateService_UpdateResource
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/modelcontrollerv1alphaUpdateResourceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: resource.resource_permalink
+          description: |-
+            Permalink of a resource. For example:
+            "resources/{resource_uuid}/types/{type}"
+          in: path
+          required: true
+          type: string
+          pattern: resources/[^/]+/types/[^/]+
+        - name: resource
+          description: Resource state
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              model_state:
+                $ref: '#/definitions/v1alphaModelState'
+                title: Model state
+              backend_state:
+                $ref: '#/definitions/HealthCheckResponseServingStatus'
+                title: Backend service state
+              progress:
+                type: integer
+                format: int32
+                title: Resource longrunning progress
+            title: Resource state
+        - name: workflow_id
+          description: Resource long-running workflow id
           in: query
           required: false
           type: string
@@ -1898,11 +1999,6 @@ paths:
             title: SourceConnector resource
             required:
               - connector
-        - name: update_mask
-          description: Update mask for a SourceConnector resource
-          in: query
-          required: true
-          type: string
       tags:
         - ConnectorPublicService
   /v1alpha/{source_connector.name}/testConnection:
@@ -2127,89 +2223,6 @@ paths:
   /v1alpha/admin/{permalink_1}/lookUp:
     get:
       summary: |-
-        LookUpDestinationConnectorAdmin method receives a
-        LookUpDestinationConnectorAdminRequest message and returns a
-        LookUpDestinationConnectorAdminResponse
-      operationId: ConnectorPrivateService_LookUpDestinationConnectorAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpDestinationConnectorAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: permalink_1
-          description: |-
-            Permalink of a destination connector. For example:
-            "destination-connectors/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
-  /v1alpha/admin/{permalink_2}/lookUp:
-    get:
-      summary: |-
-        LookUpUserAdmin method receives a LookUpUserAdminRequest message and
-        returns a LookUpUserAdminResponse
-      operationId: MgmtPrivateService_LookUpUserAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpUserAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: permalink_2
-          description: |-
-            Permalink of a user. For example:
-            "users/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: view
-          description: |-
-            View view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - MgmtPrivateService
-  /v1alpha/admin/{permalink_3}/lookUp:
-    get:
-      summary: |-
         LookUpModelAdmin method receives a LookUpModelAdminRequest message and
         returns a LookUpModelAdminResponse
       operationId: ModelPrivateService_LookUpModelAdmin
@@ -2223,7 +2236,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: permalink_3
+        - name: permalink_1
           description: |-
             Permalink of a model. For example:
             "models/{uid}"
@@ -2250,6 +2263,90 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPrivateService
+  /v1alpha/admin/{permalink_2}/lookUp:
+    get:
+      summary: |-
+        LookUpSourceConnectorAdmin method receives a
+        LookUpSourceConnectorAdminRequest message and returns a
+        LookUpSourceConnectorAdminResponse
+      operationId: ConnectorPrivateService_LookUpSourceConnectorAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpSourceConnectorAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: permalink_2
+          description: |-
+            Permalink of a source connector. For example:
+            "source-connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: source-connectors/[^/]+
+        - name: view
+          description: |-
+            SourceConnector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ConnectorPrivateService
+  /v1alpha/admin/{permalink_3}/lookUp:
+    get:
+      summary: |-
+        LookUpDestinationConnectorAdmin method receives a
+        LookUpDestinationConnectorAdminRequest message and returns a
+        LookUpDestinationConnectorAdminResponse
+      operationId: ConnectorPrivateService_LookUpDestinationConnectorAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpDestinationConnectorAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: permalink_3
+          description: |-
+            Permalink of a destination connector. For example:
+            "destination-connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: destination-connectors/[^/]+
+        - name: view
+          description: |-
+            SourceConnector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ConnectorPrivateService
   /v1alpha/admin/{permalink_4}/lookUp:
     get:
       summary: |-
@@ -2294,15 +2391,14 @@ paths:
   /v1alpha/admin/{permalink}/lookUp:
     get:
       summary: |-
-        LookUpSourceConnectorAdmin method receives a
-        LookUpSourceConnectorAdminRequest message and returns a
-        LookUpSourceConnectorAdminResponse
-      operationId: ConnectorPrivateService_LookUpSourceConnectorAdmin
+        LookUpUserAdmin method receives a LookUpUserAdminRequest message and
+        returns a LookUpUserAdminResponse
+      operationId: MgmtPrivateService_LookUpUserAdmin
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpSourceConnectorAdminResponse'
+            $ref: '#/definitions/v1alphaLookUpUserAdminResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2310,17 +2406,17 @@ paths:
       parameters:
         - name: permalink
           description: |-
-            Permalink of a source connector. For example:
-            "source-connectors/{uid}"
+            Permalink of a user. For example:
+            "users/{uid}"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: users/[^/]+
         - name: view
           description: |-
-            SourceConnector view (default is VIEW_BASIC)
+            View view (default is VIEW_BASIC)
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
           in: query
@@ -2332,7 +2428,7 @@ paths:
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPrivateService
+        - MgmtPrivateService
   /v1alpha/admin/{source_connector_permalink}/check:
     get:
       summary: |-
@@ -2467,8 +2563,8 @@ paths:
               id:
                 type: string
                 description: |-
-                  Resource ID (the last segment of the resource name), also the user username.
-                  This conforms to RFC-1034, which restricts to letters, numbers,
+                  Resource ID (the last segment of the resource name), also the user
+                  username. This conforms to RFC-1034, which restricts to letters, numbers,
                   and hyphen, with the first character a letter, the last a letter or a
                   number, and a 63 character maximum.
                   Note that the ID can be updated.
@@ -2527,11 +2623,6 @@ paths:
               - id
               - email
               - newsletter_subscription
-        - name: update_mask
-          description: Update mask for a user resource
-          in: query
-          required: true
-          type: string
       tags:
         - MgmtPrivateService
   /v1alpha/admin/destination-connectors:
@@ -2584,8 +2675,8 @@ paths:
   /v1alpha/admin/models:
     get:
       summary: |-
-        ListModelsAdmin method receives a ListModelsAdminRequest message and returns a
-        ListModelsAdminResponse
+        ListModelsAdmin method receives a ListModelsAdminRequest message and
+        returns a ListModelsAdminResponse
       operationId: ModelPrivateService_ListModelsAdmin
       responses:
         "200":
@@ -2864,8 +2955,9 @@ paths:
   /v1alpha/destination-connectors:
     get:
       summary: |-
-        ListDestinationConnectors method receives a ListDestinationConnectorsRequest
-        message and returns a ListDestinationConnectorsResponse message.
+        ListDestinationConnectors method receives a
+        ListDestinationConnectorsRequest message and returns a
+        ListDestinationConnectorsResponse message.
       operationId: ConnectorPublicService_ListDestinationConnectors
       responses:
         "200":
@@ -2993,7 +3085,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/vdpmgmtv1alphaLivenessResponse'
+            $ref: '#/definitions/basemgmtv1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3017,7 +3109,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/vdpmodelv1alphaLivenessResponse'
+            $ref: '#/definitions/modelmodelv1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3065,7 +3157,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/vdpusagev1alphaLivenessResponse'
+            $ref: '#/definitions/baseusagev1alphaLivenessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3296,7 +3388,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/vdpmgmtv1alphaReadinessResponse'
+            $ref: '#/definitions/basemgmtv1alphaReadinessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3320,7 +3412,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/vdpmodelv1alphaReadinessResponse'
+            $ref: '#/definitions/modelmodelv1alphaReadinessResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3525,8 +3617,8 @@ paths:
         - name: page_size
           description: |-
             The maximum number of API tokens to return. The service may return fewer
-            than this value. If unspecified, at most 10 API tokens will be returned. The
-            maximum value is 100; values above 100 will be coerced to 100.
+            than this value. If unspecified, at most 10 API tokens will be returned.
+            The maximum value is 100; values above 100 will be coerced to 100.
           in: query
           required: false
           type: string
@@ -3603,11 +3695,6 @@ paths:
             $ref: '#/definitions/v1alphaUser'
             required:
               - user
-        - name: update_mask
-          description: Update mask for a user resource
-          in: query
-          required: true
-          type: string
       tags:
         - MgmtPublicService
 definitions:
@@ -3687,6 +3774,49 @@ definitions:
        - SERVICE_MODEL: Service: MODEL
        - SERVICE_PIPELINE: Service: PIPELINE
     title: Service enumerates the services to collect data from
+  basemgmtv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  basemgmtv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
+  basemgmtv1alphaView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      View represents a view of any resource. The resource view is implemented by
+      adding a parameter to the method request which allows the client to specify
+      which view of the resource it wants to receive in the response.
+
+       - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+  baseusagev1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  baseusagev1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
   googlelongrunningOperation:
     type: object
     properties:
@@ -3726,6 +3856,127 @@ definitions:
     description: |-
       This resource represents a long-running operation that is the result of a
       network API call.
+  modelcontrollerv1alphaDeleteResourceResponse:
+    type: object
+    title: DeleteResourceResponse represents an empty response
+  modelcontrollerv1alphaGetResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/modelcontrollerv1alphaResource'
+        title: Retrieved resource state
+    title: GetResourceResponse represents a response to fetch a resource's state
+  modelcontrollerv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  modelcontrollerv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
+  modelcontrollerv1alphaResource:
+    type: object
+    properties:
+      resource_permalink:
+        type: string
+        title: |-
+          Permalink of a resource. For example:
+          "resources/{resource_uuid}/types/{type}"
+      model_state:
+        $ref: '#/definitions/v1alphaModelState'
+        title: Model state
+      backend_state:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Backend service state
+      progress:
+        type: integer
+        format: int32
+        title: Resource longrunning progress
+    title: Resource represents the current information of a resource
+    required:
+      - resource_permalink
+  modelcontrollerv1alphaUpdateResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/modelcontrollerv1alphaResource'
+        title: Updated resource state
+    title: UpdateResourceResponse represents a response to update a resource's state
+  modelmodelv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  modelmodelv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1alphaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
+  modelmodelv1alphaTaskOutput:
+    type: object
+    properties:
+      classification:
+        $ref: '#/definitions/v1alphaClassificationOutput'
+        title: The classification output
+        readOnly: true
+      detection:
+        $ref: '#/definitions/v1alphaDetectionOutput'
+        title: The detection output
+        readOnly: true
+      keypoint:
+        $ref: '#/definitions/v1alphaKeypointOutput'
+        title: The keypoint output
+        readOnly: true
+      ocr:
+        $ref: '#/definitions/v1alphaOcrOutput'
+        title: The ocr output
+        readOnly: true
+      instance_segmentation:
+        $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
+        title: The instance segmentation output
+        readOnly: true
+      semantic_segmentation:
+        $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
+        title: The semantic segmentation output
+        readOnly: true
+      text_to_image:
+        $ref: '#/definitions/v1alphaTextToImageOutput'
+        title: The text to image output
+        readOnly: true
+      text_generation:
+        $ref: '#/definitions/v1alphaTextGenerationOutput'
+        title: The text generation output
+        readOnly: true
+      unspecified:
+        $ref: '#/definitions/v1alphaUnspecifiedOutput'
+        title: The unspecified task output
+        readOnly: true
+    title: TaskOutput represents the output of a CV Task result from a model
+  modelmodelv1alphaView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      View represents a view of any resource. The resource view is implemented by
+      adding a parameter to the method request which allows the client to specify
+      which view of the resource it wants to receive in the response.
+
+       - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+       - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+       - VIEW_FULL: View: FULL, full representation of the resource
   protobufAny:
     type: object
     properties:
@@ -3877,6 +4128,7 @@ definitions:
       details:
         type: array
         items:
+          type: object
           $ref: '#/definitions/protobufAny'
         description: |-
           A list of messages that carry the error details.  There is a common set of
@@ -3929,7 +4181,8 @@ definitions:
         type: string
         description: |-
           An opaque access token representing the API token string.
-          To validate the token, the recipient of the token needs to call the server that issued the token.
+          To validate the token, the recipient of the token needs to call the server
+          that issued the token.
         readOnly: true
       state:
         $ref: '#/definitions/v1alphaApiTokenState'
@@ -3993,8 +4246,8 @@ definitions:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      CheckDestinationConnectorResponse represents a response to fetch a destination connector's
-      current state
+      CheckDestinationConnectorResponse represents a response to fetch a
+      destination connector's current state
   v1alphaCheckModelResponse:
     type: object
     properties:
@@ -4011,8 +4264,8 @@ definitions:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      CheckSourceConnectorResponse represents a response to fetch a source connector's
-      current state
+      CheckSourceConnectorResponse represents a response to fetch a source
+      connector's current state
   v1alphaClassificationInput:
     type: object
     properties:
@@ -4036,7 +4289,9 @@ definitions:
         type: string
         format: byte
         title: Content of images in bytes
-    title: ClassificationInputStream represents the input of classification task when using stream method
+    title: |-
+      ClassificationInputStream represents the input of classification task when
+      using stream method
     required:
       - file_lengths
       - content
@@ -4113,7 +4368,9 @@ definitions:
         readOnly: true
       user:
         type: string
-        description: The resource name with UUID of a user, e.g., "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+        description: |-
+          The resource name with UUID of a user, e.g.,
+          "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
         readOnly: true
       org:
         type: string
@@ -4203,6 +4460,7 @@ definitions:
       usages:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaConnectorUsageDataUserUsageData'
         title: Usage data of all users in the connector service
     title: Connector service usage data
@@ -4355,9 +4613,6 @@ definitions:
   v1alphaDeletePipelineResponse:
     type: object
     title: DeletePipelineResponse represents an empty response
-  v1alphaDeleteResourceResponse:
-    type: object
-    title: DeleteResourceResponse represents an empty response
   v1alphaDeleteSourceConnectorResponse:
     type: object
     title: DeleteSourceConnectorResponse represents an empty response
@@ -4454,7 +4709,9 @@ definitions:
         type: string
         format: byte
         title: Content of images in bytes
-    title: DetectionInputStream represents the input of detection task when using stream method
+    title: |-
+      DetectionInputStream represents the input of detection task when using stream
+      method
     required:
       - file_lengths
       - content
@@ -4481,6 +4738,7 @@ definitions:
       objects:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaDetectionObject'
         title: A list of detection objects
         readOnly: true
@@ -4507,15 +4765,19 @@ definitions:
       output:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaDataPayload'
         title: Output
-    title: ExecuteDestinationConnectorResponse represents a response for execution output
+    title: |-
+      ExecuteDestinationConnectorResponse represents a response for execution
+      output
   v1alphaExecuteSourceConnectorResponse:
     type: object
     properties:
       output:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaDataPayload'
         title: Output
     title: ExecuteSourceConnectorResponse represents a response for execution output
@@ -4534,9 +4796,12 @@ definitions:
       bulk_cumulative_records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetCumulativeModelOnlineRecordsResponse'
         title: A list of cumulative model online record lists
-    title: GetBulkCumulativeModelOnlineRecordsResponse represents a response to GetBulkCumulativeModelOnlineRecordsRequest
+    title: |-
+      GetBulkCumulativeModelOnlineRecordsResponse represents a response to
+      GetBulkCumulativeModelOnlineRecordsRequest
     required:
       - bulk_cumulative_records
   v1alphaGetBulkCumulativePipelineTriggerRecordsResponse:
@@ -4545,9 +4810,12 @@ definitions:
       bulk_cumulative_records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetCumulativePipelineTriggerRecordsResponse'
         title: A list of cumulative pipeline trigger record lists
-    title: GetBulkCumulativePipelineTriggerRecordsResponse represents a response to GetBulkCumulativePipelineTriggerRecordsRequest
+    title: |-
+      GetBulkCumulativePipelineTriggerRecordsResponse represents a response to
+      GetBulkCumulativePipelineTriggerRecordsRequest
     required:
       - bulk_cumulative_records
   v1alphaGetBulkModelOnlinePriceResponse:
@@ -4556,9 +4824,12 @@ definitions:
       bulk_prices:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetModelOnlinePriceResponse'
         title: A list of model online price lists
-    title: GetBulkModelOnlinePriceResponse represents a response to GetBulkModelOnlinePriceRequest
+    title: |-
+      GetBulkModelOnlinePriceResponse represents a response to
+      GetBulkModelOnlinePriceRequest
     required:
       - bulk_prices
   v1alphaGetBulkModelOnlineRecordsResponse:
@@ -4567,9 +4838,12 @@ definitions:
       bulk_records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetModelOnlineRecordsResponse'
         title: A list of model online record lists
-    title: GetBulkModelOnlineRecordsResponse represents a response to GetBulkModelOnlineRecordsRequest
+    title: |-
+      GetBulkModelOnlineRecordsResponse represents a response to
+      GetBulkModelOnlineRecordsRequest
     required:
       - bulk_records
   v1alphaGetBulkModelOnlineSummaryResponse:
@@ -4578,9 +4852,12 @@ definitions:
       bulk_summaries:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetModelOnlineSummaryResponse'
         title: A list of model online usage summaries
-    title: GetBulkModelOnlineSummaryResponse represents a response to GetBulkModelOnlineSummaryRequest
+    title: |-
+      GetBulkModelOnlineSummaryResponse represents a response to
+      GetBulkModelOnlineSummaryRequest
     required:
       - bulk_summaries
   v1alphaGetBulkPipelineTriggerPriceResponse:
@@ -4589,9 +4866,12 @@ definitions:
       bulk_prices:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetPipelineTriggerPriceResponse'
         title: A list of pipeline trigger price lists
-    title: GetBulkPipelineTriggerPriceResponse represents a response to GetBulkPipelineTriggerPriceRequest
+    title: |-
+      GetBulkPipelineTriggerPriceResponse represents a response to
+      GetBulkPipelineTriggerPriceRequest
     required:
       - bulk_prices
   v1alphaGetBulkPipelineTriggerRecordsResponse:
@@ -4600,9 +4880,12 @@ definitions:
       bulk_records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetPipelineTriggerRecordsResponse'
         title: A list of pipeline trigger record lists
-    title: GetBulkPipelineTriggerRecordsResponse represents a response to GetBulkPipelineTriggerRecordsRequest
+    title: |-
+      GetBulkPipelineTriggerRecordsResponse represents a response to
+      GetBulkPipelineTriggerRecordsRequest
     required:
       - bulk_records
   v1alphaGetBulkPipelineTriggerSummariesResponse:
@@ -4611,9 +4894,12 @@ definitions:
       bulk_summaries:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaGetPipelineTriggerSummaryResponse'
-        title: A list of pipeline trigger usage summries
-    title: GetBulkPipelineTriggerSummariesResponse represents a response to GetBulkPipelineTriggerSummariesRequest
+        title: A list of pipeline trigger usage summaries
+    title: |-
+      GetBulkPipelineTriggerSummariesResponse represents a response to
+      GetBulkPipelineTriggerSummariesRequest
     required:
       - bulk_summaries
   v1alphaGetCumulativeModelOnlineRecordsRequest:
@@ -4628,7 +4914,9 @@ definitions:
       time_interval:
         $ref: '#/definitions/v1alphaTimeInterval'
         title: Time interval
-    title: GetCumulativeModelOnlineRecordsRequest represents a query for cumulative model online records
+    title: |-
+      GetCumulativeModelOnlineRecordsRequest represents a query for cumulative
+      model online records
     required:
       - user
       - model
@@ -4639,9 +4927,12 @@ definitions:
       cumulative_records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModelUsageRecord'
         title: A list of model online records in cumulative format
-    title: GetCumulativeModelOnlineRecordsResponse represents a response to GetCumulativeModelOnlineRecordsRequest
+    title: |-
+      GetCumulativeModelOnlineRecordsResponse represents a response to
+      GetCumulativeModelOnlineRecordsRequest
     required:
       - cumulative_records
   v1alphaGetCumulativePipelineTriggerRecordsRequest:
@@ -4656,7 +4947,9 @@ definitions:
       time_interval:
         $ref: '#/definitions/v1alphaTimeInterval'
         title: Time interval
-    title: GetCumulativePipelineTriggerRecordsRequest represents a query for cumulative pipeline trigger records
+    title: |-
+      GetCumulativePipelineTriggerRecordsRequest represents a query for cumulative
+      pipeline trigger records
     required:
       - user
       - pipeline
@@ -4666,9 +4959,12 @@ definitions:
       cumulative_records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPipelineUsageRecord'
         title: Pipeline trigger records where values are in cumulative formats
-    title: GetCumulativePipelineTriggerRecordsResponse represents a response to GetCumulativePipelineTriggerRecordsRequest
+    title: |-
+      GetCumulativePipelineTriggerRecordsResponse represents a response to
+      GetCumulativePipelineTriggerRecordsRequest
     required:
       - cumulative_records
   v1alphaGetDestinationConnectorDefinitionResponse:
@@ -4715,7 +5011,9 @@ definitions:
       time_interval:
         $ref: '#/definitions/v1alphaTimeInterval'
         title: Time interval
-    title: GetPipelineTriggerPriceRequest represents a query for price data of the billing periods covered by the time interval
+    title: |-
+      GetPipelineTriggerPriceRequest represents a query for price data of the
+      billing periods covered by the time interval
     required:
       - user
       - model
@@ -4726,9 +5024,14 @@ definitions:
       price:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPriceData'
-        title: A list of model online prices given the billing periods covered by the time interval
-    title: GetModelOnlinePriceResponse represents a response to GetModelOnlinePriceRequest
+        title: |-
+          A list of model online prices given the billing periods covered by the time
+          interval
+    title: |-
+      GetModelOnlinePriceResponse represents a response to
+      GetModelOnlinePriceRequest
     required:
       - price
   v1alphaGetModelOnlineRecordsRequest:
@@ -4754,9 +5057,12 @@ definitions:
       records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModelUsageRecord'
         title: A list of model trigger records
-    title: GetModelOnlineRecordsResponse represents a response to GetModelOnlineRecordsRequest
+    title: |-
+      GetModelOnlineRecordsResponse represents a response to
+      GetModelOnlineRecordsRequest
     required:
       - records
   v1alphaGetModelOnlineSummaryRequest:
@@ -4782,7 +5088,9 @@ definitions:
       summary:
         $ref: '#/definitions/v1alphaUsageSummary'
         title: The total model online usage in the time interval
-    title: GetModelOnlineSummaryResponse represents a response to GetModelOnlineSummaryRequest
+    title: |-
+      GetModelOnlineSummaryResponse represents a response to
+      GetModelOnlineSummaryRequest
     required:
       - summary
   v1alphaGetModelOperationResponse:
@@ -4805,6 +5113,7 @@ definitions:
       models:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModelData'
         title: A list of model informations
     title: GetPipelinesResponse represents a respond to GetModelsRequest
@@ -4829,7 +5138,9 @@ definitions:
       time_interval:
         $ref: '#/definitions/v1alphaTimeInterval'
         title: Time interval
-    title: GetPipelineTriggerPriceRequest represents a query for pipeline trigger prices given the billing periods covered by the time interval
+    title: |-
+      GetPipelineTriggerPriceRequest represents a query for pipeline trigger prices
+      given the billing periods covered by the time interval
     required:
       - user
       - pipeline
@@ -4840,9 +5151,14 @@ definitions:
       price:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPriceData'
-        title: A list of pipeline trigger prices given the billing periods covered by the time interval
-    title: GetPipelineTriggerPriceResponse represents a response to GetPipelineTriggerPriceRequest
+        title: |-
+          A list of pipeline trigger prices given the billing periods covered by the
+          time interval
+    title: |-
+      GetPipelineTriggerPriceResponse represents a response to
+      GetPipelineTriggerPriceRequest
     required:
       - price
   v1alphaGetPipelineTriggerRecordsRequest:
@@ -4857,7 +5173,9 @@ definitions:
       time_interval:
         $ref: '#/definitions/v1alphaTimeInterval'
         title: Time interval
-    title: GetPipelineTriggerRecordsRequest represents a query for pipeline trigger records
+    title: |-
+      GetPipelineTriggerRecordsRequest represents a query for pipeline trigger
+      records
     required:
       - user
       - pipeline
@@ -4867,9 +5185,12 @@ definitions:
       records:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPipelineUsageRecord'
         title: A list of pipeline trigger records
-    title: GetPipelineTriggerRecordsResponse represnets a response to GetPipelineTriggerRecordsRequest
+    title: |-
+      GetPipelineTriggerRecordsResponse represents a response to
+      GetPipelineTriggerRecordsRequest
     required:
       - records
   v1alphaGetPipelineTriggerSummaryRequest:
@@ -4884,7 +5205,9 @@ definitions:
       time_interval:
         $ref: '#/definitions/v1alphaTimeInterval'
         title: Time interval
-    title: GetPipelineTriggerSummaryRequest represents a query for pipeline trigger summary
+    title: |-
+      GetPipelineTriggerSummaryRequest represents a query for pipeline trigger
+      summary
     required:
       - user
       - pipeline
@@ -4894,7 +5217,9 @@ definitions:
       summaries:
         $ref: '#/definitions/v1alphaUsageSummary'
         title: The total pipeline trigger usage in the time interval
-    title: GetPipelineTriggerSummaryResponse represents a reqposne to GetPipelineTriggerSummaryRequest
+    title: |-
+      GetPipelineTriggerSummaryResponse represents a response to
+      GetPipelineTriggerSummaryRequest
     required:
       - summaries
   v1alphaGetPipelinesResponse:
@@ -4903,18 +5228,12 @@ definitions:
       pipelines:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPipelineData'
         title: A list of pipeline informations
     title: GetPipelinesResponse represents a respond to GetPipelineRequest
     required:
       - pipelines
-  v1alphaGetResourceResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v1alphaResource'
-        title: Retrieved resource state
-    title: GetResourceResponse represents a response to fetch a resource's state
   v1alphaGetSourceConnectorDefinitionResponse:
     type: object
     properties:
@@ -4947,7 +5266,9 @@ definitions:
         $ref: '#/definitions/googlelongrunningOperation'
         title: The retrieved longrunning operation
         readOnly: true
-    title: GetTriggerAsyncOperationResponse represents a response for a longrunning operation
+    title: |-
+      GetTriggerAsyncOperationResponse represents a response for a longrunning
+      operation
   v1alphaGetUserAdminResponse:
     type: object
     properties:
@@ -4992,7 +5313,9 @@ definitions:
         type: string
         format: byte
         title: Content of images in bytes
-    title: InstanceSegmentationInputStream represents the input of instance segmentation task when using stream method
+    title: |-
+      InstanceSegmentationInputStream represents the input of instance segmentation
+      task when using stream method
     required:
       - file_lengths
       - content
@@ -5023,6 +5346,7 @@ definitions:
       objects:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaInstanceSegmentationObject'
         title: A list of instance segmentation objects
         readOnly: true
@@ -5071,7 +5395,9 @@ definitions:
         type: string
         format: byte
         title: Content of images in bytes
-    title: KeypointInputStream represents the input of keypoint detection task when using stream method
+    title: |-
+      KeypointInputStream represents the input of keypoint detection task when
+      using stream method
     required:
       - file_lengths
       - content
@@ -5081,6 +5407,7 @@ definitions:
       keypoints:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaKeypoint'
         title: Keypoints
         readOnly: true
@@ -5100,6 +5427,7 @@ definitions:
       objects:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaKeypointObject'
         title: A list of keypoint objects
         readOnly: true
@@ -5110,6 +5438,7 @@ definitions:
       destination_connector_definitions:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaDestinationConnectorDefinition'
         title: A list of DestinationConnectorDefinition resources
       next_page_token:
@@ -5128,6 +5457,7 @@ definitions:
       destination_connectors:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaDestinationConnector'
         title: A list of DestinationConnector resources
       next_page_token:
@@ -5146,6 +5476,7 @@ definitions:
       destination_connectors:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaDestinationConnector'
         title: A list of DestinationConnector resources
       next_page_token:
@@ -5164,6 +5495,7 @@ definitions:
       model_definitions:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModelDefinition'
         title: a list of ModelDefinition instances
       next_page_token:
@@ -5174,14 +5506,15 @@ definitions:
         format: int64
         title: Total count of model definitions
     title: |-
-      ListModelDefinitionsResponse represents a response to list all supported model
-      definitions
+      ListModelDefinitionsResponse represents a response to list all supported
+      model definitions
   v1alphaListModelsAdminResponse:
     type: object
     properties:
       models:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModel'
         title: a list of Models
       next_page_token:
@@ -5198,6 +5531,7 @@ definitions:
       models:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModel'
         title: a list of Models
       next_page_token:
@@ -5214,6 +5548,7 @@ definitions:
       pipelines:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPipeline'
         title: A list of pipeline resources
       next_page_token:
@@ -5233,6 +5568,7 @@ definitions:
       pipelines:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPipeline'
         title: A list of pipeline resources
       next_page_token:
@@ -5249,6 +5585,7 @@ definitions:
       source_connector_definitions:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaSourceConnectorDefinition'
         title: A list of SourceConnectorDefinition resources
       next_page_token:
@@ -5267,6 +5604,7 @@ definitions:
       source_connectors:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaSourceConnector'
         title: A list of SourceConnector resources
       next_page_token:
@@ -5285,6 +5623,7 @@ definitions:
       source_connectors:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaSourceConnector'
         title: A list of SourceConnector resources
       next_page_token:
@@ -5303,6 +5642,7 @@ definitions:
       tokens:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaApiToken'
         title: A list of API tokens resources
       next_page_token:
@@ -5319,6 +5659,7 @@ definitions:
       users:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaUser'
         title: A list of users
       next_page_token:
@@ -5336,8 +5677,8 @@ definitions:
         $ref: '#/definitions/v1alphaDestinationConnector'
         title: DestinationConnector resource
     title: |-
-      LookUpDestinationConnectorAdminResponse represents a response for a destination
-      connector
+      LookUpDestinationConnectorAdminResponse represents a response for a
+      destination connector
   v1alphaLookUpDestinationConnectorResponse:
     type: object
     properties:
@@ -5381,7 +5722,9 @@ definitions:
       source_connector:
         $ref: '#/definitions/v1alphaSourceConnector'
         title: SourceConnector resource
-    title: LookUpSourceConnectorAdminResponse represents a response for a source connector
+    title: |-
+      LookUpSourceConnectorAdminResponse represents a response for a source
+      connector
   v1alphaLookUpSourceConnectorResponse:
     type: object
     properties:
@@ -5402,6 +5745,7 @@ definitions:
       usages:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaUser'
         title: Repeated user usage data
     title: Management service usage data
@@ -5450,7 +5794,9 @@ definitions:
         readOnly: true
       user:
         type: string
-        description: The resource name with UUID of a user, e.g., "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+        description: |-
+          The resource name with UUID of a user, e.g.,
+          "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
         readOnly: true
       org:
         type: string
@@ -5588,6 +5934,7 @@ definitions:
       task_outputs:
         type: array
         items:
+          type: object
           $ref: '#/definitions/vdppipelinev1alphaTaskOutput'
         title: |-
           The extended task outputs based on the model inference (i.e.,
@@ -5614,6 +5961,7 @@ definitions:
       usages:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModelUsageDataUserUsageData'
         title: Usage data of all users in the model service
     title: Model service usage data
@@ -5671,7 +6019,10 @@ definitions:
       value:
         type: string
         format: int64
-        title: The model online usage record that is logged in cumulative manner. This value records the cumulative usage since model is online in the current billing period
+        title: |-
+          The model online usage record that is logged in cumulative manner. This
+          value records the cumulative usage since model is online in the current
+          billing period
     title: Model online usage record definition
     required:
       - deploy_time
@@ -5730,6 +6081,7 @@ definitions:
       objects:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaOcrObject'
         title: A list of OCR objects
         readOnly: true
@@ -5789,7 +6141,9 @@ definitions:
         readOnly: true
       user:
         type: string
-        description: The resource name with UUID of a user, e.g., "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+        description: |-
+          The resource name with UUID of a user, e.g.,
+          "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
         readOnly: true
       org:
         type: string
@@ -5811,10 +6165,10 @@ definitions:
     properties:
       uid:
         type: string
-        title: Pipieline unique id that is auto generated
+        title: Pipeline unique id that is auto generated
       id:
         type: string
-        title: Pipeline id assigend by users
+        title: Pipeline id assigned by users
       task:
         type: string
         title: Pipeline task indicate the AI task this pipeline supports
@@ -5843,6 +6197,7 @@ definitions:
       usages:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaPipelineUsageDataUserUsageData'
         title: Usage data of all users in the pipeline service
     title: Pipeline service usage data
@@ -5903,7 +6258,9 @@ definitions:
       value:
         type: string
         format: int64
-        title: The pipeline trigger usage record. The unit of the usage should be consistent with Stripe
+        title: |-
+          The pipeline trigger usage record. The unit of the usage should be
+          consistent with Stripe
     title: Pipeline trigger usage record definition
     required:
       - request_id
@@ -5920,7 +6277,7 @@ definitions:
         title: Time when the price record is generated
       currency:
         type: string
-        title: The curency of the price
+        title: The currency of the price
         readOnly: true
       amount:
         type: number
@@ -5955,6 +6312,7 @@ definitions:
       components:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaComponent'
         title: List of pipeline components
     title: Pipeline represents a pipeline recipe
@@ -6016,7 +6374,9 @@ definitions:
       cum_usage_record:
         $ref: '#/definitions/v1alphaModelUsageRecord'
         title: Model online record
-    title: ReportModelOnlineRequest represents a request for reporting a model-online record
+    title: |-
+      ReportModelOnlineRequest represents a request for reporting a model-online
+      record
     required:
       - user
       - model
@@ -6027,14 +6387,18 @@ definitions:
       "null":
         $ref: '#/definitions/v1alphaNullMessage'
         title: Null message for empty response
-    title: ReportModelOnlineResponse represents a respond to a model-online-record report request
+    title: |-
+      ReportModelOnlineResponse represents a respond to a model-online-record
+      report request
   v1alphaReportModelOnlinesResponse:
     type: object
     properties:
       "null":
         $ref: '#/definitions/v1alphaNullMessage'
         title: Null message for empty response
-    title: ReportModelOnlinesResponse represents a respond to a model-online-records reporting bulk request
+    title: |-
+      ReportModelOnlinesResponse represents a respond to a model-online-records
+      reporting bulk request
   v1alphaReportPipelineTriggerRequest:
     type: object
     properties:
@@ -6043,11 +6407,13 @@ definitions:
         title: User information
       pipeline:
         $ref: '#/definitions/v1alphaPipelineData'
-        title: Pipeline infomration
+        title: Pipeline information
       usage_record:
         $ref: '#/definitions/v1alphaPipelineUsageRecord'
         title: Pipeline trigger record
-    title: ReportPipelineTriggerRequest represents a request for reporting a pipeline-trigger record
+    title: |-
+      ReportPipelineTriggerRequest represents a request for reporting a
+      pipeline-trigger record
     required:
       - user
       - pipeline
@@ -6058,41 +6424,18 @@ definitions:
       "null":
         $ref: '#/definitions/v1alphaNullMessage'
         title: Null message for empty response
-    title: ReportPipelineTriggerResponse represents a respond to a pipeline-trigger-record report request
+    title: |-
+      ReportPipelineTriggerResponse represents a respond to a
+      pipeline-trigger-record report request
   v1alphaReportPipelineTriggersResponse:
     type: object
     properties:
       "null":
         $ref: '#/definitions/v1alphaNullMessage'
         title: Null message for empty response
-    title: ReportPipelineTriggersResponse represents a respond to a pipeline-trigger-records reporting bulk request
-  v1alphaResource:
-    type: object
-    properties:
-      resource_permalink:
-        type: string
-        title: |-
-          Permalink of a resouce. For example:
-          "resources/{resource_uuid}/types/{type}"
-      model_state:
-        $ref: '#/definitions/v1alphaModelState'
-        title: Model state
-      pipeline_state:
-        $ref: '#/definitions/v1alphaPipelineState'
-        title: Pipeline state
-      connector_state:
-        $ref: '#/definitions/v1alphaConnectorState'
-        title: Connector state
-      backend_state:
-        $ref: '#/definitions/HealthCheckResponseServingStatus'
-        title: Backend service state
-      progress:
-        type: integer
-        format: int32
-        title: Resource longrunning progress
-    title: Resource represents the current information of a resource
-    required:
-      - resource_permalink
+    title: |-
+      ReportPipelineTriggersResponse represents a respond to a
+      pipeline-trigger-records reporting bulk request
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
@@ -6116,7 +6459,9 @@ definitions:
         type: string
         format: byte
         title: Content of images in bytes
-    title: SemanticSegmentationInputStream represents the input of semantic segmentation task when using stream method
+    title: |-
+      SemanticSegmentationInputStream represents the input of semantic segmentation
+      task when using stream method
     required:
       - file_lengths
       - content
@@ -6126,6 +6471,7 @@ definitions:
       stuffs:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaSemanticSegmentationStuff'
         title: A list of semantic segmentation stuffs
         readOnly: true
@@ -6382,8 +6728,8 @@ definitions:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      TestDestinationConnectorResponse represents a response containing a destination
-      connector's current state
+      TestDestinationConnectorResponse represents a response containing a
+      destination connector's current state
   v1alphaTestModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -6393,7 +6739,8 @@ definitions:
       task_outputs:
         type: array
         items:
-          $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+          type: object
+          $ref: '#/definitions/modelmodelv1alphaTaskOutput'
         title: The task output from a model
     title: |-
       TestModelBinaryFileUploadResponse represents a response for the
@@ -6410,7 +6757,8 @@ definitions:
       task_outputs:
         type: array
         items:
-          $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+          type: object
+          $ref: '#/definitions/modelmodelv1alphaTaskOutput'
         title: The task output from a model
     title: |-
       TestModelResponse represents a response for the output for
@@ -6425,8 +6773,8 @@ definitions:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      TestSourceConnectorResponse represents a response containing a source connector's
-      current state
+      TestSourceConnectorResponse represents a response containing a source
+      connector's current state
   v1alphaTextGenerationInput:
     type: object
     properties:
@@ -6526,8 +6874,8 @@ definitions:
         title: The data mapping indices for each input
         readOnly: true
     title: |-
-      TriggerAsyncPipelineBinaryFileUploadResponse represents a response for the longrunning operation
-      of a pipeline
+      TriggerAsyncPipelineBinaryFileUploadResponse represents a response for the
+      longrunning operation of a pipeline
   v1alphaTriggerAsyncPipelineResponse:
     type: object
     properties:
@@ -6542,8 +6890,8 @@ definitions:
         title: The data mapping indices for each input
         readOnly: true
     title: |-
-      TriggerAsyncPipelineResponse represents a response for the longrunning operation
-      of a pipeline
+      TriggerAsyncPipelineResponse represents a response for the longrunning
+      operation of a pipeline
   v1alphaTriggerModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -6553,7 +6901,8 @@ definitions:
       task_outputs:
         type: array
         items:
-          $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+          type: object
+          $ref: '#/definitions/modelmodelv1alphaTaskOutput'
         title: The task output from a model
     title: |-
       TriggerModelBinaryFileUploadResponse represents a response for the
@@ -6570,7 +6919,8 @@ definitions:
       task_outputs:
         type: array
         items:
-          $ref: '#/definitions/vdpmodelv1alphaTaskOutput'
+          type: object
+          $ref: '#/definitions/modelmodelv1alphaTaskOutput'
         title: The task output from a model
     title: |-
       TriggerModelResponse represents a response for the output for
@@ -6586,11 +6936,12 @@ definitions:
       model_outputs:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModelOutput'
         title: The multiple model inference outputs
     title: |-
-      TriggerSyncPipelineBinaryFileUploadResponse represents a response for the output
-      of a pipeline, i.e., the multiple model inference outputs
+      TriggerSyncPipelineBinaryFileUploadResponse represents a response for the
+      output of a pipeline, i.e., the multiple model inference outputs
   v1alphaTriggerSyncPipelineResponse:
     type: object
     properties:
@@ -6602,6 +6953,7 @@ definitions:
       model_outputs:
         type: array
         items:
+          type: object
           $ref: '#/definitions/v1alphaModelOutput'
         title: The multiple model inference outputs
     title: |-
@@ -6663,13 +7015,6 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: An updated pipeline resource
     title: UpdatePipelineResponse represents a response for a pipeline resource
-  v1alphaUpdateResourceResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v1alphaResource'
-        title: Updated resource state
-    title: UpdateResourceResponse represents a response to update a resource's state
   v1alphaUpdateSourceConnectorResponse:
     type: object
     properties:
@@ -6718,8 +7063,8 @@ definitions:
       id:
         type: string
         description: |-
-          Resource ID (the last segment of the resource name), also the user username.
-          This conforms to RFC-1034, which restricts to letters, numbers,
+          Resource ID (the last segment of the resource name), also the user
+          username. This conforms to RFC-1034, which restricts to letters, numbers,
           and hyphen, with the first character a letter, the last a letter or a
           number, and a 63 character maximum.
           Note that the ID can be updated.
@@ -6783,7 +7128,7 @@ definitions:
         title: User unique id
       name:
         type: string
-        title: User name, which is not necessry for service queries
+        title: User name, which is not necessary for service queries
     title: User records definition
     required:
       - uid
@@ -6794,8 +7139,8 @@ definitions:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      WatchDestinationConnectorResponse represents a response to fetch a destination connector's
-      current state
+      WatchDestinationConnectorResponse represents a response to fetch a
+      destination connector's current state
   v1alphaWatchModelResponse:
     type: object
     properties:
@@ -6825,8 +7170,8 @@ definitions:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      WatchSourceConnectorResponse represents a response to fetch a source connector's
-      current state
+      WatchSourceConnectorResponse represents a response to fetch a source
+      connector's current state
   vdpconnectorv1alphaLivenessResponse:
     type: object
     properties:
@@ -6853,6 +7198,16 @@ definitions:
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
     title: View enumerates the definition views
+  vdpcontrollerv1alphaDeleteResourceResponse:
+    type: object
+    title: DeleteResourceResponse represents an empty response
+  vdpcontrollerv1alphaGetResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/vdpcontrollerv1alphaResource'
+        title: Retrieved resource state
+    title: GetResourceResponse represents a response to fetch a resource's state
   vdpcontrollerv1alphaLivenessResponse:
     type: object
     properties:
@@ -6867,104 +7222,37 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  vdpmgmtv1alphaLivenessResponse:
+  vdpcontrollerv1alphaResource:
     type: object
     properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  vdpmgmtv1alphaReadinessResponse:
+      resource_permalink:
+        type: string
+        title: |-
+          Permalink of a resouce. For example:
+          "resources/{resource_uuid}/types/{type}"
+      pipeline_state:
+        $ref: '#/definitions/v1alphaPipelineState'
+        title: Pipeline state
+      connector_state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Connector state
+      backend_state:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Backend service state
+      progress:
+        type: integer
+        format: int32
+        title: Resource longrunning progress
+    title: Resource represents the current information of a resource
+    required:
+      - resource_permalink
+  vdpcontrollerv1alphaUpdateResourceResponse:
     type: object
     properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
-  vdpmgmtv1alphaView:
-    type: string
-    enum:
-      - VIEW_UNSPECIFIED
-      - VIEW_BASIC
-      - VIEW_FULL
-    default: VIEW_UNSPECIFIED
-    description: |-
-      View represents a view of any resource. The resource view is implemented by
-      adding a parameter to the method request which allows the client to specify
-      which view of the resource it wants to receive in the response.
-
-       - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-  vdpmodelv1alphaLivenessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  vdpmodelv1alphaReadinessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
-  vdpmodelv1alphaTaskOutput:
-    type: object
-    properties:
-      classification:
-        $ref: '#/definitions/v1alphaClassificationOutput'
-        title: The classification output
-        readOnly: true
-      detection:
-        $ref: '#/definitions/v1alphaDetectionOutput'
-        title: The detection output
-        readOnly: true
-      keypoint:
-        $ref: '#/definitions/v1alphaKeypointOutput'
-        title: The keypoint output
-        readOnly: true
-      ocr:
-        $ref: '#/definitions/v1alphaOcrOutput'
-        title: The ocr output
-        readOnly: true
-      instance_segmentation:
-        $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
-        title: The instance segmentation output
-        readOnly: true
-      semantic_segmentation:
-        $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
-        title: The semantic segmentation output
-        readOnly: true
-      text_to_image:
-        $ref: '#/definitions/v1alphaTextToImageOutput'
-        title: The text to image output
-        readOnly: true
-      text_generation:
-        $ref: '#/definitions/v1alphaTextGenerationOutput'
-        title: The text generation output
-        readOnly: true
-      unspecified:
-        $ref: '#/definitions/v1alphaUnspecifiedOutput'
-        title: The unspecified task output
-        readOnly: true
-    title: TaskOutput represents the output of a CV Task result from a model
-  vdpmodelv1alphaView:
-    type: string
-    enum:
-      - VIEW_UNSPECIFIED
-      - VIEW_BASIC
-      - VIEW_FULL
-    default: VIEW_UNSPECIFIED
-    description: |-
-      View represents a view of any resource. The resource view is implemented by
-      adding a parameter to the method request which allows the client to specify
-      which view of the resource it wants to receive in the response.
-
-       - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
-       - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-       - VIEW_FULL: View: FULL, full representation of the resource
+      resource:
+        $ref: '#/definitions/vdpcontrollerv1alphaResource'
+        title: Updated resource state
+    title: UpdateResourceResponse represents a response to update a resource's state
   vdppipelinev1alphaLivenessResponse:
     type: object
     properties:
@@ -7043,17 +7331,3 @@ definitions:
        - VIEW_UNSPECIFIED: View: UNSPECIFIED
        - VIEW_BASIC: View: BASIC
        - VIEW_FULL: View: FULL
-  vdpusagev1alphaLivenessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  vdpusagev1alphaReadinessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status

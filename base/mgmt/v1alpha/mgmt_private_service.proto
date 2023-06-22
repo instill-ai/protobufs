@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package base.mgmt.v1alpha;
+
+// Google API
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+
+import "base/mgmt/v1alpha/mgmt.proto";
+
+// Mgmt service responds to internal access
+service MgmtPrivateService {
+
+  // ListUsersAdmin method receives a ListUsersAdminRequest message and returns
+  // a ListUsersAdminResponse message.
+  rpc ListUsersAdmin(ListUsersAdminRequest) returns (ListUsersAdminResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/admin/users"
+    };
+  }
+
+  // CreateUserAdmin receives a CreateUserAdminRequest message and returns a
+  // a GetUserAdminResponse
+  rpc CreateUserAdmin(CreateUserAdminRequest)
+      returns (CreateUserAdminResponse) {
+    option (google.api.http) = {
+      post : "/v1alpha/admin/users"
+      body : "user"
+    };
+    option (google.api.method_signature) = "user";
+  }
+
+  // GetUserAdmin method receives a GetUserAdminRequest message and returns
+  // a GetUserAdminResponse message.
+  rpc GetUserAdmin(GetUserAdminRequest) returns (GetUserAdminResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/admin/{name=users/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdateUserAdmin method receives a UpdateUserAdminRequest message and
+  // returns a UpdateUserAdminResponse
+  rpc UpdateUserAdmin(UpdateUserAdminRequest)
+      returns (UpdateUserAdminResponse) {
+    option (google.api.http) = {
+      patch : "/v1alpha/admin/{user.name=users/*}"
+      body : "user"
+    };
+    option (google.api.method_signature) = "user,update_mask";
+  }
+
+  // DeleteUserAdmin method receives a DeleteUserAdminRequest message and
+  // returns a DeleteUserAdminResponse
+  rpc DeleteUserAdmin(DeleteUserAdminRequest)
+      returns (DeleteUserAdminResponse) {
+    option (google.api.http) = {
+      delete : "/v1alpha/admin/{name=users/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // LookUpUserAdmin method receives a LookUpUserAdminRequest message and
+  // returns a LookUpUserAdminResponse
+  rpc LookUpUserAdmin(LookUpUserAdminRequest)
+      returns (LookUpUserAdminResponse) {
+    option (google.api.http) = {
+      get : "/v1alpha/admin/{permalink=users/*}/lookUp"
+    };
+    option (google.api.method_signature) = "permalink";
+  }
+}
