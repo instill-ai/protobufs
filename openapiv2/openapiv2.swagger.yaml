@@ -69,33 +69,33 @@ paths:
           type: string
       tags:
         - PipelinePublicService
-  /v1alpha/{destination_connector.name}:
+  /v1alpha/{connector.name}:
     get:
       summary: |-
-        GetDestinationConnector method receives a GetDestinationConnectorRequest
-        message and returns a GetDestinationConnectorResponse message.
-      operationId: ConnectorPublicService_GetDestinationConnector
+        GetConnector method receives a GetConnectorRequest
+        message and returns a GetConnectorResponse message.
+      operationId: ConnectorPublicService_GetConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetDestinationConnectorResponse'
+            $ref: '#/definitions/v1alphaGetConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector.name
+        - name: connector.name
           description: |-
-            DestinationConnectorConnector resource name. It must have the format of
-            "destination-connectors/*"
+            ConnectorConnector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: destination-connectors/[^/]+
+          pattern: connectors/[^/]+
         - name: view
           description: |-
-            DestinationConnector view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -112,56 +112,56 @@ paths:
         - ConnectorPublicService
     delete:
       summary: |-
-        DeleteDestinationConnector method receives a
-        DeleteDestinationConnectorRequest message and returns a
-        DeleteDestinationConnectorResponse message.
-      operationId: ConnectorPublicService_DeleteDestinationConnector
+        DeleteConnector method receives a
+        DeleteConnectorRequest message and returns a
+        DeleteConnectorResponse message.
+      operationId: ConnectorPublicService_DeleteConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeleteDestinationConnectorResponse'
+            $ref: '#/definitions/v1alphaDeleteConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector.name
+        - name: connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Connector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: destination-connectors/[^/]+
+          pattern: connectors/[^/]+
       tags:
         - ConnectorPublicService
     patch:
       summary: |-
-        UpdateDestinationConnector method receives a
-        UpdateDestinationConnectorRequest message and returns a
-        UpdateDestinationConnectorResponse message.
-      operationId: ConnectorPublicService_UpdateDestinationConnector
+        UpdateConnector method receives a
+        UpdateConnectorRequest message and returns a
+        UpdateConnectorResponse message.
+      operationId: ConnectorPublicService_UpdateConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUpdateDestinationConnectorResponse'
+            $ref: '#/definitions/v1alphaUpdateConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector.name
+        - name: connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Connector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: destination-connectors/[^/]+
-        - name: destination_connector
-          description: DestinationConnector resource
+          pattern: connectors/[^/]+
+        - name: connector
+          description: Connector resource
           in: body
           required: true
           schema:
@@ -169,107 +169,146 @@ paths:
             properties:
               uid:
                 type: string
-                title: DestinationConnector UUID
+                title: Connector UUID
                 readOnly: true
               id:
                 type: string
                 description: |-
-                  DestinationConnector resource ID (the last segment of the resource name)
+                  Connector resource ID (the last segment of the resource name)
                   used to construct the resource name. This conforms to RFC-1034, which
                   restricts to letters, numbers, and hyphen, with the first character a
                   letter, the last a letter or a number, and a 63 character maximum.
-              destination_connector_definition:
+              connector_definition:
                 type: string
-                title: DestinationConnectorDefinition resource
-              connector:
-                $ref: '#/definitions/v1alphaConnector'
-                title: DestinationConnector's connector data structure
-            title: DestinationConnector resource
+                title: ConnectorDefinition resource
+              connector_type:
+                $ref: '#/definitions/v1alphaConnectorType'
+                title: Connector Type
+                readOnly: true
+              task:
+                type: string
+                title: Connector description
+                readOnly: true
+              description:
+                type: string
+                title: Connector description
+              configuration:
+                type: object
+                title: Connector configuration in JSON format
+              state:
+                $ref: '#/definitions/v1alphaConnectorState'
+                title: Connector state
+                readOnly: true
+              tombstone:
+                type: boolean
+                title: Connector tombstone
+                readOnly: true
+              user:
+                type: string
+                description: |-
+                  The resource name with UUID of a user, e.g.,
+                  "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+                readOnly: true
+              org:
+                type: string
+                title: The resource name with UUID of an organization
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                title: Connector creation time
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Connector update time
+                readOnly: true
+            title: Connector resource
             required:
-              - connector
+              - configuration
       tags:
         - ConnectorPublicService
-  /v1alpha/{destination_connector.name}/testConnection:
+  /v1alpha/{connector.name}/testConnection:
     post:
       summary: |-
-        TestDestinationConnector method receives a TestDestinationConnectorRequest
-        message and returns a TestDestinationConnectorResponse
-      operationId: ConnectorPublicService_TestDestinationConnector
+        TestConnector method receives a TestConnectorRequest
+        message and returns a TestConnectorResponse
+      operationId: ConnectorPublicService_TestConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaTestDestinationConnectorResponse'
+            $ref: '#/definitions/v1alphaTestConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector.name
+        - name: connector.name
           description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Connector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: destination-connectors/[^/]+
+          pattern: connectors/[^/]+
       tags:
         - ConnectorPublicService
-  /v1alpha/{destination_connector.name}/watch:
+  /v1alpha/{connector.name}/watch:
     get:
       summary: |-
-        WatchDestinationConnector method receives a
-        WatchDestinationConnectorRequest message and returns a
-        WatchDestinationConnectorResponse
-      operationId: ConnectorPublicService_WatchDestinationConnector
+        WatchConnector method receives a
+        WatchConnectorRequest message and returns a
+        WatchConnectorResponse
+      operationId: ConnectorPublicService_WatchConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaWatchDestinationConnectorResponse'
+            $ref: '#/definitions/v1alphaWatchConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector.name
+        - name: connector.name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "destination-connectors/*"
+            Connector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: destination-connectors/[^/]+
+          pattern: connectors/[^/]+
       tags:
         - ConnectorPublicService
-  /v1alpha/{destination_connector_definition.name}:
+  /v1alpha/{connector_definition.name}:
     get:
       summary: |-
-        GetDestinationConnectorDefinition method receives a
-        GetDestinationConnectorDefinitionRequest message and returns a
-        GetGetDestinationConnectorDefinitionResponse message.
-      operationId: ConnectorPublicService_GetDestinationConnectorDefinition
+        GetConnectorDefinition method receives a
+        GetConnectorDefinitionRequest message and returns a
+        GetGetConnectorDefinitionResponse message.
+      operationId: ConnectorPublicService_GetConnectorDefinition
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetDestinationConnectorDefinitionResponse'
+            $ref: '#/definitions/v1alphaGetConnectorDefinitionResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector_definition.name
+        - name: connector_definition.name
           description: |-
-            DestinationConnectorDefinition resource name. It must have the format of
-            "source-connector-definitions/*"
+            ConnectorDefinition resource name. It must have the format of
+            "connector-definitions/*"
           in: path
           required: true
           type: string
-          pattern: destination-connector-definitions/[^/]+
+          pattern: connector-definitions/[^/]+
         - name: view
           description: |-
-            DestinationConnectorDefinition resource view (default is
+            ConnectorDefinition resource view (default is
             DEFINITION_VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
@@ -568,133 +607,18 @@ paths:
           pattern: triggerAsyncOperations/[^/]+
       tags:
         - PipelinePublicService
-  /v1alpha/{name_1}/connect:
-    post:
-      summary: |-
-        Connect a destination connector.
-        The "state" of the connector after connecting is "CONNECTED".
-        ConnectDestinationConnector can be called on DestinationConnector in the
-        state `DISCONNECTED`; DestinationConnector in a different state (including
-        `CONNECTED`) returns an error.
-      operationId: ConnectorPublicService_ConnectDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaConnectDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: |-
-              ConnectDestinationConnectorRequest represents a request to connect a
-              destination connector
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{name_1}/disconnect:
-    post:
-      summary: |-
-        Disconnect a destination connector.
-        The "state" of the connector after disconnecting is "DISCONNECTED".
-        DisconnectDestinationConnector can be called on DestinationConnector in the
-        state `CONNECTED`; DestinationConnector in a different state (including
-        `DISCONNECTED`) returns an error.
-      operationId: ConnectorPublicService_DisconnectDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDisconnectDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: |-
-              DisconnectDestinationConnectorRequest represents a request to disconnect a
-              destination connector
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{name_1}/execute:
-    post:
-      summary: |-
-        ExecuteDestinationConnector method receives a
-        ExecuteDestinationConnectorRequest message and returns a
-        ExecuteDestinationConnectorResponse message.
-      operationId: ConnectorPublicService_ExecuteDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaExecuteDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_1
-          description: |-
-            Name of a destination connector. For example:
-            "destination-connectors/{name}"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              input:
-                type: array
-                items:
-                  type: object
-                  $ref: '#/definitions/v1alphaDataPayload'
-                title: Input
-            title: |-
-              ExecuteDestinationConnectorRequest represents a private request to execution
-              connector
-      tags:
-        - ConnectorPublicService
   /v1alpha/{name_1}/rename:
     post:
       summary: |-
-        RenameSourceConnector method receives a RenameSourceConnectorRequest
-        message and returns a RenameSourceConnectorResponse message.
-      operationId: ConnectorPublicService_RenameSourceConnector
+        RenameConnector method receives a
+        RenameConnectorRequest message and returns a
+        RenameConnectorResponse message.
+      operationId: ConnectorPublicService_RenameConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaRenameConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -702,76 +626,32 @@ paths:
       parameters:
         - name: name_1
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            Connector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: connectors/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             properties:
-              new_source_connector_id:
+              new_connector_id:
                 type: string
                 title: |-
-                  SourceConnector new resource id to replace with the
-                  SourceConnector resource name to be
-                  "source-connectors/{new_source_connector_id}"
+                  Connector new resource id to replace with the
+                  Connector resource name to be
+                  "connectors/{new_connector_id}"
             title: |-
-              RenameSourceConnectorRequest represents a request to rename the
-              SourceConnector resource name
+              RenameConnectorRequest represents a request to rename the
+              Connector resource name
             required:
-              - new_source_connector_id
+              - new_connector_id
       tags:
         - ConnectorPublicService
   /v1alpha/{name_2}/rename:
-    post:
-      summary: |-
-        RenameDestinationConnector method receives a
-        RenameDestinationConnectorRequest message and returns a
-        RenameDestinationConnectorResponse message.
-      operationId: ConnectorPublicService_RenameDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaRenameDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: name_2
-          description: |-
-            DestinationConnector resource name. It must have the format of
-            "destination-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              new_destination_connector_id:
-                type: string
-                title: |-
-                  DestinationConnector new resource id to replace with the
-                  DestinationConnector resource name to be
-                  "destination-connectors/{new_destination_connector_id}"
-            title: |-
-              RenameDestinationConnectorRequest represents a request to rename the
-              DestinationConnector resource name
-            required:
-              - new_destination_connector_id
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{name_3}/rename:
     post:
       summary: |-
         RenamePipeline method receives a RenamePipelineRequest message and returns
@@ -787,7 +667,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: name_3
+        - name: name_2
           description: Pipeline resource name. It must have the format of "pipelines/*"
           in: path
           required: true
@@ -888,17 +768,17 @@ paths:
   /v1alpha/{name}/connect:
     post:
       summary: |-
-        Connect a source connector.
+        Connect a connector.
         The "state" of the connector after connecting is "CONNECTED".
-        ConnectSourceConnector can be called on SourceConnector in the state
-        `DISCONNECTED`; SourceConnector in a different state (including
+        ConnectConnector can be called on Connector in the
+        state `DISCONNECTED`; Connector in a different state (including
         `CONNECTED`) returns an error.
-      operationId: ConnectorPublicService_ConnectSourceConnector
+      operationId: ConnectorPublicService_ConnectConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaConnectSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaConnectConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -906,20 +786,20 @@ paths:
       parameters:
         - name: name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            Connector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: connectors/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             title: |-
-              ConnectSourceConnectorRequest represents a request to connect a
-              source connector
+              ConnectConnectorRequest represents a request to connect a
+              connector
       tags:
         - ConnectorPublicService
   /v1alpha/{name}/deactivate:
@@ -987,17 +867,17 @@ paths:
   /v1alpha/{name}/disconnect:
     post:
       summary: |-
-        Disconnect a source connector.
+        Disconnect a connector.
         The "state" of the connector after disconnecting is "DISCONNECTED".
-        DisconnectSourceConnector can be called on SourceConnector in the state
-        `CONNECTED`; SourceConnector in a different state (including
+        DisconnectConnector can be called on Connector in the
+        state `CONNECTED`; Connector in a different state (including
         `DISCONNECTED`) returns an error.
-      operationId: ConnectorPublicService_DisconnectSourceConnector
+      operationId: ConnectorPublicService_DisconnectConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDisconnectSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaDisconnectConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1005,33 +885,34 @@ paths:
       parameters:
         - name: name
           description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
+            Connector resource name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: connectors/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             title: |-
-              DisconnectSourceConnectorRequest represents a request to disconnect a
-              source connector
+              DisconnectConnectorRequest represents a request to disconnect a
+              connector
       tags:
         - ConnectorPublicService
   /v1alpha/{name}/execute:
     post:
       summary: |-
-        ExecuteSourceConnector method receives a ExecuteSourceConnectorRequest
-        message and returns a ExecuteSourceConnectorResponse message.
-      operationId: ConnectorPublicService_ExecuteSourceConnector
+        ExecuteConnector method receives a
+        ExecuteConnectorRequest message and returns a
+        ExecuteConnectorResponse message.
+      operationId: ConnectorPublicService_ExecuteConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaExecuteSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaExecuteConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1039,12 +920,12 @@ paths:
       parameters:
         - name: name
           description: |-
-            Name of a source connector. For example:
-            "source-connectors/{name}"
+            Name of a connector. For example:
+            "connectors/{name}"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: connectors/[^/]+
         - name: body
           in: body
           required: true
@@ -1058,7 +939,7 @@ paths:
                   $ref: '#/definitions/v1alphaDataPayload'
                 title: Input
             title: |-
-              ExecuteSourceConnectorRequest represents a private request to execution
+              ExecuteConnectorRequest represents a private request to execution
               connector
       tags:
         - ConnectorPublicService
@@ -1356,14 +1237,15 @@ paths:
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
-        LookUpSourceConnector method receives a LookUpSourceConnectorRequest
-        message and returns a LookUpSourceConnectorResponse
-      operationId: ConnectorPublicService_LookUpSourceConnector
+        LookUpConnector method receives a
+        LookUpConnectorRequest message and returns a
+        LookUpConnectorResponse
+      operationId: ConnectorPublicService_LookUpConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpSourceConnectorResponse'
+            $ref: '#/definitions/v1alphaLookUpConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1371,15 +1253,15 @@ paths:
       parameters:
         - name: permalink_1
           description: |-
-            Permalink of a source connector. For example:
-            "source-connectors/{uid}"
+            Permalink of a connector. For example:
+            "connectors/{uid}"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: connectors/[^/]+
         - name: view
           description: |-
-            SourceConnector view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -1397,48 +1279,6 @@ paths:
   /v1alpha/{permalink_2}/lookUp:
     get:
       summary: |-
-        LookUpDestinationConnector method receives a
-        LookUpDestinationConnectorRequest message and returns a
-        LookUpDestinationConnectorResponse
-      operationId: ConnectorPublicService_LookUpDestinationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpDestinationConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: permalink_2
-          description: |-
-            Permalink of a destination connector. For example:
-            "destination-connectors/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{permalink_3}/lookUp:
-    get:
-      summary: |-
         LookUpPipeline method receives a LookUpPipelineRequest message and returns
         a LookUpPipelineResponse
       operationId: PipelinePublicService_LookUpPipeline
@@ -1452,7 +1292,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: permalink_3
+        - name: permalink_2
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -1883,218 +1723,6 @@ paths:
           type: string
       tags:
         - ControllerPrivateService
-  /v1alpha/{source_connector.name}:
-    get:
-      summary: |-
-        GetSourceConnector method receives a GetSourceConnectorRequest message and
-        returns a GetSourceConnectorResponse message.
-      operationId: ConnectorPublicService_GetSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name
-          description: |-
-            SourceConnectorConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
-    delete:
-      summary: |-
-        DeleteSourceConnector method receives a DeleteSourceConnectorRequest
-        message and returns a DeleteSourceConnectorResponse message.
-      operationId: ConnectorPublicService_DeleteSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeleteSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-      tags:
-        - ConnectorPublicService
-    patch:
-      summary: |-
-        UpdateSourceConnector method receives a UpdateSourceConnectorRequest
-        message and returns a UpdateSourceConnectorResponse message.
-      operationId: ConnectorPublicService_UpdateSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaUpdateSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-        - name: source_connector
-          description: SourceConnector resource
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              uid:
-                type: string
-                title: SourceConnector UUID
-                readOnly: true
-              id:
-                type: string
-                description: |-
-                  SourceConnector resource ID (the last segment of the resource name) used to
-                  construct the resource name. This conforms to RFC-1034, which restricts to
-                  letters, numbers, and hyphen, with the first character a letter, the last a
-                  letter or a number, and a 63 character maximum.
-              source_connector_definition:
-                type: string
-                title: SourceConnectorDefinition resource
-              connector:
-                $ref: '#/definitions/v1alphaConnector'
-                title: SourceConnector's connector data structure
-            title: SourceConnector resource
-            required:
-              - connector
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{source_connector.name}/testConnection:
-    post:
-      summary: |-
-        TestSourceConnector method receives a TestSourceConnectorRequest message
-        and returns a TestSourceConnectorResponse
-      operationId: ConnectorPublicService_TestSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaTestSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{source_connector.name}/watch:
-    get:
-      summary: |-
-        WatchSourceConnector method receives a WatchSourceConnectorRequest message
-        and returns a WatchSourceConnectorResponse
-      operationId: ConnectorPublicService_WatchSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaWatchSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector.name
-          description: |-
-            SourceConnector resource name. It must have the format of
-            "source-connectors/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{source_connector_definition.name}:
-    get:
-      summary: |-
-        GetSourceConnectorDefinition method receives a
-        GetSourceConnectorDefinitionRequest message and returns a
-        GetGetSourceConnectorDefinitionResponse message.
-      operationId: ConnectorPublicService_GetSourceConnectorDefinition
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetSourceConnectorDefinitionResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector_definition.name
-          description: |-
-            SourceConnectorDefinition resource name. It must have the format of
-            "source-connector-definitions/*"
-          in: path
-          required: true
-          type: string
-          pattern: source-connector-definitions/[^/]+
-        - name: view
-          description: |-
-            SourceConnectorDefinition resource view (default is DEFINITION_VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
   /v1alpha/{token.name}:
     get:
       summary: |-
@@ -2168,30 +1796,30 @@ paths:
           pattern: users/[^/]+
       tags:
         - MgmtPublicService
-  /v1alpha/admin/{destination_connector_permalink}/check:
+  /v1alpha/admin/{connector_permalink}/check:
     get:
       summary: |-
-        CheckDestinationConnector method receives a CheckDestinationConnectorRequest message and returns a
-        CheckDestinationConnectorResponse
-      operationId: ConnectorPrivateService_CheckDestinationConnector
+        CheckConnector method receives a CheckConnectorRequest message and returns a
+        CheckConnectorResponse
+      operationId: ConnectorPrivateService_CheckConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaCheckDestinationConnectorResponse'
+            $ref: '#/definitions/v1alphaCheckConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector_permalink
+        - name: connector_permalink
           description: |-
-            Permalink of a destination connector. For example:
-            "destination-connectors/{uid}"
+            Permalink of a connector. For example:
+            "connectors/{uid}"
           in: path
           required: true
           type: string
-          pattern: destination-connectors/[^/]+
+          pattern: connectors/[^/]+
       tags:
         - ConnectorPrivateService
   /v1alpha/admin/{model_permalink}/check:
@@ -2266,15 +1894,15 @@ paths:
   /v1alpha/admin/{permalink_2}/lookUp:
     get:
       summary: |-
-        LookUpSourceConnectorAdmin method receives a
-        LookUpSourceConnectorAdminRequest message and returns a
-        LookUpSourceConnectorAdminResponse
-      operationId: ConnectorPrivateService_LookUpSourceConnectorAdmin
+        LookUpConnectorAdmin method receives a
+        LookUpConnectorAdminRequest message and returns a
+        LookUpConnectorAdminResponse
+      operationId: ConnectorPrivateService_LookUpConnectorAdmin
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpSourceConnectorAdminResponse'
+            $ref: '#/definitions/v1alphaLookUpConnectorAdminResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2282,15 +1910,15 @@ paths:
       parameters:
         - name: permalink_2
           description: |-
-            Permalink of a source connector. For example:
-            "source-connectors/{uid}"
+            Permalink of a connector. For example:
+            "connectors/{uid}"
           in: path
           required: true
           type: string
-          pattern: source-connectors/[^/]+
+          pattern: connectors/[^/]+
         - name: view
           description: |-
-            SourceConnector view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -2308,48 +1936,6 @@ paths:
   /v1alpha/admin/{permalink_3}/lookUp:
     get:
       summary: |-
-        LookUpDestinationConnectorAdmin method receives a
-        LookUpDestinationConnectorAdminRequest message and returns a
-        LookUpDestinationConnectorAdminResponse
-      operationId: ConnectorPrivateService_LookUpDestinationConnectorAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpDestinationConnectorAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: permalink_3
-          description: |-
-            Permalink of a destination connector. For example:
-            "destination-connectors/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: destination-connectors/[^/]+
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
-  /v1alpha/admin/{permalink_4}/lookUp:
-    get:
-      summary: |-
         LookUpPipelineAdmin method receives a LookUpPipelineAdminRequest message
         and returns a LookUpPipelineAdminResponse
       operationId: PipelinePrivateService_LookUpPipelineAdmin
@@ -2363,7 +1949,7 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: permalink_4
+        - name: permalink_3
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -2429,32 +2015,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - MgmtPrivateService
-  /v1alpha/admin/{source_connector_permalink}/check:
-    get:
-      summary: |-
-        CheckSourceConnector method receives a CheckSourceConnectorRequest message and returns a
-        CheckSourceConnectorResponse
-      operationId: ConnectorPrivateService_CheckSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCheckSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector_permalink
-          description: |-
-            Permalink of a source connector. For example:
-            "source-connectors/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: source-connectors/[^/]+
-      tags:
-        - ConnectorPrivateService
   /v1alpha/admin/{user.name}:
     get:
       summary: |-
@@ -2625,17 +2185,17 @@ paths:
               - newsletter_subscription
       tags:
         - MgmtPrivateService
-  /v1alpha/admin/destination-connectors:
+  /v1alpha/admin/connectors:
     get:
       summary: |-
-        ListDestinationConnectorsAdmin method receives a ListDestinationConnectorsAdminRequest
-        message and returns a ListDestinationConnectorsResponse message.
-      operationId: ConnectorPrivateService_ListDestinationConnectorsAdmin
+        ListConnectorsAdmin method receives a ListConnectorsAdminRequest
+        message and returns a ListConnectorsResponse message.
+      operationId: ConnectorPrivateService_ListConnectorsAdmin
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListDestinationConnectorsAdminResponse'
+            $ref: '#/definitions/v1alphaListConnectorsAdminResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2657,7 +2217,7 @@ paths:
           type: string
         - name: view
           description: |-
-            DestinationConnector view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -2670,6 +2230,11 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list connectors
+          in: query
+          required: false
+          type: string
       tags:
         - ConnectorPrivateService
   /v1alpha/admin/models:
@@ -2774,53 +2339,6 @@ paths:
           type: string
       tags:
         - PipelinePrivateService
-  /v1alpha/admin/source-connectors:
-    get:
-      summary: |-
-        ListSourceConnectorsAdmin method receives a ListSourceConnectorsAdminRequest message
-        and returns a ListSourceConnectorsAdminResponse message.
-      operationId: ConnectorPrivateService_ListSourceConnectorsAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListSourceConnectorsAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: page_size
-          description: |-
-            The maximum number of connectors to return. The service may return fewer
-            than this value. If unspecified, at most 10 connectors will be returned.
-            The maximum value is 100; values above 100 will be coerced to 100.
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: page_token
-          description: Page token
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
   /v1alpha/admin/users:
     get:
       summary: |-
@@ -2903,18 +2421,18 @@ paths:
               - user
       tags:
         - MgmtPrivateService
-  /v1alpha/destination-connector-definitions:
+  /v1alpha/connector-definitions:
     get:
       summary: |-
-        ListDestinationConnectorDefinitions method receives a
-        ListDestinationConnectorDefinitionsRequest message and returns a
-        ListDestinationConnectorDefinitionsResponse message.
-      operationId: ConnectorPublicService_ListDestinationConnectorDefinitions
+        ListConnectorDefinitions method receives a
+        ListConnectorDefinitionsRequest message and returns a
+        ListConnectorDefinitionsResponse message.
+      operationId: ConnectorPublicService_ListConnectorDefinitions
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListDestinationConnectorDefinitionsResponse'
+            $ref: '#/definitions/v1alphaListConnectorDefinitionsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2922,9 +2440,9 @@ paths:
       parameters:
         - name: page_size
           description: |-
-            The maximum number of DestinationConnectorDefinitions to return. The
+            The maximum number of ConnectorDefinitions to return. The
             service may return fewer than this value. If unspecified, at most 10
-            DestinationConnectorDefinitions will be returned. The maximum value is 100;
+            ConnectorDefinitions will be returned. The maximum value is 100;
             values above 100 will be coerced to 100.
           in: query
           required: false
@@ -2950,20 +2468,25 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list connector definitions
+          in: query
+          required: false
+          type: string
       tags:
         - ConnectorPublicService
-  /v1alpha/destination-connectors:
+  /v1alpha/connectors:
     get:
       summary: |-
-        ListDestinationConnectors method receives a
-        ListDestinationConnectorsRequest message and returns a
-        ListDestinationConnectorsResponse message.
-      operationId: ConnectorPublicService_ListDestinationConnectors
+        ListConnectors method receives a
+        ListConnectorsRequest message and returns a
+        ListConnectorsResponse message.
+      operationId: ConnectorPublicService_ListConnectors
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListDestinationConnectorsResponse'
+            $ref: '#/definitions/v1alphaListConnectorsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2985,7 +2508,7 @@ paths:
           type: string
         - name: view
           description: |-
-            DestinationConnector view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -2998,32 +2521,37 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list connectors
+          in: query
+          required: false
+          type: string
       tags:
         - ConnectorPublicService
     post:
       summary: |-
-        CreateDestinationConnector method receives a
-        CreateDestinationConnectorRequest message and returns a
-        CreateDestinationConnectorResponse message.
-      operationId: ConnectorPublicService_CreateDestinationConnector
+        CreateConnector method receives a
+        CreateConnectorRequest message and returns a
+        CreateConnectorResponse message.
+      operationId: ConnectorPublicService_CreateConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaCreateDestinationConnectorResponse'
+            $ref: '#/definitions/v1alphaCreateConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: destination_connector
-          description: DestinationConnector resource
+        - name: connector
+          description: Connector resource
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1alphaDestinationConnector'
+            $ref: '#/definitions/v1alphaConnector'
             required:
-              - destination_connector
+              - connector
       tags:
         - ConnectorPublicService
   /v1alpha/health/connector:
@@ -3477,127 +3005,6 @@ paths:
               - session
       tags:
         - UsageService
-  /v1alpha/source-connector-definitions:
-    get:
-      summary: |-
-        ListSourceConnectorDefinitions method receives a
-        ListSourceConnectorDefinitionsRequest message and returns a
-        ListSourceConnectorDefinitionsResponse message.
-      operationId: ConnectorPublicService_ListSourceConnectorDefinitions
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListSourceConnectorDefinitionsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: page_size
-          description: |-
-            The maximum number of SourceConnectorDefinitions to return. The service may
-            return fewer than this value. If unspecified, at most 10
-            SourceConnectorDefinitions will be returned. The maximum value is 100;
-            values above 100 will be coerced to 100.
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: page_token
-          description: Page token
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            Definition view (default is DEFINITION_VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
-  /v1alpha/source-connectors:
-    get:
-      summary: |-
-        ListSourceConnectors method receives a ListSourceConnectorsRequest message
-        and returns a ListSourceConnectorsResponse message.
-      operationId: ConnectorPublicService_ListSourceConnectors
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListSourceConnectorsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: page_size
-          description: |-
-            The maximum number of connectors to return. The service may return fewer
-            than this value. If unspecified, at most 10 connectors will be returned.
-            The maximum value is 100; values above 100 will be coerced to 100.
-          in: query
-          required: false
-          type: string
-          format: int64
-        - name: page_token
-          description: Page token
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            SourceConnector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
-    post:
-      summary: |-
-        CreateSourceConnector method receives a CreateSourceConnectorRequest
-        message and returns a CreateSourceConnectorResponse message.
-      operationId: ConnectorPublicService_CreateSourceConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCreateSourceConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: source_connector
-          description: SourceConnector resource
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1alphaSourceConnector'
-            required:
-              - source_connector
-      tags:
-        - ConnectorPublicService
   /v1alpha/tokens:
     get:
       summary: |-
@@ -4239,15 +3646,15 @@ definitions:
         title: Bounding box height value
         readOnly: true
     title: BoundingBox represents the bounding box data structure
-  v1alphaCheckDestinationConnectorResponse:
+  v1alphaCheckConnectorResponse:
     type: object
     properties:
       state:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      CheckDestinationConnectorResponse represents a response to fetch a
-      destination connector's current state
+      CheckConnectorResponse represents a response to fetch a
+      connector's current state
   v1alphaCheckModelResponse:
     type: object
     properties:
@@ -4257,15 +3664,6 @@ definitions:
     title: |-
       CheckModelResponse represents a response to fetch a model's
       current state and longrunning progress
-  v1alphaCheckSourceConnectorResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/v1alphaConnectorState'
-        title: Retrieved connector state
-    title: |-
-      CheckSourceConnectorResponse represents a response to fetch a source
-      connector's current state
   v1alphaClassificationInput:
     type: object
     properties:
@@ -4333,25 +3731,46 @@ definitions:
     required:
       - id
       - resource_name
-  v1alphaConnectDestinationConnectorResponse:
+  v1alphaConnectConnectorResponse:
     type: object
     properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: A DestinationConnector resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A Connector resource
     title: |-
-      ConnectDestinationConnectorResponse represents a connected destination
+      ConnectConnectorResponse represents a connected
       connector
-  v1alphaConnectSourceConnectorResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: A SourceConnector resource
-    title: ConnectSourceConnectorResponse represents a connected source connector
   v1alphaConnector:
     type: object
     properties:
+      name:
+        type: string
+        title: |-
+          Connector resource name. It must have the format of
+          "connectors/*"
+        readOnly: true
+      uid:
+        type: string
+        title: Connector UUID
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Connector resource ID (the last segment of the resource name)
+          used to construct the resource name. This conforms to RFC-1034, which
+          restricts to letters, numbers, and hyphen, with the first character a
+          letter, the last a letter or a number, and a 63 character maximum.
+      connector_definition:
+        type: string
+        title: ConnectorDefinition resource
+      connector_type:
+        $ref: '#/definitions/v1alphaConnectorType'
+        title: Connector Type
+        readOnly: true
+      task:
+        type: string
+        title: Connector description
+        readOnly: true
       description:
         type: string
         title: Connector description
@@ -4392,6 +3811,24 @@ definitions:
   v1alphaConnectorDefinition:
     type: object
     properties:
+      name:
+        type: string
+        title: |-
+          ConnectorDefinition resource name. It must have the format of
+          "connector-definitions/*"
+        readOnly: true
+      uid:
+        type: string
+        title: ConnectorDefinition UUID
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          ConnectorDefinition resource ID (the last segment of the
+          resource name) used to construct the resource name. This conforms to
+          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+          character a letter, the last a letter or a number, and a 63 character
+          maximum.
       title:
         type: string
         title: ConnectorDefinition title
@@ -4407,6 +3844,10 @@ definitions:
       spec:
         $ref: '#/definitions/v1alphaSpec'
         title: ConnectorDefinition spec
+        readOnly: true
+      connector_type:
+        $ref: '#/definitions/v1alphaConnectorType'
+        title: Connector Type
         readOnly: true
       tombstone:
         type: boolean
@@ -4454,6 +3895,22 @@ definitions:
        - STATE_CONNECTED: State: CONNECTED
        - STATE_ERROR: State: ERROR
     title: State enumerates the connector state
+  v1alphaConnectorType:
+    type: string
+    enum:
+      - CONNECTOR_TYPE_UNSPECIFIED
+      - CONNECTOR_TYPE_SOURCE
+      - CONNECTOR_TYPE_DESTINATION
+      - CONNECTOR_TYPE_MODEL
+      - CONNECTOR_TYPE_BLOCKCHAIN
+    default: CONNECTOR_TYPE_UNSPECIFIED
+    description: |-
+      - CONNECTOR_TYPE_UNSPECIFIED: ConnectorType: UNSPECIFIED
+       - CONNECTOR_TYPE_SOURCE: ConnectorType: SOURCE
+       - CONNECTOR_TYPE_DESTINATION: ConnectorType: DESTINATION
+       - CONNECTOR_TYPE_MODEL: ConnectorType: Model
+       - CONNECTOR_TYPE_BLOCKCHAIN: ConnectorType: Blockchain
+    title: ConnectorType enumerates connector types
   v1alphaConnectorUsageData:
     type: object
     properties:
@@ -4509,15 +3966,15 @@ definitions:
       - destination_connector_connected_state_num
       - destination_connector_disconnected_state_num
       - destination_connector_definition_ids
-  v1alphaCreateDestinationConnectorResponse:
+  v1alphaCreateConnectorResponse:
     type: object
     properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: DestinationConnector resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: Connector resource
     title: |-
-      CreateDestinationConnectorResponse represents a response for a
-      DestinationConnector resource
+      CreateConnectorResponse represents a response for a
+      Connector resource
   v1alphaCreateModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -4548,15 +4005,6 @@ definitions:
         $ref: '#/definitions/v1alphaSession'
         title: A session resource
     title: CreateSessionResponse represents a response for a session response
-  v1alphaCreateSourceConnectorResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: SourceConnector resource
-    title: |-
-      CreateSourceConnectorResponse represents a response for a
-      SourceConnector resource
   v1alphaCreateTokenResponse:
     type: object
     properties:
@@ -4604,18 +4052,15 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: DeactivatePipelineResponse represents an inactivated pipeline
-  v1alphaDeleteDestinationConnectorResponse:
+  v1alphaDeleteConnectorResponse:
     type: object
-    title: DeleteDestinationConnectorResponse represents an empty response
+    title: DeleteConnectorResponse represents an empty response
   v1alphaDeleteModelResponse:
     type: object
     title: DeleteModelResponse represents an empty response
   v1alphaDeletePipelineResponse:
     type: object
     title: DeletePipelineResponse represents an empty response
-  v1alphaDeleteSourceConnectorResponse:
-    type: object
-    title: DeleteSourceConnectorResponse represents an empty response
   v1alphaDeleteTokenResponse:
     type: object
     title: DeleteTokenResponse represents an empty response
@@ -4629,63 +4074,6 @@ definitions:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Deploy operation message
     title: DeployModelResponse represents a response for a deployed model
-  v1alphaDestinationConnector:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          DestinationConnector resource name. It must have the format of
-          "destination-connectors/*"
-        readOnly: true
-      uid:
-        type: string
-        title: DestinationConnector UUID
-        readOnly: true
-      id:
-        type: string
-        description: |-
-          DestinationConnector resource ID (the last segment of the resource name)
-          used to construct the resource name. This conforms to RFC-1034, which
-          restricts to letters, numbers, and hyphen, with the first character a
-          letter, the last a letter or a number, and a 63 character maximum.
-      destination_connector_definition:
-        type: string
-        title: DestinationConnectorDefinition resource
-      connector:
-        $ref: '#/definitions/v1alphaConnector'
-        title: DestinationConnector's connector data structure
-    title: DestinationConnector represents a destination connector resource
-    required:
-      - connector
-  v1alphaDestinationConnectorDefinition:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          DestinationConnectorDefinition resource name. It must have the format of
-          "connector-definitions/*"
-        readOnly: true
-      uid:
-        type: string
-        title: DestinationConnectorDefinition UUID
-        readOnly: true
-      id:
-        type: string
-        description: |-
-          DestinationConnectorDefinition resource ID (the last segment of the
-          resource name) used to construct the resource name. This conforms to
-          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
-          character a letter, the last a letter or a number, and a 63 character
-          maximum.
-      connector_definition:
-        $ref: '#/definitions/v1alphaConnectorDefinition'
-        title: DestinationConnectorDefinition connector definition
-        readOnly: true
-    title: |-
-      DestinationConnectorDefinition represents the destination connector
-      definition resource
   v1alphaDetectionInput:
     type: object
     properties:
@@ -4743,23 +4131,16 @@ definitions:
         title: A list of detection objects
         readOnly: true
     title: DetectionOutput represents the output of detection task
-  v1alphaDisconnectDestinationConnectorResponse:
+  v1alphaDisconnectConnectorResponse:
     type: object
     properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: A DestinationConnector resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A Connector resource
     title: |-
-      DisconnectDestinationConnectorResponse represents a disconnected destination
+      DisconnectConnectorResponse represents a disconnected
       connector
-  v1alphaDisconnectSourceConnectorResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: A SourceConnector resource
-    title: DisconnectSourceConnectorResponse represents a disconnected source connector
-  v1alphaExecuteDestinationConnectorResponse:
+  v1alphaExecuteConnectorResponse:
     type: object
     properties:
       output:
@@ -4769,18 +4150,8 @@ definitions:
           $ref: '#/definitions/v1alphaDataPayload'
         title: Output
     title: |-
-      ExecuteDestinationConnectorResponse represents a response for execution
+      ExecuteConnectorResponse represents a response for execution
       output
-  v1alphaExecuteSourceConnectorResponse:
-    type: object
-    properties:
-      output:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaDataPayload'
-        title: Output
-    title: ExecuteSourceConnectorResponse represents a response for execution output
   v1alphaExistUsernameResponse:
     type: object
     properties:
@@ -4902,6 +4273,24 @@ definitions:
       GetBulkPipelineTriggerSummariesRequest
     required:
       - bulk_summaries
+  v1alphaGetConnectorDefinitionResponse:
+    type: object
+    properties:
+      connector_definition:
+        $ref: '#/definitions/v1alphaConnectorDefinition'
+        title: A ConnectorDefinition resource
+    title: |-
+      GetConnectorDefinitionResponse represents a
+      ConnectorDefinition response
+  v1alphaGetConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: Connector resource
+    title: |-
+      GetConnectorResponse represents a response for a
+      Connector resource
   v1alphaGetCumulativeModelOnlineRecordsRequest:
     type: object
     properties:
@@ -4967,24 +4356,6 @@ definitions:
       GetCumulativePipelineTriggerRecordsRequest
     required:
       - cumulative_records
-  v1alphaGetDestinationConnectorDefinitionResponse:
-    type: object
-    properties:
-      destination_connector_definition:
-        $ref: '#/definitions/v1alphaDestinationConnectorDefinition'
-        title: A DestinationConnectorDefinition resource
-    title: |-
-      GetDestinationConnectorDefinitionResponse represents a
-      DestinationConnectorDefinition response
-  v1alphaGetDestinationConnectorResponse:
-    type: object
-    properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: DestinationConnector resource
-    title: |-
-      GetDestinationConnectorResponse represents a response for a
-      DestinationConnector resource
   v1alphaGetModelCardResponse:
     type: object
     properties:
@@ -5234,24 +4605,6 @@ definitions:
     title: GetPipelinesResponse represents a respond to GetPipelineRequest
     required:
       - pipelines
-  v1alphaGetSourceConnectorDefinitionResponse:
-    type: object
-    properties:
-      source_connector_definition:
-        $ref: '#/definitions/v1alphaSourceConnectorDefinition'
-        title: A SourceConnectorDefinition resource
-    title: |-
-      GetSourceConnectorDefinitionResponse represents a SourceConnectorDefinition
-      response
-  v1alphaGetSourceConnectorResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: SourceConnector resource
-    title: |-
-      GetSourceConnectorResponse represents a response for a
-      SourceConnector resource
   v1alphaGetTokenResponse:
     type: object
     properties:
@@ -5432,53 +4785,34 @@ definitions:
         title: A list of keypoint objects
         readOnly: true
     title: KeypointOutput represents the output of keypoint detection task
-  v1alphaListDestinationConnectorDefinitionsResponse:
+  v1alphaListConnectorDefinitionsResponse:
     type: object
     properties:
-      destination_connector_definitions:
+      connector_definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaDestinationConnectorDefinition'
-        title: A list of DestinationConnectorDefinition resources
+          $ref: '#/definitions/v1alphaConnectorDefinition'
+        title: A list of ConnectorDefinition resources
       next_page_token:
         type: string
         title: Next page token
       total_size:
         type: string
         format: int64
-        title: Total count of DestinationConnectorDefinition resources
+        title: Total count of ConnectorDefinition resources
     title: |-
-      ListDestinationConnectorDefinitionsResponse represents a response for a list
-      of DestinationConnectorDefinitions
-  v1alphaListDestinationConnectorsAdminResponse:
+      ListConnectorDefinitionsResponse represents a response for a list
+      of ConnectorDefinitions
+  v1alphaListConnectorsAdminResponse:
     type: object
     properties:
-      destination_connectors:
+      connectors:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaDestinationConnector'
-        title: A list of DestinationConnector resources
-      next_page_token:
-        type: string
-        title: Next page token
-      total_size:
-        type: string
-        format: int64
-        title: Total count of connector resources
-    title: |-
-      ListDestinationConnectorsAdminResponse represents a response for a list of
-      DestinationConnector resources
-  v1alphaListDestinationConnectorsResponse:
-    type: object
-    properties:
-      destination_connectors:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaDestinationConnector'
-        title: A list of DestinationConnector resources
+          $ref: '#/definitions/v1alphaConnector'
+        title: A list of Connector resources
       next_page_token:
         type: string
         title: Next page token
@@ -5487,8 +4821,27 @@ definitions:
         format: int64
         title: Total count of connector resources
     title: |-
-      ListDestinationConnectorsResponse represents a response for a list of
-      DestinationConnector resources
+      ListConnectorsAdminResponse represents a response for a list of
+      Connector resources
+  v1alphaListConnectorsResponse:
+    type: object
+    properties:
+      connectors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaConnector'
+        title: A list of Connector resources
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of connector resources
+    title: |-
+      ListConnectorsResponse represents a response for a list of
+      Connector resources
   v1alphaListModelDefinitionsResponse:
     type: object
     properties:
@@ -5579,63 +4932,6 @@ definitions:
         format: int64
         title: Total count of pipeline resources
     title: ListPipelinesResponse represents a response for a list of pipelines
-  v1alphaListSourceConnectorDefinitionsResponse:
-    type: object
-    properties:
-      source_connector_definitions:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaSourceConnectorDefinition'
-        title: A list of SourceConnectorDefinition resources
-      next_page_token:
-        type: string
-        title: Next page token
-      total_size:
-        type: string
-        format: int64
-        title: Total count of SourceConnectorDefinition resources
-    title: |-
-      ListSourceConnectorDefinitionsResponse represents a response for a list of
-      SourceConnectorDefinitions
-  v1alphaListSourceConnectorsAdminResponse:
-    type: object
-    properties:
-      source_connectors:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaSourceConnector'
-        title: A list of SourceConnector resources
-      next_page_token:
-        type: string
-        title: Next page token
-      total_size:
-        type: string
-        format: int64
-        title: Total count of connector resources
-    title: |-
-      ListSourceConnectorsAdminResponse represents a response for a list of
-      SourceConnector resources
-  v1alphaListSourceConnectorsResponse:
-    type: object
-    properties:
-      source_connectors:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaSourceConnector'
-        title: A list of SourceConnector resources
-      next_page_token:
-        type: string
-        title: Next page token
-      total_size:
-        type: string
-        format: int64
-        title: Total count of connector resources
-    title: |-
-      ListSourceConnectorsResponse represents a response for a list of
-      SourceConnector resources
   v1alphaListTokensResponse:
     type: object
     properties:
@@ -5670,23 +4966,23 @@ definitions:
         format: int64
         title: Total count of users
     title: ListUsersAdminResponse represents a response for a list of users
-  v1alphaLookUpDestinationConnectorAdminResponse:
+  v1alphaLookUpConnectorAdminResponse:
     type: object
     properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: DestinationConnector resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: Connector resource
     title: |-
-      LookUpDestinationConnectorAdminResponse represents a response for a
-      destination connector
-  v1alphaLookUpDestinationConnectorResponse:
+      LookUpConnectorAdminResponse represents a response for a
+      connector
+  v1alphaLookUpConnectorResponse:
     type: object
     properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: DestinationConnector resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: Connector resource
     title: |-
-      LookUpDestinationConnectorResponse represents a response for a destination
+      LookUpConnectorResponse represents a response for a
       connector
   v1alphaLookUpModelAdminResponse:
     type: object
@@ -5716,22 +5012,6 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: LookUpPipelineResponse represents a response for a pipeline resource
-  v1alphaLookUpSourceConnectorAdminResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: SourceConnector resource
-    title: |-
-      LookUpSourceConnectorAdminResponse represents a response for a source
-      connector
-  v1alphaLookUpSourceConnectorResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: SourceConnector resource
-    title: LookUpSourceConnectorResponse represents a response for a source connector
   v1alphaLookUpUserAdminResponse:
     type: object
     properties:
@@ -6332,14 +5612,14 @@ definitions:
        - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
        - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
     title: ReleaseStage enumerates the release stages
-  v1alphaRenameDestinationConnectorResponse:
+  v1alphaRenameConnectorResponse:
     type: object
     properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: A DestinationConnector resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A Connector resource
     title: |-
-      RenameDestinationConnectorResponse represents a renamed DestinationConnector
+      RenameConnectorResponse represents a renamed Connector
       resource
   v1alphaRenameModelResponse:
     type: object
@@ -6355,13 +5635,6 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: RenamePipelineResponse represents a renamed pipeline resource
-  v1alphaRenameSourceConnectorResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: A SourceConnector resource
-    title: RenameSourceConnectorResponse represents a renamed SourceConnector resource
   v1alphaReportModelOnlineRequest:
     type: object
     properties:
@@ -6590,60 +5863,6 @@ definitions:
       - token
       - pow
       - session
-  v1alphaSourceConnector:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          SourceConnector resource name. It must have the format of
-          "source-connectors/*"
-        readOnly: true
-      uid:
-        type: string
-        title: SourceConnector UUID
-        readOnly: true
-      id:
-        type: string
-        description: |-
-          SourceConnector resource ID (the last segment of the resource name) used to
-          construct the resource name. This conforms to RFC-1034, which restricts to
-          letters, numbers, and hyphen, with the first character a letter, the last a
-          letter or a number, and a 63 character maximum.
-      source_connector_definition:
-        type: string
-        title: SourceConnectorDefinition resource
-      connector:
-        $ref: '#/definitions/v1alphaConnector'
-        title: SourceConnector's connector data structure
-    title: SourceConnector represents a source connector resource
-    required:
-      - connector
-  v1alphaSourceConnectorDefinition:
-    type: object
-    properties:
-      name:
-        type: string
-        title: |-
-          SourceConnectorDefinition resource name. It must have the format of
-          "connector-definitions/*"
-        readOnly: true
-      uid:
-        type: string
-        title: SourceConnectorDefinition UUID
-        readOnly: true
-      id:
-        type: string
-        description: |-
-          SourceConnectorDefinition resource ID (the last segment of the resource
-          name) used to construct the resource name. This conforms to RFC-1034, which
-          restricts to letters, numbers, and hyphen, with the first character a
-          letter, the last a letter or a number, and a 63 character maximum.
-      connector_definition:
-        $ref: '#/definitions/v1alphaConnectorDefinition'
-        title: SourceConnectorDefinition connector definition
-        readOnly: true
-    title: SourceConnectorDefinition represents the source connector definition resource
   v1alphaSpec:
     type: object
     properties:
@@ -6721,15 +5940,15 @@ definitions:
         $ref: '#/definitions/v1alphaUnspecifiedInput'
         title: The unspecified task input
     title: TaskInputStream represents the input to trigger a model with stream method
-  v1alphaTestDestinationConnectorResponse:
+  v1alphaTestConnectorResponse:
     type: object
     properties:
       state:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      TestDestinationConnectorResponse represents a response containing a
-      destination connector's current state
+      TestConnectorResponse represents a response containing a
+      connector's current state
   v1alphaTestModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -6766,15 +5985,6 @@ definitions:
     required:
       - task
       - task_outputs
-  v1alphaTestSourceConnectorResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/v1alphaConnectorState'
-        title: Retrieved connector state
-    title: |-
-      TestSourceConnectorResponse represents a response containing a source
-      connector's current state
   v1alphaTextGenerationInput:
     type: object
     properties:
@@ -6992,15 +6202,15 @@ definitions:
         title: A list of unspecified task outputs
         readOnly: true
     title: UnspecifiedOutput represents the output of unspecified task
-  v1alphaUpdateDestinationConnectorResponse:
+  v1alphaUpdateConnectorResponse:
     type: object
     properties:
-      destination_connector:
-        $ref: '#/definitions/v1alphaDestinationConnector'
-        title: DestinationConnector resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: Connector resource
     title: |-
-      UpdateDestinationConnectorResponse represents a response for a
-      DestinationConnector resource
+      UpdateConnectorResponse represents a response for a
+      Connector resource
   v1alphaUpdateModelResponse:
     type: object
     properties:
@@ -7015,15 +6225,6 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: An updated pipeline resource
     title: UpdatePipelineResponse represents a response for a pipeline resource
-  v1alphaUpdateSourceConnectorResponse:
-    type: object
-    properties:
-      source_connector:
-        $ref: '#/definitions/v1alphaSourceConnector'
-        title: SourceConnector resource
-    title: |-
-      UpdateSourceConnectorResponse represents a response for a
-      SourceConnector resource
   v1alphaUpdateUserAdminResponse:
     type: object
     properties:
@@ -7132,15 +6333,15 @@ definitions:
     title: User records definition
     required:
       - uid
-  v1alphaWatchDestinationConnectorResponse:
+  v1alphaWatchConnectorResponse:
     type: object
     properties:
       state:
         $ref: '#/definitions/v1alphaConnectorState'
         title: Retrieved connector state
     title: |-
-      WatchDestinationConnectorResponse represents a response to fetch a
-      destination connector's current state
+      WatchConnectorResponse represents a response to fetch a
+      connector's current state
   v1alphaWatchModelResponse:
     type: object
     properties:
@@ -7163,15 +6364,6 @@ definitions:
     title: |-
       WatchPipelineResponse represents a response to fetch a pipeline's
       current state
-  v1alphaWatchSourceConnectorResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/v1alphaConnectorState'
-        title: Retrieved connector state
-    title: |-
-      WatchSourceConnectorResponse represents a response to fetch a source
-      connector's current state
   vdpconnectorv1alphaLivenessResponse:
     type: object
     properties:
