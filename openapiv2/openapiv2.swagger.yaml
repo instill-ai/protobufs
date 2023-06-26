@@ -2702,6 +2702,43 @@ paths:
           type: string
       tags:
         - UsageService
+  /v1alpha/metrics/vdp/pipeline/triggers:
+    get:
+      summary: |-
+        ListPipelineTriggerRecord method receives a ListPipelineTriggerRecordRequest message and returns a
+        ListPipelineTriggerRecordResponse message.
+      operationId: MgmtPublicService_ListPipelineTriggerRecord
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListPipelineTriggerRecordResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of pipeline trigger record to return. The service may return
+            fewer than this value. If unspecified, at most 100 record will be returned. The
+            maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: Filter expression to list record
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
   /v1alpha/model-definitions:
     get:
       summary: |-
@@ -4903,6 +4940,25 @@ definitions:
         format: int64
         title: Total count of models
     title: ListModelsResponse represents a response for a list of models
+  v1alphaListPipelineTriggerRecordResponse:
+    type: object
+    properties:
+      pipeline_trigger_data_point:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPipelineTriggerRecord'
+        title: A list of pipeline trigger records
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of pipeline trigger records
+    title: |-
+      ListPipelineTriggerRecordResponse represents a response for a list
+      of pipeline trigger record
   v1alphaListPipelinesAdminResponse:
     type: object
     properties:
@@ -5491,6 +5547,35 @@ definitions:
        - STATE_ACTIVE: State ACTIVE indicates the pipeline is active
        - STATE_ERROR: State ERROR indicates the pipeline has error
     title: State enumerates the state of a pipeline
+  v1alphaPipelineTriggerRecord:
+    type: object
+    properties:
+      trigger_time:
+        type: string
+        format: date-time
+        title: Timestamp for the pipeline trigger time
+      pipeline_trigger_id:
+        type: string
+        title: Unique uuid for each pipeline trigger
+      pipeline_name:
+        type: string
+        title: Resource name for the triggered pipeline
+      pipeline_permalink:
+        type: string
+        title: Permalink for the triggered pipeline
+      pipeline_mode:
+        $ref: '#/definitions/PipelineMode'
+        title: Pipeline mode
+      compute_time_duration:
+        type: number
+        format: float
+        title: Total compute time duration for this pipeline trigger
+        readOnly: true
+      status:
+        type: string
+        title: Final status for pipeline trigger
+        readOnly: true
+    title: PipelineTriggerRecord represents a record for pipeline trigger
   v1alphaPipelineUsageData:
     type: object
     properties:
