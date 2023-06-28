@@ -1124,15 +1124,15 @@ paths:
           schema:
             type: object
             properties:
-              task_inputs:
+              inputs:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v1alphaTaskInput'
+                  $ref: '#/definitions/v1alphaPipelineDataPayload'
                 title: Input to the pipeline
             title: TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
             required:
-              - task_inputs
+              - inputs
       tags:
         - PipelinePublicService
   /v1alpha/{name}/triggerSync:
@@ -1163,15 +1163,15 @@ paths:
           schema:
             type: object
             properties:
-              task_inputs:
+              inputs:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v1alphaTaskInput'
+                  $ref: '#/definitions/v1alphaPipelineDataPayload'
                 title: Input to the pipeline
             title: TriggerSyncPipelineRequest represents a request to trigger a pipeline
             required:
-              - task_inputs
+              - inputs
       tags:
         - PipelinePublicService
   /v1alpha/{name}/undeploy:
@@ -3182,6 +3182,17 @@ definitions:
        - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
        - TASK_TEXT_GENERATION: Task: TEXT Generation
     title: Task enumerates the task type of a model
+  PipelineDataPayloadUnstructuredData:
+    type: object
+    properties:
+      blob:
+        type: string
+        format: byte
+        title: "UnstructuredData using bytes, \ngrpc-gateway will do base64 conversion for http endpoint"
+      url:
+        type: string
+        title: UnstructuredData using url
+    title: UnstructuredData
   PipelineMode:
     type: string
     enum:
@@ -3756,6 +3767,10 @@ definitions:
         additionalProperties:
           type: string
         title: Dependencies for the pipeline component
+      type:
+        type: string
+        title: Resource Type
+        readOnly: true
     title: Represents a pipeline component
     required:
       - id
@@ -5264,27 +5279,6 @@ definitions:
     title: |-
       /////////////////////////////////////////////////////////////////
       ModelDefinition represents the definition of a model
-  v1alphaModelOutput:
-    type: object
-    properties:
-      model:
-        type: string
-        title: The model
-        readOnly: true
-      task:
-        $ref: '#/definitions/ModelTask'
-        title: The task type
-        readOnly: true
-      task_outputs:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/vdppipelinev1alphaTaskOutput'
-        title: |-
-          The extended task outputs based on the model inference (i.e.,
-          from a trigger endpoint of model-backend)
-        readOnly: true
-    title: ModelOutput represents one model inference result
   v1alphaModelState:
     type: string
     enum:
@@ -5533,6 +5527,35 @@ definitions:
       - uid
       - id
       - task
+  v1alphaPipelineDataPayload:
+    type: object
+    properties:
+      data_mapping_index:
+        type: string
+        title: |-
+          Data index corresponds to each data element
+          if not provided, vdp will generate a one by uild
+          ref: https://github.com/ulid/spec
+      texts:
+        type: array
+        items:
+          type: string
+        title: 'Unstructured: text field'
+      images:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/PipelineDataPayloadUnstructuredData'
+        title: 'Unstructured: image field'
+      structured_data:
+        type: object
+        title: '[semi-]structured data: json field'
+      metadata:
+        type: object
+        title: Metadata
+    title: PipelineDataPayload is a data structure for pipeline input
+    required:
+      - data_mapping_index
   v1alphaPipelineState:
     type: string
     enum:
@@ -6175,22 +6198,6 @@ definitions:
     required:
       - start_time
       - end_time
-  v1alphaTriggerAsyncPipelineBinaryFileUploadResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: Trigger async pipeline operation message
-        readOnly: true
-      data_mapping_indices:
-        type: array
-        items:
-          type: string
-        title: The data mapping indices for each input
-        readOnly: true
-    title: |-
-      TriggerAsyncPipelineBinaryFileUploadResponse represents a response for the
-      longrunning operation of a pipeline
   v1alphaTriggerAsyncPipelineResponse:
     type: object
     properties:
@@ -6240,23 +6247,6 @@ definitions:
     title: |-
       TriggerModelResponse represents a response for the output for
       triggering a model
-  v1alphaTriggerSyncPipelineBinaryFileUploadResponse:
-    type: object
-    properties:
-      data_mapping_indices:
-        type: array
-        items:
-          type: string
-        title: The data mapping indices stores UUID for each input
-      model_outputs:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaModelOutput'
-        title: The multiple model inference outputs
-    title: |-
-      TriggerSyncPipelineBinaryFileUploadResponse represents a response for the
-      output of a pipeline, i.e., the multiple model inference outputs
   v1alphaTriggerSyncPipelineResponse:
     type: object
     properties:
@@ -6265,11 +6255,11 @@ definitions:
         items:
           type: string
         title: The data mapping indices stores UUID for each input
-      model_outputs:
+      outputs:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaModelOutput'
+          $ref: '#/definitions/v1alphaPipelineDataPayload'
         title: The multiple model inference outputs
     title: |-
       TriggerSyncPipelineResponse represents a response for the output
@@ -6564,55 +6554,6 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  vdppipelinev1alphaTaskOutput:
-    type: object
-    properties:
-      index:
-        type: string
-        title: The index of input data in a batch
-        readOnly: true
-      classification:
-        $ref: '#/definitions/v1alphaClassificationOutput'
-        title: The classification output
-        readOnly: true
-      detection:
-        $ref: '#/definitions/v1alphaDetectionOutput'
-        title: The detection output
-        readOnly: true
-      keypoint:
-        $ref: '#/definitions/v1alphaKeypointOutput'
-        title: The keypoint output
-        readOnly: true
-      ocr:
-        $ref: '#/definitions/v1alphaOcrOutput'
-        title: The ocr output
-        readOnly: true
-      instance_segmentation:
-        $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
-        title: The instance segmentation output
-        readOnly: true
-      semantic_segmentation:
-        $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
-        title: The semantic segmentation output
-        readOnly: true
-      text_to_image:
-        $ref: '#/definitions/v1alphaTextToImageOutput'
-        title: The text to image output
-        readOnly: true
-      text_generation:
-        $ref: '#/definitions/v1alphaTextGenerationOutput'
-        title: The text generation
-        readOnly: true
-      unspecified:
-        $ref: '#/definitions/v1alphaUnspecifiedOutput'
-        title: The unspecified task output
-        readOnly: true
-    description: |-
-      TaskOutput represents the output of a CV Task result from a
-      model, extended from model.v1alpha.TaskOutput.
-      Here we don't use a model.v1alpha.TaskOutput type field but explicitly use
-      the replicated oneof field because we want the CV Task output to be at the
-      same message layer like the trigger output of model.
   vdppipelinev1alphaView:
     type: string
     enum:
