@@ -14,7 +14,6 @@ import "google/api/field_behavior.proto";
 import "google/longrunning/operations.proto";
 
 import "common/healthcheck/v1alpha/healthcheck.proto";
-import "model/model/v1alpha/model.proto";
 import "model/model/v1alpha/task_classification.proto";
 import "model/model/v1alpha/task_detection.proto";
 import "model/model/v1alpha/task_keypoint.proto";
@@ -68,6 +67,8 @@ message Component {
   google.protobuf.Struct metadata = 4;
   // Dependencies for the pipeline component
   map<string, string> dependencies = 5;
+  // Resource Type
+  string type = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // Pipeline represents a pipeline recipe
@@ -317,6 +318,7 @@ message RenamePipelineResponse {
 // Here we don't use a model.v1alpha.TaskOutput type field but explicitly use
 // the replicated oneof field because we want the CV Task output to be at the
 // same message layer like the trigger output of model.
+// This message is deprecated, will be removed soon
 message TaskOutput {
   // The index of input data in a batch
   string index = 1 [ (google.api.field_behavior) = OUTPUT_ONLY ];
@@ -352,20 +354,40 @@ message TaskOutput {
   }
 }
 
-// ModelOutput represents one model inference result
-message ModelOutput {
-  // The model
-  string model = 1 [
-    (google.api.field_behavior) = OUTPUT_ONLY,
-    (google.api.resource_reference).type = "api.instill.tech/Model"
-  ];
-  // The task type
-  model.model.v1alpha.Model.Task task = 2
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // The extended task outputs based on the model inference (i.e.,
-  // from a trigger endpoint of model-backend)
-  repeated TaskOutput task_outputs = 3
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
+// PipelineDataPayload is a data structure for pipeline input
+message PipelineDataPayload {
+
+  // UnstructuredData
+  message UnstructuredData {
+    // UnstructuredData
+    oneof unstructured_data {
+      // UnstructuredData using bytes, 
+      // grpc-gateway will do base64 conversion for http endpoint
+      bytes blob = 1;
+      // UnstructuredData using url 
+      string url = 2;
+    }
+  }
+
+  // Data index corresponds to each data element
+  // if not provided, vdp will generate a one by uild
+  // ref: https://github.com/ulid/spec
+  string data_mapping_index = 1 [ (google.api.field_behavior) = REQUIRED ];
+
+  // Unstructured: text field
+  repeated string texts = 2;
+
+  // Unstructured: image field
+  repeated UnstructuredData images = 3;
+
+  // repeated UnstructuredData audios = 4;
+  // repeated UnstructuredData videos = 5;
+
+  // [semi-]structured data: json field
+  google.protobuf.Struct structured_data = 6;
+
+  // Metadata
+  google.protobuf.Struct metadata = 7;
 }
 
 // TriggerSyncPipelineRequest represents a request to trigger a pipeline
@@ -376,7 +398,7 @@ message TriggerSyncPipelineRequest {
     (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
   ];
   // Input to the pipeline
-  repeated model.model.v1alpha.TaskInput task_inputs = 2
+  repeated PipelineDataPayload inputs = 2
       [ (google.api.field_behavior) = REQUIRED ];
 }
 
@@ -386,29 +408,7 @@ message TriggerSyncPipelineResponse {
   // The data mapping indices stores UUID for each input
   repeated string data_mapping_indices = 1;
   // The multiple model inference outputs
-  repeated ModelOutput model_outputs = 2;
-}
-
-// TriggerSyncPipelineBinaryFileUploadRequest represents a request to trigger a
-// pipeline
-message TriggerSyncPipelineBinaryFileUploadRequest {
-  // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
-  ];
-  // Input to the pipeline
-  model.model.v1alpha.TaskInputStream task_input = 2
-      [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// TriggerSyncPipelineBinaryFileUploadResponse represents a response for the
-// output of a pipeline, i.e., the multiple model inference outputs
-message TriggerSyncPipelineBinaryFileUploadResponse {
-  // The data mapping indices stores UUID for each input
-  repeated string data_mapping_indices = 1;
-  // The multiple model inference outputs
-  repeated ModelOutput model_outputs = 2;
+  repeated PipelineDataPayload outputs = 2;
 }
 
 // TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
@@ -419,37 +419,13 @@ message TriggerAsyncPipelineRequest {
     (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
   ];
   // Input to the pipeline
-  repeated model.model.v1alpha.TaskInput task_inputs = 2
+  repeated PipelineDataPayload inputs = 2
       [ (google.api.field_behavior) = REQUIRED ];
 }
 
 // TriggerAsyncPipelineResponse represents a response for the longrunning
 // operation of a pipeline
 message TriggerAsyncPipelineResponse {
-  // Trigger async pipeline operation message
-  google.longrunning.Operation operation = 1
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
-  // The data mapping indices for each input
-  repeated string data_mapping_indices = 2
-      [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// TriggerAsyncPipelineBinaryFileUploadRequest represents a request to trigger a
-// pipeline
-message TriggerAsyncPipelineBinaryFileUploadRequest {
-  // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Pipeline"}
-  ];
-  // Input to the pipeline
-  model.model.v1alpha.TaskInputStream task_input = 2
-      [ (google.api.field_behavior) = REQUIRED ];
-}
-
-// TriggerAsyncPipelineBinaryFileUploadResponse represents a response for the
-// longrunning operation of a pipeline
-message TriggerAsyncPipelineBinaryFileUploadResponse {
   // Trigger async pipeline operation message
   google.longrunning.Operation operation = 1
       [ (google.api.field_behavior) = OUTPUT_ONLY ];
