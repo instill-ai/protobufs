@@ -1833,14 +1833,14 @@ paths:
   /v1alpha/admin/{model_permalink}/check:
     get:
       summary: |-
-        CheckModel method receives a CheckModelRequest message and returns a
-        CheckModelResponse
-      operationId: ModelPrivateService_CheckModel
+        CheckModelAdmin method receives a CheckModelAdminRequest message and returns a
+        CheckModelAdminResponse
+      operationId: ModelPrivateService_CheckModelAdmin
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaCheckModelResponse'
+            $ref: '#/definitions/v1alphaCheckModelAdminResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1854,6 +1854,68 @@ paths:
           required: true
           type: string
           pattern: models/[^/]+
+      tags:
+        - ModelPrivateService
+  /v1alpha/admin/{model_permalink}/deploy:
+    post:
+      summary: DeployModelAdmin deploy a model to online state
+      operationId: ModelPrivateService_DeployModelAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeployModelAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_permalink
+          description: |-
+            Permalink for the model to be deployed.
+            Format: "models/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: DeployModelAdminRequest represents a request to deploy a model to online state
+      tags:
+        - ModelPrivateService
+  /v1alpha/admin/{model_permalink}/undeploy:
+    post:
+      summary: UndeployModelAdmin undeploy a model to offline state
+      operationId: ModelPrivateService_UndeployModelAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUndeployModelAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_permalink
+          description: |-
+            Permalink for the model to be undeployed.
+            Format: "models/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: |-
+              UndeployModelAdminRequest represents a request to undeploy a model to offline
+              state
       tags:
         - ModelPrivateService
   /v1alpha/admin/{permalink_1}/lookUp:
@@ -3192,7 +3254,9 @@ definitions:
       blob:
         type: string
         format: byte
-        title: "UnstructuredData using bytes, \ngrpc-gateway will do base64 conversion for http endpoint"
+        title: |-
+          UnstructuredData using bytes,
+          grpc-gateway will do base64 conversion for http endpoint
       url:
         type: string
         title: UnstructuredData using url
@@ -3699,14 +3763,14 @@ definitions:
     title: |-
       CheckConnectorResponse represents a response to fetch a
       connector's current state
-  v1alphaCheckModelResponse:
+  v1alphaCheckModelAdminResponse:
     type: object
     properties:
       state:
         $ref: '#/definitions/v1alphaModelState'
         title: Retrieved model state
     title: |-
-      CheckModelResponse represents a response to fetch a model's
+      CheckModelAdminResponse represents a response to fetch a model's
       current state and longrunning progress
   v1alphaClassificationInput:
     type: object
@@ -4135,6 +4199,13 @@ definitions:
   v1alphaDeleteUserAdminResponse:
     type: object
     title: DeleteUserAdminResponse represents an empty response
+  v1alphaDeployModelAdminResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Deploy operation message
+    title: DeployModelAdminResponse represents a response for a deployed model
   v1alphaDeployModelResponse:
     type: object
     properties:
@@ -6267,6 +6338,13 @@ definitions:
     title: |-
       TriggerSyncPipelineResponse represents a response for the output
       of a pipeline, i.e., the multiple model inference outputs
+  v1alphaUndeployModelAdminResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Undeploy operation message
+    title: UndeployModelAdminResponse represents a response for a undeployed model
   v1alphaUndeployModelResponse:
     type: object
     properties:
