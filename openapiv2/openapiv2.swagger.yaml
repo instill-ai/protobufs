@@ -2830,6 +2830,43 @@ paths:
           type: string
       tags:
         - MgmtPublicService
+  /v1alpha/metrics/vdp/connector/tables:
+    get:
+      summary: |-
+        ListConnectorExecuteTableRecords method receives a ListConnectorExecuteTableRecordsRequest message and returns a
+        ListConnectorExecuteTableRecordsResponse message.
+      operationId: MgmtPublicService_ListConnectorExecuteTableRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListConnectorExecuteTableRecordsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of connector execution table record to return. The service may return
+            fewer than this value. If unspecified, at most 100 record will be returned. The
+            maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: Filter expression to list record
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
   /v1alpha/metrics/vdp/pipeline/charts:
     get:
       summary: |-
@@ -2854,6 +2891,43 @@ paths:
           format: int64
         - name: filter
           description: Filter expression to list chart record
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
+  /v1alpha/metrics/vdp/pipeline/tables:
+    get:
+      summary: |-
+        ListPipelineTriggerTableRecords method receives a ListPipelineTriggerTableRecordsRequest message and returns a
+        ListPipelineTriggerTableRecordsResponse message.
+      operationId: MgmtPublicService_ListPipelineTriggerTableRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListPipelineTriggerTableRecordsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of pipeline trigger record to return. The service may return
+            fewer than this value. If unspecified, at most 100 record will be returned. The
+            maximum value is 1000; values above 1000 will be coerced to 1000.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: Filter expression to list record
           in: query
           required: false
           type: string
@@ -4129,6 +4203,26 @@ definitions:
         title: Final status for the connector execution
         readOnly: true
     title: ConnectorExecuteRecord represents a record for connector execution
+  v1alphaConnectorExecuteTableRecord:
+    type: object
+    properties:
+      connector_id:
+        type: string
+        title: ID for the executed connector
+      connector_uid:
+        type: string
+        title: UID for the executed connector
+      execute_count_completed:
+        type: string
+        format: int64
+        title: Execute count with STATUS_COMPLETED
+        readOnly: true
+      execute_count_errored:
+        type: string
+        format: int64
+        title: Execute count with STATUS_ERRORED
+        readOnly: true
+    title: ConnectorExecuteTableRecord represents a aggregated table record for connector execute
   v1alphaConnectorState:
     type: string
     enum:
@@ -5108,6 +5202,25 @@ definitions:
     title: |-
       ListConnectorExecuteRecordsResponse represents a response for a list
       of connector execute record
+  v1alphaListConnectorExecuteTableRecordsResponse:
+    type: object
+    properties:
+      connector_execute_table_records:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaConnectorExecuteTableRecord'
+        title: A list of connector execute records
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of connector execute records
+    title: |-
+      ListConnectorExecuteTableRecordsResponse represents a response for a list
+      of connector execute table record
   v1alphaListConnectorsAdminResponse:
     type: object
     properties:
@@ -5230,6 +5343,25 @@ definitions:
     title: |-
       ListPipelineTriggerRecordsResponse represents a response for a list
       of pipeline trigger record
+  v1alphaListPipelineTriggerTableRecordsResponse:
+    type: object
+    properties:
+      pipeline_trigger_table_records:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPipelineTriggerTableRecord'
+        title: A list of pipeline trigger table records
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of pipeline trigger records
+    title: |-
+      ListPipelineTriggerTableRecordsResponse represents a response for a list
+      of pipeline trigger table record
   v1alphaListPipelinesAdminResponse:
     type: object
     properties:
@@ -5931,6 +6063,26 @@ definitions:
         title: Final status for pipeline trigger
         readOnly: true
     title: PipelineTriggerRecord represents a record for pipeline trigger
+  v1alphaPipelineTriggerTableRecord:
+    type: object
+    properties:
+      pipeline_id:
+        type: string
+        title: ID for the triggered pipeline
+      pipeline_uid:
+        type: string
+        title: UID for the triggered pipeline
+      trigger_count_completed:
+        type: string
+        format: int64
+        title: Trigger count with STATUS_COMPLETED
+        readOnly: true
+      trigger_count_errored:
+        type: string
+        format: int64
+        title: Trigger count with STATUS_ERRORED
+        readOnly: true
+    title: PipelineTriggerTableRecord represents a aggregated table record for pipeline trigger
   v1alphaPipelineUsageData:
     type: object
     properties:

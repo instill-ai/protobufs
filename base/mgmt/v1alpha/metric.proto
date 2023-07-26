@@ -8,8 +8,6 @@ import "google/protobuf/timestamp.proto";
 // Google API
 import "google/api/field_behavior.proto";
 
-// ========== Pipeline endpoints
-
 // Mode enumerates the pipeline modes
 enum Mode {
     // Mode: UNSPECIFIED
@@ -30,6 +28,8 @@ enum Status {
     STATUS_ERRORED = 2;
 }
 
+// ========== Pipeline endpoints
+
 // PipelineTriggerRecord represents a record for pipeline trigger
 message PipelineTriggerRecord {
     // Timestamp for the pipeline trigger time
@@ -48,6 +48,18 @@ message PipelineTriggerRecord {
     Status status = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
+// PipelineTriggerTableRecord represents a aggregated table record for pipeline trigger
+message PipelineTriggerTableRecord {
+    // ID for the triggered pipeline
+    string pipeline_id = 1;
+    // UID for the triggered pipeline
+    string pipeline_uid = 2;
+    // Trigger count with STATUS_COMPLETED
+    int64 trigger_count_completed = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // Trigger count with STATUS_ERRORED
+    int64 trigger_count_errored = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
 // PipelineTriggerChartRecord represents a aggregated chart record for pipeline trigger
 message PipelineTriggerChartRecord {
     // ID for the triggered pipeline
@@ -64,46 +76,6 @@ message PipelineTriggerChartRecord {
     repeated int64 trigger_counts = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
     // Total compute time duration in each time bucket
     repeated float compute_time_duration = 7 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// ConnectorExecuteRecord represents a record for connector execution
-message ConnectorExecuteRecord {
-    // Timestamp for the connector execution time
-    google.protobuf.Timestamp execute_time = 1;
-    // UID for connector execution
-    string connector_execute_id = 2;
-    // ID for the executed connector
-    string connector_id = 3;
-    // UID for the executed connector
-    string connector_uid = 4;
-    // UID for the executed connector definition
-    string connector_definition_uid = 5;
-    // ID for the pipeline this connector belong to
-    string pipeline_id = 6;
-    // UID for the pipeline this connector belong to
-    string pipeline_uid = 7;
-    // UID for the trigger id of the pipeline this connector belong to
-    string pipeline_trigger_id = 8;
-    // Total compute time duration for this execution
-    float compute_time_duration = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-    // Final status for the connector execution
-    Status status = 10 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-}
-
-// ConnectorExecuteChartRecord represents a aggregated chart record for connector execute
-message ConnectorExecuteChartRecord {
-    // ID for the executed connector
-    string connector_id = 1;
-    // UID for the executed connector
-    string connector_uid = 2;
-    // Status of connector execution
-    Status status = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-    // Time buckets
-    repeated google.protobuf.Timestamp time_buckets = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-    // Aggregated execute count in each time bucket
-    repeated int64 execute_counts = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
-    // Total compute time duration in each time bucket
-    repeated float compute_time_duration = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
 }
 
 // ListPipelineTriggerRecordsRequest represents a request to list
@@ -130,6 +102,30 @@ message ListPipelineTriggerRecordsResponse {
     int64 total_size = 3;
 }
 
+// ListPipelineTriggerTableRecordsRequest represents a request to list
+// pipeline trigger table record
+message ListPipelineTriggerTableRecordsRequest {
+    // The maximum number of pipeline trigger record to return. The service may return
+    // fewer than this value. If unspecified, at most 100 record will be returned. The
+    // maximum value is 1000; values above 1000 will be coerced to 1000.
+    optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+    // Page token
+    optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+    // Filter expression to list record
+    optional string filter = 3 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListPipelineTriggerTableRecordsResponse represents a response for a list
+// of pipeline trigger table record
+message ListPipelineTriggerTableRecordsResponse {
+    // A list of pipeline trigger table records
+    repeated PipelineTriggerTableRecord pipeline_trigger_table_records = 1;
+    // Next page token
+    string next_page_token = 2;
+    // Total count of pipeline trigger records
+    int64 total_size = 3;
+}
+
 // ListPipelineTriggerChartRecordsRequest represents a request to list
 // pipeline trigger chart record
 message ListPipelineTriggerChartRecordsRequest {
@@ -147,6 +143,59 @@ message ListPipelineTriggerChartRecordsResponse {
 }
 
 // ========== Connector endpoints
+
+// ConnectorExecuteRecord represents a record for connector execution
+message ConnectorExecuteRecord {
+    // Timestamp for the connector execution time
+    google.protobuf.Timestamp execute_time = 1;
+    // UID for connector execution
+    string connector_execute_id = 2;
+    // ID for the executed connector
+    string connector_id = 3;
+    // UID for the executed connector
+    string connector_uid = 4;
+    // UID for the executed connector definition
+    string connector_definition_uid = 5;
+    // ID for the pipeline this connector belong to
+    string pipeline_id = 6;
+    // UID for the pipeline this connector belong to
+    string pipeline_uid = 7;
+    // UID for the trigger id of the pipeline this connector belong to
+    string pipeline_trigger_id = 8;
+    // Total compute time duration for this execution
+    float compute_time_duration = 9 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // Final status for the connector execution
+    Status status = 10 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// ConnectorExecuteTableRecord represents a aggregated table record for connector execute
+message ConnectorExecuteTableRecord {
+    // ID for the executed connector
+    string connector_id = 1;
+    // UID for the executed connector
+    string connector_uid = 2;
+    // Execute count with STATUS_COMPLETED
+    int64 execute_count_completed = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // Execute count with STATUS_ERRORED
+    int64 execute_count_errored = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
+// ConnectorExecuteChartRecord represents a aggregated chart record for connector execute
+message ConnectorExecuteChartRecord {
+    // ID for the executed connector
+    string connector_id = 1;
+    // UID for the executed connector
+    string connector_uid = 2;
+    // Status of connector execution
+    Status status = 3 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // Time buckets
+    repeated google.protobuf.Timestamp time_buckets = 4 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // Aggregated execute count in each time bucket
+    repeated int64 execute_counts = 5 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+    // Total compute time duration in each time bucket
+    repeated float compute_time_duration = 6 [ (google.api.field_behavior) = OUTPUT_ONLY ];
+}
+
 
 // ListConnectorExecuteRecordsRequest represents a request to list
 // connector execute record
@@ -166,6 +215,30 @@ message ListConnectorExecuteRecordsRequest {
 message ListConnectorExecuteRecordsResponse {
     // A list of connector execute records
     repeated ConnectorExecuteRecord connector_execute_records = 1;
+    // Next page token
+    string next_page_token = 2;
+    // Total count of connector execute records
+    int64 total_size = 3;
+}
+
+// ListConnectorExecuteTableRecordsRequest represents a request to list
+// connector execute table record
+message ListConnectorExecuteTableRecordsRequest {
+    // The maximum number of connector execution table record to return. The service may return
+    // fewer than this value. If unspecified, at most 100 record will be returned. The
+    // maximum value is 1000; values above 1000 will be coerced to 1000.
+    optional int64 page_size = 1 [ (google.api.field_behavior) = OPTIONAL ];
+    // Page token
+    optional string page_token = 2 [ (google.api.field_behavior) = OPTIONAL ];
+    // Filter expression to list record
+    optional string filter = 3 [ (google.api.field_behavior) = OPTIONAL ];
+}
+
+// ListConnectorExecuteTableRecordsResponse represents a response for a list
+// of connector execute table record
+message ListConnectorExecuteTableRecordsResponse {
+    // A list of connector execute records
+    repeated ConnectorExecuteTableRecord connector_execute_table_records = 1;
     // Next page token
     string next_page_token = 2;
     // Total count of connector execute records
