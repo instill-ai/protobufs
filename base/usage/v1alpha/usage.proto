@@ -9,6 +9,10 @@ import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 // Protobuf standard
 import "google/protobuf/timestamp.proto";
+
+import "common/healthcheck/v1alpha/healthcheck.proto";
+import "base/mgmt/v1alpha/mgmt.proto";
+import "base/mgmt/v1alpha/metric.proto";
 import "model/model/v1alpha/model.proto";
 
 // LivenessRequest represents a request to check a service liveness status
@@ -95,22 +99,28 @@ message MgmtUsageData {
 message ConnectorUsageData {
   // Per user usage data in the connector service
   message UserUsageData {
+    // Per execute usage metadata
+    message ConnectorExecuteData {
+      // UID for the executed connector
+      string connector_uid = 1 [ (google.api.field_behavior) = REQUIRED ];
+      // UID for the trigger log
+      string execute_uid = 2 [ (google.api.field_behavior) = REQUIRED ];
+      // Timestamp for the execution
+      google.protobuf.Timestamp execute_time = 3 [ (google.api.field_behavior) = REQUIRED ];
+      // Definition ID of the connector
+      string connector_definition_id = 4 [ (google.api.field_behavior) = REQUIRED ];
+    }
     // User UUID
-    string user_uid = 1 [(google.api.field_behavior) = REQUIRED];
-    // Number of source connectors with 'connected' state
-    int64 source_connector_connected_state_num = 2 [(google.api.field_behavior) = REQUIRED];
-    // Number of source connectors with 'disconneceted' state
-    int64 source_connector_disconnected_state_num = 3 [(google.api.field_behavior) = REQUIRED];
-    // Definition IDs of the source connectors. Element in the list
-    // should not be duplicated.
-    repeated string source_connector_definition_ids = 4 [(google.api.field_behavior) = REQUIRED];
-    // Number of destination connectors with 'connected' state
-    int64 destination_connector_connected_state_num = 5 [(google.api.field_behavior) = REQUIRED];
-    // Number of destination connectors with 'disconnected' state
-    int64 destination_connector_disconnected_state_num = 6 [(google.api.field_behavior) = REQUIRED];
-    // Definition IDs of the destination connectors. Element in the
-    // list should not be duplicated.
-    repeated string destination_connector_definition_ids = 7 [(google.api.field_behavior) = REQUIRED];
+    string user_uid = 1 [ (google.api.field_behavior) = REQUIRED ];
+    // Number of connectors with 'connected' state
+    int64 connector_connected_state_num = 2
+        [ (google.api.field_behavior) = REQUIRED ];
+    // Number of connectors with 'disconneceted' state
+    int64 connector_disconnected_state_num = 3
+        [ (google.api.field_behavior) = REQUIRED ];
+    // Execution data for each user
+    repeated ConnectorExecuteData connector_execute_data = 4
+        [ (google.api.field_behavior) = REQUIRED ];
   }
   // Usage data of all users in the connector service
   repeated UserUsageData usages = 1;
@@ -120,20 +130,28 @@ message ConnectorUsageData {
 message ModelUsageData {
   // Per user usage data in the model service
   message UserUsageData {
+    // Per trigger usage metadata
+    message ModelTriggerData {
+      // UID for the trigged model
+      string model_uid = 1 [ (google.api.field_behavior) = REQUIRED ];
+      // UID for the trigger log
+      string trigger_uid = 2 [ (google.api.field_behavior) = REQUIRED ];
+      // Timestamp for the trigger
+      google.protobuf.Timestamp trigger_time = 3 [ (google.api.field_behavior) = REQUIRED ];
+      // Definition ID of the model
+      string model_definition_id = 4 [ (google.api.field_behavior) = REQUIRED ];
+      // Task of the model
+      model.model.v1alpha.Model.Task model_task = 5 [ (google.api.field_behavior) = REQUIRED ];
+    }
     // User UUID
     string user_uid = 1 [(google.api.field_behavior) = REQUIRED];
     // Number of 'online' models
     int64 model_online_state_num = 2 [(google.api.field_behavior) = REQUIRED];
     // Number of 'offline' models
-    int64 model_offline_state_num = 3 [(google.api.field_behavior) = REQUIRED];
-    // Definition IDs of the model. Element in the list
-    // should not be duplicated.
-    repeated string model_definition_ids = 4 [(google.api.field_behavior) = REQUIRED];
-    // Tasks of the models. Element in the list should not be
-    // duplicated.
-    repeated model.model.v1alpha.Model.Task tasks = 5 [(google.api.field_behavior) = REQUIRED];
-    // Number of model testing operations
-    int64 test_num = 6 [(google.api.field_behavior) = REQUIRED];
+    int64 model_offline_state_num = 3
+        [ (google.api.field_behavior) = REQUIRED ];
+    // Trigger data for each user
+    repeated ModelTriggerData model_trigger_data = 4 [ (google.api.field_behavior) = REQUIRED ];
   }
   // Usage data of all users in the model service
   repeated UserUsageData usages = 1;
@@ -143,18 +161,26 @@ message ModelUsageData {
 message PipelineUsageData {
   // Per user usage data in the pipeline service
   message UserUsageData {
+    // Per trigger usage metadata
+    message PipelineTriggerData {
+      // UID for the triggered pipeline
+      string pipeline_uid = 1  [ (google.api.field_behavior) = REQUIRED ];
+      // UID for the trigger log
+      string trigger_uid = 2  [ (google.api.field_behavior) = REQUIRED ];
+      // Timestamp for the trigger
+      google.protobuf.Timestamp trigger_time = 3 [ (google.api.field_behavior) = REQUIRED ];
+      // Trigger mode
+      base.mgmt.v1alpha.Mode trigger_mode = 4 [ (google.api.field_behavior) = REQUIRED ];
+    }
     // User UUID
     string user_uid = 1 [(google.api.field_behavior) = REQUIRED];
     // Number of pipelines with 'active' state
     int64 pipeline_active_state_num = 2 [(google.api.field_behavior) = REQUIRED];
     // Number of pipelines with 'inactive' state
-    int64 pipeline_inactive_state_num = 3 [(google.api.field_behavior) = REQUIRED];
-    // Number of pipelines with 'async' mode
-    int64 pipeline_async_mode_num = 4 [(google.api.field_behavior) = REQUIRED];
-    // Number of pipelines with 'sync' mode
-    int64 pipeline_sync_mode_num = 5 [(google.api.field_behavior) = REQUIRED];
-    // Number of pipeline triggering operations
-    int64 trigger_num = 6 [(google.api.field_behavior) = REQUIRED];
+    int64 pipeline_inactive_state_num = 3
+        [ (google.api.field_behavior) = REQUIRED ];
+    // Trigger data for each user
+    repeated PipelineTriggerData pipeline_trigger_data = 4  [ (google.api.field_behavior) = REQUIRED ];
   }
   // Usage data of all users in the pipeline service
   repeated UserUsageData usages = 1;
