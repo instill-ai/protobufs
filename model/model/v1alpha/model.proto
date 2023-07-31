@@ -2,35 +2,32 @@ syntax = "proto3";
 
 package model.model.v1alpha;
 
-// Protobuf standard
-import "google/protobuf/struct.proto";
-import "google/protobuf/field_mask.proto";
-import "google/protobuf/timestamp.proto";
-import "protoc-gen-openapiv2/options/annotations.proto";
-
-// Google api
-import "google/api/resource.proto";
-import "google/api/field_behavior.proto";
-import "google/longrunning/operations.proto";
-
 import "common/healthcheck/v1alpha/healthcheck.proto";
 import "common/task/v1alpha/task.proto";
+import "google/api/field_behavior.proto";
+// Google api
+import "google/api/resource.proto";
+import "google/longrunning/operations.proto";
+import "google/protobuf/field_mask.proto";
+// Protobuf standard
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
 import "model/model/v1alpha/model_definition.proto";
 import "model/model/v1alpha/task_classification.proto";
 import "model/model/v1alpha/task_detection.proto";
+import "model/model/v1alpha/task_instance_segmentation.proto";
 import "model/model/v1alpha/task_keypoint.proto";
 import "model/model/v1alpha/task_ocr.proto";
-import "model/model/v1alpha/task_instance_segmentation.proto";
 import "model/model/v1alpha/task_semantic_segmentation.proto";
-import "model/model/v1alpha/task_text_to_image.proto";
 import "model/model/v1alpha/task_text_generation.proto";
+import "model/model/v1alpha/task_text_to_image.proto";
 import "model/model/v1alpha/task_unspecified.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
-      1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // LivenessResponse represents a response for a service liveness status
@@ -42,8 +39,7 @@ message LivenessResponse {
 // ReadinessRequest represents a request to check a service readiness status
 message ReadinessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
-      1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ReadinessResponse represents a response for a service readiness status
@@ -55,8 +51,8 @@ message ReadinessResponse {
 // Model represents a model
 message Model {
   option (google.api.resource) = {
-    type : "api.instill.tech/Model"
-    pattern : "models/{model}"
+    type: "api.instill.tech/Model"
+    pattern: "models/{model}"
   };
 
   // Model visibility including public or private
@@ -100,8 +96,7 @@ message Model {
   ];
   // Model configuration represents the configuration JSON that has been
   // validated using the `model_spec` JSON schema of a ModelDefinition
-  google.protobuf.Struct configuration = 6
-  [(google.api.field_behavior) = IMMUTABLE];
+  google.protobuf.Struct configuration = 6 [(google.api.field_behavior) = IMMUTABLE];
   // Model task
   common.task.v1alpha.Task task = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model state
@@ -121,21 +116,19 @@ message Model {
       (google.api.resource_reference).type = "api.instill.tech/Organization",
       (google.api.field_behavior) = OUTPUT_ONLY
     ];
-  };
+  }
   // Model create time
-  google.protobuf.Timestamp create_time = 12
-  [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp create_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model update time
-  google.protobuf.Timestamp update_time = 13
-  [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ModelCard represents the README card for a model. There
 // exists one and exactly one README card per model.
 message ModelCard {
   option (google.api.resource) = {
-    type : "api.instill.tech/ModelCard"
-    pattern : "models/{model}/readme"
+    type: "api.instill.tech/ModelCard"
+    pattern: "models/{model}/readme"
   };
 
   // Resource name. It must have the format of
@@ -188,8 +181,7 @@ message CreateModelRequest {
 // CreateModelResponse represents a response for a model
 message CreateModelResponse {
   // Create model operation message
-  google.longrunning.Operation operation = 1
-  [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // CreateModelBinaryFileUploadRequest represents a request to create a model
@@ -206,8 +198,7 @@ message CreateModelBinaryFileUploadRequest {
 // CreateModelBinaryFileUploadResponse represents a response for a model
 message CreateModelBinaryFileUploadResponse {
   // Create model operation message
-  google.longrunning.Operation operation = 1
-  [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // GetModelRequest represents a request to query a model
@@ -218,7 +209,7 @@ message GetModelRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "model.name"}
+      field_configuration: {path_param_name: "model.name"}
     }
   ];
   // Model view (default is VIEW_BASIC)
@@ -241,8 +232,7 @@ message UpdateModelRequest {
   // Format: models/{model}
   Model model = 1 [(google.api.field_behavior) = REQUIRED];
   // Mask of fields to update.
-  google.protobuf.FieldMask update_mask = 2
-  [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // UpdateModelResponse represents a response for a model
@@ -259,7 +249,7 @@ message DeleteModelRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "model.name"}
+      field_configuration: {path_param_name: "model.name"}
     }
   ];
 }
@@ -375,7 +365,7 @@ message GetModelCardRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/ModelCard",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "model.name/readme"}
+      field_configuration: {path_param_name: "model.name/readme"}
     }
   ];
 }
@@ -395,7 +385,7 @@ message WatchModelRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "model.name/watch"}
+      field_configuration: {path_param_name: "model.name/watch"}
     }
   ];
 }
@@ -468,8 +458,7 @@ message TaskOutput {
   // The inference task output
   oneof output {
     // The classification output
-    ClassificationOutput classification = 1
-    [(google.api.field_behavior) = OUTPUT_ONLY];
+    ClassificationOutput classification = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
     // The detection output
     DetectionOutput detection = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
     // The keypoint output
@@ -477,20 +466,15 @@ message TaskOutput {
     // The ocr output
     OcrOutput ocr = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
     // The instance segmentation output
-    InstanceSegmentationOutput instance_segmentation = 5
-    [(google.api.field_behavior) = OUTPUT_ONLY];
+    InstanceSegmentationOutput instance_segmentation = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
     // The semantic segmentation output
-    SemanticSegmentationOutput semantic_segmentation = 6
-    [(google.api.field_behavior) = OUTPUT_ONLY];
+    SemanticSegmentationOutput semantic_segmentation = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
     // The text to image output
-    TextToImageOutput text_to_image = 7
-    [(google.api.field_behavior) = OUTPUT_ONLY];
+    TextToImageOutput text_to_image = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
     // The text generation output
-    TextGenerationOutput text_generation = 8
-    [(google.api.field_behavior) = OUTPUT_ONLY];
+    TextGenerationOutput text_generation = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
     // The unspecified task output
-    UnspecifiedOutput unspecified = 9
-    [(google.api.field_behavior) = OUTPUT_ONLY];
+    UnspecifiedOutput unspecified = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 }
 
@@ -534,8 +518,7 @@ message TriggerModelBinaryFileUploadResponse {
   // The task type
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // The task output from a model
-  repeated TaskOutput task_outputs = 2
-  [(google.api.field_behavior) = REQUIRED];
+  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TestModelRequest represents a request to test a model
@@ -556,8 +539,7 @@ message TestModelResponse {
   // The task type
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // The task output from a model
-  repeated TaskOutput task_outputs = 2
-  [(google.api.field_behavior) = REQUIRED];
+  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TestModelBinaryFileUploadRequest represents a request to test a
@@ -579,8 +561,7 @@ message TestModelBinaryFileUploadResponse {
   // The task type
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // The task output from a model
-  repeated TaskOutput task_outputs = 2
-  [(google.api.field_behavior) = REQUIRED];
+  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // GetModelOperationRequest represents a request to query a model operation

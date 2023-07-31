@@ -2,21 +2,18 @@ syntax = "proto3";
 
 package model.controller.v1alpha;
 
-// Protobuf standard
-import "protoc-gen-openapiv2/options/annotations.proto";
-
+import "common/healthcheck/v1alpha/healthcheck.proto";
 // Google api
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
-
-import "common/healthcheck/v1alpha/healthcheck.proto";
 import "model/model/v1alpha/model.proto";
+// Protobuf standard
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
-      1 [ (google.api.field_behavior) = OPTIONAL ];
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // LivenessResponse represents a response for a service liveness status
@@ -28,8 +25,7 @@ message LivenessResponse {
 // ReadinessRequest represents a request to check a service readiness status
 message ReadinessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
-      1 [ (google.api.field_behavior) = OPTIONAL ];
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ReadinessResponse represents a response for a service readiness status
@@ -41,23 +37,22 @@ message ReadinessResponse {
 // Resource represents the current information of a resource
 message Resource {
   option (google.api.resource) = {
-    type : "api.instill.tech/Resource"
-    pattern : "resources/{resource_uuid}/types/{type}"
+    type: "api.instill.tech/Resource"
+    pattern: "resources/{resource_uuid}/types/{type}"
   };
 
   // Permalink of a resource. For example:
   // "resources/{resource_uuid}/types/{type}"
-  string resource_permalink = 1 [ (google.api.field_behavior) = REQUIRED ];
+  string resource_permalink = 1 [(google.api.field_behavior) = REQUIRED];
   // Resource state
   oneof state {
     // Model state
     model.v1alpha.Model.State model_state = 2;
     // Backend service state
-    common.healthcheck.v1alpha.HealthCheckResponse.ServingStatus backend_state =
-        5;
-  };
+    common.healthcheck.v1alpha.HealthCheckResponse.ServingStatus backend_state = 5;
+  }
   // Resource longrunning progress
-  optional int32 progress = 6 [ (google.api.field_behavior) = OPTIONAL ];
+  optional int32 progress = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetResourceRequest represents a request to query a resource's state
@@ -66,9 +61,9 @@ message GetResourceRequest {
   // "resources/{resource_uuid}/types/{type}"
   string resource_permalink = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
+    (google.api.resource_reference) = {type: "api.instill.tech/Resource"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "resource.resource_permalink"}
+      field_configuration: {path_param_name: "resource.resource_permalink"}
     }
   ];
 }
@@ -82,9 +77,9 @@ message GetResourceResponse {
 // UpdateResourceRequest represents a request to update a resource's state
 message UpdateResourceRequest {
   // Resource state
-  Resource resource = 1 [ (google.api.field_behavior) = REQUIRED ];
+  Resource resource = 1 [(google.api.field_behavior) = REQUIRED];
   // Resource long-running workflow id
-  optional string workflow_id = 2 [ (google.api.field_behavior) = OPTIONAL ];
+  optional string workflow_id = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // UpdateResourceResponse represents a response to update a resource's state
@@ -99,9 +94,9 @@ message DeleteResourceRequest {
   // "resources/{resource_uuid}/types/{type}"
   string resource_permalink = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
+    (google.api.resource_reference) = {type: "api.instill.tech/Resource"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "resource.resource_permalink"}
+      field_configuration: {path_param_name: "resource.resource_permalink"}
     }
   ];
 }

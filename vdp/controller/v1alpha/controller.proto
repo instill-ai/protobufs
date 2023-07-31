@@ -2,22 +2,19 @@ syntax = "proto3";
 
 package vdp.controller.v1alpha;
 
-// Protobuf standard
-import "protoc-gen-openapiv2/options/annotations.proto";
-
+import "common/healthcheck/v1alpha/healthcheck.proto";
 // Google api
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
-
-import "common/healthcheck/v1alpha/healthcheck.proto";
-import "vdp/pipeline/v1alpha/pipeline.proto";
+// Protobuf standard
+import "protoc-gen-openapiv2/options/annotations.proto";
 import "vdp/connector/v1alpha/connector.proto";
+import "vdp/pipeline/v1alpha/pipeline.proto";
 
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
-      1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // LivenessResponse represents a response for a service liveness status
@@ -29,8 +26,7 @@ message LivenessResponse {
 // ReadinessRequest represents a request to check a service readiness status
 message ReadinessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request =
-      1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ReadinessResponse represents a response for a service readiness status
@@ -42,8 +38,8 @@ message ReadinessResponse {
 // Resource represents the current information of a resource
 message Resource {
   option (google.api.resource) = {
-    type : "api.instill.tech/Resource"
-    pattern : "resources/{resource_uuid}/types/{type}"
+    type: "api.instill.tech/Resource"
+    pattern: "resources/{resource_uuid}/types/{type}"
   };
 
   // Permalink of a resouce. For example:
@@ -56,9 +52,8 @@ message Resource {
     // Connector state
     vdp.connector.v1alpha.Connector.State connector_state = 4;
     // Backend service state
-    common.healthcheck.v1alpha.HealthCheckResponse.ServingStatus backend_state =
-        5;
-  };
+    common.healthcheck.v1alpha.HealthCheckResponse.ServingStatus backend_state = 5;
+  }
   // Resource longrunning progress
   optional int32 progress = 6 [(google.api.field_behavior) = OPTIONAL];
 }
@@ -69,9 +64,9 @@ message GetResourceRequest {
   // "resources/{resource_uuid}/types/{type}"
   string resource_permalink = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
+    (google.api.resource_reference) = {type: "api.instill.tech/Resource"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "resource.resource_permalink"}
+      field_configuration: {path_param_name: "resource.resource_permalink"}
     }
   ];
 }
@@ -102,9 +97,9 @@ message DeleteResourceRequest {
   // "resources/{resource_uuid}/types/{type}"
   string resource_permalink = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type : "api.instill.tech/Resource"},
+    (google.api.resource_reference) = {type: "api.instill.tech/Resource"},
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration : {path_param_name : "resource.resource_permalink"}
+      field_configuration: {path_param_name: "resource.resource_permalink"}
     }
   ];
 }
