@@ -3418,6 +3418,88 @@ definitions:
        - SERVICE_MODEL: Service: MODEL
        - SERVICE_PIPELINE: Service: PIPELINE
     title: Service enumerates the services to collect data from
+  UserUsageDataConnectorExecuteData:
+    type: object
+    properties:
+      connector_uid:
+        type: string
+        title: UID for the executed connector
+      execute_uid:
+        type: string
+        title: UID for the trigger log
+      execute_time:
+        type: string
+        format: date-time
+        title: Timestamp for the execution
+      connector_definition_uid:
+        type: string
+        title: Definition ID of the connector
+      status:
+        $ref: '#/definitions/mgmtv1alphaStatus'
+        title: Final status of the execution
+    title: Per execute usage metadata
+    required:
+      - connector_uid
+      - execute_uid
+      - execute_time
+      - connector_definition_uid
+      - status
+  UserUsageDataModelTriggerData:
+    type: object
+    properties:
+      model_uid:
+        type: string
+        title: UID for the trigged model
+      trigger_uid:
+        type: string
+        title: UID for the trigger log
+      trigger_time:
+        type: string
+        format: date-time
+        title: Timestamp for the trigger
+      model_definition_id:
+        type: string
+        title: Definition ID of the model
+      model_task:
+        $ref: '#/definitions/v1alphaModelTask'
+        title: Task of the model
+      status:
+        $ref: '#/definitions/mgmtv1alphaStatus'
+        title: Final status of the execution
+    title: Per trigger usage metadata
+    required:
+      - model_uid
+      - trigger_uid
+      - trigger_time
+      - model_definition_id
+      - model_task
+      - status
+  UserUsageDataPipelineTriggerData:
+    type: object
+    properties:
+      pipeline_uid:
+        type: string
+        title: UID for the triggered pipeline
+      trigger_uid:
+        type: string
+        title: UID for the trigger log
+      trigger_time:
+        type: string
+        format: date-time
+        title: Timestamp for the trigger
+      trigger_mode:
+        $ref: '#/definitions/v1alphaMode'
+        title: Trigger mode
+      status:
+        $ref: '#/definitions/mgmtv1alphaStatus'
+        title: Final status of the execution
+    title: Per trigger usage metadata
+    required:
+      - pipeline_uid
+      - trigger_uid
+      - trigger_time
+      - trigger_mode
+      - status
   basemgmtv1alphaLivenessResponse:
     type: object
     properties:
@@ -4217,6 +4299,8 @@ definitions:
       - CONNECTOR_TYPE_DESTINATION
       - CONNECTOR_TYPE_AI
       - CONNECTOR_TYPE_BLOCKCHAIN
+      - CONNECTOR_TYPE_DATA
+      - CONNECTOR_TYPE_OPERATOR
     default: CONNECTOR_TYPE_UNSPECIFIED
     description: |-
       - CONNECTOR_TYPE_UNSPECIFIED: ConnectorType: UNSPECIFIED
@@ -4224,6 +4308,8 @@ definitions:
        - CONNECTOR_TYPE_DESTINATION: ConnectorType: DESTINATION
        - CONNECTOR_TYPE_AI: ConnectorType: AI
        - CONNECTOR_TYPE_BLOCKCHAIN: ConnectorType: Blockchain
+       - CONNECTOR_TYPE_DATA: ConnectorType: DATA
+       - CONNECTOR_TYPE_OPERATOR: ConnectorType: OPERATOR
     title: ConnectorType enumerates connector types
   v1alphaConnectorUsageData:
     type: object
@@ -4241,45 +4327,16 @@ definitions:
       user_uid:
         type: string
         title: User UUID
-      source_connector_connected_state_num:
-        type: string
-        format: int64
-        title: Number of source connectors with 'connected' state
-      source_connector_disconnected_state_num:
-        type: string
-        format: int64
-        title: Number of source connectors with 'disconneceted' state
-      source_connector_definition_ids:
+      connector_execute_data:
         type: array
         items:
-          type: string
-        description: |-
-          Definition IDs of the source connectors. Element in the list
-          should not be duplicated.
-      destination_connector_connected_state_num:
-        type: string
-        format: int64
-        title: Number of destination connectors with 'connected' state
-      destination_connector_disconnected_state_num:
-        type: string
-        format: int64
-        title: Number of destination connectors with 'disconnected' state
-      destination_connector_definition_ids:
-        type: array
-        items:
-          type: string
-        description: |-
-          Definition IDs of the destination connectors. Element in the
-          list should not be duplicated.
+          type: object
+          $ref: '#/definitions/UserUsageDataConnectorExecuteData'
+        title: Execution data for each user
     title: Per user usage data in the connector service
     required:
       - user_uid
-      - source_connector_connected_state_num
-      - source_connector_disconnected_state_num
-      - source_connector_definition_ids
-      - destination_connector_connected_state_num
-      - destination_connector_disconnected_state_num
-      - destination_connector_definition_ids
+      - connector_execute_data
   v1alphaConnectorVisibility:
     type: string
     enum:
@@ -5681,15 +5738,7 @@ definitions:
       user_uid:
         type: string
         title: User UUID
-      model_online_state_num:
-        type: string
-        format: int64
-        title: Number of 'online' models
-      model_offline_state_num:
-        type: string
-        format: int64
-        title: Number of 'offline' models
-      model_definition_ids:
+      model_trigger_data:
         type: array
         items:
           type: string
@@ -5710,11 +5759,7 @@ definitions:
     title: Per user usage data in the model service
     required:
       - user_uid
-      - model_online_state_num
-      - model_offline_state_num
-      - model_definition_ids
-      - tasks
-      - test_num
+      - model_trigger_data
   v1alphaModelUsageRecord:
     type: object
     properties:
@@ -6047,34 +6092,16 @@ definitions:
       user_uid:
         type: string
         title: User UUID
-      pipeline_active_state_num:
-        type: string
-        format: int64
-        title: Number of pipelines with 'active' state
-      pipeline_inactive_state_num:
-        type: string
-        format: int64
-        title: Number of pipelines with 'inactive' state
-      pipeline_async_mode_num:
-        type: string
-        format: int64
-        title: Number of pipelines with 'async' mode
-      pipeline_sync_mode_num:
-        type: string
-        format: int64
-        title: Number of pipelines with 'sync' mode
-      trigger_num:
-        type: string
-        format: int64
-        title: Number of pipeline triggering operations
+      pipeline_trigger_data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/UserUsageDataPipelineTriggerData'
+        title: Trigger data for each user
     title: Per user usage data in the pipeline service
     required:
       - user_uid
-      - pipeline_active_state_num
-      - pipeline_inactive_state_num
-      - pipeline_async_mode_num
-      - pipeline_sync_mode_num
-      - trigger_num
+      - pipeline_trigger_data
   v1alphaPipelineUsageRecord:
     type: object
     properties:
