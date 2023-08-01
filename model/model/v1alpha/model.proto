@@ -3,6 +3,7 @@ syntax = "proto3";
 package model.model.v1alpha;
 
 import "common/healthcheck/v1alpha/healthcheck.proto";
+import "common/task/v1alpha/task.proto";
 import "google/api/field_behavior.proto";
 // Google api
 import "google/api/resource.proto";
@@ -64,28 +65,6 @@ message Model {
     VISIBILITY_PUBLIC = 2;
   }
 
-  // Task enumerates the task type of a model
-  enum Task {
-    // Task: UNSPECIFIED
-    TASK_UNSPECIFIED = 0;
-    // Task: CLASSIFICATION
-    TASK_CLASSIFICATION = 1;
-    // Task: DETECTION
-    TASK_DETECTION = 2;
-    // Task: KEYPOINT
-    TASK_KEYPOINT = 3;
-    // Task: OCR
-    TASK_OCR = 4;
-    // Task: INSTANCE SEGMENTATION
-    TASK_INSTANCE_SEGMENTATION = 5;
-    // Task: SEMANTIC SEGMENTATION
-    TASK_SEMANTIC_SEGMENTATION = 6;
-    // Task: TEXT TO IMAGE
-    TASK_TEXT_TO_IMAGE = 7;
-    // Task: TEXT Generation
-    TASK_TEXT_GENERATION = 8;
-  }
-
   // State enumerates a model state
   enum State {
     // State: UNSPECIFIED
@@ -119,7 +98,7 @@ message Model {
   // validated using the `model_spec` JSON schema of a ModelDefinition
   google.protobuf.Struct configuration = 6 [(google.api.field_behavior) = IMMUTABLE];
   // Model task
-  Task task = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  common.task.v1alpha.Task task = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model state
   State state = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model visibility including public or private
@@ -515,7 +494,7 @@ message TriggerModelRequest {
 // triggering a model
 message TriggerModelResponse {
   // The task type
-  Model.Task task = 1;
+  common.task.v1alpha.Task task = 1;
   // The task output from a model
   repeated TaskOutput task_outputs = 2;
 }
@@ -537,7 +516,7 @@ message TriggerModelBinaryFileUploadRequest {
 // output for testing a model
 message TriggerModelBinaryFileUploadResponse {
   // The task type
-  Model.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // The task output from a model
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
@@ -558,7 +537,7 @@ message TestModelRequest {
 // testing a model
 message TestModelResponse {
   // The task type
-  Model.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // The task output from a model
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
@@ -580,7 +559,7 @@ message TestModelBinaryFileUploadRequest {
 // output for testing a model
 message TestModelBinaryFileUploadResponse {
   // The task type
-  Model.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // The task output from a model
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
