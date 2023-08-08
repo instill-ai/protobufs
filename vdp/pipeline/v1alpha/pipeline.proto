@@ -48,10 +48,8 @@ message Component {
   ];
   // A pipeline component resource detail
   google.protobuf.Struct resource_detail = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Metadata for the pipeline component
-  google.protobuf.Struct metadata = 4;
-  // Dependencies for the pipeline component
-  map<string, string> dependencies = 5;
+  // Configuration for the pipeline component
+  google.protobuf.Struct configuration = 4;
   // Resource Type
   string type = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
@@ -279,42 +277,6 @@ message RenamePipelineResponse {
   Pipeline pipeline = 1;
 }
 
-// PipelineDataPayload is a data structure for pipeline input
-message PipelineDataPayload {
-  // UnstructuredData
-  message UnstructuredData {
-    // UnstructuredData
-    oneof unstructured_data {
-      // UnstructuredData using bytes,
-      // grpc-gateway will do base64 conversion for http endpoint
-      bytes blob = 1;
-      // UnstructuredData using url
-      string url = 2;
-    }
-  }
-
-  // Data index corresponds to each data element
-  // if not provided, vdp will generate a one by uild
-  // ref: https://github.com/ulid/spec
-  string data_mapping_index = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Unstructured: text field
-  repeated string texts = 2;
-
-  // Unstructured: image field
-  repeated UnstructuredData images = 3;
-  // Unstructured: audio field
-  repeated UnstructuredData audios = 4;
-
-  // repeated UnstructuredData videos = 5;
-
-  // [semi-]structured data: json field
-  google.protobuf.Struct structured_data = 6;
-
-  // Metadata
-  google.protobuf.Struct metadata = 7;
-}
-
 // TriggerPipelineRequest represents a request to trigger a pipeline
 message TriggerPipelineRequest {
   // Pipeline resource name. It must have the format of "pipelines/*"
@@ -323,14 +285,14 @@ message TriggerPipelineRequest {
     (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"}
   ];
   // Input to the pipeline
-  repeated PipelineDataPayload inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  repeated google.protobuf.Struct inputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerPipelineResponse represents a response for the output
 // of a pipeline, i.e., the multiple model inference outputs
 message TriggerPipelineResponse {
   // The multiple model inference outputs
-  repeated PipelineDataPayload outputs = 1;
+  repeated google.protobuf.Struct outputs = 1;
 }
 
 // TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
@@ -341,7 +303,7 @@ message TriggerAsyncPipelineRequest {
     (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"}
   ];
   // Input to the pipeline
-  repeated PipelineDataPayload inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  repeated google.protobuf.Struct inputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerAsyncPipelineResponse represents a response for the longrunning
