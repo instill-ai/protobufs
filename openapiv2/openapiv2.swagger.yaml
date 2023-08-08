@@ -691,7 +691,6 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v1alphaPipelineDataPayload'
                 title: Input to the pipeline
             title: TriggerPipelineRequest represents a request to trigger a pipeline
             required:
@@ -983,7 +982,6 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v1alphaDataPayload'
                 title: Inputs
             title: |-
               ExecuteConnectorRequest represents a private request to execution
@@ -1171,7 +1169,6 @@ paths:
                 type: array
                 items:
                   type: object
-                  $ref: '#/definitions/v1alphaPipelineDataPayload'
                 title: Input to the pipeline
             title: TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
             required:
@@ -3389,19 +3386,6 @@ definitions:
        - SERVING_STATUS_SERVING: Serving status: SERVING
        - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
     title: ServingStatus enumerates the status of a queried service
-  PipelineDataPayloadUnstructuredData:
-    type: object
-    properties:
-      blob:
-        type: string
-        format: byte
-        title: |-
-          UnstructuredData using bytes,
-          grpc-gateway will do base64 conversion for http endpoint
-      url:
-        type: string
-        title: UnstructuredData using url
-    title: UnstructuredData
   SessionService:
     type: string
     enum:
@@ -4010,14 +3994,9 @@ definitions:
         type: object
         title: A pipeline component resource detail
         readOnly: true
-      metadata:
+      configuration:
         type: object
-        title: Metadata for the pipeline component
-      dependencies:
-        type: object
-        additionalProperties:
-          type: string
-        title: Dependencies for the pipeline component
+        title: Configuration for the pipeline component
       type:
         type: string
         title: Resource Type
@@ -4402,38 +4381,6 @@ definitions:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
     title: CreateUserAdminResponse represents a response for a user response
-  v1alphaDataPayload:
-    type: object
-    properties:
-      data_mapping_index:
-        type: string
-        title: Data index corresponds to each data element
-      texts:
-        type: array
-        items:
-          type: string
-        title: 'Unstructured: text field'
-      images:
-        type: array
-        items:
-          type: string
-          format: byte
-        title: 'Unstructured: image field'
-      audios:
-        type: array
-        items:
-          type: string
-          format: byte
-        title: 'Unstructured: audio field'
-      structured_data:
-        type: object
-        title: '[semi-]structured data: structured_data field'
-      metadata:
-        type: object
-        title: Metadata
-    title: DataPayload is a data structure trasferring data in pipeline
-    required:
-      - data_mapping_index
   v1alphaDeactivatePipelineResponse:
     type: object
     properties:
@@ -4543,7 +4490,6 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaDataPayload'
         title: Outputs
     title: |-
       ExecuteConnectorResponse represents a response for execution
@@ -5928,41 +5874,6 @@ definitions:
       - uid
       - id
       - task
-  v1alphaPipelineDataPayload:
-    type: object
-    properties:
-      data_mapping_index:
-        type: string
-        title: |-
-          Data index corresponds to each data element
-          if not provided, vdp will generate a one by uild
-          ref: https://github.com/ulid/spec
-      texts:
-        type: array
-        items:
-          type: string
-        title: 'Unstructured: text field'
-      images:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/PipelineDataPayloadUnstructuredData'
-        title: 'Unstructured: image field'
-      audios:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/PipelineDataPayloadUnstructuredData'
-        title: 'Unstructured: audio field'
-      structured_data:
-        type: object
-        title: '[semi-]structured data: json field'
-      metadata:
-        type: object
-        title: Metadata
-    title: PipelineDataPayload is a data structure for pipeline input
-    required:
-      - data_mapping_index
   v1alphaPipelineState:
     type: string
     enum:
@@ -6441,18 +6352,22 @@ definitions:
   v1alphaSpec:
     type: object
     properties:
-      documentation_url:
-        type: string
-        title: Spec documentation URL
-        readOnly: true
-      connection_specification:
+      resource_specification:
         type: object
-        title: Spec connection specification
+        title: Spec resource specification
+      component_specification:
+        type: object
+        title: Spec connector specification
+      openapi_specifications:
+        type: object
+        title: Spec openapi specification
     title: |-
       //////////////////////////////////
       Spec represents a spec data model
     required:
-      - connection_specification
+      - resource_specification
+      - component_specification
+      - openapi_specifications
   v1alphaTask:
     type: string
     enum:
@@ -6765,7 +6680,6 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaPipelineDataPayload'
         title: The multiple model inference outputs
     title: |-
       TriggerPipelineResponse represents a response for the output
