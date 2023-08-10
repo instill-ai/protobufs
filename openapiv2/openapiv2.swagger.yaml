@@ -1239,6 +1239,49 @@ paths:
             title: UnpublishModelRequest represents a request to unpublish a model
       tags:
         - ModelPublicService
+  /v1alpha/{operator_definition.name}:
+    get:
+      summary: |-
+        GetOperatorDefinition method receives a
+        GetOperatorDefinitionRequest message and returns a
+        GetGetOperatorDefinitionResponse message.
+      operationId: PipelinePublicService_GetOperatorDefinition
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOperatorDefinitionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: operator_definition.name
+          description: |-
+            Operator resource name. It must have the format of
+            "operator-definitions/*"
+          in: path
+          required: true
+          type: string
+          pattern: operator-definitions/[^/]+
+        - name: view
+          description: |-
+            Operator resource view (default is
+            DEFINITION_VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
@@ -1957,6 +2000,48 @@ paths:
   /v1alpha/admin/{permalink_2}/lookUp:
     get:
       summary: |-
+        LookUpConnectorDefinitionAdmin method receives a
+        LookUpConnectorDefinitionAdminRequest message and returns a
+        LookUpConnectorDefinitionAdminResponse
+      operationId: ConnectorPrivateService_LookUpConnectorDefinitionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpConnectorDefinitionAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_2
+          description: |-
+            Permalink of a connector. For example:
+            "connector-definitions/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connector-definitions/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ConnectorPrivateService
+  /v1alpha/admin/{permalink_3}/lookUp:
+    get:
+      summary: |-
         LookUpConnectorAdmin method receives a
         LookUpConnectorAdminRequest message and returns a
         LookUpConnectorAdminResponse
@@ -1971,7 +2056,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_2
+        - name: permalink_3
           description: |-
             Permalink of a connector. For example:
             "connectors/{uid}"
@@ -1996,7 +2081,7 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ConnectorPrivateService
-  /v1alpha/admin/{permalink_3}/lookUp:
+  /v1alpha/admin/{permalink_4}/lookUp:
     get:
       summary: |-
         LookUpPipelineAdmin method receives a LookUpPipelineAdminRequest message
@@ -2012,7 +2097,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_3
+        - name: permalink_4
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -2023,6 +2108,48 @@ paths:
         - name: view
           description: |-
             View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePrivateService
+  /v1alpha/admin/{permalink_5}/lookUp:
+    get:
+      summary: |-
+        LookUpOperatorDefinitionAdmin method receives a
+        LookUpOperatorDefinitionAdminRequest message and returns a
+        LookUpOperatorDefinitionAdminResponse
+      operationId: PipelinePrivateService_LookUpOperatorDefinitionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpOperatorDefinitionAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_5
+          description: |-
+            Permalink of a operator. For example:
+            "operator-definitions/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: operator-definitions/[^/]+
+        - name: view
+          description: |-
+            Operator view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -3097,6 +3224,60 @@ paths:
               - model
       tags:
         - ModelPublicService
+  /v1alpha/operator-definitions:
+    get:
+      summary: |-
+        ListOperatorDefinitions method receives a
+        ListOperatorDefinitionsRequest message and returns a
+        ListOperatorDefinitionsResponse message.
+      operationId: PipelinePublicService_ListOperatorDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOperatorDefinitionsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of OperatorDefinitions to return. The
+            service may return fewer than this value. If unspecified, at most 10
+            OperatorDefinitions will be returned. The maximum value is 100;
+            values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            Definition view (default is DEFINITION_VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list operator definitions
+          in: query
+          required: false
+          type: string
+      tags:
+        - PipelinePublicService
   /v1alpha/pipelines:
     get:
       summary: |-
@@ -4001,10 +4182,17 @@ definitions:
         type: string
         title: Resource Type
         readOnly: true
+      definition_name:
+        type: string
+        title: A pipeline component definition name
+      definition_detail:
+        type: object
+        title: A pipeline component definition detail
+        readOnly: true
     title: Represents a pipeline component
     required:
       - id
-      - resource_name
+      - definition_name
   v1alphaConnectConnectorResponse:
     type: object
     properties:
@@ -4124,7 +4312,7 @@ definitions:
         title: ConnectorDefinition icon
         readOnly: true
       spec:
-        $ref: '#/definitions/v1alphaSpec'
+        $ref: '#/definitions/vdpconnectorv1alphaSpec'
         title: ConnectorDefinition spec
         readOnly: true
       connector_type:
@@ -4842,6 +5030,15 @@ definitions:
     title: |-
       GetOperationResponse represents a response for a longrunning
       operation
+  v1alphaGetOperatorDefinitionResponse:
+    type: object
+    properties:
+      operator_definition:
+        $ref: '#/definitions/v1alphaOperatorDefinition'
+        title: A Operator resource
+    title: |-
+      GetOperatorDefinitionResponse represents a
+      Operator response
   v1alphaGetPipelineResponse:
     type: object
     properties:
@@ -5287,6 +5484,25 @@ definitions:
         format: int64
         title: Total count of models
     title: ListModelsResponse represents a response for a list of models
+  v1alphaListOperatorDefinitionsResponse:
+    type: object
+    properties:
+      operator_definitions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaOperatorDefinition'
+        title: A list of Operator resources
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of Operator resources
+    title: |-
+      ListOperatorDefinitionsResponse represents a response for a list
+      of OperatorDefinitions
   v1alphaListPipelineTriggerChartRecordsResponse:
     type: object
     properties:
@@ -5417,6 +5633,15 @@ definitions:
     title: |-
       LookUpConnectorAdminResponse represents a response for a
       connector
+  v1alphaLookUpConnectorDefinitionAdminResponse:
+    type: object
+    properties:
+      connector_definition:
+        $ref: '#/definitions/v1alphaConnectorDefinition'
+        title: Connector resource
+    title: |-
+      LookUpConnectorAdminResponse represents a response for a
+      connector
   v1alphaLookUpConnectorResponse:
     type: object
     properties:
@@ -5440,6 +5665,15 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: A model resource
     title: LookUpModelResponse represents a response for a model
+  v1alphaLookUpOperatorDefinitionAdminResponse:
+    type: object
+    properties:
+      operator_definition:
+        $ref: '#/definitions/v1alphaOperatorDefinition'
+        title: operator resource
+    title: |-
+      LookUpOperatorAdminResponse represents a response for a
+      operator
   v1alphaLookUpPipelineAdminResponse:
     type: object
     properties:
@@ -5787,6 +6021,67 @@ definitions:
         title: A list of OCR objects
         readOnly: true
     title: OcrOutput represents the output of ocr task
+  v1alphaOperatorDefinition:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          Operator resource name. It must have the format of
+          "operator-definitions/*"
+        readOnly: true
+      uid:
+        type: string
+        title: Operator UUID
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Operator resource ID (the last segment of the
+          resource name) used to construct the resource name. This conforms to
+          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+          character a letter, the last a letter or a number, and a 63 character
+          maximum.
+      title:
+        type: string
+        title: Operator title
+        readOnly: true
+      documentation_url:
+        type: string
+        title: Operator documentation URL
+        readOnly: true
+      icon:
+        type: string
+        title: Operator icon
+        readOnly: true
+      spec:
+        $ref: '#/definitions/vdppipelinev1alphaSpec'
+        title: Operator spec
+        readOnly: true
+      tombstone:
+        type: boolean
+        title: |-
+          Operator tombstone, i.e., if not set or false, the
+          configuration is active, or otherwise, if true, this configuration is
+          permanently off
+        readOnly: true
+      public:
+        type: boolean
+        title: |-
+          Operator public flag, i.e., true if this operator
+          definition is available to all workspaces
+        readOnly: true
+      custom:
+        type: boolean
+        title: |-
+          Operator custom flag, i.e., whether this is a custom
+          operator definition
+        readOnly: true
+      icon_url:
+        type: string
+        title: Operator iconUrl
+        readOnly: true
+    title: Operator represents the operator definition data model
   v1alphaOwnerType:
     type: string
     enum:
@@ -6349,25 +6644,6 @@ definitions:
       - token
       - pow
       - session
-  v1alphaSpec:
-    type: object
-    properties:
-      resource_specification:
-        type: object
-        title: Spec resource specification
-      component_specification:
-        type: object
-        title: Spec connector specification
-      openapi_specifications:
-        type: object
-        title: Spec openapi specification
-    title: |-
-      //////////////////////////////////
-      Spec represents a spec data model
-    required:
-      - resource_specification
-      - component_specification
-      - openapi_specifications
   v1alphaTask:
     type: string
     enum:
@@ -6900,6 +7176,25 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
+  vdpconnectorv1alphaSpec:
+    type: object
+    properties:
+      resource_specification:
+        type: object
+        title: Spec resource specification
+      component_specification:
+        type: object
+        title: Spec connector specification
+      openapi_specifications:
+        type: object
+        title: Spec openapi specification
+    title: |-
+      //////////////////////////////////
+      Spec represents a spec data model
+    required:
+      - resource_specification
+      - component_specification
+      - openapi_specifications
   vdpconnectorv1alphaView:
     type: string
     enum:
@@ -6981,6 +7276,15 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
+  vdppipelinev1alphaSpec:
+    type: object
+    properties:
+      component_specification:
+        type: object
+        title: Spec operator specification
+    title: View enumerates the definition views
+    required:
+      - component_specification
   vdppipelinev1alphaView:
     type: string
     enum:
