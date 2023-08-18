@@ -3583,6 +3583,15 @@ definitions:
        - SERVICE_MODEL: Service: MODEL
        - SERVICE_PIPELINE: Service: PIPELINE
     title: Service enumerates the services to collect data from
+  TriggerPipelineResponseMetadata:
+    type: object
+    properties:
+      traces:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/v1alphaTrace'
+        title: 'The traces of the pipeline inference, {component_id: Trace}'
+    title: The metadata
   UserUsageDataConnectorExecuteData:
     type: object
     properties:
@@ -6932,6 +6941,30 @@ definitions:
     required:
       - start_time
       - end_time
+  v1alphaTrace:
+    type: object
+    properties:
+      success:
+        type: boolean
+        title: Success or not
+      inputs:
+        type: array
+        items:
+          type: object
+        title: Inputs of the component
+      outputs:
+        type: array
+        items:
+          type: object
+        title: Outputs of the component
+      error:
+        type: object
+        title: Error of the component
+      compute_time_in_seconds:
+        type: number
+        format: float
+        title: Compute Time
+    title: Trace for the intermediate component
   v1alphaTriggerAsyncPipelineResponse:
     type: object
     properties:
@@ -6983,6 +7016,9 @@ definitions:
         items:
           type: object
         title: The multiple model inference outputs
+      metadata:
+        $ref: '#/definitions/TriggerPipelineResponseMetadata'
+        title: 'The traces of the pipeline inference, {component_id: Trace}'
     title: |-
       TriggerPipelineResponse represents a response for the output
       of a pipeline, i.e., the multiple model inference outputs

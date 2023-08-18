@@ -143,6 +143,20 @@ message Pipeline {
   google.protobuf.Timestamp update_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// Trace for the intermediate component
+message Trace {
+  // Success or not
+  bool success = 1;
+  // Inputs of the component
+  repeated google.protobuf.Struct inputs = 2;
+  // Outputs of the component
+  repeated google.protobuf.Struct outputs = 3;
+  // Error of the component
+  google.protobuf.Struct error = 4;
+  // Compute Time
+  float compute_time_in_seconds = 5;
+}
+
 // CreatePipelineRequest represents a request to create a pipeline
 message CreatePipelineRequest {
   // A pipeline resource to create
@@ -306,8 +320,15 @@ message TriggerPipelineRequest {
 // TriggerPipelineResponse represents a response for the output
 // of a pipeline, i.e., the multiple model inference outputs
 message TriggerPipelineResponse {
+  // The metadata
+  message Metadata {
+    // The traces of the pipeline inference, {component_id: Trace}
+    map<string, Trace> traces = 1;
+  }
   // The multiple model inference outputs
   repeated google.protobuf.Struct outputs = 1;
+  // The traces of the pipeline inference, {component_id: Trace}
+  Metadata metadata = 2;
 }
 
 // TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
