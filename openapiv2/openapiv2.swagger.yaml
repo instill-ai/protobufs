@@ -697,6 +697,44 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
+  /v1alpha/{name_1}/triggerAsync:
+    post:
+      summary: |-
+        TriggerAsyncPipelineRelease method receives a TriggerAsyncPipelineReleaseRequest message and
+        returns a TriggerAsyncPipelineReleaseResponse.
+      operationId: PipelinePublicService_TriggerAsyncPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: Resource name.
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                title: Input to the pipeline
+            title: TriggerAsyncPipelineReleaseRequest represents a request to trigger a pipeline_released pipeline
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
   /v1alpha/{name_2}/rename:
     post:
       summary: |-
@@ -735,6 +773,84 @@ paths:
               name
             required:
               - new_pipeline_id
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_2}/trigger:
+    post:
+      summary: |-
+        TriggerPipelineRelease method receives a TriggePipelineReleaseRequest message
+        and returns a TriggerPipelineReleasePipelineResponse.
+      operationId: PipelinePublicService_TriggerPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_2
+          description: Resource name.
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                title: Input to the pipeline
+            title: TriggerPipelineReleaseRequest represents a request to trigger a pipeline_released pipeline
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_3}/rename:
+    post:
+      summary: |-
+        RenamePipelineRelease method receives a RenamePipelineReleaseRequest message and returns
+        a RenamePipelineReleaseResponse message.
+      operationId: PipelinePublicService_RenamePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenamePipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_3
+          description: Pipeline release resource name. It must have the format of "pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_pipeline_release_id:
+                type: string
+                title: |-
+                  Pipeline new resource id to replace with the pipeline resource name to be
+                  "pipelines/*/releases/{new_pipeline_id}"
+            title: |-
+              RenamePipelineReleaseRequest represents a request to rename the pipeline release resource
+              name
+            required:
+              - new_pipeline_release_id
       tags:
         - PipelinePublicService
   /v1alpha/{name}:
@@ -779,38 +895,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-  /v1alpha/{name}/activate:
-    post:
-      summary: |-
-        Activate a pipeline.
-        The "state" of the pipeline after activating is "ACTIVE".
-        ActivatePipeline can be called on Pipelines in the state "INACTIVE";
-        Pipelines in a different state (including "ACTIVE") returns an error.
-      operationId: PipelinePublicService_ActivatePipeline
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaActivatePipelineResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: Pipeline resource name. It must have the format of "pipelines/*"
-          in: path
-          required: true
-          type: string
-          pattern: pipelines/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: ActivatePipelineRequest represents a request to activate a pipeline
-      tags:
-        - PipelinePublicService
   /v1alpha/{name}/connect:
     post:
       summary: |-
@@ -848,38 +932,6 @@ paths:
               connector_resource
       tags:
         - ConnectorPublicService
-  /v1alpha/{name}/deactivate:
-    post:
-      summary: |-
-        Deactivate a pipeline.
-        The "state" of the pipeline after inactivating is "INACTIVE".
-        DeactivatePipeline can be called on Pipelines in the state "ACTIVE";
-        Pipelines in a different state (including "INACTIVE") returns an error.
-      operationId: PipelinePublicService_DeactivatePipeline
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeactivatePipelineResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: Pipeline resource name. It must have the format of "pipelines/*"
-          in: path
-          required: true
-          type: string
-          pattern: pipelines/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            title: DeactivatePipelineRequest represents a request to deactivate a pipeline
-      tags:
-        - PipelinePublicService
   /v1alpha/{name}/deploy:
     post:
       summary: DeployModel deploy a model to online state
@@ -1054,6 +1106,54 @@ paths:
               - new_model_id
       tags:
         - ModelPublicService
+  /v1alpha/{name}/restore:
+    post:
+      summary: |-
+        RestorePipelineRelease method receives a RestorePipelineReleaseRequest message
+        and returns a RestorePipelineReleaseResponse
+      operationId: PipelinePublicService_RestorePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRestorePipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: Pipeline resource name. It must have the format of "pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name}/set_default:
+    post:
+      summary: |-
+        SetDefaultPipelineRelease method receives a SetDefaultPipelineReleaseRequest message
+        and returns a SetDefaultPipelineReleaseResponse
+      operationId: PipelinePublicService_SetDefaultPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaSetDefaultPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: Pipeline resource name. It must have the format of "pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
   /v1alpha/{name}/test:
     post:
       summary: |-
@@ -1239,6 +1339,34 @@ paths:
             title: UnpublishModelRequest represents a request to unpublish a model
       tags:
         - ModelPublicService
+  /v1alpha/{name}/validate:
+    post:
+      summary: Validate a pipeline.
+      operationId: PipelinePublicService_ValidatePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaValidatePipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: Pipeline resource name. It must have the format of "pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: ValidatePipelineRequest represents a request to validate a pipeline
+      tags:
+        - PipelinePublicService
   /v1alpha/{operator_definition.name}:
     get:
       summary: |-
@@ -1280,6 +1408,99 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+  /v1alpha/{parent}/releases:
+    get:
+      summary: |-
+        ListPipelineReleases method receives a ListPipelineReleasesRequest message and returns a
+        ListPipelineReleasesResponse message.
+      operationId: PipelinePublicService_ListPipelineReleases
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListPipelineReleasesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource where this pipeline_release will be created.
+            Format: pipelines/{pipeline}
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of pipeline_releases to return. The service may return fewer
+            than this value. If unspecified, at most 10 pipeline_release will be returned. The
+            maximum value is 100; values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list pipeline_releases
+          in: query
+          required: false
+          type: string
+      tags:
+        - PipelinePublicService
+    post:
+      summary: |-
+        CreatePipelineRelease method receives a CreatePipelineReleaseRequest message and returns
+        a CreatePipelineReleaseResponse message.
+      operationId: PipelinePublicService_CreatePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreatePipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource where this pipeline_release will be created.
+            Format: pipelines/{pipeline}
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: release
+          description: A pipeline_release resource to create
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaPipelineRelease'
+            required:
+              - release
       tags:
         - PipelinePublicService
   /v1alpha/{permalink_1}/lookUp:
@@ -1411,25 +1632,25 @@ paths:
   /v1alpha/{pipeline.name/watch}/watch:
     get:
       summary: |-
-        WatchPipeline method receives a WatchPipelineRequest message
-        and returns a WatchPipelineResponse
-      operationId: PipelinePublicService_WatchPipeline
+        WatchPipelineRelease method receives a WatchPipelineReleaseRequest message
+        and returns a WatchPipelineReleaseResponse
+      operationId: PipelinePublicService_WatchPipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaWatchPipelineResponse'
+            $ref: '#/definitions/v1alphaWatchPipelineReleaseResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: pipeline.name/watch
-          description: Pipeline resource name. It must have the format of "pipelines/*"
+          description: Pipeline resource name. It must have the format of "pipelines/*/releases/*"
           in: path
           required: true
           type: string
-          pattern: pipelines/[^/]+
+          pattern: pipelines/[^/]+/releases/default
       tags:
         - PipelinePublicService
   /v1alpha/{pipeline.name}:
@@ -1539,10 +1760,6 @@ paths:
               recipe:
                 $ref: '#/definitions/v1alphaRecipe'
                 title: Pipeline recipe
-              state:
-                $ref: '#/definitions/v1alphaPipelineState'
-                title: Pipeline state
-                readOnly: true
               user:
                 type: string
                 description: |-
@@ -1564,6 +1781,126 @@ paths:
                 title: Pipeline update time
                 readOnly: true
             title: A pipeline resource to update
+      tags:
+        - PipelinePublicService
+  /v1alpha/{pipeline_release.name}:
+    get:
+      summary: |-
+        GetPipelineRelease method receives a GetPipelineReleaseRequest message and returns a
+        GetPipelineReleaseResponse message.
+      operationId: PipelinePublicService_GetPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline_release.name
+          description: PipelineRelease resource name. It must have the format of "pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+        - name: view
+          description: |-
+            PipelineRelease resource view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: |-
+        DeletePipelineRelease method receives a DeletePipelineReleaseRequest message and returns
+        a DeletePipelineReleaseResponse message.
+      operationId: PipelinePublicService_DeletePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeletePipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline_release.name
+          description: PipelineRelease resource name. It must have the format of "pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1alpha/{release.name}:
+    patch:
+      summary: |-
+        UpdatePipelineRelease method receives a UpdatePipelineReleaseRequest message and returns
+        a UpdatePipelineReleaseResponse message.
+      operationId: PipelinePublicService_UpdatePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdatePipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: release.name
+          description: PipelineRelease resource name. It must have the format of "pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+/releases/[^/]+
+        - name: release
+          description: A pipeline release resource to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                title: PipelineRelease UUID
+                readOnly: true
+              id:
+                type: string
+                title: |-
+                  PipelineRelease resource ID (the last segment of the resource name) used to
+                  construct the resource name. Must be a sematic version vX.Y.Z
+              description:
+                type: string
+                title: PipelineRelease description
+              recipe:
+                $ref: '#/definitions/v1alphaRecipe'
+                title: Pipeline recipe snapshot
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                title: Pipeline creation time
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Pipeline update time
+                readOnly: true
+            title: A pipeline release resource to update
       tags:
         - PipelinePublicService
   /v1alpha/{resource.resource_permalink_1}:
@@ -1648,7 +1985,7 @@ paths:
             type: object
             properties:
               pipeline_state:
-                $ref: '#/definitions/v1alphaPipelineState'
+                $ref: '#/definitions/pipelinev1alphaState'
                 title: Pipeline state
               connector_state:
                 $ref: '#/definitions/v1alphaConnectorResourceState'
@@ -2488,6 +2825,58 @@ paths:
           description: A successful response.
           schema:
             $ref: '#/definitions/v1alphaListPipelinesAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of pipelines to return. The service may return fewer
+            than this value. If unspecified, at most 10 pipelines will be returned. The
+            maximum value is 100; values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list pipelines
+          in: query
+          required: false
+          type: string
+      tags:
+        - PipelinePrivateService
+  /v1alpha/admin/releases:
+    get:
+      summary: |-
+        ListPipelineReleasesAdmin method receives a ListPipelineReleasesAdminRequest message and
+        returns a ListPipelineReleasesAdminResponse message.
+      operationId: PipelinePrivateService_ListPipelineReleasesAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListPipelineReleasesAdminResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3583,15 +3972,6 @@ definitions:
        - SERVICE_MODEL: Service: MODEL
        - SERVICE_PIPELINE: Service: PIPELINE
     title: Service enumerates the services to collect data from
-  TriggerPipelineResponseMetadata:
-    type: object
-    properties:
-      traces:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/v1alphaTrace'
-        title: 'The traces of the pipeline inference, {component_id: Trace}'
-    title: The metadata
   UserUsageDataConnectorExecuteData:
     type: object
     properties:
@@ -3881,6 +4261,20 @@ definitions:
        - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
        - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
        - VIEW_FULL: View: FULL, full representation of the resource
+  pipelinev1alphaState:
+    type: string
+    enum:
+      - STATE_UNSPECIFIED
+      - STATE_INACTIVE
+      - STATE_ACTIVE
+      - STATE_ERROR
+    default: STATE_UNSPECIFIED
+    description: |-
+      - STATE_UNSPECIFIED: State: UNSPECIFIED
+       - STATE_INACTIVE: State INACTIVE indicates the pipeline is inactive
+       - STATE_ACTIVE: State ACTIVE indicates the pipeline is active
+       - STATE_ERROR: State ERROR indicates the pipeline has error
+    title: State enumerates the state of a pipeline
   protobufAny:
     type: object
     properties:
@@ -4013,13 +4407,6 @@ definitions:
        The JSON representation for `NullValue` is JSON `null`.
 
        - NULL_VALUE: Null value.
-  v1alphaActivatePipelineResponse:
-    type: object
-    properties:
-      pipeline:
-        $ref: '#/definitions/v1alphaPipeline'
-        title: A pipeline resource
-    title: ActivatePipelineResponse represents an activated pipeline
   v1alphaApiToken:
     type: object
     properties:
@@ -4570,6 +4957,13 @@ definitions:
         title: Create model operation message
         readOnly: true
     title: CreateModelResponse represents a response for a model
+  v1alphaCreatePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: The created pipeline_release resource
+    title: CreatePipelineReleaseResponse represents a response for a pipeline_release resource
   v1alphaCreatePipelineResponse:
     type: object
     properties:
@@ -4598,19 +4992,15 @@ definitions:
         $ref: '#/definitions/v1alphaUser'
         title: A user resource
     title: CreateUserAdminResponse represents a response for a user response
-  v1alphaDeactivatePipelineResponse:
-    type: object
-    properties:
-      pipeline:
-        $ref: '#/definitions/v1alphaPipeline'
-        title: A pipeline resource
-    title: DeactivatePipelineResponse represents an inactivated pipeline
   v1alphaDeleteConnectorResourceResponse:
     type: object
     title: DeleteConnectorResourceResponse represents an empty response
   v1alphaDeleteModelResponse:
     type: object
     title: DeleteModelResponse represents an empty response
+  v1alphaDeletePipelineReleaseResponse:
+    type: object
+    title: DeletePipelineReleaseResponse represents an empty response
   v1alphaDeletePipelineResponse:
     type: object
     title: DeletePipelineResponse represents an empty response
@@ -5070,6 +5460,13 @@ definitions:
     title: |-
       GetOperatorDefinitionResponse represents a
       Operator response
+  v1alphaGetPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A pipeline_release resource
+    title: GetPipelineReleaseResponse represents a response for a pipeline_release resource
   v1alphaGetPipelineResponse:
     type: object
     properties:
@@ -5534,6 +5931,43 @@ definitions:
     title: |-
       ListOperatorDefinitionsResponse represents a response for a list
       of OperatorDefinitions
+  v1alphaListPipelineReleasesAdminResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A list of pipeline resources
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of pipeline resources
+    title: |-
+      ListPipelineReleasesAdminResponse represents a response for a list of pipeline_releases
+      The recipe returned will be permaLinks instead of resourceName temporary,
+      this will be refactored soon
+  v1alphaListPipelineReleasesResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A list of pipeline_release resources
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of pipeline_release resources
+    title: ListPipelineReleasesResponse represents a response for a list of pipeline_releases
   v1alphaListPipelineTriggerChartRecordsResponse:
     type: object
     properties:
@@ -6158,10 +6592,6 @@ definitions:
       recipe:
         $ref: '#/definitions/v1alphaRecipe'
         title: Pipeline recipe
-      state:
-        $ref: '#/definitions/v1alphaPipelineState'
-        title: Pipeline state
-        readOnly: true
       user:
         type: string
         description: |-
@@ -6200,20 +6630,40 @@ definitions:
       - uid
       - id
       - task
-  v1alphaPipelineState:
-    type: string
-    enum:
-      - STATE_UNSPECIFIED
-      - STATE_INACTIVE
-      - STATE_ACTIVE
-      - STATE_ERROR
-    default: STATE_UNSPECIFIED
-    description: |-
-      - STATE_UNSPECIFIED: State: UNSPECIFIED
-       - STATE_INACTIVE: State INACTIVE indicates the pipeline is inactive
-       - STATE_ACTIVE: State ACTIVE indicates the pipeline is active
-       - STATE_ERROR: State ERROR indicates the pipeline has error
-    title: State enumerates the state of a pipeline
+  v1alphaPipelineRelease:
+    type: object
+    properties:
+      name:
+        type: string
+        title: PipelineRelease resource name. It must have the format of "pipelines/*/releases/*"
+        readOnly: true
+      uid:
+        type: string
+        title: PipelineRelease UUID
+        readOnly: true
+      id:
+        type: string
+        title: |-
+          PipelineRelease resource ID (the last segment of the resource name) used to
+          construct the resource name. Must be a sematic version vX.Y.Z
+      description:
+        type: string
+        title: PipelineRelease description
+      recipe:
+        $ref: '#/definitions/v1alphaRecipe'
+        title: Pipeline recipe snapshot
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        title: Pipeline creation time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: Pipeline update time
+        readOnly: true
+    title: PipelineRelease represents the content of a pipeline release
   v1alphaPipelineTriggerChartRecord:
     type: object
     properties:
@@ -6440,6 +6890,13 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: Renamed model
     title: RenameModelResponse represents a response for a model
+  v1alphaRenamePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A pipeline resource
+    title: RenamePipelineReleaseResponse represents a renamed pipeline release resource
   v1alphaRenamePipelineResponse:
     type: object
     properties:
@@ -6521,6 +6978,13 @@ definitions:
     title: |-
       ReportPipelineTriggersResponse represents a respond to a
       pipeline-trigger-records reporting bulk request
+  v1alphaRestorePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A pipeline resource
+    title: RestorePipelineReleaseResponse
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
@@ -6679,6 +7143,13 @@ definitions:
       - token
       - pow
       - session
+  v1alphaSetDefaultPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A pipeline resource
+    title: SetDefaultPipelineReleaseResponse
   v1alphaTask:
     type: string
     enum:
@@ -6965,6 +7436,16 @@ definitions:
         format: float
         title: Compute Time
     title: Trace for the intermediate component
+  v1alphaTriggerAsyncPipelineReleaseResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Trigger async pipeline operation message
+        readOnly: true
+    title: |-
+      TriggerAsyncPipelineReleaseResponse represents a response for the longrunning
+      operation of a pipeline
   v1alphaTriggerAsyncPipelineResponse:
     type: object
     properties:
@@ -6975,6 +7456,15 @@ definitions:
     title: |-
       TriggerAsyncPipelineResponse represents a response for the longrunning
       operation of a pipeline
+  v1alphaTriggerMetadata:
+    type: object
+    properties:
+      traces:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/v1alphaTrace'
+        title: 'The traces of the pipeline inference, {component_id: Trace}'
+    title: The metadata
   v1alphaTriggerModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -7008,6 +7498,20 @@ definitions:
     title: |-
       TriggerModelResponse represents a response for the output for
       triggering a model
+  v1alphaTriggerPipelineReleaseResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        title: The multiple model inference outputs
+      metadata:
+        $ref: '#/definitions/v1alphaTriggerMetadata'
+        title: 'The traces of the pipeline inference, {component_id: Trace}'
+    title: |-
+      TriggerPipelineReleaseResponse represents a response for the output
+      of a pipeline, i.e., the multiple model inference outputs
   v1alphaTriggerPipelineResponse:
     type: object
     properties:
@@ -7017,7 +7521,7 @@ definitions:
           type: object
         title: The multiple model inference outputs
       metadata:
-        $ref: '#/definitions/TriggerPipelineResponseMetadata'
+        $ref: '#/definitions/v1alphaTriggerMetadata'
         title: 'The traces of the pipeline inference, {component_id: Trace}'
     title: |-
       TriggerPipelineResponse represents a response for the output
@@ -7080,6 +7584,13 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: The updated model
     title: UpdateModelResponse represents a response for a model
+  v1alphaUpdatePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: An updated pipeline resource
+    title: UpdatePipelineReleaseResponse represents a response for a pipeline resource
   v1alphaUpdatePipelineResponse:
     type: object
     properties:
@@ -7195,6 +7706,13 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1alphaValidatePipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1alphaPipeline'
+        title: A pipeline resource
+    title: ValidatePipelineResponse represents an response of validated pipeline
   v1alphaWatchConnectorResourceResponse:
     type: object
     properties:
@@ -7217,14 +7735,14 @@ definitions:
     title: |-
       WatchModelResponse represents a public response to
       fetch a model current state and longrunning progress
-  v1alphaWatchPipelineResponse:
+  v1alphaWatchPipelineReleaseResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaPipelineState'
+        $ref: '#/definitions/pipelinev1alphaState'
         title: Retrieved pipeline state
     title: |-
-      WatchPipelineResponse represents a response to fetch a pipeline's
+      WatchPipelineReleaseResponse represents a response to fetch a pipeline's
       current state
   vdpconnectorv1alphaLivenessResponse:
     type: object
@@ -7304,7 +7822,7 @@ definitions:
           Permalink of a resouce. For example:
           "resources/{resource_uuid}/types/{type}"
       pipeline_state:
-        $ref: '#/definitions/v1alphaPipelineState'
+        $ref: '#/definitions/pipelinev1alphaState'
         title: Pipeline state
       connector_state:
         $ref: '#/definitions/v1alphaConnectorResourceState'

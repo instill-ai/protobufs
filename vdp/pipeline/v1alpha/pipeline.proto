@@ -89,24 +89,24 @@ message Recipe {
   repeated Component components = 2;
 }
 
+// State enumerates the state of a pipeline
+enum State {
+  // State: UNSPECIFIED
+  STATE_UNSPECIFIED = 0;
+  // State INACTIVE indicates the pipeline is inactive
+  STATE_INACTIVE = 1;
+  // State ACTIVE indicates the pipeline is active
+  STATE_ACTIVE = 2;
+  // State ERROR indicates the pipeline has error
+  STATE_ERROR = 3;
+}
+
 // Pipeline represents the content of a pipeline
 message Pipeline {
   option (google.api.resource) = {
     type: "api.instill.tech/Pipeline"
     pattern: "pipelines/{pipeline}"
   };
-
-  // State enumerates the state of a pipeline
-  enum State {
-    // State: UNSPECIFIED
-    STATE_UNSPECIFIED = 0;
-    // State INACTIVE indicates the pipeline is inactive
-    STATE_INACTIVE = 1;
-    // State ACTIVE indicates the pipeline is active
-    STATE_ACTIVE = 2;
-    // State ERROR indicates the pipeline has error
-    STATE_ERROR = 3;
-  }
 
   // Pipeline resource name. It must have the format of "pipelines/*"
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -121,8 +121,7 @@ message Pipeline {
   optional string description = 4 [(google.api.field_behavior) = OPTIONAL];
   // Pipeline recipe
   Recipe recipe = 5 [(google.api.field_behavior) = IMMUTABLE];
-  // Pipeline state
-  State state = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // Pipeline owner
   oneof owner {
     // The resource name with UUID of a user, e.g.,
@@ -143,6 +142,12 @@ message Pipeline {
   google.protobuf.Timestamp update_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// The metadata
+message TriggerMetadata {
+  // The traces of the pipeline inference, {component_id: Trace}
+  map<string, Trace> traces = 1;
+}
+
 // Trace for the intermediate component
 message Trace {
   // Success or not
@@ -155,6 +160,30 @@ message Trace {
   google.protobuf.Struct error = 4;
   // Compute Time
   float compute_time_in_seconds = 5;
+}
+
+// PipelineRelease represents the content of a pipeline release
+message PipelineRelease {
+  option (google.api.resource) = {
+    type: "api.instill.tech/Release"
+    pattern: "releases/{release}"
+  };
+
+  // PipelineRelease resource name. It must have the format of "pipelines/*/releases/*"
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // PipelineRelease UUID
+  string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // PipelineRelease resource ID (the last segment of the resource name) used to
+  // construct the resource name. Must be a sematic version vX.Y.Z
+  string id = 3 [(google.api.field_behavior) = IMMUTABLE];
+  // PipelineRelease description
+  optional string description = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Pipeline recipe snapshot
+  Recipe recipe = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline creation time
+  google.protobuf.Timestamp create_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline update time
+  google.protobuf.Timestamp update_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // CreatePipelineRequest represents a request to create a pipeline
@@ -257,8 +286,8 @@ message LookUpPipelineResponse {
   Pipeline pipeline = 1;
 }
 
-// ActivatePipelineRequest represents a request to activate a pipeline
-message ActivatePipelineRequest {
+// ValidatePipelineRequest represents a request to validate a pipeline
+message ValidatePipelineRequest {
   // Pipeline resource name. It must have the format of "pipelines/*"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -266,23 +295,8 @@ message ActivatePipelineRequest {
   ];
 }
 
-// ActivatePipelineResponse represents an activated pipeline
-message ActivatePipelineResponse {
-  // A pipeline resource
-  Pipeline pipeline = 1;
-}
-
-// DeactivatePipelineRequest represents a request to deactivate a pipeline
-message DeactivatePipelineRequest {
-  // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"}
-  ];
-}
-
-// DeactivatePipelineResponse represents an inactivated pipeline
-message DeactivatePipelineResponse {
+// ValidatePipelineResponse represents an response of validated pipeline
+message ValidatePipelineResponse {
   // A pipeline resource
   Pipeline pipeline = 1;
 }
@@ -320,15 +334,10 @@ message TriggerPipelineRequest {
 // TriggerPipelineResponse represents a response for the output
 // of a pipeline, i.e., the multiple model inference outputs
 message TriggerPipelineResponse {
-  // The metadata
-  message Metadata {
-    // The traces of the pipeline inference, {component_id: Trace}
-    map<string, Trace> traces = 1;
-  }
   // The multiple model inference outputs
   repeated google.protobuf.Struct outputs = 1;
   // The traces of the pipeline inference, {component_id: Trace}
-  Metadata metadata = 2;
+  TriggerMetadata metadata = 2;
 }
 
 // TriggerAsyncPipelineRequest represents a request to trigger a async pipeline
@@ -363,26 +372,6 @@ message GetOperationResponse {
   google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// WatchPipelineRequest represents a public request to query
-// a pipeline's current state
-message WatchPipelineRequest {
-  // Pipeline resource name. It must have the format of "pipelines/*"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "pipeline.name/watch"}
-    }
-  ];
-}
-
-// WatchPipelineResponse represents a response to fetch a pipeline's
-// current state
-message WatchPipelineResponse {
-  // Retrieved pipeline state
-  Pipeline.State state = 1;
-}
-
 // ========== Private endpoints
 
 // ListPipelinesAdminRequest represents a request to list all pipelines from all
@@ -406,6 +395,33 @@ message ListPipelinesAdminRequest {
 message ListPipelinesAdminResponse {
   // A list of pipeline resources
   repeated Pipeline pipelines = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of pipeline resources
+  int64 total_size = 3;
+}
+
+// ListPipelinesReleaseAdminRequest represents a request to list all pipeline_releases from all
+// users by admin
+message ListPipelineReleasesAdminRequest {
+  // The maximum number of pipelines to return. The service may return fewer
+  // than this value. If unspecified, at most 10 pipelines will be returned. The
+  // maximum value is 100; values above 100 will be coerced to 100.
+  optional int64 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page token
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // View view (default is VIEW_BASIC)
+  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Filter expression to list pipelines
+  optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListPipelineReleasesAdminResponse represents a response for a list of pipeline_releases
+// The recipe returned will be permaLinks instead of resourceName temporary,
+// this will be refactored soon
+message ListPipelineReleasesAdminResponse {
+  // A list of pipeline resources
+  repeated PipelineRelease releases = 1;
   // Next page token
   string next_page_token = 2;
   // Total count of pipeline resources
@@ -447,4 +463,208 @@ message LookUpPipelineAdminRequest {
 message LookUpPipelineAdminResponse {
   // A pipeline resource
   Pipeline pipeline = 1;
+}
+
+// CreatePipelineReleaseRequest represents a request to create a pipeline_release
+message CreatePipelineReleaseRequest {
+  // A pipeline_release resource to create
+  PipelineRelease release = 1 [(google.api.field_behavior) = REQUIRED];
+  // The parent resource where this pipeline_release will be created.
+  // Format: pipelines/{pipeline}
+  string parent = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "api.instill.tech/PipelineRelease"}
+  ];
+}
+
+// CreatePipelineReleaseResponse represents a response for a pipeline_release resource
+message CreatePipelineReleaseResponse {
+  // The created pipeline_release resource
+  PipelineRelease release = 1;
+}
+
+// ListPipelineReleasesRequest represents a request to list pipeline_releases
+message ListPipelineReleasesRequest {
+  // The maximum number of pipeline_releases to return. The service may return fewer
+  // than this value. If unspecified, at most 10 pipeline_release will be returned. The
+  // maximum value is 100; values above 100 will be coerced to 100.
+  optional int64 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page token
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // View view (default is VIEW_BASIC)
+  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Filter expression to list pipeline_releases
+  optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+  // The parent resource where this pipeline_release will be created.
+  // Format: pipelines/{pipeline}
+  string parent = 5 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "api.instill.tech/PipelineRelease"}
+  ];
+}
+
+// ListPipelineReleasesResponse represents a response for a list of pipeline_releases
+message ListPipelineReleasesResponse {
+  // A list of pipeline_release resources
+  repeated PipelineRelease releases = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of pipeline_release resources
+  int64 total_size = 3;
+}
+
+// GetPipelineReleaseRequest represents a request to query a pipeline_release
+message GetPipelineReleaseRequest {
+  // PipelineRelease resource name. It must have the format of "pipelines/*/releases/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "pipeline_release.name"}
+    }
+  ];
+  // PipelineRelease resource view (default is VIEW_BASIC)
+  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// GetPipelineReleaseResponse represents a response for a pipeline_release resource
+message GetPipelineReleaseResponse {
+  // A pipeline_release resource
+  PipelineRelease release = 1;
+}
+
+// UpdatePipelineReleaseRequest represents a request to update a pipeline release
+message UpdatePipelineReleaseRequest {
+  // A pipeline release resource to update
+  PipelineRelease release = 1 [(google.api.field_behavior) = REQUIRED];
+  // Update mask for a pipeline resource
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UpdatePipelineReleaseResponse represents a response for a pipeline resource
+message UpdatePipelineReleaseResponse {
+  // An updated pipeline resource
+  PipelineRelease release = 1;
+}
+
+// DeletePipelineReleaseRequest represents a request to delete a pipeline_release resource
+message DeletePipelineReleaseRequest {
+  // PipelineRelease resource name. It must have the format of "pipelines/*/releases/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "pipeline_release.name"}
+    }
+  ];
+}
+
+// DeletePipelineReleaseResponse represents an empty response
+message DeletePipelineReleaseResponse {}
+
+// SetDefaultPipelineReleaseRequest
+message SetDefaultPipelineReleaseRequest {
+  // Pipeline resource name. It must have the format of "pipelines/*/releases/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"}
+  ];
+}
+
+// SetDefaultPipelineReleaseResponse
+message SetDefaultPipelineReleaseResponse {
+  // A pipeline resource
+  PipelineRelease release = 1;
+}
+
+// RestorePipelineReleaseRequest
+message RestorePipelineReleaseRequest {
+  // Pipeline resource name. It must have the format of "pipelines/*/releases/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"}
+  ];
+}
+
+// RestorePipelineReleaseResponse
+message RestorePipelineReleaseResponse {
+  // A pipeline resource
+  PipelineRelease release = 1;
+}
+
+// RenamePipelineReleaseRequest represents a request to rename the pipeline release resource
+// name
+message RenamePipelineReleaseRequest {
+  // Pipeline release resource name. It must have the format of "pipelines/*/releases/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"}
+  ];
+  // Pipeline new resource id to replace with the pipeline resource name to be
+  // "pipelines/*/releases/{new_pipeline_id}"
+  string new_pipeline_release_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// RenamePipelineReleaseResponse represents a renamed pipeline release resource
+message RenamePipelineReleaseResponse {
+  // A pipeline resource
+  PipelineRelease release = 1;
+}
+
+// WatchPipelineReleaseRequest represents a public request to query
+// a pipeline's current state
+message WatchPipelineReleaseRequest {
+  // Pipeline resource name. It must have the format of "pipelines/*/releases/*"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "pipeline.name/watch"}
+    }
+  ];
+}
+
+// WatchPipelineReleaseResponse represents a response to fetch a pipeline's
+// current state
+message WatchPipelineReleaseResponse {
+  // Retrieved pipeline state
+  State state = 1;
+}
+
+// TriggerPipelineReleaseRequest represents a request to trigger a pipeline_released pipeline
+message TriggerPipelineReleaseRequest {
+  // Resource name.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"}
+  ];
+  // Input to the pipeline
+  repeated google.protobuf.Struct inputs = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// TriggerPipelineReleaseResponse represents a response for the output
+// of a pipeline, i.e., the multiple model inference outputs
+message TriggerPipelineReleaseResponse {
+  // The multiple model inference outputs
+  repeated google.protobuf.Struct outputs = 1;
+  // The traces of the pipeline inference, {component_id: Trace}
+  TriggerMetadata metadata = 2;
+}
+
+// TriggerAsyncPipelineReleaseRequest represents a request to trigger a pipeline_released pipeline
+message TriggerAsyncPipelineReleaseRequest {
+  // Resource name.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"}
+  ];
+  // Input to the pipeline
+  repeated google.protobuf.Struct inputs = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// TriggerAsyncPipelineReleaseResponse represents a response for the longrunning
+// operation of a pipeline
+message TriggerAsyncPipelineReleaseResponse {
+  // Trigger async pipeline operation message
+  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
