@@ -92,25 +92,10 @@ service PipelinePublicService {
     option (google.api.method_signature) = "permalink";
   }
 
-  // Activate a pipeline.
-  // The "state" of the pipeline after activating is "ACTIVE".
-  // ActivatePipeline can be called on Pipelines in the state "INACTIVE";
-  // Pipelines in a different state (including "ACTIVE") returns an error.
-  rpc ActivatePipeline(ActivatePipelineRequest) returns (ActivatePipelineResponse) {
+  // Validate a pipeline.
+  rpc ValidatePipeline(ValidatePipelineRequest) returns (ValidatePipelineResponse) {
     option (google.api.http) = {
-      post: "/v1alpha/{name=pipelines/*}/activate"
-      body: "*"
-    };
-    option (google.api.method_signature) = "name";
-  }
-
-  // Deactivate a pipeline.
-  // The "state" of the pipeline after inactivating is "INACTIVE".
-  // DeactivatePipeline can be called on Pipelines in the state "ACTIVE";
-  // Pipelines in a different state (including "INACTIVE") returns an error.
-  rpc DeactivatePipeline(DeactivatePipelineRequest) returns (DeactivatePipelineResponse) {
-    option (google.api.http) = {
-      post: "/v1alpha/{name=pipelines/*}/deactivate"
+      post: "/v1alpha/{name=pipelines/*}/validate"
       body: "*"
     };
     option (google.api.method_signature) = "name";
@@ -146,13 +131,6 @@ service PipelinePublicService {
     option (google.api.method_signature) = "name,inputs";
   }
 
-  // WatchPipeline method receives a WatchPipelineRequest message
-  // and returns a WatchPipelineResponse
-  rpc WatchPipeline(WatchPipelineRequest) returns (WatchPipelineResponse) {
-    option (google.api.http) = {get: "/v1alpha/{name=pipelines/*}/watch"};
-    option (google.api.method_signature) = "name";
-  }
-
   // *Longrunning operation methods
 
   // GetOperation method receives a
@@ -161,5 +139,97 @@ service PipelinePublicService {
   rpc GetOperation(GetOperationRequest) returns (GetOperationResponse) {
     option (google.api.http) = {get: "/v1alpha/{name=operations/*}"};
     option (google.api.method_signature) = "name";
+  }
+
+  // CreatePipelineRelease method receives a CreatePipelineReleaseRequest message and returns
+  // a CreatePipelineReleaseResponse message.
+  rpc CreatePipelineRelease(CreatePipelineReleaseRequest) returns (CreatePipelineReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/{parent=pipelines/*}/releases"
+      body: "release"
+    };
+    option (google.api.method_signature) = "parent,release";
+  }
+
+  // ListPipelineReleases method receives a ListPipelineReleasesRequest message and returns a
+  // ListPipelineReleasesResponse message.
+  rpc ListPipelineReleases(ListPipelineReleasesRequest) returns (ListPipelineReleasesResponse) {
+    option (google.api.http) = {get: "/v1alpha/{parent=pipelines/*}/releases"};
+    option (google.api.method_signature) = "pipelines";
+  }
+
+  // GetPipelineRelease method receives a GetPipelineReleaseRequest message and returns a
+  // GetPipelineReleaseResponse message.
+  rpc GetPipelineRelease(GetPipelineReleaseRequest) returns (GetPipelineReleaseResponse) {
+    option (google.api.http) = {get: "/v1alpha/{name=pipelines/*/releases/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // UpdatePipelineRelease method receives a UpdatePipelineReleaseRequest message and returns
+  // a UpdatePipelineReleaseResponse message.
+  rpc UpdatePipelineRelease(UpdatePipelineReleaseRequest) returns (UpdatePipelineReleaseResponse) {
+    option (google.api.http) = {
+      patch: "/v1alpha/{release.name=pipelines/*/releases/*}"
+      body: "release"
+    };
+    option (google.api.method_signature) = "release,update_mask";
+  }
+
+  // DeletePipelineRelease method receives a DeletePipelineReleaseRequest message and returns
+  // a DeletePipelineReleaseResponse message.
+  rpc DeletePipelineRelease(DeletePipelineReleaseRequest) returns (DeletePipelineReleaseResponse) {
+    option (google.api.http) = {delete: "/v1alpha/{name=pipelines/*/releases/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // RestorePipelineRelease method receives a RestorePipelineReleaseRequest message
+  // and returns a RestorePipelineReleaseResponse
+  rpc RestorePipelineRelease(RestorePipelineReleaseRequest) returns (RestorePipelineReleaseResponse) {
+    option (google.api.http) = {post: "/v1alpha/{name=pipelines/*/releases/*}/restore"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // SetDefaultPipelineRelease method receives a SetDefaultPipelineReleaseRequest message
+  // and returns a SetDefaultPipelineReleaseResponse
+  rpc SetDefaultPipelineRelease(SetDefaultPipelineReleaseRequest) returns (SetDefaultPipelineReleaseResponse) {
+    option (google.api.http) = {post: "/v1alpha/{name=pipelines/*/releases/*}/set_default"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // WatchPipelineRelease method receives a WatchPipelineReleaseRequest message
+  // and returns a WatchPipelineReleaseResponse
+  rpc WatchPipelineRelease(WatchPipelineReleaseRequest) returns (WatchPipelineReleaseResponse) {
+    option (google.api.http) = {get: "/v1alpha/{name=pipelines/*/releases/default}/watch"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // RenamePipelineRelease method receives a RenamePipelineReleaseRequest message and returns
+  // a RenamePipelineReleaseResponse message.
+  rpc RenamePipelineRelease(RenamePipelineReleaseRequest) returns (RenamePipelineReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/{name=pipelines/*/releases/*}/rename"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name,new_pipeline_release_id";
+  }
+
+  // TriggerPipelineRelease method receives a TriggePipelineReleaseRequest message
+  // and returns a TriggerPipelineReleasePipelineResponse.
+  rpc TriggerPipelineRelease(TriggerPipelineReleaseRequest) returns (TriggerPipelineReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/{name=pipelines/*/releases/*}/trigger"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name,inputs";
+  }
+
+  // TriggerAsyncPipelineRelease method receives a TriggerAsyncPipelineReleaseRequest message and
+  // returns a TriggerAsyncPipelineReleaseResponse.
+  rpc TriggerAsyncPipelineRelease(TriggerAsyncPipelineReleaseRequest) returns (TriggerAsyncPipelineReleaseResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/{name=pipelines/*/releases/*}/triggerAsync"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name,inputs";
   }
 }
