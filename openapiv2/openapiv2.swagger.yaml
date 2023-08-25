@@ -224,7 +224,7 @@ paths:
               connector_definition_name:
                 type: string
                 title: ConnectorDefinition resource
-              connector_type:
+              type:
                 $ref: '#/definitions/v1alphaConnectorType'
                 title: ConnectorResource Type
                 readOnly: true
@@ -1919,7 +1919,7 @@ paths:
           in: path
           required: true
           type: string
-          pattern: users/[^/]+pipelines/[^/]+
+          pattern: users/[^/]+/pipelines/[^/]+
         - name: pipeline
           description: A pipeline resource to update
           in: body
@@ -1964,6 +1964,9 @@ paths:
                 format: date-time
                 title: Pipeline update time
                 readOnly: true
+              visibility:
+                $ref: '#/definitions/pipelinev1alphaVisibility'
+                title: Visibility
             title: A pipeline resource to update
       tags:
         - PipelinePublicService
@@ -2084,6 +2087,9 @@ paths:
                 format: date-time
                 title: Pipeline update time
                 readOnly: true
+              visibility:
+                $ref: '#/definitions/pipelinev1alphaVisibility'
+                title: Visibility
             title: A pipeline release resource to update
       tags:
         - PipelinePublicService
@@ -4408,6 +4414,18 @@ definitions:
        - STATE_ACTIVE: State ACTIVE indicates the pipeline is active
        - STATE_ERROR: State ERROR indicates the pipeline has error
     title: State enumerates the state of a pipeline
+  pipelinev1alphaVisibility:
+    type: string
+    enum:
+      - VISIBILITY_UNSPECIFIED
+      - VISIBILITY_PRIVATE
+      - VISIBILITY_PUBLIC
+    default: VISIBILITY_UNSPECIFIED
+    description: |-
+      - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
+       - VISIBILITY_PRIVATE: Visibility: PRIVATE
+       - VISIBILITY_PUBLIC: Visibility: PUBLIC
+    title: ConnectorResource visibility including public or private
   protobufAny:
     type: object
     properties:
@@ -4788,7 +4806,7 @@ definitions:
         $ref: '#/definitions/vdpconnectorv1alphaSpec'
         title: ConnectorDefinition spec
         readOnly: true
-      connector_type:
+      type:
         $ref: '#/definitions/v1alphaConnectorType'
         title: Connector Type
         readOnly: true
@@ -4940,7 +4958,7 @@ definitions:
       connector_definition_name:
         type: string
         title: ConnectorDefinition resource
-      connector_type:
+      type:
         $ref: '#/definitions/v1alphaConnectorType'
         title: ConnectorResource Type
         readOnly: true
@@ -6777,6 +6795,9 @@ definitions:
         format: date-time
         title: Pipeline update time
         readOnly: true
+      visibility:
+        $ref: '#/definitions/pipelinev1alphaVisibility'
+        title: Visibility
     title: Pipeline represents the content of a pipeline
   v1alphaPipelineData:
     type: object
@@ -6828,6 +6849,9 @@ definitions:
         format: date-time
         title: Pipeline update time
         readOnly: true
+      visibility:
+        $ref: '#/definitions/pipelinev1alphaVisibility'
+        title: Visibility
     title: PipelineRelease represents the content of a pipeline release
   v1alphaPipelineTriggerChartRecord:
     type: object
