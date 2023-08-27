@@ -331,14 +331,14 @@ paths:
   /v1alpha/{model.name/readme}:
     get:
       summary: |-
-        GetModelCard method receives a GetModelCardRequest message
-        and returns a GetModelCardResponse
-      operationId: ModelPublicService_GetModelCard
+        GetUserModelCard method receives a GetUserModelCardRequest message
+        and returns a GetUserModelCardResponseUser
+      operationId: ModelPublicService_GetUserModelCard
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetModelCardResponse'
+            $ref: '#/definitions/v1alphaGetUserModelCardResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -347,24 +347,24 @@ paths:
         - name: model.name/readme
           description: |-
             Resource name of the model card.
-            For example "models/{model}/readme"
+            For example "// Format: users/{user}/models/{model}/readme"
           in: path
           required: true
           type: string
-          pattern: models/[^/]+/readme
+          pattern: users/[^/]+/models/[^/]+/readme
       tags:
         - ModelPublicService
   /v1alpha/{model.name/watch}/watch:
     get:
       summary: |-
-        WatchModel method receives a WatchModelRequest message
+        WatchUserModel method receives a WatchUserModelRequest message
         and returns a WatchModelResponse
-      operationId: ModelPublicService_WatchModel
+      operationId: ModelPublicService_WatchUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaWatchModelResponse'
+            $ref: '#/definitions/v1alphaWatchUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -373,24 +373,24 @@ paths:
         - name: model.name/watch
           description: |-
             Resource name of the model.
-            For example "models/{model}"
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
       tags:
         - ModelPublicService
   /v1alpha/{model.name}:
     get:
       summary: |-
-        GetModel method receives a GetModelRequest message and returns a
-        GetModelResponse
-      operationId: ModelPublicService_GetModel
+        GetUserModel method receives a GetUserModelRequest message and returns a
+        GetUserModelResponse
+      operationId: ModelPublicService_GetUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetModelResponse'
+            $ref: '#/definitions/v1alphaGetUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -399,11 +399,11 @@ paths:
         - name: model.name
           description: |-
             Resource name of the model.
-            For example "models/{model}"
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: view
           description: |-
             Model view (default is VIEW_BASIC)
@@ -425,14 +425,14 @@ paths:
         - ModelPublicService
     delete:
       summary: |-
-        DeleteModel method receives a DeleteModelRequest message and returns a
-        DeleteModelResponse
-      operationId: ModelPublicService_DeleteModel
+        DeleteUserModel method receives a DeleteUserModelRequest message and returns a
+        DeleteUserModelResponse
+      operationId: ModelPublicService_DeleteUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeleteModelResponse'
+            $ref: '#/definitions/v1alphaDeleteUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -441,23 +441,23 @@ paths:
         - name: model.name
           description: |-
             Resource name of the model.
-            For example "models/{model}"
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
       tags:
         - ModelPublicService
     patch:
       summary: |-
-        UpdateModel method receives a UpdateModelRequest message and returns a
-        UpdateModelResponse
-      operationId: ModelPublicService_UpdateModel
+        UpdateUserModel method receives a UpdateUserModelRequest message and returns a
+        UpdateUserModelResponse
+      operationId: ModelPublicService_UpdateUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUpdateModelResponse'
+            $ref: '#/definitions/v1alphaUpdateUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -465,18 +465,14 @@ paths:
       parameters:
         - name: model.name
           description: |-
-            Resource name. It must have the format of "models/{model}".
-            For example: "models/yolov4"
+            Resource name. It must have the format of "users/{user}/models/{model}".
+            For example: "users/instill-ai/models/yolov4"
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: model
-          description: |-
-            The model to update
-
-            The model `name` field is used to identify the model to update.
-            Format: models/{model}
+          description: The model to update
           in: body
           required: true
           schema:
@@ -536,9 +532,6 @@ paths:
                 format: date-time
                 title: Model update time
                 readOnly: true
-            description: |-
-              The model `name` field is used to identify the model to update.
-              Format: models/{model}
             title: The model to update
       tags:
         - ModelPublicService
@@ -852,15 +845,15 @@ paths:
   /v1alpha/{name}:
     get:
       summary: |-
-        GetModelOperation method receives a
-        GetModelOperationRequest message and returns a
-        GetModelOperationResponse message.
-      operationId: ModelPublicService_GetModelOperation
+        GetUserModelOperation method receives a
+        GetUserModelOperationRequest message and returns a
+        GetUserModelOperationResponse message.
+      operationId: ModelPublicService_GetUserModelOperation
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
+            $ref: '#/definitions/v1alphaGetUserModelOperationResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -871,7 +864,7 @@ paths:
           in: path
           required: true
           type: string
-          pattern: operations/[^/]+
+          pattern: users/[^/]+/operations/[^/]+
         - name: view
           description: |-
             View (default is VIEW_BASIC)
@@ -930,13 +923,13 @@ paths:
         - ConnectorPublicService
   /v1alpha/{name}/deploy:
     post:
-      summary: DeployModel deploy a model to online state
-      operationId: ModelPublicService_DeployModel
+      summary: DeployUserModel deploy a model to online state
+      operationId: ModelPublicService_DeployUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeployModelResponse'
+            $ref: '#/definitions/v1alphaDeployUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -945,17 +938,17 @@ paths:
         - name: name
           description: |-
             Resource name for the model to be deployed.
-            Format: models/{model}
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
-            title: DeployModelRequest represents a request to deploy a model to online state
+            title: DeployUserModelRequest represents a request to deploy a model to online state
       tags:
         - ModelPublicService
   /v1alpha/{name}/disconnect:
@@ -1039,14 +1032,14 @@ paths:
   /v1alpha/{name}/publish:
     post:
       summary: |-
-        PublishModel method receives a PublishModelRequest message and returns a
-        PublishModelResponse
-      operationId: ModelPublicService_PublishModel
+        PublishUserModel method receives a PublisUserhModelRequest message and returns a
+        PublishUserModelResponse
+      operationId: ModelPublicService_PublishUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaPublishModelResponse'
+            $ref: '#/definitions/v1alphaPublishUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1055,39 +1048,41 @@ paths:
         - name: name
           description: |-
             Resource name of the model.
-            For example "models/{model}"
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
-            title: PublishModelRequest represents a request to publish a model
+            title: PublisUserhModelRequest represents a request to publish a model
       tags:
         - ModelPublicService
   /v1alpha/{name}/rename:
     post:
-      summary: RenameModel method rename a model
-      operationId: ModelPublicService_RenameModel
+      summary: RenameUserModel method rename a model
+      operationId: ModelPublicService_RenameUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameModelResponse'
+            $ref: '#/definitions/v1alphaRenameUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name
-          description: Resource name for the model to be renamed.
+          description: |-
+            Resource name for the model to be renamed.
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
@@ -1096,8 +1091,10 @@ paths:
             properties:
               new_model_id:
                 type: string
-                title: New ID of this model
-            title: RenameModelRequest represents a request to rename a model
+                title: |-
+                  New ID of this model
+                  Format: users/{user}/models/{new_model_id}
+            title: RenameUserModelRequest represents a request to rename a model
             required:
               - new_model_id
       tags:
@@ -1153,14 +1150,14 @@ paths:
   /v1alpha/{name}/test:
     post:
       summary: |-
-        TestModel method receives a TestModelRequest message
-        and returns a TestModelResponse message.
-      operationId: ModelPublicService_TestModel
+        TestUserModel method receives a TestUserModelRequest message
+        and returns a TestUserModelResponse message.
+      operationId: ModelPublicService_TestUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaTestModelResponse'
+            $ref: '#/definitions/v1alphaTestUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1169,11 +1166,11 @@ paths:
         - name: name
           description: |-
             The resource name of the model to trigger.
-            For example "models/{model}"
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
@@ -1186,7 +1183,7 @@ paths:
                   type: object
                   $ref: '#/definitions/v1alphaTaskInput'
                 title: Input to trigger the model
-            title: TestModelRequest represents a request to test a model
+            title: TestUserModelRequest represents a request to test a model
             required:
               - task_inputs
       tags:
@@ -1195,14 +1192,14 @@ paths:
     post:
       summary: /////////////////////////////////////////////////////
       description: |-
-        TriggerModel method receives a TriggerModelRequest message
-        and returns a TriggerModelResponse message.
-      operationId: ModelPublicService_TriggerModel
+        TriggerUserModel method receives a TriggerUserModelRequest message
+        and returns a TriggerUserModelResponse message.
+      operationId: ModelPublicService_TriggerUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaTriggerModelResponse'
+            $ref: '#/definitions/v1alphaTriggerUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1211,11 +1208,11 @@ paths:
         - name: name
           description: |-
             The resource name of the model to trigger.
-            For example "models/{model}"
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
@@ -1228,7 +1225,7 @@ paths:
                   type: object
                   $ref: '#/definitions/v1alphaTaskInput'
                 title: Input to trigger the model
-            title: TriggerModelRequest represents a request to trigger a model
+            title: TriggerUserModelRequest represents a request to trigger a model
             required:
               - task_inputs
       tags:
@@ -1273,13 +1270,13 @@ paths:
         - PipelinePublicService
   /v1alpha/{name}/undeploy:
     post:
-      summary: UndeployModel undeploy a model to offline state
-      operationId: ModelPublicService_UndeployModel
+      summary: UndeployUserModel undeploy a model to offline state
+      operationId: ModelPublicService_UndeployUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUndeployModelResponse'
+            $ref: '#/definitions/v1alphaUndeployUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1288,32 +1285,32 @@ paths:
         - name: name
           description: |-
             Resource name for the model to be undeployed.
-            Format: models/{model}
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             title: |-
-              UndeployModelRequest represents a request to undeploy a model to offline
+              UndeployUserModelRequest represents a request to undeploy a model to offline
               state
       tags:
         - ModelPublicService
   /v1alpha/{name}/unpublish:
     post:
       summary: |-
-        UnpublishModel method receives a UnpublishModelRequest message and returns
-        a UnpublishModelResponse
-      operationId: ModelPublicService_UnpublishModel
+        UnpublishUserModel method receives a UnpublishUserModelRequest message and returns
+        a UnpublishUserModelResponse
+      operationId: ModelPublicService_UnpublishUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUnpublishModelResponse'
+            $ref: '#/definitions/v1alphaUnpublishUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1322,17 +1319,17 @@ paths:
         - name: name
           description: |-
             Resource name of the model.
-            For example "models/{model}"
+            Format: users/{user}/models/{model}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: users/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
-            title: UnpublishModelRequest represents a request to unpublish a model
+            title: UnpublishUserModelRequest represents a request to unpublish a model
       tags:
         - ModelPublicService
   /v1alpha/{name}/validate:
@@ -1501,6 +1498,101 @@ paths:
               - connector_resource
       tags:
         - ConnectorPublicService
+  /v1alpha/{parent}/models:
+    get:
+      summary: |-
+        LisUsertModels method receives a ListUserModelsRequest message and returns a
+        ListUserModelsResponse
+      operationId: ModelPublicService_ListUserModels
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListUserModelsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource where this connector resource will be created.
+            Format: users/{users}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: page_size
+          description: |-
+            Page size: the maximum number of resources to return. The service may
+            return fewer than this value. If unspecified, at most 10 models will be
+            returned. The maximum value is 100; values above 100 will be coereced to
+            100.
+          in: query
+          required: false
+          type: string
+          format: int64
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            Model view (default is VIEW_BASIC)
+            VIEW_UNSPECIFIED/VIEW_BASIC: omit `Model.configuration`
+            VIEW_FULL: show full information
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+             - VIEW_FULL: View: FULL, full representation of the resource
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - ModelPublicService
+    post:
+      summary: |-
+        CreateUserModel method receives a CreateUserModelRequest message and returns a
+        CreateUserModelResponse
+      operationId: ModelPublicService_CreateUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateUserModelResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource where this connector resource will be created.
+            Format: users/{users}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: model
+          description: |-
+            The model to be created
+
+            The model `name` field is used to identify the model to create.
+            Format: models/{model}
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaModel'
+            required:
+              - model
+      tags:
+        - ModelPublicService
   /v1alpha/{parent}/pipelines:
     get:
       summary: |-
@@ -1773,14 +1865,14 @@ paths:
   /v1alpha/{permalink}/lookUp:
     get:
       summary: |-
-        LookUpModel method receives a LookUpModelRequest message and returns a
-        LookUpModelResponse
-      operationId: ModelPublicService_LookUpModel
+        LookUpUserModel method receives a LookUpUserModelRequest message and returns a
+        LookUpUserModelResponse
+      operationId: ModelPublicService_LookUpUserModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpModelResponse'
+            $ref: '#/definitions/v1alphaLookUpUserModelResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1789,11 +1881,11 @@ paths:
         - name: permalink
           description: |-
             Permalink of a model. For example:
-            "models/{uid}"
+            Format: users/{user}/models/{uid}
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+          pattern: musers/[^/]+/odels/[^/]+
         - name: view
           description: |-
             Model view (default is VIEW_BASIC)
@@ -3748,35 +3840,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
-    post:
-      summary: |-
-        CreateModel method receives a CreateModelRequest message and returns a
-        CreateModelResponse
-      operationId: ModelPublicService_CreateModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCreateModelResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: model
-          description: |-
-            The model to be created
-
-            The model `name` field is used to identify the model to create.
-            Format: models/{model}
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1alphaModel'
-            required:
-              - model
-      tags:
-        - ModelPublicService
   /v1alpha/operator-definitions:
     get:
       summary: |-
@@ -5079,22 +5142,6 @@ definitions:
     required:
       - user_uid
       - connector_execute_data
-  v1alphaCreateModelBinaryFileUploadResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: Create model operation message
-        readOnly: true
-    title: CreateModelBinaryFileUploadResponse represents a response for a model
-  v1alphaCreateModelResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: Create model operation message
-        readOnly: true
-    title: CreateModelResponse represents a response for a model
   v1alphaCreateSessionResponse:
     type: object
     properties:
@@ -5125,6 +5172,22 @@ definitions:
     title: |-
       CreateUserConnectorResourceResponse represents a response for a
       ConnectorResource resource
+  v1alphaCreateUserModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Create model operation message
+        readOnly: true
+    title: CreateUserModelBinaryFileUploadResponse represents a response for a model
+  v1alphaCreateUserModelResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Create model operation message
+        readOnly: true
+    title: CreateUserModelResponse represents a response for a model
   v1alphaCreateUserPipelineReleaseResponse:
     type: object
     properties:
@@ -5139,9 +5202,6 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: The created pipeline resource
     title: CreateUserPipelineResponse represents a response for a pipeline resource
-  v1alphaDeleteModelResponse:
-    type: object
-    title: DeleteModelResponse represents an empty response
   v1alphaDeleteTokenResponse:
     type: object
     title: DeleteTokenResponse represents an empty response
@@ -5151,6 +5211,9 @@ definitions:
   v1alphaDeleteUserConnectorResourceResponse:
     type: object
     title: DeleteUserConnectorResourceResponse represents an empty response
+  v1alphaDeleteUserModelResponse:
+    type: object
+    title: DeleteUserModelResponse represents an empty response
   v1alphaDeleteUserPipelineReleaseResponse:
     type: object
     title: DeleteUserPipelineReleaseResponse represents an empty response
@@ -5164,15 +5227,15 @@ definitions:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Deploy operation message
     title: DeployModelAdminResponse represents a response for a deployed model
-  v1alphaDeployModelResponse:
+  v1alphaDeployUserModelResponse:
     type: object
     properties:
       model_id:
         type: string
         title: |-
           Deployed model's id
-          Format: models/{model}
-    title: DeployModelResponse represents a response for a deployed model
+          Format: users/{user}/models/{model}
+    title: DeployUserModelResponse represents a response for a deployed model
   v1alphaDetectionInput:
     type: object
     properties:
@@ -5445,13 +5508,6 @@ definitions:
       GetCumulativePipelineTriggerRecordsRequest
     required:
       - cumulative_records
-  v1alphaGetModelCardResponse:
-    type: object
-    properties:
-      readme:
-        $ref: '#/definitions/v1alphaModelCard'
-        title: Retrieved model card
-    title: GetModelCardResponse represents a response to fetch a model's README card
   v1alphaGetModelDefinitionResponse:
     type: object
     properties:
@@ -5553,20 +5609,6 @@ definitions:
       GetModelOnlineSummaryRequest
     required:
       - summary
-  v1alphaGetModelOperationResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: The retrieved model operation
-    title: GetModelOperationResponse represents a response for a model operation
-  v1alphaGetModelResponse:
-    type: object
-    properties:
-      model:
-        $ref: '#/definitions/v1alphaModel'
-        title: The retrieved model
-    title: GetModelResponse represents a response for a model
   v1alphaGetModelsResponse:
     type: object
     properties:
@@ -5729,6 +5771,27 @@ definitions:
     title: |-
       GetUserConnectorResourceResponse represents a response for a
       ConnectorResource resource
+  v1alphaGetUserModelCardResponse:
+    type: object
+    properties:
+      readme:
+        $ref: '#/definitions/v1alphaModelCard'
+        title: Retrieved model card
+    title: GetUserModelCardResponse represents a response to fetch a model's README card
+  v1alphaGetUserModelOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: The retrieved model operation
+    title: GetUserModelOperationResponse represents a response for a model operation
+  v1alphaGetUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: The retrieved model
+    title: GetUserModelResponse represents a response for a model
   v1alphaGetUserPipelineReleaseResponse:
     type: object
     properties:
@@ -6221,6 +6284,23 @@ definitions:
     title: |-
       ListUserConnectorResourcesResponse represents a response for a list of
       ConnectorResource resources
+  v1alphaListUserModelsResponse:
+    type: object
+    properties:
+      models:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModel'
+        title: a list of Models
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: string
+        format: int64
+        title: Total count of models
+    title: ListUserModelsResponse represents a response for a list of models
   v1alphaListUserPipelineReleasesResponse:
     type: object
     properties:
@@ -6297,13 +6377,6 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: A model resource
     title: LookUpModelResponse represents a response for a model
-  v1alphaLookUpModelResponse:
-    type: object
-    properties:
-      model:
-        $ref: '#/definitions/v1alphaModel'
-        title: A model resource
-    title: LookUpModelResponse represents a response for a model
   v1alphaLookUpOperatorDefinitionAdminResponse:
     type: object
     properties:
@@ -6336,6 +6409,13 @@ definitions:
     title: |-
       LookUpUserConnectorResourceResponse represents a response for a
       connector_resource
+  v1alphaLookUpUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: A model resource
+    title: LookUpUserModelResponse represents a response for a model
   v1alphaLookUpUserPipelineResponse:
     type: object
     properties:
@@ -6371,8 +6451,8 @@ definitions:
       name:
         type: string
         title: |-
-          Resource name. It must have the format of "models/{model}".
-          For example: "models/yolov4"
+          Resource name. It must have the format of "users/{user}/models/{model}".
+          For example: "users/instill-ai/models/yolov4"
         readOnly: true
       uid:
         type: string
@@ -6436,7 +6516,7 @@ definitions:
         type: string
         title: |-
           Resource name. It must have the format of
-          "models/{model}/readme"
+          "users/{user}/models/{model}/readme"
         readOnly: true
       size:
         type: integer
@@ -7018,13 +7098,13 @@ definitions:
     title: Pricing information
     required:
       - time
-  v1alphaPublishModelResponse:
+  v1alphaPublishUserModelResponse:
     type: object
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
         title: Published model
-    title: PublishModelResponse represents a response for the published model
+    title: PublishUserModelResponse represents a response for the published model
   v1alphaQueryAuthenticatedUserResponse:
     type: object
     properties:
@@ -7063,13 +7143,6 @@ definitions:
        - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
        - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
     title: ReleaseStage enumerates the release stages
-  v1alphaRenameModelResponse:
-    type: object
-    properties:
-      model:
-        $ref: '#/definitions/v1alphaModel'
-        title: Renamed model
-    title: RenameModelResponse represents a response for a model
   v1alphaRenameUserConnectorResourceResponse:
     type: object
     properties:
@@ -7079,6 +7152,13 @@ definitions:
     title: |-
       RenameUserConnectorResourceResponse represents a renamed ConnectorResource
       resource
+  v1alphaRenameUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: Renamed model
+    title: RenameUserModelResponse represents a response for a model
   v1alphaRenameUserPipelineReleaseResponse:
     type: object
     properties:
@@ -7471,42 +7551,6 @@ definitions:
         title: The unspecified task output
         readOnly: true
     title: TaskOutput represents the output of a CV Task result from a model
-  v1alphaTestModelBinaryFileUploadResponse:
-    type: object
-    properties:
-      task:
-        $ref: '#/definitions/v1alphaTask'
-        title: The task type
-      task_outputs:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaTaskOutput'
-        title: The task output from a model
-    title: |-
-      TestModelBinaryFileUploadResponse represents a response for the
-      output for testing a model
-    required:
-      - task
-      - task_outputs
-  v1alphaTestModelResponse:
-    type: object
-    properties:
-      task:
-        $ref: '#/definitions/v1alphaTask'
-        title: The task type
-      task_outputs:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaTaskOutput'
-        title: The task output from a model
-    title: |-
-      TestModelResponse represents a response for the output for
-      testing a model
-    required:
-      - task
-      - task_outputs
   v1alphaTestUserConnectorResourceResponse:
     type: object
     properties:
@@ -7516,6 +7560,42 @@ definitions:
     title: |-
       TestUserConnectorResourceResponse represents a response containing a
       connector_resource's current state
+  v1alphaTestUserModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TestUserModelBinaryFileUploadResponse represents a response for the
+      output for testing a model
+    required:
+      - task
+      - task_outputs
+  v1alphaTestUserModelResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TestUserModelResponse represents a response for the output for
+      testing a model
+    required:
+      - task
+      - task_outputs
   v1alphaTextGenerationInput:
     type: object
     properties:
@@ -7654,7 +7734,7 @@ definitions:
           $ref: '#/definitions/v1alphaTrace'
         title: 'The traces of the pipeline inference, {component_id: Trace}'
     title: The metadata
-  v1alphaTriggerModelBinaryFileUploadResponse:
+  v1alphaTriggerUserModelBinaryFileUploadResponse:
     type: object
     properties:
       task:
@@ -7667,12 +7747,12 @@ definitions:
           $ref: '#/definitions/v1alphaTaskOutput'
         title: The task output from a model
     title: |-
-      TriggerModelBinaryFileUploadResponse represents a response for the
+      TriggerUserModelBinaryFileUploadResponse represents a response for the
       output for testing a model
     required:
       - task
       - task_outputs
-  v1alphaTriggerModelResponse:
+  v1alphaTriggerUserModelResponse:
     type: object
     properties:
       task:
@@ -7685,7 +7765,7 @@ definitions:
           $ref: '#/definitions/v1alphaTaskOutput'
         title: The task output from a model
     title: |-
-      TriggerModelResponse represents a response for the output for
+      TriggerUserModelResponse represents a response for the output for
       triggering a model
   v1alphaTriggerUserPipelineReleaseResponse:
     type: object
@@ -7722,22 +7802,22 @@ definitions:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Undeploy operation message
     title: UndeployModelAdminResponse represents a response for a undeployed model
-  v1alphaUndeployModelResponse:
+  v1alphaUndeployUserModelResponse:
     type: object
     properties:
       model_id:
         type: string
         title: |-
           Undeployed model's id
-          Format: models/{model}
-    title: UndeployModelResponse represents a response for a undeployed model
-  v1alphaUnpublishModelResponse:
+          Format: users/{user}/models/{model}
+    title: UndeployUserModelResponse represents a response for a undeployed model
+  v1alphaUnpublishUserModelResponse:
     type: object
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
         title: Unpublished model
-    title: UnpublishModelResponse represents a response for the unpublished model
+    title: UnpublishUserModelResponse represents a response for the unpublished model
   v1alphaUnspecifiedInput:
     type: object
     properties:
@@ -7757,13 +7837,6 @@ definitions:
         title: A list of unspecified task outputs
         readOnly: true
     title: UnspecifiedOutput represents the output of unspecified task
-  v1alphaUpdateModelResponse:
-    type: object
-    properties:
-      model:
-        $ref: '#/definitions/v1alphaModel'
-        title: The updated model
-    title: UpdateModelResponse represents a response for a model
   v1alphaUpdateUserAdminResponse:
     type: object
     properties:
@@ -7780,6 +7853,13 @@ definitions:
     title: |-
       UpdateUserConnectorResourceResponse represents a response for a
       ConnectorResource resource
+  v1alphaUpdateUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: The updated model
+    title: UpdateUserModelResponse represents a response for a model
   v1alphaUpdateUserPipelineReleaseResponse:
     type: object
     properties:
@@ -7902,7 +7982,16 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: ValidateUserPipelineResponse represents an response of validated pipeline
-  v1alphaWatchModelResponse:
+  v1alphaWatchUserConnectorResourceResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaConnectorResourceState'
+        title: Retrieved connector_resource state
+    title: |-
+      WatchUserConnectorResourceResponse represents a response to fetch a
+      connector_resource's current state
+  v1alphaWatchUserModelResponse:
     type: object
     properties:
       state:
@@ -7913,17 +8002,8 @@ definitions:
         format: int32
         title: Retrieved model logrunning progress
     title: |-
-      WatchModelResponse represents a public response to
+      WatchUserModelResponse represents a public response to
       fetch a model current state and longrunning progress
-  v1alphaWatchUserConnectorResourceResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/v1alphaConnectorResourceState'
-        title: Retrieved connector_resource state
-    title: |-
-      WatchUserConnectorResourceResponse represents a response to fetch a
-      connector_resource's current state
   v1alphaWatchUserPipelineReleaseResponse:
     type: object
     properties:
