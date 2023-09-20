@@ -3384,6 +3384,104 @@ paths:
               - user
       tags:
         - MgmtPrivateService
+  /v1alpha/auth/change_password:
+    post:
+      summary: Auth Change password endpoint
+      operationId: MgmtPublicService_AuthChangePassword
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaAuthChangePasswordResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaAuthChangePasswordRequest'
+      tags:
+        - MgmtPublicService
+  /v1alpha/auth/login:
+    post:
+      summary: Auth Login endpoint
+      operationId: MgmtPublicService_AuthLogin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaAuthLoginResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: username
+          description: Username
+          in: query
+          required: true
+          type: string
+        - name: password
+          description: Password
+          in: query
+          required: true
+          type: string
+      tags:
+        - MgmtPublicService
+  /v1alpha/auth/logout:
+    post:
+      summary: Auth Logout endpoint
+      operationId: MgmtPublicService_AuthLogout
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaAuthLogoutResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - MgmtPublicService
+  /v1alpha/auth/token_issuer:
+    post:
+      summary: AuthTokenIssuer endpoint
+      operationId: MgmtPublicService_AuthTokenIssuer
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaAuthTokenIssuerResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaAuthTokenIssuerRequest'
+      tags:
+        - MgmtPublicService
+  /v1alpha/auth/validate_access_token:
+    post:
+      summary: Auth AccessToken validation endpoint
+      operationId: MgmtPublicService_AuthValidateAccessToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaAuthValidateAccessTokenResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - MgmtPublicService
   /v1alpha/connector-definitions:
     get:
       summary: |-
@@ -4288,6 +4386,26 @@ paths:
       tags:
         - MgmtPublicService
 definitions:
+  AuthTokenIssuerResponseUnsignedAccessToken:
+    type: object
+    properties:
+      aud:
+        type: string
+        title: aud
+      iss:
+        type: string
+        title: iss
+      sub:
+        type: string
+        title: sub
+      jti:
+        type: string
+        title: jti
+      exp:
+        type: integer
+        format: int32
+        title: exp
+    title: UnsignedAccessToken
   HealthCheckResponseServingStatus:
     type: string
     enum:
@@ -4838,6 +4956,52 @@ definitions:
        - STATE_ACTIVE: State: ACTIVE
        - STATE_EXPIRED: State: EXPIRED
     title: State enumerates the state of an API token
+  v1alphaAuthChangePasswordRequest:
+    type: object
+    properties:
+      old_password:
+        type: string
+        title: Old password
+      new_password:
+        type: string
+        title: New password
+    title: Request for changing password
+  v1alphaAuthChangePasswordResponse:
+    type: object
+    title: Response for changing password
+  v1alphaAuthLoginResponse:
+    type: object
+    properties:
+      access_token:
+        type: string
+        title: access token
+    title: Response for user logout
+  v1alphaAuthLogoutResponse:
+    type: object
+    title: Response for user logout
+  v1alphaAuthTokenIssuerRequest:
+    type: object
+    properties:
+      username:
+        type: string
+        title: Username
+      password:
+        type: string
+        title: Password
+    title: Request for user login
+    required:
+      - username
+      - password
+  v1alphaAuthTokenIssuerResponse:
+    type: object
+    properties:
+      access_token:
+        $ref: '#/definitions/AuthTokenIssuerResponseUnsignedAccessToken'
+        title: access_token
+    title: Response for user logout
+  v1alphaAuthValidateAccessTokenResponse:
+    type: object
+    title: Response for access_token validation
   v1alphaBoundingBox:
     type: object
     properties:
