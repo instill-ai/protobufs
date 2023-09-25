@@ -2104,9 +2104,6 @@ paths:
                 format: date-time
                 title: Pipeline update time
                 readOnly: true
-              visibility:
-                $ref: '#/definitions/pipelinev1alphaVisibility'
-                title: Visibility
               openapi_schema:
                 type: object
                 title: OpenAPI schema
@@ -2116,6 +2113,9 @@ paths:
                 format: date-time
                 title: Pipeline delete time
                 readOnly: true
+              permission:
+                $ref: '#/definitions/v1alphaPermission'
+                title: Pipeline permission
             title: A pipeline resource to update
       tags:
         - PipelinePublicService
@@ -2238,9 +2238,6 @@ paths:
                 format: date-time
                 title: Pipeline update time
                 readOnly: true
-              visibility:
-                $ref: '#/definitions/pipelinev1alphaVisibility'
-                title: Visibility
               openapi_schema:
                 type: object
                 title: OpenAPI schema
@@ -3379,7 +3376,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1alphaUser'
+            $ref: '#/definitions/mgmtv1alphaUser'
             required:
               - user
       tags:
@@ -4363,7 +4360,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1alphaUser'
+            $ref: '#/definitions/mgmtv1alphaUser'
             required:
               - user
       tags:
@@ -4418,6 +4415,22 @@ definitions:
        - SERVING_STATUS_SERVING: Serving status: SERVING
        - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
     title: ServingStatus enumerates the status of a queried service
+  PermissionShareCode:
+    type: object
+    properties:
+      user:
+        type: string
+        title: user
+      code:
+        type: string
+        title: user
+      enabled:
+        type: boolean
+        title: enabled
+      role:
+        $ref: '#/definitions/v1alphaRole'
+        title: role
+    title: Share Code
   SessionService:
     type: string
     enum:
@@ -4650,6 +4663,80 @@ definitions:
        - STATUS_COMPLETED: Status: COMPLETED
        - STATUS_ERRORED: Status: ERRORED
     title: Status enumerates the final status of a pipeline trigger
+  mgmtv1alphaUser:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          Resource name. It must have the format of "users/*".
+          For example: "users/local-user".
+        readOnly: true
+      uid:
+        type: string
+        description: |-
+          User ID in UUIDv4. This field is optionally set by users
+          (optional on resource creation, server-generated if unset).
+      id:
+        type: string
+        description: |-
+          Resource ID (the last segment of the resource name), also the user
+          username. This conforms to RFC-1034, which restricts to letters, numbers,
+          and hyphen, with the first character a letter, the last a letter or a
+          number, and a 63 character maximum.
+          Note that the ID can be updated.
+      type:
+        $ref: '#/definitions/v1alphaOwnerType'
+        title: 'Owner type: fixed to `OWNER_TYPE_USER`'
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        title: User creation time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: User update time
+        readOnly: true
+      email:
+        type: string
+        title: User email
+      customer_id:
+        type: string
+        description: Stripe customer ID. This field is used in Instill Cloud.
+        readOnly: true
+      first_name:
+        type: string
+        title: User first name
+      last_name:
+        type: string
+        title: User last name
+      org_name:
+        type: string
+        title: User company or institution name
+      role:
+        type: string
+        title: |-
+          User role. Allowed roles:
+           - "manager"
+           - "ai-researcher"
+           - "ai-engineer"
+           - "data-engineer",
+           - "data-scientist",
+           - "analytics-engineer"
+           - "hobbyist"
+      newsletter_subscription:
+        type: boolean
+        title: User newsletter subscription
+      cookie_token:
+        type: string
+        title: User console cookie token
+    title: User represents the content of a user
+    required:
+      - id
+      - email
+      - newsletter_subscription
   modelcontrollerv1alphaDeleteResourceResponse:
     type: object
     title: DeleteResourceResponse represents an empty response
@@ -4745,18 +4832,6 @@ definitions:
        - STATE_ACTIVE: State ACTIVE indicates the pipeline is active
        - STATE_ERROR: State ERROR indicates the pipeline has error
     title: State enumerates the state of a pipeline
-  pipelinev1alphaVisibility:
-    type: string
-    enum:
-      - VISIBILITY_UNSPECIFIED
-      - VISIBILITY_PRIVATE
-      - VISIBILITY_PUBLIC
-    default: VISIBILITY_UNSPECIFIED
-    description: |-
-      - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
-       - VISIBILITY_PRIVATE: Visibility: PRIVATE
-       - VISIBILITY_PUBLIC: Visibility: PUBLIC
-    title: ConnectorResource visibility including public or private
   protobufAny:
     type: object
     properties:
@@ -5479,7 +5554,7 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1alphaUser'
+        $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: CreateUserAdminResponse represents a response for a user response
   v1alphaCreateUserConnectorResourceResponse:
@@ -6085,7 +6160,7 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1alphaUser'
+        $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: GetUserAdminResponse represents a response for a user resource
   v1alphaGetUserConnectorResourceResponse:
@@ -6661,7 +6736,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaUser'
+          $ref: '#/definitions/mgmtv1alphaUser'
         title: A list of users
       next_page_token:
         type: string
@@ -6739,7 +6814,7 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1alphaUser'
+        $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: LookUpUserAdminResponse represents a response for a user resource by admin
   v1alphaMgmtUsageData:
@@ -6749,7 +6824,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaUser'
+          $ref: '#/definitions/mgmtv1alphaUser'
         title: Repeated user usage data
     title: Management service usage data
   v1alphaMode:
@@ -7150,11 +7225,33 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1alphaUser'
+        $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: |-
       PatchAuthenticatedUserResponse represents a response for
       the authenticated user resource
+  v1alphaPermission:
+    type: object
+    properties:
+      users:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/v1alphaPermissionUser'
+        title: users
+      share_code:
+        $ref: '#/definitions/PermissionShareCode'
+        title: shared code
+    title: Permission
+  v1alphaPermissionUser:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+        title: enabled
+      role:
+        $ref: '#/definitions/v1alphaRole'
+        title: role
+    title: User
   v1alphaPipeline:
     type: object
     properties:
@@ -7199,9 +7296,6 @@ definitions:
         format: date-time
         title: Pipeline update time
         readOnly: true
-      visibility:
-        $ref: '#/definitions/pipelinev1alphaVisibility'
-        title: Visibility
       openapi_schema:
         type: object
         title: OpenAPI schema
@@ -7211,6 +7305,9 @@ definitions:
         format: date-time
         title: Pipeline delete time
         readOnly: true
+      permission:
+        $ref: '#/definitions/v1alphaPermission'
+        title: Pipeline permission
     title: Pipeline represents the content of a pipeline
   v1alphaPipelineData:
     type: object
@@ -7262,9 +7359,6 @@ definitions:
         format: date-time
         title: Pipeline update time
         readOnly: true
-      visibility:
-        $ref: '#/definitions/pipelinev1alphaVisibility'
-        title: Visibility
       openapi_schema:
         type: object
         title: OpenAPI schema
@@ -7475,7 +7569,7 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1alphaUser'
+        $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: |-
       QueryAuthenticatedUserResponse represents a response for
@@ -7620,6 +7714,16 @@ definitions:
         $ref: '#/definitions/v1alphaPipelineRelease'
         title: A pipeline resource
     title: RestoreUserPipelineReleaseResponse
+  v1alphaRole:
+    type: string
+    enum:
+      - ROLE_UNSPECIFIED
+      - ROLE_VIEWER
+    default: ROLE_UNSPECIFIED
+    description: |-
+      - ROLE_UNSPECIFIED: ROLE: UNSPECIFIED
+       - ROLE_VIEWER: Role: Viewer
+    title: Role
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
@@ -8207,7 +8311,7 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1alphaUser'
+        $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: UpdateUserAdminResponse represents a response for a user resource
   v1alphaUpdateUserConnectorResourceResponse:
@@ -8255,80 +8359,6 @@ definitions:
     required:
       - time
       - value
-  v1alphaUser:
-    type: object
-    properties:
-      name:
-        type: string
-        description: |-
-          Resource name. It must have the format of "users/*".
-          For example: "users/local-user".
-        readOnly: true
-      uid:
-        type: string
-        description: |-
-          User ID in UUIDv4. This field is optionally set by users
-          (optional on resource creation, server-generated if unset).
-      id:
-        type: string
-        description: |-
-          Resource ID (the last segment of the resource name), also the user
-          username. This conforms to RFC-1034, which restricts to letters, numbers,
-          and hyphen, with the first character a letter, the last a letter or a
-          number, and a 63 character maximum.
-          Note that the ID can be updated.
-      type:
-        $ref: '#/definitions/v1alphaOwnerType'
-        title: 'Owner type: fixed to `OWNER_TYPE_USER`'
-        readOnly: true
-      create_time:
-        type: string
-        format: date-time
-        title: User creation time
-        readOnly: true
-      update_time:
-        type: string
-        format: date-time
-        title: User update time
-        readOnly: true
-      email:
-        type: string
-        title: User email
-      customer_id:
-        type: string
-        description: Stripe customer ID. This field is used in Instill Cloud.
-        readOnly: true
-      first_name:
-        type: string
-        title: User first name
-      last_name:
-        type: string
-        title: User last name
-      org_name:
-        type: string
-        title: User company or institution name
-      role:
-        type: string
-        title: |-
-          User role. Allowed roles:
-           - "manager"
-           - "ai-researcher"
-           - "ai-engineer"
-           - "data-engineer",
-           - "data-scientist",
-           - "analytics-engineer"
-           - "hobbyist"
-      newsletter_subscription:
-        type: boolean
-        title: User newsletter subscription
-      cookie_token:
-        type: string
-        title: User console cookie token
-    title: User represents the content of a user
-    required:
-      - id
-      - email
-      - newsletter_subscription
   v1alphaUserData:
     type: object
     properties:
