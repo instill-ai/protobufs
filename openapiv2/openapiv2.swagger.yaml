@@ -5563,6 +5563,16 @@ definitions:
     required:
       - user_uid
       - connector_execute_data
+  v1alphaConversationObject:
+    type: object
+    properties:
+      role:
+        type: string
+        title: Role name of the conversation
+      content:
+        type: string
+        title: Content of the conversation
+    title: Conversation based prompt for text generation model
   v1alphaCreateSessionResponse:
     type: object
     properties:
@@ -5743,6 +5753,21 @@ definitions:
     title: |-
       ExistUsernameResponse represents a response about whether
       the queried username has been occupied
+  v1alphaExtraParamObject:
+    type: object
+    properties:
+      param_name:
+        type: string
+        title: Name of the hyperparameter
+      param_type:
+        type: string
+        title: Type of the hyperparameter
+      param_value:
+        type: string
+        title: Value of the hyperparameter, it would be cast accroding to param_type
+    title: |-
+      Additional hyperparameters for model inferences
+      or other configuration not listsed in protobuf
   v1alphaGetBulkCumulativeModelOnlineRecordsResponse:
     type: object
     properties:
@@ -6241,6 +6266,35 @@ definitions:
         $ref: '#/definitions/HealthCheckResponseServingStatus'
         title: Status is the instance of the enum type ServingStatus
     title: HealthCheckResponse represents a response for a service heath status
+  v1alphaImageToImageInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+      prompt:
+        type: string
+        title: The text input of the model
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: Additional parameters of the model
+    title: ImageToImageInput represents the input of image to image task
+  v1alphaImageToImageOutput:
+    type: object
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        title: List of generated images
+        readOnly: true
+    title: ImageToImageOutput represents the output of image to image task
   v1alphaInstanceSegmentationInput:
     type: object
     properties:
@@ -7942,6 +7996,8 @@ definitions:
       - TASK_SEMANTIC_SEGMENTATION
       - TASK_TEXT_TO_IMAGE
       - TASK_TEXT_GENERATION
+      - TASK_TEXT_GENERATION_CHAT
+      - TASK_VISUAL_QUESTION_ANSWERING
       - TASK_IMAGE_TO_IMAGE
       - TASK_TEXT_EMBEDDINGS
       - TASK_SPEECH_RECOGNITION
@@ -7956,6 +8012,8 @@ definitions:
        - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
        - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
        - TASK_TEXT_GENERATION: Task: TEXT GENERATION
+       - TASK_TEXT_GENERATION_CHAT: Task: TEXT GENERATION CHAT
+       - TASK_VISUAL_QUESTION_ANSWERING: Task: VISUAL QUESTION ANSWERING
        - TASK_IMAGE_TO_IMAGE: Task: IMAGE TO IMAGE
        - TASK_TEXT_EMBEDDINGS: Task: TEXT EMBEDDINGS
        - TASK_SPEECH_RECOGNITION: Task: SPEECH RECOGNITION
@@ -7984,9 +8042,18 @@ definitions:
       text_to_image:
         $ref: '#/definitions/v1alphaTextToImageInput'
         title: The text to image input
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageInput'
+        title: The image to image input
       text_generation:
         $ref: '#/definitions/v1alphaTextGenerationInput'
         title: The text generation input
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatInput'
+        title: The text generation chat input
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+        title: The visual question answering input
       unspecified:
         $ref: '#/definitions/v1alphaUnspecifiedInput'
         title: The unspecified task input
@@ -8015,9 +8082,18 @@ definitions:
       text_to_image:
         $ref: '#/definitions/v1alphaTextToImageInput'
         title: The text to image input
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageInput'
+        title: The image to image input
       text_generation:
         $ref: '#/definitions/v1alphaTextGenerationInput'
         title: The text generation input
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatInput'
+        title: The text generation chat input
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+        title: The visual question answering input
       unspecified:
         $ref: '#/definitions/v1alphaUnspecifiedInput'
         title: The unspecified task input
@@ -8053,8 +8129,20 @@ definitions:
         $ref: '#/definitions/v1alphaTextToImageOutput'
         title: The text to image output
         readOnly: true
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageOutput'
+        title: The image to image output
+        readOnly: true
       text_generation:
         $ref: '#/definitions/v1alphaTextGenerationOutput'
+        title: The text generation output
+        readOnly: true
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatOutput'
+        title: The text generation output
+        readOnly: true
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringOutput'
         title: The text generation output
         readOnly: true
       unspecified:
@@ -8107,18 +8195,15 @@ definitions:
     required:
       - task
       - task_outputs
-  v1alphaTextGenerationInput:
+  v1alphaTextGenerationChatInput:
     type: object
     properties:
-      prompt:
-        type: string
+      conversation:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaConversationObject'
         title: The prompt text
-      prompt_image_url:
-        type: string
-        title: Image type URL
-      prompt_image_base64:
-        type: string
-        title: Image type base64
       max_new_tokens:
         type: integer
         format: int32
@@ -8139,7 +8224,49 @@ definitions:
         format: int32
         title: The seed
       extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
+    title: TextGenerationChatInput represents the input of text generation chat task
+    required:
+      - conversation
+  v1alphaTextGenerationChatOutput:
+    type: object
+    properties:
+      text:
         type: string
+        title: The text generated by the model
+        readOnly: true
+    title: TextGenerationChatOutput represents the output of text generation chat task
+  v1alphaTextGenerationInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
         title: The extra parameters
     title: TextGenerationInput represents the input of text generation task
     required:
@@ -8174,6 +8301,12 @@ definitions:
         type: integer
         format: int32
         title: The number of generated samples, default is 1
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
     title: TextToImageInput represents the input of text to image task
     required:
       - prompt
@@ -8437,6 +8570,51 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: ValidateUserPipelineResponse represents an response of validated pipeline
+  v1alphaVisualQuestionAnsweringInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_image_url:
+        type: string
+        title: Image type URL
+      prompt_image_base64:
+        type: string
+        title: Image type base64
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
+    title: VisualQuestionAnsweringInput represents the input of visaul question answering task
+    required:
+      - prompt
+  v1alphaVisualQuestionAnsweringOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        title: The text generated by the model
+        readOnly: true
+    title: VisualQuestionAnsweringOutput represents the output of visaul question answering task
   v1alphaWatchUserConnectorResourceResponse:
     type: object
     properties:
