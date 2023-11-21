@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package vdp.connector.v1alpha;
+package vdp.pipeline.v1alpha;
 
 import "google/api/field_behavior.proto";
 // Google API
@@ -8,18 +8,16 @@ import "google/api/resource.proto";
 // Protocol Buffers Well-Known Types
 import "google/protobuf/struct.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "vdp/connector/v1alpha/spec.proto";
 
-// View enumerates the definition views
-enum View {
-  // View: UNSPECIFIED
-  VIEW_UNSPECIFIED = 0;
-  // View: BASIC
-  VIEW_BASIC = 1;
-  // View: FULL
-  VIEW_FULL = 2;
-  // View: CONFIGURATION
-  VIEW_CONFIGURATION = 3;
+////////////////////////////////////
+// Spec represents a spec data model
+message ConnectorSpec {
+  // Spec resource specification
+  google.protobuf.Struct resource_specification = 2 [(google.api.field_behavior) = REQUIRED];
+  // Spec component specification
+  google.protobuf.Struct component_specification = 3 [(google.api.field_behavior) = REQUIRED];
+  // Spec openapi specification
+  google.protobuf.Struct openapi_specifications = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -69,7 +67,7 @@ message ConnectorDefinition {
   // ConnectorDefinition icon
   string icon = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   // ConnectorDefinition spec
-  Spec spec = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  ConnectorSpec spec = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Connector Type
   ConnectorType type = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
   // ConnectorDefinition tombstone, i.e., if not set or false, the
@@ -97,6 +95,16 @@ message ConnectorDefinition {
 // ListConnectorDefinitionsRequest represents a request to list
 // ConnectorDefinitions
 message ListConnectorDefinitionsRequest {
+  // View enumerates the definition views
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+  }
+
   // The maximum number of ConnectorDefinitions to return. The
   // service may return fewer than this value. If unspecified, at most 10
   // ConnectorDefinitions will be returned. The maximum value is 100;
@@ -124,6 +132,16 @@ message ListConnectorDefinitionsResponse {
 // GetConnectorDefinitionRequest represents a request to query a
 // ConnectorDefinition resource
 message GetConnectorDefinitionRequest {
+  // View enumerates the definition views
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+  }
+
   // ConnectorDefinition resource name. It must have the format of
   // "connector-definitions/*"
   string name = 1 [
@@ -148,6 +166,16 @@ message GetConnectorDefinitionResponse {
 // LookUpConnectorDefinitionAdminRequest represents a request to query a
 // connectorDefinition via permalink by admin
 message LookUpConnectorDefinitionAdminRequest {
+  // View enumerates the definition views
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+  }
+
   // Permalink of a connector. For example:
   // "connector-definitions/{uid}"
   string permalink = 1 [(google.api.field_behavior) = REQUIRED];

@@ -12,9 +12,9 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "vdp/connector/v1alpha/connector.proto";
-import "vdp/connector/v1alpha/connector_definition.proto";
 import "vdp/pipeline/v1alpha/common.proto";
+import "vdp/pipeline/v1alpha/connector.proto";
+import "vdp/pipeline/v1alpha/connector_definition.proto";
 import "vdp/pipeline/v1alpha/operator_definition.proto";
 
 // LivenessRequest represents a request to check a service liveness status
@@ -62,7 +62,7 @@ message Component {
   // A pipeline component resource name
   string resource_name = 2 [(google.api.resource_reference).type = "*"];
   // A pipeline component resource detail
-  vdp.connector.v1alpha.Connector resource = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  Connector resource = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Configuration for the pipeline component
   google.protobuf.Struct configuration = 4;
   // Resource Type
@@ -77,7 +77,7 @@ message Component {
     // operator definition detail
     OperatorDefinition operator_definition = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
     // connector definition detail
-    vdp.connector.v1alpha.ConnectorDefinition connector_definition = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+    ConnectorDefinition connector_definition = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 }
 
@@ -204,6 +204,18 @@ message PipelineRelease {
 
 // ListPipelinesRequest represents a request to list pipelines
 message ListPipelinesRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // The maximum number of pipelines to return. The service may return fewer
   // than this value. If unspecified, at most 10 pipelines will be returned. The
   // maximum value is 100; values above 100 will be coerced to 100.
@@ -248,6 +260,17 @@ message CreateUserPipelineResponse {
 
 // ListUserPipelinesRequest represents a request to list pipelines
 message ListUserPipelinesRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
   // The maximum number of pipelines to return. The service may return fewer
   // than this value. If unspecified, at most 10 pipelines will be returned. The
   // maximum value is 100; values above 100 will be coerced to 100.
@@ -280,6 +303,18 @@ message ListUserPipelinesResponse {
 
 // LookUpPipelineRequest represents a request to query a pipeline via permalink
 message LookUpPipelineRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // Permalink of a pipeline. For example:
   // "pipelines/{uid}"
   string permalink = 1 [(google.api.field_behavior) = REQUIRED];
@@ -295,6 +330,18 @@ message LookUpPipelineResponse {
 
 // GetUserPipelineRequest represents a request to query a pipeline
 message GetUserPipelineRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // Pipeline resource name. It must have the format of "users/*/pipelines/*"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -448,6 +495,18 @@ message CreateUserPipelineReleaseResponse {
 
 // ListUserPipelineReleasesRequest represents a request to list pipeline_releases
 message ListUserPipelineReleasesRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // The maximum number of pipeline_releases to return. The service may return fewer
   // than this value. If unspecified, at most 10 pipeline_release will be returned. The
   // maximum value is 100; values above 100 will be coerced to 100.
@@ -480,6 +539,18 @@ message ListUserPipelineReleasesResponse {
 
 // GetUserPipelineReleaseRequest represents a request to query a pipeline_release
 message GetUserPipelineReleaseRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // PipelineRelease resource name. It must have the format of "users/*/pipelines/*/releases/*"
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
@@ -639,6 +710,18 @@ message TriggerAsyncUserPipelineReleaseResponse {
 // ListPipelinesAdminRequest represents a request to list all pipelines from all
 // users by admin
 message ListPipelinesAdminRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // The maximum number of pipelines to return. The service may return fewer
   // than this value. If unspecified, at most 10 pipelines will be returned. The
   // maximum value is 100; values above 100 will be coerced to 100.
@@ -668,6 +751,18 @@ message ListPipelinesAdminResponse {
 // ListPipelinesReleaseAdminRequest represents a request to list all pipeline_releases from all
 // users by admin
 message ListPipelineReleasesAdminRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // The maximum number of pipelines to return. The service may return fewer
   // than this value. If unspecified, at most 10 pipelines will be returned. The
   // maximum value is 100; values above 100 will be coerced to 100.
@@ -697,6 +792,18 @@ message ListPipelineReleasesAdminResponse {
 // LookUpPipelineAdminRequest represents a request to query a user's pipeline
 // via permalink by admin
 message LookUpPipelineAdminRequest {
+  // Pipeline View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+    // View: RECIPE: will return recipe
+    VIEW_RECIPE = 3;
+  }
+
   // Permalink of a pipeline. For example:
   // "pipelines/{uid}"
   string permalink = 1 [(google.api.field_behavior) = REQUIRED];

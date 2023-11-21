@@ -11,8 +11,6 @@ tags:
   - name: ControllerPrivateService
   - name: ModelPrivateService
   - name: ModelPublicService
-  - name: ConnectorPrivateService
-  - name: ConnectorPublicService
   - name: ControllerPrivateService
   - name: PipelinePrivateService
   - name: PipelinePublicService
@@ -74,7 +72,7 @@ paths:
       summary: |-
         GetUserConnector method receives a GetUserConnectorRequest
         message and returns a GetUserConnectorResponse message.
-      operationId: ConnectorPublicService_GetUserConnector
+      operationId: PipelinePublicService_GetUserConnector
       responses:
         "200":
           description: A successful response.
@@ -111,13 +109,13 @@ paths:
             - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
     delete:
       summary: |-
         DeleteUserConnector method receives a
         DeleteUserConnectorRequest message and returns a
         DeleteUserConnectorResponse message.
-      operationId: ConnectorPublicService_DeleteUserConnector
+      operationId: PipelinePublicService_DeleteUserConnector
       responses:
         "200":
           description: A successful response.
@@ -137,13 +135,13 @@ paths:
           type: string
           pattern: users/[^/]+/connectors/[^/]+
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
     patch:
       summary: |-
         UpdateUserConnector method receives a
         UpdateUserConnectorRequest message and returns a
         UpdateUserConnectorResponse message.
-      operationId: ConnectorPublicService_UpdateUserConnector
+      operationId: PipelinePublicService_UpdateUserConnector
       responses:
         "200":
           description: A successful response.
@@ -238,13 +236,13 @@ paths:
             required:
               - configuration
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{connector.name}/testConnection:
     post:
       summary: |-
         TestUserConnector method receives a TestUserConnectorRequest
         message and returns a TestUserConnectorResponse
-      operationId: ConnectorPublicService_TestUserConnector
+      operationId: PipelinePublicService_TestUserConnector
       responses:
         "200":
           description: A successful response.
@@ -264,14 +262,14 @@ paths:
           type: string
           pattern: users/[^/]+/connectors/[^/]+
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{connector.name}/watch:
     get:
       summary: |-
         WatchUserConnector method receives a
         WatchUserConnectorRequest message and returns a
         WatchUserConnectorResponse
-      operationId: ConnectorPublicService_WatchUserConnector
+      operationId: PipelinePublicService_WatchUserConnector
       responses:
         "200":
           description: A successful response.
@@ -291,14 +289,14 @@ paths:
           type: string
           pattern: users/[^/]+/connectors/[^/]+
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{connector_definition.name}:
     get:
       summary: |-
         GetConnectorDefinition method receives a
         GetConnectorDefinitionRequest message and returns a
         GetGetConnectorDefinitionResponse message.
-      operationId: ConnectorPublicService_GetConnectorDefinition
+      operationId: PipelinePublicService_GetConnectorDefinition
       responses:
         "200":
           description: A successful response.
@@ -325,7 +323,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
           in: query
           required: false
           type: string
@@ -333,10 +330,9 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{membership.name_1}:
     get:
       summary: |-
@@ -851,47 +847,43 @@ paths:
   /v1alpha/{name_1}/rename:
     post:
       summary: |-
-        RenameUserConnector method receives a
-        RenameUserConnectorRequest message and returns a
-        RenameUserConnectorResponse message.
-      operationId: ConnectorPublicService_RenameUserConnector
+        RenameUserPipeline method receives a RenameUserPipelineRequest message and returns
+        a RenameUserPipelineResponse message.
+      operationId: PipelinePublicService_RenameUserPipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameUserConnectorResponse'
+            $ref: '#/definitions/v1alphaRenameUserPipelineResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_1
-          description: |-
-            connector name. It must have the format of
-            "connectors/*"
+          description: Pipeline resource name. It must have the format of "users/*/pipelines/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connectors/[^/]+
+          pattern: users/[^/]+/pipelines/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             properties:
-              new_connector_id:
+              new_pipeline_id:
                 type: string
                 title: |-
-                  Connector new resource id to replace with the
-                  connector name to be
-                  "connectors/{new_connector_id}"
+                  Pipeline new resource id to replace with the pipeline resource name to be
+                  "users/*/pipelines/{new_pipeline_id}"
             title: |-
-              RenameUserConnectorRequest represents a request to rename the
-              connector name
+              RenameUserPipelineRequest represents a request to rename the pipeline resource
+              name
             required:
-              - new_connector_id
+              - new_pipeline_id
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{name_1}/trigger:
     post:
       summary: |-
@@ -971,41 +963,41 @@ paths:
   /v1alpha/{name_2}/rename:
     post:
       summary: |-
-        RenameUserPipeline method receives a RenameUserPipelineRequest message and returns
-        a RenameUserPipelineResponse message.
-      operationId: PipelinePublicService_RenameUserPipeline
+        RenameUserPipelineRelease method receives a RenameUserPipelineReleaseRequest message and returns
+        a RenameUserPipelineReleaseResponse message.
+      operationId: PipelinePublicService_RenameUserPipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameUserPipelineResponse'
+            $ref: '#/definitions/v1alphaRenameUserPipelineReleaseResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: Pipeline resource name. It must have the format of "users/*/pipelines/*"
+          description: Pipeline release resource name. It must have the format of "users/*/pipelines/*/releases/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/pipelines/[^/]+
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             properties:
-              new_pipeline_id:
+              new_pipeline_release_id:
                 type: string
                 title: |-
                   Pipeline new resource id to replace with the pipeline resource name to be
-                  "users/*/pipelines/{new_pipeline_id}"
+                  "users/*/pipelines/*/releases/{new_pipeline_id}"
             title: |-
-              RenameUserPipelineRequest represents a request to rename the pipeline resource
+              RenameUserPipelineReleaseRequest represents a request to rename the pipeline release resource
               name
             required:
-              - new_pipeline_id
+              - new_pipeline_release_id
       tags:
         - PipelinePublicService
   /v1alpha/{name_2}/trigger:
@@ -1049,41 +1041,45 @@ paths:
   /v1alpha/{name_3}/rename:
     post:
       summary: |-
-        RenameUserPipelineRelease method receives a RenameUserPipelineReleaseRequest message and returns
-        a RenameUserPipelineReleaseResponse message.
-      operationId: PipelinePublicService_RenameUserPipelineRelease
+        RenameUserConnector method receives a
+        RenameUserConnectorRequest message and returns a
+        RenameUserConnectorResponse message.
+      operationId: PipelinePublicService_RenameUserConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameUserPipelineReleaseResponse'
+            $ref: '#/definitions/v1alphaRenameUserConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
-          description: Pipeline release resource name. It must have the format of "users/*/pipelines/*/releases/*"
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+          pattern: users/[^/]+/connectors/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             properties:
-              new_pipeline_release_id:
+              new_connector_id:
                 type: string
                 title: |-
-                  Pipeline new resource id to replace with the pipeline resource name to be
-                  "users/*/pipelines/*/releases/{new_pipeline_id}"
+                  Connector new resource id to replace with the
+                  connector name to be
+                  "connectors/{new_connector_id}"
             title: |-
-              RenameUserPipelineReleaseRequest represents a request to rename the pipeline release resource
-              name
+              RenameUserConnectorRequest represents a request to rename the
+              connector name
             required:
-              - new_pipeline_release_id
+              - new_connector_id
       tags:
         - PipelinePublicService
   /v1alpha/{name}:
@@ -1136,7 +1132,7 @@ paths:
         ConnectUserConnector can be called on Connector in the
         state `DISCONNECTED`; Connector in a different state (including
         `CONNECTED`) returns an error.
-      operationId: ConnectorPublicService_ConnectUserConnector
+      operationId: PipelinePublicService_ConnectUserConnector
       responses:
         "200":
           description: A successful response.
@@ -1164,7 +1160,7 @@ paths:
               ConnectUserConnectorRequest represents a request to connect a
               connector
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{name}/deploy:
     post:
       summary: DeployUserModel deploy a model to online state
@@ -1203,7 +1199,7 @@ paths:
         DisconnectUserConnector can be called on Connector in the
         state `CONNECTED`; Connector in a different state (including
         `DISCONNECTED`) returns an error.
-      operationId: ConnectorPublicService_DisconnectUserConnector
+      operationId: PipelinePublicService_DisconnectUserConnector
       responses:
         "200":
           description: A successful response.
@@ -1231,14 +1227,14 @@ paths:
               DisconnectUserConnectorRequest represents a request to disconnect a
               connector
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{name}/execute:
     post:
       summary: |-
         ExecuteUserConnector method receives a
         ExecuteUserConnectorRequest message and returns a
         ExecuteUserConnectorResponse message.
-      operationId: ConnectorPublicService_ExecuteUserConnector
+      operationId: PipelinePublicService_ExecuteUserConnector
       responses:
         "200":
           description: A successful response.
@@ -1275,7 +1271,7 @@ paths:
               ExecuteUserConnectorRequest represents a private request to execution
               connector
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{name}/publish:
     post:
       summary: |-
@@ -1640,7 +1636,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_RECIPE: View: RECIPE: will return recipe
           in: query
           required: false
           type: string
@@ -1648,7 +1643,6 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_RECIPE
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePublicService
@@ -1821,7 +1815,7 @@ paths:
         ListUserConnectors method receives a
         ListUserConnectorsRequest message and returns a
         ListUserConnectorsResponse message.
-      operationId: ConnectorPublicService_ListUserConnectors
+      operationId: PipelinePublicService_ListUserConnectors
       responses:
         "200":
           description: A successful response.
@@ -1882,13 +1876,13 @@ paths:
           required: false
           type: boolean
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
     post:
       summary: |-
         CreateUserConnector method receives a
         CreateUserConnectorRequest message and returns a
         CreateUserConnectorResponse message.
-      operationId: ConnectorPublicService_CreateUserConnector
+      operationId: PipelinePublicService_CreateUserConnector
       responses:
         "200":
           description: A successful response.
@@ -1916,7 +1910,7 @@ paths:
             required:
               - connector
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{parent}/memberships:
     get:
       summary: |-
@@ -2246,50 +2240,6 @@ paths:
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
-        LookUpConnector method receives a
-        LookUpConnectorRequest message and returns a
-        LookUpConnectorResponse
-      operationId: ConnectorPublicService_LookUpConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpConnectorResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: permalink_1
-          description: |-
-            Permalink of a connector. For example:
-            "connectors/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: connectors/[^/]+
-        - name: view
-          description: |-
-            Connector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{permalink_2}/lookUp:
-    get:
-      summary: |-
         LookUpPipeline method receives a LookUpPipelineRequest message and returns
         a LookUpPipelineResponse
       operationId: PipelinePublicService_LookUpPipeline
@@ -2303,7 +2253,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_2
+        - name: permalink_1
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -2327,6 +2277,50 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
             - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+  /v1alpha/{permalink_2}/lookUp:
+    get:
+      summary: |-
+        LookUpConnector method receives a
+        LookUpConnectorRequest message and returns a
+        LookUpConnectorResponse
+      operationId: PipelinePublicService_LookUpConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_2
+          description: |-
+            Permalink of a connector. For example:
+            "connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connectors/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_CONFIGURATION: View: CONFIGURATION
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePublicService
@@ -3131,94 +3125,6 @@ paths:
   /v1alpha/admin/{permalink_2}/lookUp:
     get:
       summary: |-
-        LookUpConnectorDefinitionAdmin method receives a
-        LookUpConnectorDefinitionAdminRequest message and returns a
-        LookUpConnectorDefinitionAdminResponse
-      operationId: ConnectorPrivateService_LookUpConnectorDefinitionAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpConnectorDefinitionAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: permalink_2
-          description: |-
-            Permalink of a connector. For example:
-            "connector-definitions/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: connector-definitions/[^/]+
-        - name: view
-          description: |-
-            Connector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
-  /v1alpha/admin/{permalink_3}/lookUp:
-    get:
-      summary: |-
-        LookUpConnectorAdmin method receives a
-        LookUpConnectorAdminRequest message and returns a
-        LookUpConnectorAdminResponse
-      operationId: ConnectorPrivateService_LookUpConnectorAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpConnectorAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: permalink_3
-          description: |-
-            Permalink of a connector. For example:
-            "connectors/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: connectors/[^/]+
-        - name: view
-          description: |-
-            Connector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
-  /v1alpha/admin/{permalink_4}/lookUp:
-    get:
-      summary: |-
         LookUpPipelineAdmin method receives a LookUpPipelineAdminRequest message
         and returns a LookUpPipelineAdminResponse
       operationId: PipelinePrivateService_LookUpPipelineAdmin
@@ -3232,7 +3138,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_4
+        - name: permalink_2
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -3259,7 +3165,7 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePrivateService
-  /v1alpha/admin/{permalink_5}/lookUp:
+  /v1alpha/admin/{permalink_3}/lookUp:
     get:
       summary: |-
         LookUpOperatorDefinitionAdmin method receives a
@@ -3276,7 +3182,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_5
+        - name: permalink_3
           description: |-
             Permalink of a operator. For example:
             "operator-definitions/{uid}"
@@ -3291,7 +3197,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_RECIPE: View: RECIPE: will return recipe
           in: query
           required: false
           type: string
@@ -3299,7 +3204,92 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePrivateService
+  /v1alpha/admin/{permalink_4}/lookUp:
+    get:
+      summary: |-
+        LookUpConnectorDefinitionAdmin method receives a
+        LookUpConnectorDefinitionAdminRequest message and returns a
+        LookUpConnectorDefinitionAdminResponse
+      operationId: PipelinePrivateService_LookUpConnectorDefinitionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpConnectorDefinitionAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_4
+          description: |-
+            Permalink of a connector. For example:
+            "connector-definitions/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connector-definitions/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePrivateService
+  /v1alpha/admin/{permalink_5}/lookUp:
+    get:
+      summary: |-
+        LookUpConnectorAdmin method receives a
+        LookUpConnectorAdminRequest message and returns a
+        LookUpConnectorAdminResponse
+      operationId: PipelinePrivateService_LookUpConnectorAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpConnectorAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_5
+          description: |-
+            Permalink of a connector. For example:
+            "connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connectors/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_CONFIGURATION: View: CONFIGURATION
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePrivateService
@@ -3308,7 +3298,7 @@ paths:
       summary: |-
         CheckConnector method receives a CheckConnectorRequest message and returns a
         CheckConnectorResponse
-      operationId: ConnectorPrivateService_CheckConnector
+      operationId: PipelinePrivateService_CheckConnector
       responses:
         "200":
           description: A successful response.
@@ -3328,7 +3318,7 @@ paths:
           type: string
           pattern: connectors/[^/]+
       tags:
-        - ConnectorPrivateService
+        - PipelinePrivateService
   /v1alpha/admin/{permalink}/lookUp:
     get:
       summary: |-
@@ -3416,7 +3406,7 @@ paths:
       summary: |-
         ListConnectorsAdmin method receives a ListConnectorsAdminRequest
         message and returns a ListConnectorsResponse message.
-      operationId: ConnectorPrivateService_ListConnectorsAdmin
+      operationId: PipelinePrivateService_ListConnectorsAdmin
       responses:
         "200":
           description: A successful response.
@@ -3469,7 +3459,7 @@ paths:
           required: false
           type: boolean
       tags:
-        - ConnectorPrivateService
+        - PipelinePrivateService
   /v1alpha/admin/models:
     get:
       summary: |-
@@ -3829,7 +3819,7 @@ paths:
         ListConnectorDefinitions method receives a
         ListConnectorDefinitionsRequest message and returns a
         ListConnectorDefinitionsResponse message.
-      operationId: ConnectorPublicService_ListConnectorDefinitions
+      operationId: PipelinePublicService_ListConnectorDefinitions
       responses:
         "200":
           description: A successful response.
@@ -3862,7 +3852,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
           in: query
           required: false
           type: string
@@ -3870,7 +3859,6 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
         - name: filter
           description: Filter expression to list connector definitions
@@ -3878,14 +3866,14 @@ paths:
           required: false
           type: string
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/connectors:
     get:
       summary: |-
         ListConnectors method receives a
         ListConnectorsRequest message and returns a
         ListConnectorsResponse message.
-      operationId: ConnectorPublicService_ListConnectors
+      operationId: PipelinePublicService_ListConnectors
       responses:
         "200":
           description: A successful response.
@@ -3938,31 +3926,7 @@ paths:
           required: false
           type: boolean
       tags:
-        - ConnectorPublicService
-  /v1alpha/health/connector:
-    get:
-      summary: |-
-        Liveness method receives a LivenessRequest message and returns a
-        LivenessResponse message.
-        See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: ConnectorPublicService_Liveness2
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/vdpconnectorv1alphaLivenessResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: health_check_request.service
-          description: Service name to check for its readiness status
-          in: query
-          required: false
-          type: string
-      tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/health/controller:
     get:
       summary: |-
@@ -4444,7 +4408,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_RECIPE: View: RECIPE: will return recipe
           in: query
           required: false
           type: string
@@ -4452,7 +4415,6 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_RECIPE
           default: VIEW_UNSPECIFIED
         - name: filter
           description: Filter expression to list operator definitions
@@ -5801,7 +5763,7 @@ definitions:
         title: ConnectorDefinition icon
         readOnly: true
       spec:
-        $ref: '#/definitions/vdpconnectorv1alphaSpec'
+        $ref: '#/definitions/v1alphaConnectorSpec'
         title: ConnectorDefinition spec
         readOnly: true
       type:
@@ -5937,6 +5899,25 @@ definitions:
     title: |-
       ConnectorExecuteTableRecord represents a aggregated table record for
       connector execute
+  v1alphaConnectorSpec:
+    type: object
+    properties:
+      resource_specification:
+        type: object
+        title: Spec resource specification
+      component_specification:
+        type: object
+        title: Spec component specification
+      openapi_specifications:
+        type: object
+        title: Spec openapi specification
+    title: |-
+      //////////////////////////////////
+      Spec represents a spec data model
+    required:
+      - resource_specification
+      - component_specification
+      - openapi_specifications
   v1alphaConnectorState:
     type: string
     enum:
@@ -6314,6 +6295,18 @@ definitions:
       GetBulkPipelineTriggerSummariesRequest
     required:
       - bulk_summaries
+  v1alphaGetConnectorDefinitionRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: View enumerates the definition views
   v1alphaGetConnectorDefinitionResponse:
     type: object
     properties:
@@ -6518,6 +6511,18 @@ definitions:
     title: |-
       GetOperationResponse represents a response for a longrunning
       operation
+  v1alphaGetOperatorDefinitionRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: Operator View
   v1alphaGetOperatorDefinitionResponse:
     type: object
     properties:
@@ -6663,6 +6668,20 @@ definitions:
         $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: GetUserAdminResponse represents a response for a user resource
+  v1alphaGetUserConnectorRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_CONFIGURATION: View: CONFIGURATION
+    title: View enumerates the definition views
   v1alphaGetUserConnectorResponse:
     type: object
     properties:
@@ -6693,6 +6712,20 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: The retrieved model
     title: GetUserModelResponse represents a response for a model
+  v1alphaGetUserPipelineReleaseRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaGetUserPipelineReleaseResponse:
     type: object
     properties:
@@ -6700,6 +6733,20 @@ definitions:
         $ref: '#/definitions/v1alphaPipelineRelease'
         title: A pipeline_release resource
     title: GetUserPipelineReleaseResponse represents a response for a pipeline_release resource
+  v1alphaGetUserPipelineRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaGetUserPipelineResponse:
     type: object
     properties:
@@ -6870,6 +6917,18 @@ definitions:
         title: A list of keypoint objects
         readOnly: true
     title: KeypointOutput represents the output of keypoint detection task
+  v1alphaListConnectorDefinitionsRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: View enumerates the definition views
   v1alphaListConnectorDefinitionsResponse:
     type: object
     properties:
@@ -6939,6 +6998,20 @@ definitions:
     title: |-
       ListConnectorExecuteTableRecordsResponse represents a response for a list
       of connector execute table record
+  v1alphaListConnectorsAdminRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_CONFIGURATION: View: CONFIGURATION
+    title: View enumerates the definition views
   v1alphaListConnectorsAdminResponse:
     type: object
     properties:
@@ -6958,6 +7031,20 @@ definitions:
     title: |-
       ListConnectorsAdminResponse represents a response for a list of
       connectors
+  v1alphaListConnectorsRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_CONFIGURATION: View: CONFIGURATION
+    title: View enumerates the definition views
   v1alphaListConnectorsResponse:
     type: object
     properties:
@@ -7030,6 +7117,18 @@ definitions:
         format: int32
         title: Total count of models
     title: ListModelsResponse represents a response for a list of models
+  v1alphaListOperatorDefinitionsRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: Operator View
   v1alphaListOperatorDefinitionsResponse:
     type: object
     properties:
@@ -7076,6 +7175,20 @@ definitions:
         format: int32
         title: Total count of organizations
     title: ListOrganizationsResponse represents a response for a list of organizations
+  v1alphaListPipelineReleasesAdminRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaListPipelineReleasesAdminResponse:
     type: object
     properties:
@@ -7146,6 +7259,20 @@ definitions:
     title: |-
       ListPipelineTriggerTableRecordsResponse represents a response for a list
       of pipeline trigger table record
+  v1alphaListPipelinesAdminRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaListPipelinesAdminResponse:
     type: object
     properties:
@@ -7166,6 +7293,20 @@ definitions:
       ListPipelinesAdminResponse represents a response for a list of pipelines
       The recipe returned will be permaLinks instead of resourceName temporary,
       this will be refactored soon
+  v1alphaListPipelinesRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaListPipelinesResponse:
     type: object
     properties:
@@ -7200,6 +7341,20 @@ definitions:
         format: int32
         title: Total count of API tokens resources
     title: ListTokensResponse represents a response for a list of API tokens
+  v1alphaListUserConnectorsRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_CONFIGURATION: View: CONFIGURATION
+    title: View enumerates the definition views
   v1alphaListUserConnectorsResponse:
     type: object
     properties:
@@ -7246,6 +7401,20 @@ definitions:
         format: int32
         title: Total count of models
     title: ListUserModelsResponse represents a response for a list of models
+  v1alphaListUserPipelineReleasesRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaListUserPipelineReleasesResponse:
     type: object
     properties:
@@ -7263,6 +7432,20 @@ definitions:
         format: int32
         title: Total count of pipeline_release resources
     title: ListUserPipelineReleasesResponse represents a response for a list of pipeline_releases
+  v1alphaListUserPipelinesRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaListUserPipelinesResponse:
     type: object
     properties:
@@ -7314,6 +7497,20 @@ definitions:
         format: int32
         title: Total count of users
     title: ListUsersResponse represents a response for a list of users
+  v1alphaLookUpConnectorAdminRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_CONFIGURATION: View: CONFIGURATION
+    title: View enumerates the definition views
   v1alphaLookUpConnectorAdminResponse:
     type: object
     properties:
@@ -7323,6 +7520,18 @@ definitions:
     title: |-
       LookUpConnectorAdminResponse represents a response for a
       connector
+  v1alphaLookUpConnectorDefinitionAdminRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: View enumerates the definition views
   v1alphaLookUpConnectorDefinitionAdminResponse:
     type: object
     properties:
@@ -7332,6 +7541,20 @@ definitions:
     title: |-
       LookUpConnectorDefinitionAdminResponse represents a response for a
       connector definition
+  v1alphaLookUpConnectorRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_CONFIGURATION: View: CONFIGURATION
+    title: View enumerates the definition views
   v1alphaLookUpConnectorResponse:
     type: object
     properties:
@@ -7355,6 +7578,18 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: A model resource
     title: LookUpModelResponse represents a response for a model
+  v1alphaLookUpOperatorDefinitionAdminRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: Operator View
   v1alphaLookUpOperatorDefinitionAdminResponse:
     type: object
     properties:
@@ -7364,6 +7599,20 @@ definitions:
     title: |-
       LookUpOperatorAdminResponse represents a response for a
       operator
+  v1alphaLookUpPipelineAdminRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaLookUpPipelineAdminResponse:
     type: object
     properties:
@@ -7371,6 +7620,20 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: LookUpPipelineAdminResponse represents a response for a pipeline resource
+  v1alphaLookUpPipelineRequestView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaLookUpPipelineResponse:
     type: object
     properties:
@@ -7762,7 +8025,7 @@ definitions:
         title: Operator icon
         readOnly: true
       spec:
-        $ref: '#/definitions/vdppipelinev1alphaSpec'
+        $ref: '#/definitions/v1alphaOperatorSpec'
         title: Operator spec
         readOnly: true
       tombstone:
@@ -7789,6 +8052,19 @@ definitions:
         title: Operator iconUrl
         readOnly: true
     title: Operator represents the operator definition data model
+  v1alphaOperatorSpec:
+    type: object
+    properties:
+      component_specification:
+        type: object
+        title: Spec operator specification
+      openapi_specifications:
+        type: object
+        title: Spec openapi specification
+    title: View enumerates the definition views
+    required:
+      - component_specification
+      - openapi_specifications
   v1alphaOrganization:
     type: object
     properties:
@@ -9105,53 +9381,6 @@ definitions:
     title: |-
       WatchUserPipelineReleaseResponse represents a response to fetch a pipeline's
       current state
-  vdpconnectorv1alphaLivenessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  vdpconnectorv1alphaReadinessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
-  vdpconnectorv1alphaSpec:
-    type: object
-    properties:
-      resource_specification:
-        type: object
-        title: Spec resource specification
-      component_specification:
-        type: object
-        title: Spec component specification
-      openapi_specifications:
-        type: object
-        title: Spec openapi specification
-    title: |-
-      //////////////////////////////////
-      Spec represents a spec data model
-    required:
-      - resource_specification
-      - component_specification
-      - openapi_specifications
-  vdpconnectorv1alphaView:
-    type: string
-    enum:
-      - VIEW_UNSPECIFIED
-      - VIEW_BASIC
-      - VIEW_FULL
-      - VIEW_CONFIGURATION
-    default: VIEW_UNSPECIFIED
-    description: |-
-      - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-       - VIEW_CONFIGURATION: View: CONFIGURATION
-    title: View enumerates the definition views
   vdpcontrollerv1alphaDeleteResourceResponse:
     type: object
     title: DeleteResourceResponse represents an empty response
@@ -9221,33 +9450,3 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  vdppipelinev1alphaSpec:
-    type: object
-    properties:
-      component_specification:
-        type: object
-        title: Spec operator specification
-      openapi_specifications:
-        type: object
-        title: Spec openapi specification
-    title: View enumerates the definition views
-    required:
-      - component_specification
-      - openapi_specifications
-  vdppipelinev1alphaView:
-    type: string
-    enum:
-      - VIEW_UNSPECIFIED
-      - VIEW_BASIC
-      - VIEW_FULL
-      - VIEW_RECIPE
-    default: VIEW_UNSPECIFIED
-    description: |-
-      View represents a view of any resource. The resource view is implemented by
-      adding a parameter to the method request which allows the client to specify
-      which view of the resource it wants to receive in the response.
-
-       - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-       - VIEW_RECIPE: View: RECIPE: will return recipe
