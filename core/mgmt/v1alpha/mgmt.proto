@@ -145,21 +145,6 @@ message ListUsersAdminResponse {
   int32 total_size = 3;
 }
 
-// CreateUserAdminRequest represents a request to create a user by admin
-message CreateUserAdminRequest {
-  // The user to be created
-  //
-  // The user's `name` field is used to identify the user to create.
-  // Format: users/{user}
-  User user = 1 [(google.api.field_behavior) = REQUIRED];
-}
-
-// CreateUserAdminResponse represents a response for a user response
-message CreateUserAdminResponse {
-  // A user resource
-  User user = 1;
-}
-
 // GetUserAdminRequest represents a request to query a user by admin
 message GetUserAdminRequest {
   // Resource name of a user. For example:
@@ -195,6 +180,68 @@ message LookUpUserAdminRequest {
 message LookUpUserAdminResponse {
   // A user resource
   User user = 1;
+}
+
+// ListOrganizationsAdminRequest represents a request to list all organizations by admin
+message ListOrganizationsAdminRequest {
+  // Page size: the maximum number of resources to return. The service may
+  // return fewer than this value. If unspecified, at most 10 organizations will be
+  // returned. The maximum value is 100; values above 100 will be coereced to
+  // 100.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page token
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // View view (default is VIEW_BASIC)
+  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Filter expression to list organizations
+  optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListOrganizationsAdminResponse represents a response for a list of organizations
+message ListOrganizationsAdminResponse {
+  // A list of organizations
+  repeated Organization organizations = 1;
+  // Next page token
+  string next_page_token = 2;
+  // Total count of organizations
+  int32 total_size = 3;
+}
+
+// GetOrganizationAdminRequest represents a request to query a organization by admin
+message GetOrganizationAdminRequest {
+  // Resource name of a organization. For example:
+  // "organizations/local-organization"
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Organization",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization.name"}
+    }
+  ];
+  // View view (default is VIEW_BASIC)
+  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// GetOrganizationAdminResponse represents a response for a organization resource
+message GetOrganizationAdminResponse {
+  // A organization resource
+  Organization organization = 1;
+}
+
+// LookUpOrganizationAdminRequest represents a request to query a organization via permalink by
+// admin
+message LookUpOrganizationAdminRequest {
+  // Permalink of a organization. For example:
+  // "organizations/{uid}"
+  string permalink = 1 [(google.api.field_behavior) = REQUIRED];
+  // View view (default is VIEW_BASIC)
+  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// LookUpOrganizationAdminResponse represents a response for a organization resource by admin
+message LookUpOrganizationAdminResponse {
+  // A organization resource
+  Organization organization = 1;
 }
 
 // ListUsersRequest represents a request to list all users
