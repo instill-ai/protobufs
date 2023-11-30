@@ -11,8 +11,6 @@ tags:
   - name: ControllerPrivateService
   - name: ModelPrivateService
   - name: ModelPublicService
-  - name: ConnectorPrivateService
-  - name: ConnectorPublicService
   - name: ControllerPrivateService
   - name: PipelinePrivateService
   - name: PipelinePublicService
@@ -69,13 +67,459 @@ paths:
           type: string
       tags:
         - PipelinePublicService
+  /v1alpha/{connector.name_1}:
+    get:
+      summary: |-
+        GetOrganizationConnector method receives a GetOrganizationConnectorRequest
+        message and returns a GetOrganizationConnectorResponse message.
+      operationId: PipelinePublicService_GetOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name_1
+          description: |-
+            Connectorconnector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_CONFIGURATION: View: CONFIGURATION
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: |-
+        DeleteOrganizationConnector method receives a
+        DeleteOrganizationConnectorRequest message and returns a
+        DeleteOrganizationConnectorResponse message.
+      operationId: PipelinePublicService_DeleteOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name_1
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+    patch:
+      summary: |-
+        UpdateOrganizationConnector method receives a
+        UpdateOrganizationConnectorRequest message and returns a
+        UpdateOrganizationConnectorResponse message.
+      operationId: PipelinePublicService_UpdateOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name_1
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: connector
+          description: connector
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                title: Connector UUID
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  connector ID (the last segment of the resource name)
+                  used to construct the resource name. This conforms to RFC-1034, which
+                  restricts to letters, numbers, and hyphen, with the first character a
+                  letter, the last a letter or a number, and a 63 character maximum.
+              connector_definition_name:
+                type: string
+                title: ConnectorDefinition resource
+              type:
+                $ref: '#/definitions/v1alphaConnectorType'
+                title: Connector Type
+                readOnly: true
+              description:
+                type: string
+                title: Connector description
+              configuration:
+                type: object
+                title: Connector configuration in JSON format
+              state:
+                $ref: '#/definitions/v1alphaConnectorState'
+                title: Connector state
+                readOnly: true
+              tombstone:
+                type: boolean
+                title: Connector tombstone
+                readOnly: true
+              user:
+                type: string
+                description: |-
+                  The resource name with UUID of a user, e.g.,
+                  "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+                readOnly: true
+              organization:
+                type: string
+                title: The resource name with UUID of an organization
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                title: Connector creation time
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Connector update time
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1alphaConnectorVisibility'
+                title: Connector visibility including public or private
+                readOnly: true
+              connector_definition:
+                $ref: '#/definitions/v1alphaConnectorDefinition'
+                title: Embed the content of the connector_definition
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                title: Connector delete time
+                readOnly: true
+            title: connector
+            required:
+              - configuration
+      tags:
+        - PipelinePublicService
+  /v1alpha/{connector.name_1}/testConnection:
+    post:
+      summary: |-
+        TestOrganizationConnector method receives a TestOrganizationConnectorRequest
+        message and returns a TestOrganizationConnectorResponse
+      operationId: PipelinePublicService_TestOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTestOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name_1
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1alpha/{connector.name_1}/watch:
+    get:
+      summary: |-
+        WatchOrganizationConnector method receives a
+        WatchOrganizationConnectorRequest message and returns a
+        WatchOrganizationConnectorResponse
+      operationId: PipelinePublicService_WatchOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name_1
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1alpha/{connector.name}:
+    get:
+      summary: |-
+        GetUserConnector method receives a GetUserConnectorRequest
+        message and returns a GetUserConnectorResponse message.
+      operationId: PipelinePublicService_GetUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetUserConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name
+          description: |-
+            Connectorconnector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_CONFIGURATION: View: CONFIGURATION
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: |-
+        DeleteUserConnector method receives a
+        DeleteUserConnectorRequest message and returns a
+        DeleteUserConnectorResponse message.
+      operationId: PipelinePublicService_DeleteUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteUserConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+    patch:
+      summary: |-
+        UpdateUserConnector method receives a
+        UpdateUserConnectorRequest message and returns a
+        UpdateUserConnectorResponse message.
+      operationId: PipelinePublicService_UpdateUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateUserConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: connector
+          description: connector
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                title: Connector UUID
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  connector ID (the last segment of the resource name)
+                  used to construct the resource name. This conforms to RFC-1034, which
+                  restricts to letters, numbers, and hyphen, with the first character a
+                  letter, the last a letter or a number, and a 63 character maximum.
+              connector_definition_name:
+                type: string
+                title: ConnectorDefinition resource
+              type:
+                $ref: '#/definitions/v1alphaConnectorType'
+                title: Connector Type
+                readOnly: true
+              description:
+                type: string
+                title: Connector description
+              configuration:
+                type: object
+                title: Connector configuration in JSON format
+              state:
+                $ref: '#/definitions/v1alphaConnectorState'
+                title: Connector state
+                readOnly: true
+              tombstone:
+                type: boolean
+                title: Connector tombstone
+                readOnly: true
+              user:
+                type: string
+                description: |-
+                  The resource name with UUID of a user, e.g.,
+                  "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+                readOnly: true
+              organization:
+                type: string
+                title: The resource name with UUID of an organization
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                title: Connector creation time
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Connector update time
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1alphaConnectorVisibility'
+                title: Connector visibility including public or private
+                readOnly: true
+              connector_definition:
+                $ref: '#/definitions/v1alphaConnectorDefinition'
+                title: Embed the content of the connector_definition
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                title: Connector delete time
+                readOnly: true
+            title: connector
+            required:
+              - configuration
+      tags:
+        - PipelinePublicService
+  /v1alpha/{connector.name}/testConnection:
+    post:
+      summary: |-
+        TestUserConnector method receives a TestUserConnectorRequest
+        message and returns a TestUserConnectorResponse
+      operationId: PipelinePublicService_TestUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTestUserConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1alpha/{connector.name}/watch:
+    get:
+      summary: |-
+        WatchUserConnector method receives a
+        WatchUserConnectorRequest message and returns a
+        WatchUserConnectorResponse
+      operationId: PipelinePublicService_WatchUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchUserConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
   /v1alpha/{connector_definition.name}:
     get:
       summary: |-
         GetConnectorDefinition method receives a
         GetConnectorDefinitionRequest message and returns a
         GetGetConnectorDefinitionResponse message.
-      operationId: ConnectorPublicService_GetConnectorDefinition
+      operationId: PipelinePublicService_GetConnectorDefinition
       responses:
         "200":
           description: A successful response.
@@ -102,7 +546,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
           in: query
           required: false
           type: string
@@ -110,42 +553,38 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
-  /v1alpha/{connector_resource.name}:
+        - PipelinePublicService
+  /v1alpha/{membership.name_1}:
     get:
       summary: |-
-        GetUserConnectorResource method receives a GetUserConnectorResourceRequest
-        message and returns a GetUserConnectorResourceResponse message.
-      operationId: ConnectorPublicService_GetUserConnectorResource
+        GetOrganizationMembership method receives a GetOrganizationMembershipRequest message and returns a
+        GetOrganizationMembershipResponse message.
+      operationId: MgmtPublicService_GetOrganizationMembership
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaGetUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaGetOrganizationMembershipResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: connector_resource.name
-          description: |-
-            ConnectorResourceConnectorResource resource name. It must have the format of
-            "connector-resources/*"
+        - name: membership.name_1
+          description: Membership resource name. It must have the format of "organizations/*/memberships/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
+          pattern: organizations/[^/]+/memberships/[^/]+
         - name: view
           description: |-
-            ConnectorResource view (default is VIEW_BASIC)
+            Membership resource view (default is VIEW_BASIC)
 
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
           in: query
           required: false
           type: string
@@ -153,190 +592,200 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
+        - MgmtPublicService
     delete:
       summary: |-
-        DeleteUserConnectorResource method receives a
-        DeleteUserConnectorResourceRequest message and returns a
-        DeleteUserConnectorResourceResponse message.
-      operationId: ConnectorPublicService_DeleteUserConnectorResource
+        DeleteOrganizationMembership method receives a DeleteOrganizationMembershipRequest message and returns
+        a DeleteOrganizationMembershipResponse message.
+      operationId: MgmtPublicService_DeleteOrganizationMembership
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeleteUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaDeleteOrganizationMembershipResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: connector_resource.name
-          description: |-
-            ConnectorResource resource name. It must have the format of
-            "connector-resources/*"
+        - name: membership.name_1
+          description: Membership resource name. It must have the format of "organizations/*/membership/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
+          pattern: organizations/[^/]+/memberships/[^/]+
       tags:
-        - ConnectorPublicService
-    patch:
+        - MgmtPublicService
+    put:
       summary: |-
-        UpdateUserConnectorResource method receives a
-        UpdateUserConnectorResourceRequest message and returns a
-        UpdateUserConnectorResourceResponse message.
-      operationId: ConnectorPublicService_UpdateUserConnectorResource
+        UpdateOrganizationMembership method receives a UpdateOrganizationMembershipRequest message and returns
+        a UpdateOrganizationMembershipResponse message.
+      operationId: MgmtPublicService_UpdateOrganizationMembership
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUpdateUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaUpdateOrganizationMembershipResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: connector_resource.name
-          description: |-
-            ConnectorResource resource name. It must have the format of
-            "connector-resources/*"
+        - name: membership.name_1
+          description: Resource name. It must have the format of "organizations/*/memberships/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
-        - name: connector_resource
-          description: ConnectorResource resource
+          pattern: organizations/[^/]+/memberships/[^/]+
+        - name: membership
+          description: A membership resource to update
           in: body
           required: true
           schema:
             type: object
             properties:
-              uid:
+              role:
                 type: string
-                title: ConnectorResource UUID
-                readOnly: true
-              id:
-                type: string
-                description: |-
-                  ConnectorResource resource ID (the last segment of the resource name)
-                  used to construct the resource name. This conforms to RFC-1034, which
-                  restricts to letters, numbers, and hyphen, with the first character a
-                  letter, the last a letter or a number, and a 63 character maximum.
-              connector_definition_name:
-                type: string
-                title: ConnectorDefinition resource
-              type:
-                $ref: '#/definitions/v1alphaConnectorType'
-                title: ConnectorResource Type
-                readOnly: true
-              description:
-                type: string
-                title: ConnectorResource description
-              configuration:
-                type: object
-                title: ConnectorResource configuration in JSON format
+                title: Role
               state:
-                $ref: '#/definitions/v1alphaConnectorResourceState'
-                title: ConnectorResource state
-                readOnly: true
-              tombstone:
-                type: boolean
-                title: ConnectorResource tombstone
+                $ref: '#/definitions/v1alphaMembershipState'
+                title: State
                 readOnly: true
               user:
-                type: string
-                description: |-
-                  The resource name with UUID of a user, e.g.,
-                  "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+                $ref: '#/definitions/mgmtv1alphaUser'
+                title: User
                 readOnly: true
-              org:
-                type: string
-                title: The resource name with UUID of an organization
+              organization:
+                $ref: '#/definitions/v1alphaOrganization'
+                title: Organization
                 readOnly: true
-              create_time:
-                type: string
-                format: date-time
-                title: ConnectorResource creation time
-                readOnly: true
-              update_time:
-                type: string
-                format: date-time
-                title: ConnectorResource update time
-                readOnly: true
-              visibility:
-                $ref: '#/definitions/v1alphaConnectorResourceVisibility'
-                title: ConnectorResource visibility including public or private
-                readOnly: true
-              connector_definition:
-                $ref: '#/definitions/v1alphaConnectorDefinition'
-                title: Embed the content of the connector_definition
-                readOnly: true
-              delete_time:
-                type: string
-                format: date-time
-                title: ConnectorResource delete time
-                readOnly: true
-            title: ConnectorResource resource
+            title: A membership resource to update
             required:
-              - configuration
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{connector_resource.name}/testConnection:
-    post:
-      summary: |-
-        TestUserConnectorResource method receives a TestUserConnectorResourceRequest
-        message and returns a TestUserConnectorResourceResponse
-      operationId: ConnectorPublicService_TestUserConnectorResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaTestUserConnectorResourceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: connector_resource.name
-          description: |-
-            ConnectorResource resource name. It must have the format of
-            "connector-resources/*"
-          in: path
+              - role
+        - name: update_mask
+          description: Update mask for a membership resource
+          in: query
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
       tags:
-        - ConnectorPublicService
-  /v1alpha/{connector_resource.name}/watch:
+        - MgmtPublicService
+  /v1alpha/{membership.name}:
     get:
       summary: |-
-        WatchUserConnectorResource method receives a
-        WatchUserConnectorResourceRequest message and returns a
-        WatchUserConnectorResourceResponse
-      operationId: ConnectorPublicService_WatchUserConnectorResource
+        GetUserMembership method receives a GetUserMembershipRequest message and returns a
+        GetUserMembershipResponse message.
+      operationId: MgmtPublicService_GetUserMembership
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaWatchUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaGetUserMembershipResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: connector_resource.name
-          description: |-
-            ConnectorResource resource name. It must have the format of
-            "connector-resources/*"
+        - name: membership.name
+          description: Membership resource name. It must have the format of "users/*/memberships/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
+          pattern: users/[^/]+/memberships/[^/]+
+        - name: view
+          description: |-
+            Membership resource view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
       tags:
-        - ConnectorPublicService
+        - MgmtPublicService
+    delete:
+      summary: |-
+        DeleteUserMembership method receives a DeleteUserMembershipRequest message and returns
+        a DeleteUserMembershipResponse message.
+      operationId: MgmtPublicService_DeleteUserMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteUserMembershipResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: membership.name
+          description: Membership resource name. It must have the format of "users/*/membership/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/memberships/[^/]+
+      tags:
+        - MgmtPublicService
+    put:
+      summary: |-
+        UpdateUserMembership method receives a UpdateUserMembershipRequest message and returns
+        a UpdateUserMembershipResponse message.
+      operationId: MgmtPublicService_UpdateUserMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateUserMembershipResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: membership.name
+          description: Resource name. It must have the format of "users/*/memberships/*".
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/memberships/[^/]+
+        - name: membership
+          description: A membership resource to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              role:
+                type: string
+                title: Role
+                readOnly: true
+              state:
+                $ref: '#/definitions/v1alphaMembershipState'
+                title: State
+              user:
+                $ref: '#/definitions/mgmtv1alphaUser'
+                title: User
+                readOnly: true
+              organization:
+                $ref: '#/definitions/v1alphaOrganization'
+                title: Organization
+                readOnly: true
+            title: A membership resource to update
+            required:
+              - state
+        - name: update_mask
+          description: Update mask for a membership resource
+          in: query
+          required: true
+          type: string
+      tags:
+        - MgmtPublicService
   /v1alpha/{model.name/readme}:
     get:
       summary: |-
@@ -618,18 +1067,20 @@ paths:
           pattern: operations/[^/]+
       tags:
         - PipelinePublicService
-  /v1alpha/{name_1}/rename:
+  /v1alpha/{name_1}/connect:
     post:
       summary: |-
-        RenameUserConnectorResource method receives a
-        RenameUserConnectorResourceRequest message and returns a
-        RenameUserConnectorResourceResponse message.
-      operationId: ConnectorPublicService_RenameUserConnectorResource
+        Connect a connector.
+        The "state" of the connector after connecting is "CONNECTED".
+        ConnectOrganizationConnector can be called on Connector in the
+        state `DISCONNECTED`; Connector in a different state (including
+        `CONNECTED`) returns an error.
+      operationId: PipelinePublicService_ConnectOrganizationConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaConnectOrganizationConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -637,31 +1088,167 @@ paths:
       parameters:
         - name: name_1
           description: |-
-            ConnectorResource resource name. It must have the format of
-            "connector-resources/*"
+            connector name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: |-
+              ConnectOrganizationConnectorRequest represents a request to connect a
+              connector
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_1}/disconnect:
+    post:
+      summary: |-
+        Disconnect a connector.
+        The "state" of the connector after disconnecting is "DISCONNECTED".
+        DisconnectOrganizationConnector can be called on Connector in the
+        state `CONNECTED`; Connector in a different state (including
+        `DISCONNECTED`) returns an error.
+      operationId: PipelinePublicService_DisconnectOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDisconnectOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: |-
+              DisconnectOrganizationConnectorRequest represents a request to disconnect a
+              connector
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_1}/execute:
+    post:
+      summary: |-
+        ExecuteOrganizationConnector method receives a
+        ExecuteOrganizationConnectorRequest message and returns a
+        ExecuteOrganizationConnectorResponse message.
+      operationId: PipelinePublicService_ExecuteOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaExecuteOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: |-
+            Name of a connector. For example:
+            "connectors/{name}"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             properties:
-              new_connector_id:
+              inputs:
+                type: array
+                items:
+                  type: object
+                title: Inputs
+              task:
+                type: string
+                title: Task
+            title: |-
+              ExecuteOrganizationConnectorRequest represents a private request to execution
+              connector
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_1}/rename:
+    post:
+      summary: |-
+        RenameUserPipeline method receives a RenameUserPipelineRequest message and returns
+        a RenameUserPipelineResponse message.
+      operationId: PipelinePublicService_RenameUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameUserPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: Pipeline resource name. It must have the format of "users/*/pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_pipeline_id:
                 type: string
                 title: |-
-                  ConnectorResource new resource id to replace with the
-                  ConnectorResource resource name to be
-                  "connector-resources/{new_connector_id}"
+                  Pipeline new resource id to replace with the pipeline resource name to be
+                  "users/*/pipelines/{new_pipeline_id}"
             title: |-
-              RenameUserConnectorResourceRequest represents a request to rename the
-              ConnectorResource resource name
+              RenameUserPipelineRequest represents a request to rename the pipeline resource
+              name
             required:
-              - new_connector_id
+              - new_pipeline_id
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
+  /v1alpha/{name_1}/restore:
+    post:
+      summary: |-
+        RestoreOrganizationPipelineRelease method receives a RestoreOrganizationPipelineReleaseRequest message
+        and returns a RestoreOrganizationPipelineReleaseResponse
+      operationId: PipelinePublicService_RestoreOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRestoreOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
   /v1alpha/{name_1}/trigger:
     post:
       summary: |-
@@ -738,44 +1325,72 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1alpha/{name_2}/rename:
+  /v1alpha/{name_1}/validate:
     post:
-      summary: |-
-        RenameUserPipeline method receives a RenameUserPipelineRequest message and returns
-        a RenameUserPipelineResponse message.
-      operationId: PipelinePublicService_RenameUserPipeline
+      summary: Validate a pipeline.
+      operationId: PipelinePublicService_ValidateOrganizationPipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameUserPipelineResponse'
+            $ref: '#/definitions/v1alphaValidateOrganizationPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_1
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            title: ValidatePOrganizationipelineRequest represents a request to validate a pipeline
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_2}/rename:
+    post:
+      summary: |-
+        RenameUserPipelineRelease method receives a RenameUserPipelineReleaseRequest message and returns
+        a RenameUserPipelineReleaseResponse message.
+      operationId: PipelinePublicService_RenameUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameUserPipelineReleaseResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_2
-          description: Pipeline resource name. It must have the format of "users/*/pipelines/*"
+          description: Pipeline release resource name. It must have the format of "users/*/pipelines/*/releases/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/pipelines/[^/]+
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             properties:
-              new_pipeline_id:
+              new_pipeline_release_id:
                 type: string
                 title: |-
                   Pipeline new resource id to replace with the pipeline resource name to be
-                  "users/*/pipelines/{new_pipeline_id}"
+                  "users/*/pipelines/*/releases/{new_pipeline_id}"
             title: |-
-              RenameUserPipelineRequest represents a request to rename the pipeline resource
+              RenameUserPipelineReleaseRequest represents a request to rename the pipeline release resource
               name
             required:
-              - new_pipeline_id
+              - new_pipeline_release_id
       tags:
         - PipelinePublicService
   /v1alpha/{name_2}/trigger:
@@ -816,28 +1431,182 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1alpha/{name_3}/rename:
+  /v1alpha/{name_2}/triggerAsync:
     post:
       summary: |-
-        RenameUserPipelineRelease method receives a RenameUserPipelineReleaseRequest message and returns
-        a RenameUserPipelineReleaseResponse message.
-      operationId: PipelinePublicService_RenameUserPipelineRelease
+        TriggerAsyncOrganizationPipeline method receives a TriggerAsyncOrganizationPipelineRequest message and
+        returns a TriggerAsyncOrganizationPipelineResponse.
+      operationId: PipelinePublicService_TriggerAsyncOrganizationPipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaRenameUserPipelineReleaseResponse'
+            $ref: '#/definitions/v1alphaTriggerAsyncOrganizationPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_2
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                title: Input to the pipeline
+            title: TriggerAsyncOrganizationPipelineRequest represents a request to trigger a async pipeline
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_3}/rename:
+    post:
+      summary: |-
+        RenameOrganizationPipeline method receives a RenameOrganizationPipelineRequest message and returns
+        a RenameOrganizationPipelineResponse message.
+      operationId: PipelinePublicService_RenameOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameOrganizationPipelineResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
         - name: name_3
-          description: Pipeline release resource name. It must have the format of "users/*/pipelines/*/releases/*"
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_pipeline_id:
+                type: string
+                title: |-
+                  Pipeline new resource id to replace with the pipeline resource name to be
+                  "organizations/*/pipelines/{new_pipeline_id}"
+            title: |-
+              RenameOrganizationPipelineRequest represents a request to rename the pipeline resource
+              name
+            required:
+              - new_pipeline_id
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_3}/trigger:
+    post:
+      summary: |-
+        TriggerOrganizationPipeline method receives a TriggerOrganizationPipelineRequest message
+        and returns a TriggerOrganizationPipelineResponse.
+      operationId: PipelinePublicService_TriggerOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerOrganizationPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_3
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                title: Input to the pipeline
+            title: TriggerOrganizationPipelineRequest represents a request to trigger a pipeline
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_3}/triggerAsync:
+    post:
+      summary: |-
+        TriggerAsyncOrganizationPipelineRelease method receives a TriggerAsyncOrganizationPipelineReleaseRequest message and
+        returns a TriggerAsyncOrganizationPipelineReleaseResponse.
+      operationId: PipelinePublicService_TriggerAsyncOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_3
+          description: Resource name.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                title: Input to the pipeline
+            title: TriggerAsyncOrganizationPipelineReleaseRequest represents a request to trigger a pipeline_released pipeline
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_4}/rename:
+    post:
+      summary: |-
+        RenameOrganizationPipelineRelease method receives a RenameOrganizationPipelineReleaseRequest message and returns
+        a RenameOrganizationPipelineReleaseResponse message.
+      operationId: PipelinePublicService_RenameOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_4
+          description: Pipeline release resource name. It must have the format of "organizations/*/pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: body
           in: body
           required: true
@@ -848,12 +1617,138 @@ paths:
                 type: string
                 title: |-
                   Pipeline new resource id to replace with the pipeline resource name to be
-                  "users/*/pipelines/*/releases/{new_pipeline_id}"
+                  "organizations/*/pipelines/*/releases/{new_pipeline_id}"
             title: |-
-              RenameUserPipelineReleaseRequest represents a request to rename the pipeline release resource
+              RenameOrganizationPipelineReleaseRequest represents a request to rename the pipeline release resource
               name
             required:
               - new_pipeline_release_id
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_4}/trigger:
+    post:
+      summary: |-
+        TriggerOrganizationPipelineRelease method receives a TriggeOrganizationPipelineReleaseRequest message
+        and returns a TriggerPipelineReleasePipelineResponse.
+      operationId: PipelinePublicService_TriggerOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_4
+          description: Resource name.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                title: Input to the pipeline
+            title: TriggerOrganizationPipelineReleaseRequest represents a request to trigger a pipeline_released pipeline
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_5}/rename:
+    post:
+      summary: |-
+        RenameUserConnector method receives a
+        RenameUserConnectorRequest message and returns a
+        RenameUserConnectorResponse message.
+      operationId: PipelinePublicService_RenameUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameUserConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_5
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_connector_id:
+                type: string
+                title: |-
+                  Connector new resource id to replace with the
+                  connector name to be
+                  "connectors/{new_connector_id}"
+            title: |-
+              RenameUserConnectorRequest represents a request to rename the
+              connector name
+            required:
+              - new_connector_id
+      tags:
+        - PipelinePublicService
+  /v1alpha/{name_6}/rename:
+    post:
+      summary: |-
+        RenameOrganizationConnector method receives a
+        RenameOrganizationConnectorRequest message and returns a
+        RenameOrganizationConnectorResponse message.
+      operationId: PipelinePublicService_RenameOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name_6
+          description: |-
+            connector name. It must have the format of
+            "connectors/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_connector_id:
+                type: string
+                title: |-
+                  Connector new resource id to replace with the
+                  connector name to be
+                  "connectors/{new_connector_id}"
+            title: |-
+              RenameOrganizationConnectorRequest represents a request to rename the
+              connector name
+            required:
+              - new_connector_id
       tags:
         - PipelinePublicService
   /v1alpha/{name}:
@@ -901,17 +1796,17 @@ paths:
   /v1alpha/{name}/connect:
     post:
       summary: |-
-        Connect a connector resource.
-        The "state" of the connector resource after connecting is "CONNECTED".
-        ConnectUserConnectorResource can be called on ConnectorResource in the
-        state `DISCONNECTED`; ConnectorResource in a different state (including
+        Connect a connector.
+        The "state" of the connector after connecting is "CONNECTED".
+        ConnectUserConnector can be called on Connector in the
+        state `DISCONNECTED`; Connector in a different state (including
         `CONNECTED`) returns an error.
-      operationId: ConnectorPublicService_ConnectUserConnectorResource
+      operationId: PipelinePublicService_ConnectUserConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaConnectUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaConnectUserConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -919,22 +1814,22 @@ paths:
       parameters:
         - name: name
           description: |-
-            ConnectorResource resource name. It must have the format of
-            "connector-resources/*"
+            connector name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
+          pattern: users/[^/]+/connectors/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             title: |-
-              ConnectUserConnectorResourceRequest represents a request to connect a
-              connector_resource
+              ConnectUserConnectorRequest represents a request to connect a
+              connector
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{name}/deploy:
     post:
       summary: DeployUserModel deploy a model to online state
@@ -968,17 +1863,17 @@ paths:
   /v1alpha/{name}/disconnect:
     post:
       summary: |-
-        Disconnect a connectorResource.
-        The "state" of the connectorResource after disconnecting is "DISCONNECTED".
-        DisconnectUserConnectorResource can be called on ConnectorResource in the
-        state `CONNECTED`; ConnectorResource in a different state (including
+        Disconnect a connector.
+        The "state" of the connector after disconnecting is "DISCONNECTED".
+        DisconnectUserConnector can be called on Connector in the
+        state `CONNECTED`; Connector in a different state (including
         `DISCONNECTED`) returns an error.
-      operationId: ConnectorPublicService_DisconnectUserConnectorResource
+      operationId: PipelinePublicService_DisconnectUserConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDisconnectUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaDisconnectUserConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -986,34 +1881,34 @@ paths:
       parameters:
         - name: name
           description: |-
-            ConnectorResource resource name. It must have the format of
-            "connector-resources/*"
+            connector name. It must have the format of
+            "connectors/*"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
+          pattern: users/[^/]+/connectors/[^/]+
         - name: body
           in: body
           required: true
           schema:
             type: object
             title: |-
-              DisconnectUserConnectorResourceRequest represents a request to disconnect a
-              connector_resource
+              DisconnectUserConnectorRequest represents a request to disconnect a
+              connector
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{name}/execute:
     post:
       summary: |-
-        ExecuteUserConnectorResource method receives a
-        ExecuteUserConnectorResourceRequest message and returns a
-        ExecuteUserConnectorResourceResponse message.
-      operationId: ConnectorPublicService_ExecuteUserConnectorResource
+        ExecuteUserConnector method receives a
+        ExecuteUserConnectorRequest message and returns a
+        ExecuteUserConnectorResponse message.
+      operationId: PipelinePublicService_ExecuteUserConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaExecuteUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaExecuteUserConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1021,12 +1916,12 @@ paths:
       parameters:
         - name: name
           description: |-
-            Name of a connector_resource. For example:
-            "connector-resources/{name}"
+            Name of a connector. For example:
+            "connectors/{name}"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/connector-resources/[^/]+
+          pattern: users/[^/]+/connectors/[^/]+
         - name: body
           in: body
           required: true
@@ -1042,10 +1937,10 @@ paths:
                 type: string
                 title: Task
             title: |-
-              ExecuteUserConnectorResourceRequest represents a private request to execution
-              connector_resource
+              ExecuteUserConnectorRequest represents a private request to execution
+              connector
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/{name}/publish:
     post:
       summary: |-
@@ -1127,30 +2022,6 @@ paths:
           description: A successful response.
           schema:
             $ref: '#/definitions/v1alphaRestoreUserPipelineReleaseResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: Pipeline resource name. It must have the format of "users/*/pipelines/*/releases/*"
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
-      tags:
-        - PipelinePublicService
-  /v1alpha/{name}/setDefault:
-    post:
-      summary: |-
-        SetDefaultUserPipelineRelease method receives a SetDefaultUserPipelineReleaseRequest message
-        and returns a SetDefaultUserPipelineReleaseResponse
-      operationId: PipelinePublicService_SetDefaultUserPipelineRelease
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaSetDefaultUserPipelineReleaseResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1410,7 +2281,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_RECIPE: View: RECIPE: will return recipe
           in: query
           required: false
           type: string
@@ -1418,39 +2288,181 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_RECIPE
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePublicService
-  /v1alpha/{parent}/connector-resources:
+  /v1alpha/{organization.name}:
     get:
       summary: |-
-        ListUserConnectorResources method receives a
-        ListUserConnectorResourcesRequest message and returns a
-        ListUserConnectorResourcesResponse message.
-      operationId: ConnectorPublicService_ListUserConnectorResources
+        GetOrganization method receives a GetOrganizationRequest message and returns
+        a GetOrganizationResponse message.
+      operationId: MgmtPublicService_GetOrganization
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListUserConnectorResourcesResponse'
+            $ref: '#/definitions/v1alphaGetOrganizationResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: parent
+        - name: organization.name
           description: |-
-            The parent resource where this connector resource will be created.
-            Format: users/{users}
+            Resource name of a organization. For example:
+            "organizations/local-organization"
           in: path
           required: true
           type: string
-          pattern: users/[^/]+
+          pattern: organizations/[^/]+
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - MgmtPublicService
+    delete:
+      summary: |-
+        DeleteOrganization method receives a DeleteOrganizationRequest message and
+        returns a DeleteOrganizationResponse
+      operationId: MgmtPublicService_DeleteOrganization
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteOrganizationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            The resource name of the organization to be deleted,
+            for example: "organizations/local-organization"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+      tags:
+        - MgmtPublicService
+    patch:
+      summary: |-
+        UpdateOrganization method receives a UpdateOrganizationRequest message and
+        returns a UpdateOrganizationResponse
+      operationId: MgmtPublicService_UpdateOrganization
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateOrganizationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            Resource name. It must have the format of "organizations/*".
+            For example: "organizations/local-organization".
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: organization
+          description: |-
+            The organization to update
+
+            The organization's `name` field is used to identify the organization to update.
+            Format: organizations/{organization}
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Organization ID in UUIDv4.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Resource ID (the last segment of the resource name), also the organization
+                  name. This conforms to RFC-1034, which restricts to letters, numbers,
+                  and hyphen, with the first character a letter, the last a letter or a
+                  number, and a 63 character maximum.
+                  Note that the ID can be updated.
+              create_time:
+                type: string
+                format: date-time
+                title: 'Owner type: fixed to `OWNER_TYPE_USER`'
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Organization update time
+                readOnly: true
+              org_name:
+                type: string
+                title: Organization company or institution name
+              customer_id:
+                type: string
+                description: Stripe customer ID. This field is used in Instill Cloud.
+                readOnly: true
+              profile_avatar:
+                type: string
+                title: Profile Avatar base64
+              profile_data:
+                type: object
+                title: Profile Data
+            description: |-
+              The organization's `name` field is used to identify the organization to update.
+              Format: organizations/{organization}
+            title: The organization to update
+            required:
+              - id
+      tags:
+        - MgmtPublicService
+  /v1alpha/{parent_1}/connectors:
+    get:
+      summary: |-
+        ListOrganizationConnectors method receives a
+        ListOrganizationConnectorsRequest message and returns a
+        ListOrganizationConnectorsResponse message.
+      operationId: PipelinePublicService_ListOrganizationConnectors
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationConnectorsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource where this connector will be created.
+            Format: organizations/{organizations}
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
         - name: page_size
           description: |-
-            The maximum number of connector-resources to return. The service may return fewer
-            than this value. If unspecified, at most 10 connector-resources will be returned.
+            The maximum number of connectors to return. The service may return fewer
+            than this value. If unspecified, at most 10 connectors will be returned.
             The maximum value is 100; values above 100 will be coerced to 100.
           in: query
           required: false
@@ -1463,7 +2475,7 @@ paths:
           type: string
         - name: view
           description: |-
-            ConnectorResource view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -1479,28 +2491,390 @@ paths:
             - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
         - name: filter
-          description: Filter expression to list connector-resources
+          description: Filter expression to list connectors
           in: query
           required: false
           type: string
         - name: show_deleted
-          description: Return soft_deleted connector resources
+          description: Return soft_deleted connectors
           in: query
           required: false
           type: boolean
       tags:
-        - ConnectorPublicService
+        - PipelinePublicService
     post:
       summary: |-
-        CreateUserConnectorResource method receives a
-        CreateUserConnectorResourceRequest message and returns a
-        CreateUserConnectorResourceResponse message.
-      operationId: ConnectorPublicService_CreateUserConnectorResource
+        CreateOrganizationConnector method receives a
+        CreateOrganizationConnectorRequest message and returns a
+        CreateOrganizationConnectorResponse message.
+      operationId: PipelinePublicService_CreateOrganizationConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaCreateUserConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaCreateOrganizationConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource where this connector will be created.
+            Format: organizations/{organizations}
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: connector
+          description: connector
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaConnector'
+            required:
+              - connector
+      tags:
+        - PipelinePublicService
+  /v1alpha/{parent_1}/memberships:
+    get:
+      summary: |-
+        ListOrganizationMemberships method receives a ListOrganizationMembershipsRequest message and returns a
+        ListOrganizationMembershipsResponse message.
+      operationId: MgmtPublicService_ListOrganizationMemberships
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationMembershipsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource where this connector resource will be created.
+            Format: organization/{organizations}
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+      tags:
+        - MgmtPublicService
+  /v1alpha/{parent_1}/pipelines:
+    get:
+      summary: |-
+        ListOrganizationPipelines method receives a ListOrganizationPipelinesRequest message and returns a
+        ListOrganizationPipelinesResponse message.
+      operationId: PipelinePublicService_ListOrganizationPipelines
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationPipelinesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource where this connector resource will be created.
+            Format: organizations/{organizations}
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of pipelines to return. The service may return fewer
+            than this value. If unspecified, at most 10 pipelines will be returned. The
+            maximum value is 100; values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_RECIPE: View: RECIPE: will return recipe
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list pipelines
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Return soft_deleted pipeline releases
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: |-
+        CreateOrganizationPipeline method receives a CreateOrganizationPipelineRequest message and returns
+        a CreateOrganizationPipelineResponse message.
+      operationId: PipelinePublicService_CreateOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateOrganizationPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource where this connector resource will be created.
+            Format: organizations/{organizations}
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: pipeline
+          description: A pipeline resource to create
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaPipeline'
+            required:
+              - pipeline
+      tags:
+        - PipelinePublicService
+  /v1alpha/{parent_1}/releases:
+    get:
+      summary: |-
+        ListOrganizationPipelineReleases method receives a ListOrganizationPipelineReleasesRequest message and returns a
+        ListOrganizationPipelineReleasesResponse message.
+      operationId: PipelinePublicService_ListOrganizationPipelineReleases
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationPipelineReleasesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource where this pipeline_release will be created.
+            Format: organizations/{organization}/pipelines/{pipeline}
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of pipeline_releases to return. The service may return fewer
+            than this value. If unspecified, at most 10 pipeline_release will be returned. The
+            maximum value is 100; values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_RECIPE: View: RECIPE: will return recipe
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list pipeline_releases
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Return soft_deleted pipelines
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: |-
+        CreateOrganizationPipelineRelease method receives a CreateOrganizationPipelineReleaseRequest message and returns
+        a CreateOrganizationPipelineReleaseResponse message.
+      operationId: PipelinePublicService_CreateOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource where this pipeline_release will be created.
+            Format: organizations/{organization}/pipelines/{pipeline}
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: release
+          description: A pipeline_release resource to create
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaPipelineRelease'
+            required:
+              - release
+      tags:
+        - PipelinePublicService
+  /v1alpha/{parent}/connectors:
+    get:
+      summary: |-
+        ListUserConnectors method receives a
+        ListUserConnectorsRequest message and returns a
+        ListUserConnectorsResponse message.
+      operationId: PipelinePublicService_ListUserConnectors
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListUserConnectorsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource where this connector will be created.
+            Format: users/{users}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of connectors to return. The service may return fewer
+            than this value. If unspecified, at most 10 connectors will be returned.
+            The maximum value is 100; values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_CONFIGURATION: View: CONFIGURATION
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list connectors
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Return soft_deleted connectors
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: |-
+        CreateUserConnector method receives a
+        CreateUserConnectorRequest message and returns a
+        CreateUserConnectorResponse message.
+      operationId: PipelinePublicService_CreateUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateUserConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource where this connector will be created.
+            Format: users/{users}
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: connector
+          description: connector
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaConnector'
+            required:
+              - connector
+      tags:
+        - PipelinePublicService
+  /v1alpha/{parent}/memberships:
+    get:
+      summary: |-
+        ListUserMemberships method receives a ListUserMembershipsRequest message and returns a
+        ListUserMembershipsResponse message.
+      operationId: MgmtPublicService_ListUserMemberships
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListUserMembershipsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -1514,16 +2888,8 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+
-        - name: connector_resource
-          description: ConnectorResource resource
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1alphaConnectorResource'
-            required:
-              - connector_resource
       tags:
-        - ConnectorPublicService
+        - MgmtPublicService
   /v1alpha/{parent}/models:
     get:
       summary: |-
@@ -1827,50 +3193,6 @@ paths:
   /v1alpha/{permalink_1}/lookUp:
     get:
       summary: |-
-        LookUpConnectorResource method receives a
-        LookUpConnectorResourceRequest message and returns a
-        LookUpConnectorResourceResponse
-      operationId: ConnectorPublicService_LookUpConnectorResource
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpConnectorResourceResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: permalink_1
-          description: |-
-            Permalink of a connector_resource. For example:
-            "connector-resources/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: connector-resources/[^/]+
-        - name: view
-          description: |-
-            ConnectorResource view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPublicService
-  /v1alpha/{permalink_2}/lookUp:
-    get:
-      summary: |-
         LookUpPipeline method receives a LookUpPipelineRequest message and returns
         a LookUpPipelineResponse
       operationId: PipelinePublicService_LookUpPipeline
@@ -1884,7 +3206,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_2
+        - name: permalink_1
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -1908,6 +3230,50 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
             - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+  /v1alpha/{permalink_2}/lookUp:
+    get:
+      summary: |-
+        LookUpConnector method receives a
+        LookUpConnectorRequest message and returns a
+        LookUpConnectorResponse
+      operationId: PipelinePublicService_LookUpConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpConnectorResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_2
+          description: |-
+            Permalink of a connector. For example:
+            "connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connectors/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_CONFIGURATION: View: CONFIGURATION
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePublicService
@@ -1954,6 +3320,30 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPublicService
+  /v1alpha/{pipeline.name/watch_1}/watch:
+    get:
+      summary: |-
+        WatchOrganizationPipelineRelease method receives a WatchOrganizationPipelineReleaseRequest message
+        and returns a WatchOrganizationPipelineReleaseResponse
+      operationId: PipelinePublicService_WatchOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline.name/watch_1
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
   /v1alpha/{pipeline.name/watch}/watch:
     get:
       summary: |-
@@ -1976,6 +3366,153 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1alpha/{pipeline.name_1}:
+    get:
+      summary: |-
+        GetOrganizationPipeline method receives a GetOrganizationPipelineRequest message and returns a
+        GetOrganizationPipelineResponse message.
+      operationId: PipelinePublicService_GetOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOrganizationPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline.name_1
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: view
+          description: |-
+            Pipeline resource view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_RECIPE: View: RECIPE: will return recipe
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: |-
+        DeleteOrganizationPipeline method receives a DeleteOrganizationPipelineRequest message and returns
+        a DeleteOrganizationPipelineResponse message.
+      operationId: PipelinePublicService_DeleteOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteOrganizationPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline.name_1
+          description: Pipeline resource name. It must have the format of "organizations/*/pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+      tags:
+        - PipelinePublicService
+    patch:
+      summary: |-
+        UpdateOrganizationPipeline method receives a UpdateOrganizationPipelineRequest message and returns
+        a UpdateOrganizationPipelineResponse message.
+      operationId: PipelinePublicService_UpdateOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateOrganizationPipelineResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline.name_1
+          description: Pipeline resource name. It must have the format of "users/{user}/pipelines/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: pipeline
+          description: A pipeline resource to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                title: Pipeline UUID
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Pipeline resource ID (the last segment of the resource name) used to
+                  construct the resource name. This conforms to RFC-1034, which restricts to
+                  letters, numbers, and hyphen, with the first character a letter, the last a
+                  letter or a number, and a 63 character maximum.
+              description:
+                type: string
+                title: Pipeline description
+              recipe:
+                $ref: '#/definitions/v1alphaRecipe'
+                title: Pipeline recipe
+              user:
+                type: string
+                description: |-
+                  The resource name with UUID of a user, e.g.,
+                  "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+                readOnly: true
+              organization:
+                type: string
+                title: The resource name with UUID of an organization
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                title: Pipeline creation time
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Pipeline update time
+                readOnly: true
+              openapi_schema:
+                type: object
+                title: OpenAPI schema
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                title: Pipeline delete time
+                readOnly: true
+              permission:
+                $ref: '#/definitions/v1alphaPermission'
+                title: Pipeline permission
+              metadata:
+                type: object
+                title: 'Metadata: store Console-related data such as pipeline builder layout'
+            title: A pipeline resource to update
       tags:
         - PipelinePublicService
   /v1alpha/{pipeline.name}:
@@ -2093,7 +3630,7 @@ paths:
                   The resource name with UUID of a user, e.g.,
                   "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
                 readOnly: true
-              org:
+              organization:
                 type: string
                 title: The resource name with UUID of an organization
                 readOnly: true
@@ -2123,6 +3660,70 @@ paths:
                 type: object
                 title: 'Metadata: store Console-related data such as pipeline builder layout'
             title: A pipeline resource to update
+      tags:
+        - PipelinePublicService
+  /v1alpha/{pipeline_release.name_1}:
+    get:
+      summary: |-
+        GetOrganizationPipelineRelease method receives a GetOrganizationPipelineReleaseRequest message and returns a
+        GetOrganizationPipelineReleaseResponse message.
+      operationId: PipelinePublicService_GetOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline_release.name_1
+          description: PipelineRelease resource name. It must have the format of "organizations/*/pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: view
+          description: |-
+            PipelineRelease resource view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_RECIPE: View: RECIPE: will return recipe
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: |-
+        DeleteOrganizationPipelineRelease method receives a DeleteOrganizationPipelineReleaseRequest message and returns
+        a DeleteOrganizationPipelineReleaseResponse message.
+      operationId: PipelinePublicService_DeleteOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline_release.name_1
+          description: PipelineRelease resource name. It must have the format of "organizations/*/pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
         - PipelinePublicService
   /v1alpha/{pipeline_release.name}:
@@ -2187,6 +3788,80 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1alpha/{release.name_1}:
+    patch:
+      summary: |-
+        UpdateOrganizationPipelineRelease method receives a UpdateOrganizationPipelineReleaseRequest message and returns
+        a UpdateOrganizationPipelineReleaseResponse message.
+      operationId: PipelinePublicService_UpdateOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateOrganizationPipelineReleaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: release.name_1
+          description: PipelineRelease resource name. It must have the format of "users/*/pipelines/*/releases/*"
+          in: path
+          required: true
+          type: string
+          pattern: organizationsr/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: release
+          description: A pipeline release resource to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                title: PipelineRelease UUID
+                readOnly: true
+              id:
+                type: string
+                title: |-
+                  PipelineRelease resource ID (the last segment of the resource name) used to
+                  construct the resource name. Must be a sematic version vX.Y.Z
+              description:
+                type: string
+                title: PipelineRelease description
+              recipe:
+                $ref: '#/definitions/v1alphaRecipe'
+                title: Pipeline recipe snapshot
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                title: Pipeline creation time
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                title: Pipeline update time
+                readOnly: true
+              openapi_schema:
+                type: object
+                title: OpenAPI schema
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                title: Pipeline delete time
+                readOnly: true
+              alias:
+                type: string
+                title: Alias
+                readOnly: true
+              metadata:
+                type: object
+                title: 'Metadata: store Console-related data such as pipeline builder layout'
+            title: A pipeline release resource to update
       tags:
         - PipelinePublicService
   /v1alpha/{release.name}:
@@ -2348,8 +4023,8 @@ paths:
                 $ref: '#/definitions/pipelinev1alphaState'
                 title: Pipeline state
               connector_state:
-                $ref: '#/definitions/v1alphaConnectorResourceState'
-                title: ConnectorResource state
+                $ref: '#/definitions/v1alphaConnectorState'
+                title: Connector state
               backend_state:
                 $ref: '#/definitions/HealthCheckResponseServingStatus'
                 title: Backend service state
@@ -2511,6 +4186,47 @@ paths:
           pattern: tokens/[^/]+
       tags:
         - MgmtPublicService
+  /v1alpha/{user.name}:
+    get:
+      summary: |-
+        GetUser method receives a GetUser message and returns a
+        GetUser message.
+      operationId: MgmtPublicService_GetUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetUserResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            Resource name of a user. For example:
+            "users/local-user"
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - MgmtPublicService
   /v1alpha/{user.name}/exist:
     get:
       summary: |-
@@ -2625,7 +4341,89 @@ paths:
               state
       tags:
         - ModelPrivateService
+  /v1alpha/admin/{organization.name}:
+    get:
+      summary: |-
+        GetOrganizationAdmin method receives a GetOrganizationAdminRequest message and returns
+        a GetOrganizationAdminResponse message.
+      operationId: MgmtPrivateService_GetOrganizationAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOrganizationAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            Resource name of a organization. For example:
+            "organizations/local-organization"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - MgmtPrivateService
   /v1alpha/admin/{permalink_1}/lookUp:
+    get:
+      summary: |-
+        LookUpOrganizationAdmin method receives a LookUpOrganizationAdminRequest message and
+        returns a LookUpOrganizationAdminResponse
+      operationId: MgmtPrivateService_LookUpOrganizationAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpOrganizationAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_1
+          description: |-
+            Permalink of a organization. For example:
+            "organizations/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - MgmtPrivateService
+  /v1alpha/admin/{permalink_2}/lookUp:
     get:
       summary: |-
         LookUpModelAdmin method receives a LookUpModelAdminRequest message and
@@ -2641,7 +4439,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_1
+        - name: permalink_2
           description: |-
             Permalink of a model. For example:
             "models/{uid}"
@@ -2668,95 +4466,7 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - ModelPrivateService
-  /v1alpha/admin/{permalink_2}/lookUp:
-    get:
-      summary: |-
-        LookUpConnectorDefinitionAdmin method receives a
-        LookUpConnectorDefinitionAdminRequest message and returns a
-        LookUpConnectorDefinitionAdminResponse
-      operationId: ConnectorPrivateService_LookUpConnectorDefinitionAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpConnectorDefinitionAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: permalink_2
-          description: |-
-            Permalink of a connector. For example:
-            "connector-definitions/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: connector-definitions/[^/]+
-        - name: view
-          description: |-
-            Connector view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
   /v1alpha/admin/{permalink_3}/lookUp:
-    get:
-      summary: |-
-        LookUpConnectorResourceAdmin method receives a
-        LookUpConnectorResourceAdminRequest message and returns a
-        LookUpConnectorResourceAdminResponse
-      operationId: ConnectorPrivateService_LookUpConnectorResourceAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaLookUpConnectorResourceAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: permalink_3
-          description: |-
-            Permalink of a connector_resource. For example:
-            "connector-resources/{uid}"
-          in: path
-          required: true
-          type: string
-          pattern: connector-resources/[^/]+
-        - name: view
-          description: |-
-            ConnectorResource view (default is VIEW_BASIC)
-
-             - VIEW_UNSPECIFIED: View: UNSPECIFIED
-             - VIEW_BASIC: View: BASIC
-             - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_UNSPECIFIED
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-          default: VIEW_UNSPECIFIED
-      tags:
-        - ConnectorPrivateService
-  /v1alpha/admin/{permalink_4}/lookUp:
     get:
       summary: |-
         LookUpPipelineAdmin method receives a LookUpPipelineAdminRequest message
@@ -2772,7 +4482,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_4
+        - name: permalink_3
           description: |-
             Permalink of a pipeline. For example:
             "pipelines/{uid}"
@@ -2799,7 +4509,7 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePrivateService
-  /v1alpha/admin/{permalink_5}/lookUp:
+  /v1alpha/admin/{permalink_4}/lookUp:
     get:
       summary: |-
         LookUpOperatorDefinitionAdmin method receives a
@@ -2816,7 +4526,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink_5
+        - name: permalink_4
           description: |-
             Permalink of a operator. For example:
             "operator-definitions/{uid}"
@@ -2831,7 +4541,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_RECIPE: View: RECIPE: will return recipe
           in: query
           required: false
           type: string
@@ -2839,21 +4548,106 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_RECIPE
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePrivateService
+  /v1alpha/admin/{permalink_5}/lookUp:
+    get:
+      summary: |-
+        LookUpConnectorDefinitionAdmin method receives a
+        LookUpConnectorDefinitionAdminRequest message and returns a
+        LookUpConnectorDefinitionAdminResponse
+      operationId: PipelinePrivateService_LookUpConnectorDefinitionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpConnectorDefinitionAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_5
+          description: |-
+            Permalink of a connector. For example:
+            "connector-definitions/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connector-definitions/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+      tags:
+        - PipelinePrivateService
+  /v1alpha/admin/{permalink_6}/lookUp:
+    get:
+      summary: |-
+        LookUpConnectorAdmin method receives a
+        LookUpConnectorAdminRequest message and returns a
+        LookUpConnectorAdminResponse
+      operationId: PipelinePrivateService_LookUpConnectorAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpConnectorAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink_6
+          description: |-
+            Permalink of a connector. For example:
+            "connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connectors/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+             - VIEW_CONFIGURATION: View: CONFIGURATION
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
       tags:
         - PipelinePrivateService
   /v1alpha/admin/{permalink}/check:
     get:
       summary: |-
-        CheckConnectorResource method receives a CheckConnectorResourceRequest message and returns a
-        CheckConnectorResourceResponse
-      operationId: ConnectorPrivateService_CheckConnectorResource
+        CheckConnector method receives a CheckConnectorRequest message and returns a
+        CheckConnectorResponse
+      operationId: PipelinePrivateService_CheckConnector
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaCheckConnectorResourceResponse'
+            $ref: '#/definitions/v1alphaCheckConnectorResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -2861,14 +4655,14 @@ paths:
       parameters:
         - name: permalink
           description: |-
-            Permalink of a connector_resource. For example:
-            "connector-resources/{uid}"
+            Permalink of a connector. For example:
+            "connectors/{uid}"
           in: path
           required: true
           type: string
-          pattern: connector-resources/[^/]+
+          pattern: connectors/[^/]+
       tags:
-        - ConnectorPrivateService
+        - PipelinePrivateService
   /v1alpha/admin/{permalink}/lookUp:
     get:
       summary: |-
@@ -2951,146 +4745,17 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - MgmtPrivateService
-    delete:
-      summary: |-
-        DeleteUserAdmin method receives a DeleteUserAdminRequest message and
-        returns a DeleteUserAdminResponse
-      operationId: MgmtPrivateService_DeleteUserAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeleteUserAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user.name
-          description: |-
-            The resource name of the user to be deleted,
-            for example: "users/local-user"
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-      tags:
-        - MgmtPrivateService
-    patch:
-      summary: |-
-        UpdateUserAdmin method receives a UpdateUserAdminRequest message and
-        returns a UpdateUserAdminResponse
-      operationId: MgmtPrivateService_UpdateUserAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaUpdateUserAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user.name
-          description: |-
-            Resource name. It must have the format of "users/*".
-            For example: "users/local-user".
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: user
-          description: |-
-            The user to update
-
-            The user's `name` field is used to identify the user to update.
-            Format: users/{user}
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              uid:
-                type: string
-                description: |-
-                  User ID in UUIDv4. This field is optionally set by users
-                  (optional on resource creation, server-generated if unset).
-              id:
-                type: string
-                description: |-
-                  Resource ID (the last segment of the resource name), also the user
-                  username. This conforms to RFC-1034, which restricts to letters, numbers,
-                  and hyphen, with the first character a letter, the last a letter or a
-                  number, and a 63 character maximum.
-                  Note that the ID can be updated.
-              type:
-                $ref: '#/definitions/v1alphaOwnerType'
-                title: 'Owner type: fixed to `OWNER_TYPE_USER`'
-                readOnly: true
-              create_time:
-                type: string
-                format: date-time
-                title: User creation time
-                readOnly: true
-              update_time:
-                type: string
-                format: date-time
-                title: User update time
-                readOnly: true
-              email:
-                type: string
-                title: User email
-              customer_id:
-                type: string
-                description: Stripe customer ID. This field is used in Instill Cloud.
-                readOnly: true
-              first_name:
-                type: string
-                title: User first name
-              last_name:
-                type: string
-                title: User last name
-              org_name:
-                type: string
-                title: User company or institution name
-              role:
-                type: string
-                title: |-
-                  User role. Allowed roles:
-                   - "manager"
-                   - "ai-researcher"
-                   - "ai-engineer"
-                   - "data-engineer",
-                   - "data-scientist",
-                   - "analytics-engineer"
-                   - "hobbyist"
-              newsletter_subscription:
-                type: boolean
-                title: User newsletter subscription
-              cookie_token:
-                type: string
-                title: User console cookie token
-            description: |-
-              The user's `name` field is used to identify the user to update.
-              Format: users/{user}
-            title: The user to update
-            required:
-              - id
-              - email
-              - newsletter_subscription
-      tags:
-        - MgmtPrivateService
-  /v1alpha/admin/connector-resources:
+  /v1alpha/admin/connectors:
     get:
       summary: |-
-        ListConnectorResourcesAdmin method receives a ListConnectorResourcesAdminRequest
-        message and returns a ListConnectorResourcesResponse message.
-      operationId: ConnectorPrivateService_ListConnectorResourcesAdmin
+        ListConnectorsAdmin method receives a ListConnectorsAdminRequest
+        message and returns a ListConnectorsResponse message.
+      operationId: PipelinePrivateService_ListConnectorsAdmin
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListConnectorResourcesAdminResponse'
+            $ref: '#/definitions/v1alphaListConnectorsAdminResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3098,8 +4763,8 @@ paths:
       parameters:
         - name: page_size
           description: |-
-            The maximum number of connector-resources to return. The service may return fewer
-            than this value. If unspecified, at most 10 connector-resources will be returned.
+            The maximum number of connectors to return. The service may return fewer
+            than this value. If unspecified, at most 10 connectors will be returned.
             The maximum value is 100; values above 100 will be coerced to 100.
           in: query
           required: false
@@ -3112,7 +4777,7 @@ paths:
           type: string
         - name: view
           description: |-
-            ConnectorResource view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -3128,17 +4793,17 @@ paths:
             - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
         - name: filter
-          description: Filter expression to list connector-resources
+          description: Filter expression to list connectors
           in: query
           required: false
           type: string
         - name: show_deleted
-          description: Return soft_deleted connector resources
+          description: Return soft_deleted connectors
           in: query
           required: false
           type: boolean
       tags:
-        - ConnectorPrivateService
+        - PipelinePrivateService
   /v1alpha/admin/models:
     get:
       summary: |-
@@ -3194,6 +4859,59 @@ paths:
           type: boolean
       tags:
         - ModelPrivateService
+  /v1alpha/admin/organizations:
+    get:
+      summary: |-
+        ListOrganizationsAdmin method receives a ListOrganizationsAdminRequest message and returns
+        a ListOrganizationsAdminResponse message.
+      operationId: MgmtPrivateService_ListOrganizationsAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationsAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            Page size: the maximum number of resources to return. The service may
+            return fewer than this value. If unspecified, at most 10 organizations will be
+            returned. The maximum value is 100; values above 100 will be coereced to
+            100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list organizations
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPrivateService
   /v1alpha/admin/pipelines:
     get:
       summary: |-
@@ -3365,35 +5083,6 @@ paths:
           type: string
       tags:
         - MgmtPrivateService
-    post:
-      summary: |-
-        CreateUserAdmin receives a CreateUserAdminRequest message and returns a
-        a GetUserAdminResponse
-      operationId: MgmtPrivateService_CreateUserAdmin
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCreateUserAdminResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user
-          description: |-
-            The user to be created
-
-            The user's `name` field is used to identify the user to create.
-            Format: users/{user}
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/mgmtv1alphaUser'
-            required:
-              - user
-      tags:
-        - MgmtPrivateService
   /v1alpha/auth/change_password:
     post:
       summary: Auth Change password endpoint
@@ -3498,7 +5187,7 @@ paths:
         ListConnectorDefinitions method receives a
         ListConnectorDefinitionsRequest message and returns a
         ListConnectorDefinitionsResponse message.
-      operationId: ConnectorPublicService_ListConnectorDefinitions
+      operationId: PipelinePublicService_ListConnectorDefinitions
       responses:
         "200":
           description: A successful response.
@@ -3531,7 +5220,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_CONFIGURATION: View: CONFIGURATION
           in: query
           required: false
           type: string
@@ -3539,7 +5227,6 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
         - name: filter
           description: Filter expression to list connector definitions
@@ -3547,19 +5234,19 @@ paths:
           required: false
           type: string
       tags:
-        - ConnectorPublicService
-  /v1alpha/connector-resources:
+        - PipelinePublicService
+  /v1alpha/connectors:
     get:
       summary: |-
-        ListConnectorResources method receives a
-        ListConnectorResourcesRequest message and returns a
-        ListConnectorResourcesResponse message.
-      operationId: ConnectorPublicService_ListConnectorResources
+        ListConnectors method receives a
+        ListConnectorsRequest message and returns a
+        ListConnectorsResponse message.
+      operationId: PipelinePublicService_ListConnectors
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListConnectorResourcesResponse'
+            $ref: '#/definitions/v1alphaListConnectorsResponse'
         default:
           description: An unexpected error response.
           schema:
@@ -3567,8 +5254,8 @@ paths:
       parameters:
         - name: page_size
           description: |-
-            The maximum number of connector-resources to return. The service may return fewer
-            than this value. If unspecified, at most 10 connector-resources will be returned.
+            The maximum number of connectors to return. The service may return fewer
+            than this value. If unspecified, at most 10 connectors will be returned.
             The maximum value is 100; values above 100 will be coerced to 100.
           in: query
           required: false
@@ -3581,7 +5268,7 @@ paths:
           type: string
         - name: view
           description: |-
-            ConnectorResource view (default is VIEW_BASIC)
+            Connector view (default is VIEW_BASIC)
 
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
@@ -3597,41 +5284,17 @@ paths:
             - VIEW_CONFIGURATION
           default: VIEW_UNSPECIFIED
         - name: filter
-          description: Filter expression to list connector-resources
+          description: Filter expression to list connectors
           in: query
           required: false
           type: string
         - name: show_deleted
-          description: Return soft_deleted connector resources
+          description: Return soft_deleted connectors
           in: query
           required: false
           type: boolean
       tags:
-        - ConnectorPublicService
-  /v1alpha/health/connector:
-    get:
-      summary: |-
-        Liveness method receives a LivenessRequest message and returns a
-        LivenessResponse message.
-        See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
-      operationId: ConnectorPublicService_Liveness2
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/vdpconnectorv1alphaLivenessResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: health_check_request.service
-          description: Service name to check for its readiness status
-          in: query
-          required: false
-          type: string
-      tags:
-        - ConnectorPublicService
+        - PipelinePublicService
   /v1alpha/health/controller:
     get:
       summary: |-
@@ -4113,7 +5776,6 @@ paths:
              - VIEW_UNSPECIFIED: View: UNSPECIFIED
              - VIEW_BASIC: View: BASIC
              - VIEW_FULL: View: FULL
-             - VIEW_RECIPE: View: RECIPE: will return recipe
           in: query
           required: false
           type: string
@@ -4121,7 +5783,6 @@ paths:
             - VIEW_UNSPECIFIED
             - VIEW_BASIC
             - VIEW_FULL
-            - VIEW_RECIPE
           default: VIEW_UNSPECIFIED
         - name: filter
           description: Filter expression to list operator definitions
@@ -4130,6 +5791,88 @@ paths:
           type: string
       tags:
         - PipelinePublicService
+  /v1alpha/organizations:
+    get:
+      summary: |-
+        ListOrganizations method receives a ListOrganizationsRequest message and returns
+        a ListOrganizationsResponse message.
+      operationId: MgmtPublicService_ListOrganizations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            Page size: the maximum number of resources to return. The service may
+            return fewer than this value. If unspecified, at most 10 organizations will be
+            returned. The maximum value is 100; values above 100 will be coereced to
+            100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list organizations
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
+    post:
+      summary: |-
+        CreateOrganization receives a CreateOrganizationRequest message and returns a
+        a GetOrganizationResponse
+      operationId: MgmtPublicService_CreateOrganization
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateOrganizationResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization
+          description: |-
+            The organization to be created
+
+            The organization's `name` field is used to identify the organization to create.
+            Format: organizations/{organization}
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaOrganization'
+            required:
+              - organization
+      tags:
+        - MgmtPublicService
   /v1alpha/pipelines:
     get:
       summary: |-
@@ -4346,23 +6089,60 @@ paths:
               - token
       tags:
         - MgmtPublicService
-  /v1alpha/users/me:
+  /v1alpha/users:
     get:
       summary: |-
-        QueryAuthenticatedUser method receives a QueryAuthenticatedUserRequest
-        message and returns a QueryAuthenticatedUserResponse message.
-      operationId: MgmtPublicService_QueryAuthenticatedUser
+        ListUsers method receives a ListUsersRequest message and returns a
+        ListUsersResponse message.
+      operationId: MgmtPublicService_ListUsers
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaQueryAuthenticatedUserResponse'
+            $ref: '#/definitions/v1alphaListUsersResponse'
         default:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            Page size: the maximum number of resources to return. The service may
+            return fewer than this value. If unspecified, at most 10 users will be
+            returned. The maximum value is 100; values above 100 will be coereced to
+            100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+             - VIEW_BASIC: View: BASIC
+             - VIEW_FULL: View: FULL
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_UNSPECIFIED
+            - VIEW_BASIC
+            - VIEW_FULL
+          default: VIEW_UNSPECIFIED
+        - name: filter
+          description: Filter expression to list users
+          in: query
+          required: false
+          type: string
       tags:
         - MgmtPublicService
+  /v1alpha/users/me:
     patch:
       summary: |-
         PatchAuthenticatedUser method receives a PatchAuthenticatedUserRequest
@@ -4708,10 +6488,6 @@ definitions:
           and hyphen, with the first character a letter, the last a letter or a
           number, and a 63 character maximum.
           Note that the ID can be updated.
-      type:
-        $ref: '#/definitions/v1alphaOwnerType'
-        title: 'Owner type: fixed to `OWNER_TYPE_USER`'
-        readOnly: true
       create_time:
         type: string
         format: date-time
@@ -4755,6 +6531,12 @@ definitions:
       cookie_token:
         type: string
         title: User console cookie token
+      profile_avatar:
+        type: string
+        title: Profile Avatar base64
+      profile_data:
+        type: object
+        title: Profile Data
     title: User represents the content of a user
     required:
       - id
@@ -5124,15 +6906,15 @@ definitions:
         title: Bounding box height value
         readOnly: true
     title: BoundingBox represents the bounding box data structure
-  v1alphaCheckConnectorResourceResponse:
+  v1alphaCheckConnectorResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaConnectorResourceState'
-        title: Retrieved connector_resource state
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
     title: |-
-      CheckConnectorResourceResponse represents a response to fetch a
-      connector_resource's current state
+      CheckConnectorResponse represents a response to fetch a
+      connector's current state
   v1alphaCheckModelAdminResponse:
     type: object
     properties:
@@ -5194,7 +6976,7 @@ definitions:
         type: string
         title: A pipeline component resource name
       resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
+        $ref: '#/definitions/v1alphaConnector'
         title: A pipeline component resource detail
         readOnly: true
       configuration:
@@ -5235,15 +7017,101 @@ definitions:
        - COMPONENT_TYPE_CONNECTOR_BLOCKCHAIN: CONNECTOR_BLOCKCHAIN
        - COMPONENT_TYPE_OPERATOR: CONNECTOR_OPERATOR
     title: ComponentType
-  v1alphaConnectUserConnectorResourceResponse:
+  v1alphaConnectOrganizationConnectorResponse:
     type: object
     properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: A ConnectorResource resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A connector
     title: |-
-      ConnectUserConnectorResourceResponse represents a connected
-      connector_resource
+      ConnectOrganizationConnectorResponse represents a connected
+      connector
+  v1alphaConnectUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A connector
+    title: |-
+      ConnectUserConnectorResponse represents a connected
+      connector
+  v1alphaConnector:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          connector name. It must have the format of
+          "connectors/*"
+        readOnly: true
+      uid:
+        type: string
+        title: Connector UUID
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          connector ID (the last segment of the resource name)
+          used to construct the resource name. This conforms to RFC-1034, which
+          restricts to letters, numbers, and hyphen, with the first character a
+          letter, the last a letter or a number, and a 63 character maximum.
+      connector_definition_name:
+        type: string
+        title: ConnectorDefinition resource
+      type:
+        $ref: '#/definitions/v1alphaConnectorType'
+        title: Connector Type
+        readOnly: true
+      description:
+        type: string
+        title: Connector description
+      configuration:
+        type: object
+        title: Connector configuration in JSON format
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Connector state
+        readOnly: true
+      tombstone:
+        type: boolean
+        title: Connector tombstone
+        readOnly: true
+      user:
+        type: string
+        description: |-
+          The resource name with UUID of a user, e.g.,
+          "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
+        readOnly: true
+      organization:
+        type: string
+        title: The resource name with UUID of an organization
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        title: Connector creation time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: Connector update time
+        readOnly: true
+      visibility:
+        $ref: '#/definitions/v1alphaConnectorVisibility'
+        title: Connector visibility including public or private
+        readOnly: true
+      connector_definition:
+        $ref: '#/definitions/v1alphaConnectorDefinition'
+        title: Embed the content of the connector_definition
+        readOnly: true
+      delete_time:
+        type: string
+        format: date-time
+        title: Connector delete time
+        readOnly: true
+    title: Connector represents a connector data model
+    required:
+      - configuration
   v1alphaConnectorDefinition:
     type: object
     properties:
@@ -5278,7 +7146,7 @@ definitions:
         title: ConnectorDefinition icon
         readOnly: true
       spec:
-        $ref: '#/definitions/vdpconnectorv1alphaSpec'
+        $ref: '#/definitions/v1alphaConnectorSpec'
         title: ConnectorDefinition spec
         readOnly: true
       type:
@@ -5317,6 +7185,18 @@ definitions:
         title: ConnectorDefinition vendorAttributes, i.e. the vendor-specific attributes
         readOnly: true
     title: ConnectorDefinition represents the connector definition data model
+  v1alphaConnectorDefinitionView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: View enumerates the definition views
   v1alphaConnectorExecuteChartRecord:
     type: object
     properties:
@@ -5414,84 +7294,26 @@ definitions:
     title: |-
       ConnectorExecuteTableRecord represents a aggregated table record for
       connector execute
-  v1alphaConnectorResource:
+  v1alphaConnectorSpec:
     type: object
     properties:
-      name:
-        type: string
-        title: |-
-          ConnectorResource resource name. It must have the format of
-          "connector-resources/*"
-        readOnly: true
-      uid:
-        type: string
-        title: ConnectorResource UUID
-        readOnly: true
-      id:
-        type: string
-        description: |-
-          ConnectorResource resource ID (the last segment of the resource name)
-          used to construct the resource name. This conforms to RFC-1034, which
-          restricts to letters, numbers, and hyphen, with the first character a
-          letter, the last a letter or a number, and a 63 character maximum.
-      connector_definition_name:
-        type: string
-        title: ConnectorDefinition resource
-      type:
-        $ref: '#/definitions/v1alphaConnectorType'
-        title: ConnectorResource Type
-        readOnly: true
-      description:
-        type: string
-        title: ConnectorResource description
-      configuration:
+      resource_specification:
         type: object
-        title: ConnectorResource configuration in JSON format
-      state:
-        $ref: '#/definitions/v1alphaConnectorResourceState'
-        title: ConnectorResource state
-        readOnly: true
-      tombstone:
-        type: boolean
-        title: ConnectorResource tombstone
-        readOnly: true
-      user:
-        type: string
-        description: |-
-          The resource name with UUID of a user, e.g.,
-          "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
-        readOnly: true
-      org:
-        type: string
-        title: The resource name with UUID of an organization
-        readOnly: true
-      create_time:
-        type: string
-        format: date-time
-        title: ConnectorResource creation time
-        readOnly: true
-      update_time:
-        type: string
-        format: date-time
-        title: ConnectorResource update time
-        readOnly: true
-      visibility:
-        $ref: '#/definitions/v1alphaConnectorResourceVisibility'
-        title: ConnectorResource visibility including public or private
-        readOnly: true
-      connector_definition:
-        $ref: '#/definitions/v1alphaConnectorDefinition'
-        title: Embed the content of the connector_definition
-        readOnly: true
-      delete_time:
-        type: string
-        format: date-time
-        title: ConnectorResource delete time
-        readOnly: true
-    title: ConnectorResource represents a connector_resource data model
+        title: Spec resource specification
+      component_specification:
+        type: object
+        title: Spec component specification
+      openapi_specifications:
+        type: object
+        title: Spec openapi specification
+    title: |-
+      //////////////////////////////////
+      Spec represents a spec data model
     required:
-      - configuration
-  v1alphaConnectorResourceState:
+      - resource_specification
+      - component_specification
+      - openapi_specifications
+  v1alphaConnectorState:
     type: string
     enum:
       - STATE_UNSPECIFIED
@@ -5504,19 +7326,7 @@ definitions:
        - STATE_DISCONNECTED: State: DISCONNECTED
        - STATE_CONNECTED: State: CONNECTED
        - STATE_ERROR: State: ERROR
-    title: State enumerates the connector_resource state
-  v1alphaConnectorResourceVisibility:
-    type: string
-    enum:
-      - VISIBILITY_UNSPECIFIED
-      - VISIBILITY_PRIVATE
-      - VISIBILITY_PUBLIC
-    default: VISIBILITY_UNSPECIFIED
-    description: |-
-      - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
-       - VISIBILITY_PRIVATE: Visibility: PRIVATE
-       - VISIBILITY_PUBLIC: Visibility: PUBLIC
-    title: ConnectorResource visibility including public or private
+    title: State enumerates the connector state
   v1alphaConnectorType:
     type: string
     enum:
@@ -5563,6 +7373,32 @@ definitions:
     required:
       - user_uid
       - connector_execute_data
+  v1alphaConnectorView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_CONFIGURATION: View: CONFIGURATION
+    title: View enumerates the definition views
+  v1alphaConnectorVisibility:
+    type: string
+    enum:
+      - VISIBILITY_UNSPECIFIED
+      - VISIBILITY_PRIVATE
+      - VISIBILITY_PUBLIC
+    default: VISIBILITY_UNSPECIFIED
+    description: |-
+      - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
+       - VISIBILITY_PRIVATE: Visibility: PRIVATE
+       - VISIBILITY_PUBLIC: Visibility: PUBLIC
+    title: Connector visibility including public or private
   v1alphaConversationObject:
     type: object
     properties:
@@ -5573,6 +7409,36 @@ definitions:
         type: string
         title: Content of the conversation
     title: Conversation based prompt for text generation model
+  v1alphaCreateOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
+    title: |-
+      CreateOrganizationConnectorResponse represents a response for a
+      connector
+  v1alphaCreateOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: The created pipeline_release resource
+    title: CreateOrganizationPipelineReleaseResponse represents a response for a pipeline_release resource
+  v1alphaCreateOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1alphaPipeline'
+        title: The created pipeline resource
+    title: CreateOrganizationPipelineResponse represents a response for a pipeline resource
+  v1alphaCreateOrganizationResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1alphaOrganization'
+        title: A organization resource
+    title: CreateOrganizationResponse represents a response for a organization response
   v1alphaCreateSessionResponse:
     type: object
     properties:
@@ -5587,22 +7453,15 @@ definitions:
         $ref: '#/definitions/v1alphaApiToken'
         title: The created API token resource
     title: CreateTokenResponse represents a response for a API token resource
-  v1alphaCreateUserAdminResponse:
+  v1alphaCreateUserConnectorResponse:
     type: object
     properties:
-      user:
-        $ref: '#/definitions/mgmtv1alphaUser'
-        title: A user resource
-    title: CreateUserAdminResponse represents a response for a user response
-  v1alphaCreateUserConnectorResourceResponse:
-    type: object
-    properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: ConnectorResource resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
     title: |-
-      CreateUserConnectorResourceResponse represents a response for a
-      ConnectorResource resource
+      CreateUserConnectorResponse represents a response for a
+      connector
   v1alphaCreateUserModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -5633,15 +7492,30 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: The created pipeline resource
     title: CreateUserPipelineResponse represents a response for a pipeline resource
+  v1alphaDeleteOrganizationConnectorResponse:
+    type: object
+    title: DeleteOrganizationConnectorResponse represents an empty response
+  v1alphaDeleteOrganizationMembershipResponse:
+    type: object
+    title: DeleteOrganizationMembershipResponse represents an empty response
+  v1alphaDeleteOrganizationPipelineReleaseResponse:
+    type: object
+    title: DeleteOrganizationPipelineReleaseResponse represents an empty response
+  v1alphaDeleteOrganizationPipelineResponse:
+    type: object
+    title: DeleteOrganizationPipelineResponse represents an empty response
+  v1alphaDeleteOrganizationResponse:
+    type: object
+    title: DeleteOrganizationResponse represents an empty response
   v1alphaDeleteTokenResponse:
     type: object
     title: DeleteTokenResponse represents an empty response
-  v1alphaDeleteUserAdminResponse:
+  v1alphaDeleteUserConnectorResponse:
     type: object
-    title: DeleteUserAdminResponse represents an empty response
-  v1alphaDeleteUserConnectorResourceResponse:
+    title: DeleteUserConnectorResponse represents an empty response
+  v1alphaDeleteUserMembershipResponse:
     type: object
-    title: DeleteUserConnectorResourceResponse represents an empty response
+    title: DeleteUserMembershipResponse represents an empty response
   v1alphaDeleteUserModelResponse:
     type: object
     title: DeleteUserModelResponse represents an empty response
@@ -5724,16 +7598,25 @@ definitions:
         title: A list of detection objects
         readOnly: true
     title: DetectionOutput represents the output of detection task
-  v1alphaDisconnectUserConnectorResourceResponse:
+  v1alphaDisconnectOrganizationConnectorResponse:
     type: object
     properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: A ConnectorResource resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A connector
     title: |-
-      DisconnectUserConnectorResourceResponse represents a disconnected
-      connector_resource
-  v1alphaExecuteUserConnectorResourceResponse:
+      DisconnectOrganizationConnectorResponse represents a disconnected
+      connector
+  v1alphaDisconnectUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A connector
+    title: |-
+      DisconnectUserConnectorResponse represents a disconnected
+      connector
+  v1alphaExecuteOrganizationConnectorResponse:
     type: object
     properties:
       outputs:
@@ -5742,7 +7625,18 @@ definitions:
           type: object
         title: Outputs
     title: |-
-      ExecuteUserConnectorResourceResponse represents a response for execution
+      ExecuteOrganizationConnectorResponse represents a response for execution
+      output
+  v1alphaExecuteUserConnectorResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        title: Outputs
+    title: |-
+      ExecuteUserConnectorResponse represents a response for execution
       output
   v1alphaExistUsernameResponse:
     type: object
@@ -6090,6 +7984,50 @@ definitions:
     title: |-
       GetOperatorDefinitionResponse represents a
       Operator response
+  v1alphaGetOrganizationAdminResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1alphaOrganization'
+        title: A organization resource
+    title: GetOrganizationAdminResponse represents a response for a organization resource
+  v1alphaGetOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
+    title: |-
+      GetOrganizationConnectorResponse represents a response for a
+      connector
+  v1alphaGetOrganizationMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1alphaOrganizationMembership'
+        title: A membership resource
+    title: GetOrganizationMembershipResponse represents a response for a membership resource
+  v1alphaGetOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A pipeline_release resource
+    title: GetOrganizationPipelineReleaseResponse represents a response for a pipeline_release resource
+  v1alphaGetOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1alphaPipeline'
+        title: A pipeline resource
+    title: GetOrganizationPipelineResponse represents a response for a pipeline resource
+  v1alphaGetOrganizationResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1alphaOrganization'
+        title: A organization resource
+    title: GetOrganizationResponse represents a response for a organization resource
   v1alphaGetPipelineTriggerPriceRequest:
     type: object
     properties:
@@ -6212,15 +8150,22 @@ definitions:
         $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: GetUserAdminResponse represents a response for a user resource
-  v1alphaGetUserConnectorResourceResponse:
+  v1alphaGetUserConnectorResponse:
     type: object
     properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: ConnectorResource resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
     title: |-
-      GetUserConnectorResourceResponse represents a response for a
-      ConnectorResource resource
+      GetUserConnectorResponse represents a response for a
+      connector
+  v1alphaGetUserMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1alphaUserMembership'
+        title: A membership resource
+    title: GetUserMembershipResponse represents a response for a membership resource
   v1alphaGetUserModelCardResponse:
     type: object
     properties:
@@ -6249,6 +8194,13 @@ definitions:
         $ref: '#/definitions/v1alphaPipeline'
         title: A pipeline resource
     title: GetUserPipelineResponse represents a response for a pipeline resource
+  v1alphaGetUserResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/mgmtv1alphaUser'
+        title: A user resource
+    title: GetUserResponse represents a response for a user resource
   v1alphaHealthCheckRequest:
     type: object
     properties:
@@ -6503,44 +8455,44 @@ definitions:
     title: |-
       ListConnectorExecuteTableRecordsResponse represents a response for a list
       of connector execute table record
-  v1alphaListConnectorResourcesAdminResponse:
+  v1alphaListConnectorsAdminResponse:
     type: object
     properties:
-      connector_resources:
+      connectors:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaConnectorResource'
-        title: A list of ConnectorResource resources
+          $ref: '#/definitions/v1alphaConnector'
+        title: A list of connectors
       next_page_token:
         type: string
         title: Next page token
       total_size:
         type: integer
         format: int32
-        title: Total count of connector_resource resources
+        title: Total count of connectors
     title: |-
-      ListConnectorResourcesAdminResponse represents a response for a list of
-      ConnectorResource resources
-  v1alphaListConnectorResourcesResponse:
+      ListConnectorsAdminResponse represents a response for a list of
+      connectors
+  v1alphaListConnectorsResponse:
     type: object
     properties:
-      connector_resources:
+      connectors:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaConnectorResource'
-        title: A list of ConnectorResource resources
+          $ref: '#/definitions/v1alphaConnector'
+        title: A list of connectors
       next_page_token:
         type: string
         title: Next page token
       total_size:
         type: integer
         format: int32
-        title: Total count of connector_resource resources
+        title: Total count of connectors
     title: |-
-      ListConnectorResourcesResponse represents a response for a list of
-      ConnectorResource resources
+      ListConnectorsResponse represents a response for a list of
+      connectors
   v1alphaListModelDefinitionsResponse:
     type: object
     properties:
@@ -6613,6 +8565,103 @@ definitions:
     title: |-
       ListOperatorDefinitionsResponse represents a response for a list
       of OperatorDefinitions
+  v1alphaListOrganizationConnectorsResponse:
+    type: object
+    properties:
+      connectors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaConnector'
+        title: A list of connectors
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of connectors
+    title: |-
+      ListOrganizationConnectorsResponse represents a response for a list of
+      connectors
+  v1alphaListOrganizationMembershipsResponse:
+    type: object
+    properties:
+      memberships:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaOrganizationMembership'
+        title: A list of memberships
+    title: ListOrganizationMembershipsResponse represents a response for a list of memberships
+  v1alphaListOrganizationPipelineReleasesResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A list of pipeline_release resources
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of pipeline_release resources
+    title: ListOrganizationPipelineReleasesResponse represents a response for a list of pipeline_releases
+  v1alphaListOrganizationPipelinesResponse:
+    type: object
+    properties:
+      pipelines:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPipeline'
+        title: A list of pipeline resources
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of pipeline resources
+    title: ListOrganizationPipelinesResponse represents a response for a list of pipelines
+  v1alphaListOrganizationsAdminResponse:
+    type: object
+    properties:
+      organizations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaOrganization'
+        title: A list of organizations
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of organizations
+    title: ListOrganizationsAdminResponse represents a response for a list of organizations
+  v1alphaListOrganizationsResponse:
+    type: object
+    properties:
+      organizations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaOrganization'
+        title: A list of organizations
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of organizations
+    title: ListOrganizationsResponse represents a response for a list of organizations
   v1alphaListPipelineReleasesAdminResponse:
     type: object
     properties:
@@ -6737,25 +8786,35 @@ definitions:
         format: int32
         title: Total count of API tokens resources
     title: ListTokensResponse represents a response for a list of API tokens
-  v1alphaListUserConnectorResourcesResponse:
+  v1alphaListUserConnectorsResponse:
     type: object
     properties:
-      connector_resources:
+      connectors:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaConnectorResource'
-        title: A list of ConnectorResource resources
+          $ref: '#/definitions/v1alphaConnector'
+        title: A list of connectors
       next_page_token:
         type: string
         title: Next page token
       total_size:
         type: integer
         format: int32
-        title: Total count of connector_resource resources
+        title: Total count of connectors
     title: |-
-      ListUserConnectorResourcesResponse represents a response for a list of
-      ConnectorResource resources
+      ListUserConnectorsResponse represents a response for a list of
+      connectors
+  v1alphaListUserMembershipsResponse:
+    type: object
+    properties:
+      memberships:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaUserMembership'
+        title: A list of memberships
+    title: ListUserMembershipsResponse represents a response for a list of memberships
   v1alphaListUserModelsResponse:
     type: object
     properties:
@@ -6824,6 +8883,32 @@ definitions:
         format: int32
         title: Total count of users
     title: ListUsersAdminResponse represents a response for a list of users
+  v1alphaListUsersResponse:
+    type: object
+    properties:
+      users:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/mgmtv1alphaUser'
+        title: A list of users
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of users
+    title: ListUsersResponse represents a response for a list of users
+  v1alphaLookUpConnectorAdminResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
+    title: |-
+      LookUpConnectorAdminResponse represents a response for a
+      connector
   v1alphaLookUpConnectorDefinitionAdminResponse:
     type: object
     properties:
@@ -6833,24 +8918,15 @@ definitions:
     title: |-
       LookUpConnectorDefinitionAdminResponse represents a response for a
       connector definition
-  v1alphaLookUpConnectorResourceAdminResponse:
+  v1alphaLookUpConnectorResponse:
     type: object
     properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: ConnectorResource resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
     title: |-
-      LookUpConnectorResourceAdminResponse represents a response for a
-      connector_resource
-  v1alphaLookUpConnectorResourceResponse:
-    type: object
-    properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: ConnectorResource resource
-    title: |-
-      LookUpConnectorResourceResponse represents a response for a
-      connector_resource
+      LookUpConnectorResponse represents a response for a
+      connector
   v1alphaLookUpModelAdminResponse:
     type: object
     properties:
@@ -6874,6 +8950,13 @@ definitions:
     title: |-
       LookUpOperatorAdminResponse represents a response for a
       operator
+  v1alphaLookUpOrganizationAdminResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1alphaOrganization'
+        title: A organization resource
+    title: LookUpOrganizationAdminResponse represents a response for a organization resource by admin
   v1alphaLookUpPipelineAdminResponse:
     type: object
     properties:
@@ -6895,6 +8978,18 @@ definitions:
         $ref: '#/definitions/mgmtv1alphaUser'
         title: A user resource
     title: LookUpUserAdminResponse represents a response for a user resource by admin
+  v1alphaMembershipState:
+    type: string
+    enum:
+      - MEMBERSHIP_STATE_UNSPECIFIED
+      - MEMBERSHIP_STATE_ACTIVE
+      - MEMBERSHIP_STATE_PENDING
+    default: MEMBERSHIP_STATE_UNSPECIFIED
+    description: |-
+      - MEMBERSHIP_STATE_UNSPECIFIED: UNSPECIFIED
+       - MEMBERSHIP_STATE_ACTIVE: Active
+       - MEMBERSHIP_STATE_PENDING: Pending
+    title: MembershipState
   v1alphaMgmtUsageData:
     type: object
     properties:
@@ -7260,7 +9355,7 @@ definitions:
         title: Operator icon
         readOnly: true
       spec:
-        $ref: '#/definitions/vdppipelinev1alphaSpec'
+        $ref: '#/definitions/v1alphaOperatorSpec'
         title: Operator spec
         readOnly: true
       tombstone:
@@ -7287,18 +9382,103 @@ definitions:
         title: Operator iconUrl
         readOnly: true
     title: Operator represents the operator definition data model
-  v1alphaOwnerType:
+  v1alphaOperatorDefinitionView:
     type: string
     enum:
-      - OWNER_TYPE_UNSPECIFIED
-      - OWNER_TYPE_USER
-      - OWNER_TYPE_ORGANIZATION
-    default: OWNER_TYPE_UNSPECIFIED
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+    default: VIEW_UNSPECIFIED
     description: |-
-      - OWNER_TYPE_UNSPECIFIED: OwnerType: UNSPECIFIED
-       - OWNER_TYPE_USER: OwnerType: USER
-       - OWNER_TYPE_ORGANIZATION: OwnerType: ORGANIZATION
-    title: OwnerType enumerates the owner type of any resource
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+    title: Operator View
+  v1alphaOperatorSpec:
+    type: object
+    properties:
+      component_specification:
+        type: object
+        title: Spec operator specification
+      openapi_specifications:
+        type: object
+        title: Spec openapi specification
+    title: View enumerates the definition views
+    required:
+      - component_specification
+      - openapi_specifications
+  v1alphaOrganization:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          Resource name. It must have the format of "organizations/*".
+          For example: "organizations/local-organization".
+        readOnly: true
+      uid:
+        type: string
+        description: Organization ID in UUIDv4.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Resource ID (the last segment of the resource name), also the organization
+          name. This conforms to RFC-1034, which restricts to letters, numbers,
+          and hyphen, with the first character a letter, the last a letter or a
+          number, and a 63 character maximum.
+          Note that the ID can be updated.
+      create_time:
+        type: string
+        format: date-time
+        title: 'Owner type: fixed to `OWNER_TYPE_USER`'
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: Organization update time
+        readOnly: true
+      org_name:
+        type: string
+        title: Organization company or institution name
+      customer_id:
+        type: string
+        description: Stripe customer ID. This field is used in Instill Cloud.
+        readOnly: true
+      profile_avatar:
+        type: string
+        title: Profile Avatar base64
+      profile_data:
+        type: object
+        title: Profile Data
+    title: Organization represents the content of a organization
+    required:
+      - id
+  v1alphaOrganizationMembership:
+    type: object
+    properties:
+      name:
+        type: string
+        title: Resource name. It must have the format of "organizations/*/memberships/*"
+        readOnly: true
+      role:
+        type: string
+        title: Role
+      state:
+        $ref: '#/definitions/v1alphaMembershipState'
+        title: State
+        readOnly: true
+      user:
+        $ref: '#/definitions/mgmtv1alphaUser'
+        title: User
+        readOnly: true
+      organization:
+        $ref: '#/definitions/v1alphaOrganization'
+        title: Organization
+        readOnly: true
+    title: Membership represents the content of a membership
+    required:
+      - role
   v1alphaPatchAuthenticatedUserResponse:
     type: object
     properties:
@@ -7360,7 +9540,7 @@ definitions:
           The resource name with UUID of a user, e.g.,
           "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
         readOnly: true
-      org:
+      organization:
         type: string
         title: The resource name with UUID of an organization
         readOnly: true
@@ -7632,6 +9812,20 @@ definitions:
       - trigger_time
       - record_time
       - value
+  v1alphaPipelineView:
+    type: string
+    enum:
+      - VIEW_UNSPECIFIED
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    default: VIEW_UNSPECIFIED
+    description: |-
+      - VIEW_UNSPECIFIED: View: UNSPECIFIED
+       - VIEW_BASIC: View: BASIC
+       - VIEW_FULL: View: FULL
+       - VIEW_RECIPE: View: RECIPE: will return recipe
+    title: Pipeline View
   v1alphaPriceData:
     type: object
     properties:
@@ -7657,15 +9851,6 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: Published model
     title: PublishUserModelResponse represents a response for the published model
-  v1alphaQueryAuthenticatedUserResponse:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/mgmtv1alphaUser'
-        title: A user resource
-    title: |-
-      QueryAuthenticatedUserResponse represents a response for
-      the authenticated user resource
   v1alphaRecipe:
     type: object
     properties:
@@ -7695,14 +9880,37 @@ definitions:
        - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
        - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
     title: ReleaseStage enumerates the release stages
-  v1alphaRenameUserConnectorResourceResponse:
+  v1alphaRenameOrganizationConnectorResponse:
     type: object
     properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: A ConnectorResource resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A connector
     title: |-
-      RenameUserConnectorResourceResponse represents a renamed ConnectorResource
+      RenameOrganizationConnectorResponse represents a renamed Connector
+      resource
+  v1alphaRenameOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A pipeline resource
+    title: RenameOrganizationPipelineReleaseResponse represents a renamed pipeline release resource
+  v1alphaRenameOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1alphaPipeline'
+        title: A pipeline resource
+    title: RenameOrganizationPipelineResponse represents a renamed pipeline resource
+  v1alphaRenameUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: A connector
+    title: |-
+      RenameUserConnectorResponse represents a renamed Connector
       resource
   v1alphaRenameUserModelResponse:
     type: object
@@ -7799,6 +10007,13 @@ definitions:
     title: |-
       ReportPipelineTriggersResponse represents a respond to a
       pipeline-trigger-records reporting bulk request
+  v1alphaRestoreOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: A pipeline resource
+    title: RestoreOrganizationPipelineReleaseResponse
   v1alphaRestoreUserPipelineReleaseResponse:
     type: object
     properties:
@@ -7974,13 +10189,6 @@ definitions:
       - token
       - pow
       - session
-  v1alphaSetDefaultUserPipelineReleaseResponse:
-    type: object
-    properties:
-      release:
-        $ref: '#/definitions/v1alphaPipelineRelease'
-        title: A pipeline resource
-    title: SetDefaultUserPipelineReleaseResponse
   v1alphaTask:
     type: string
     enum:
@@ -8147,15 +10355,24 @@ definitions:
         title: The unspecified task output
         readOnly: true
     title: TaskOutput represents the output of a CV Task result from a model
-  v1alphaTestUserConnectorResourceResponse:
+  v1alphaTestOrganizationConnectorResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaConnectorResourceState'
-        title: Retrieved connector_resource state
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
     title: |-
-      TestUserConnectorResourceResponse represents a response containing a
-      connector_resource's current state
+      TestOrganizationConnectorResponse represents a response containing a
+      connector's current state
+  v1alphaTestUserConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
+    title: |-
+      TestUserConnectorResponse represents a response containing a
+      connector's current state
   v1alphaTestUserModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -8279,6 +10496,12 @@ definitions:
       prompt:
         type: string
         title: The prompt text
+      prompt_image_url:
+        type: string
+        title: Image type URL
+      prompt_image_base64:
+        type: string
+        title: Image type base64
       steps:
         type: integer
         format: int32
@@ -8296,10 +10519,7 @@ definitions:
         format: int32
         title: The number of generated samples, default is 1
       extra_params:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaExtraParamObject'
+        $ref: '#/definitions/v1alphaExtraParamObject'
         title: The extra parameters
     title: TextToImageInput represents the input of text to image task
     required:
@@ -8353,6 +10573,26 @@ definitions:
         format: float
         title: Compute Time
     title: Trace for the intermediate component
+  v1alphaTriggerAsyncOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Trigger async pipeline operation message
+        readOnly: true
+    title: |-
+      TriggerAsyncOrganizationPipelineReleaseResponse represents a response for the longrunning
+      operation of a pipeline
+  v1alphaTriggerAsyncOrganizationPipelineResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Trigger async pipeline operation message
+        readOnly: true
+    title: |-
+      TriggerAsyncOrganizationPipelineResponse represents a response for the longrunning
+      operation of a pipeline
   v1alphaTriggerAsyncUserPipelineReleaseResponse:
     type: object
     properties:
@@ -8382,6 +10622,34 @@ definitions:
           $ref: '#/definitions/v1alphaTrace'
         title: 'The traces of the pipeline inference, {component_id: Trace}'
     title: The metadata
+  v1alphaTriggerOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        title: The multiple model inference outputs
+      metadata:
+        $ref: '#/definitions/v1alphaTriggerMetadata'
+        title: 'The traces of the pipeline inference, {component_id: Trace}'
+    title: |-
+      TriggerOrganizationPipelineReleaseResponse represents a response for the output
+      of a pipeline, i.e., the multiple model inference outputs
+  v1alphaTriggerOrganizationPipelineResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        title: The multiple model inference outputs
+      metadata:
+        $ref: '#/definitions/v1alphaTriggerMetadata'
+        title: 'The traces of the pipeline inference, {component_id: Trace}'
+    title: |-
+      TriggerOrganizationPipelineResponse represents a response for the output
+      of a pipeline, i.e., the multiple model inference outputs
   v1alphaTriggerUserModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -8485,22 +10753,59 @@ definitions:
         title: A list of unspecified task outputs
         readOnly: true
     title: UnspecifiedOutput represents the output of unspecified task
-  v1alphaUpdateUserAdminResponse:
+  v1alphaUpdateOrganizationConnectorResponse:
     type: object
     properties:
-      user:
-        $ref: '#/definitions/mgmtv1alphaUser'
-        title: A user resource
-    title: UpdateUserAdminResponse represents a response for a user resource
-  v1alphaUpdateUserConnectorResourceResponse:
-    type: object
-    properties:
-      connector_resource:
-        $ref: '#/definitions/v1alphaConnectorResource'
-        title: ConnectorResource resource
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
     title: |-
-      UpdateUserConnectorResourceResponse represents a response for a
-      ConnectorResource resource
+      UpdateOrganizationConnectorResponse represents a response for a
+      connector
+  v1alphaUpdateOrganizationMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1alphaOrganizationMembership'
+        title: An updated membership resource
+    title: UpdateOrganizationMembershipResponse represents a response for a membership resource
+  v1alphaUpdateOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1alphaPipelineRelease'
+        title: An updated pipeline resource
+    title: UpdateOrganizationPipelineReleaseResponse represents a response for a pipeline resource
+  v1alphaUpdateOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1alphaPipeline'
+        title: An updated pipeline resource
+    title: UpdateOrganizationPipelineResponse represents a response for a pipeline resource
+  v1alphaUpdateOrganizationResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1alphaOrganization'
+        title: A organization resource
+    title: UpdateOrganizationResponse represents a response for a organization resource
+  v1alphaUpdateUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1alphaConnector'
+        title: connector
+    title: |-
+      UpdateUserConnectorResponse represents a response for a
+      connector
+  v1alphaUpdateUserMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1alphaUserMembership'
+        title: An updated membership resource
+    title: UpdateUserMembershipResponse represents a response for a membership resource
   v1alphaUpdateUserModelResponse:
     type: object
     properties:
@@ -8549,6 +10854,38 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1alphaUserMembership:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Resource name. It must have the format of "users/*/memberships/*".
+        readOnly: true
+      role:
+        type: string
+        title: Role
+        readOnly: true
+      state:
+        $ref: '#/definitions/v1alphaMembershipState'
+        title: State
+      user:
+        $ref: '#/definitions/mgmtv1alphaUser'
+        title: User
+        readOnly: true
+      organization:
+        $ref: '#/definitions/v1alphaOrganization'
+        title: Organization
+        readOnly: true
+    title: Membership represents the content of a membership
+    required:
+      - state
+  v1alphaValidateOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1alphaPipeline'
+        title: A pipeline resource
+    title: ValidateOrganizationPipelineResponse represents an response of validated pipeline
   v1alphaValidateTokenResponse:
     type: object
     properties:
@@ -8609,15 +10946,33 @@ definitions:
         title: The text generated by the model
         readOnly: true
     title: VisualQuestionAnsweringOutput represents the output of visaul question answering task
-  v1alphaWatchUserConnectorResourceResponse:
+  v1alphaWatchOrganizationConnectorResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaConnectorResourceState'
-        title: Retrieved connector_resource state
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
     title: |-
-      WatchUserConnectorResourceResponse represents a response to fetch a
-      connector_resource's current state
+      WatchOrganizationConnectorResponse represents a response to fetch a
+      connector's current state
+  v1alphaWatchOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/pipelinev1alphaState'
+        title: Retrieved pipeline state
+    title: |-
+      WatchOrganizationPipelineReleaseResponse represents a response to fetch a pipeline's
+      current state
+  v1alphaWatchUserConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Retrieved connector state
+    title: |-
+      WatchUserConnectorResponse represents a response to fetch a
+      connector's current state
   v1alphaWatchUserModelResponse:
     type: object
     properties:
@@ -8640,53 +10995,6 @@ definitions:
     title: |-
       WatchUserPipelineReleaseResponse represents a response to fetch a pipeline's
       current state
-  vdpconnectorv1alphaLivenessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  vdpconnectorv1alphaReadinessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1alphaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
-  vdpconnectorv1alphaSpec:
-    type: object
-    properties:
-      resource_specification:
-        type: object
-        title: Spec resource specification
-      component_specification:
-        type: object
-        title: Spec component specification
-      openapi_specifications:
-        type: object
-        title: Spec openapi specification
-    title: |-
-      //////////////////////////////////
-      Spec represents a spec data model
-    required:
-      - resource_specification
-      - component_specification
-      - openapi_specifications
-  vdpconnectorv1alphaView:
-    type: string
-    enum:
-      - VIEW_UNSPECIFIED
-      - VIEW_BASIC
-      - VIEW_FULL
-      - VIEW_CONFIGURATION
-    default: VIEW_UNSPECIFIED
-    description: |-
-      - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-       - VIEW_CONFIGURATION: View: CONFIGURATION
-    title: View enumerates the definition views
   vdpcontrollerv1alphaDeleteResourceResponse:
     type: object
     title: DeleteResourceResponse represents an empty response
@@ -8723,8 +11031,8 @@ definitions:
         $ref: '#/definitions/pipelinev1alphaState'
         title: Pipeline state
       connector_state:
-        $ref: '#/definitions/v1alphaConnectorResourceState'
-        title: ConnectorResource state
+        $ref: '#/definitions/v1alphaConnectorState'
+        title: Connector state
       backend_state:
         $ref: '#/definitions/HealthCheckResponseServingStatus'
         title: Backend service state
@@ -8756,33 +11064,3 @@ definitions:
         $ref: '#/definitions/v1alphaHealthCheckResponse'
         title: HealthCheckResponse message
     title: ReadinessResponse represents a response for a service readiness status
-  vdppipelinev1alphaSpec:
-    type: object
-    properties:
-      component_specification:
-        type: object
-        title: Spec operator specification
-      openapi_specifications:
-        type: object
-        title: Spec openapi specification
-    title: View enumerates the definition views
-    required:
-      - component_specification
-      - openapi_specifications
-  vdppipelinev1alphaView:
-    type: string
-    enum:
-      - VIEW_UNSPECIFIED
-      - VIEW_BASIC
-      - VIEW_FULL
-      - VIEW_RECIPE
-    default: VIEW_UNSPECIFIED
-    description: |-
-      View represents a view of any resource. The resource view is implemented by
-      adding a parameter to the method request which allows the client to specify
-      which view of the resource it wants to receive in the response.
-
-       - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-       - VIEW_RECIPE: View: RECIPE: will return recipe

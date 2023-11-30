@@ -8,10 +8,9 @@ import "google/api/resource.proto";
 // Protocol Buffers Well-Known Types
 import "google/protobuf/struct.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "vdp/pipeline/v1alpha/common.proto";
 
 // View enumerates the definition views
-message Spec {
+message OperatorSpec {
   // Spec operator specification
   google.protobuf.Struct component_specification = 1 [(google.api.field_behavior) = REQUIRED];
   // Spec openapi specification
@@ -22,6 +21,16 @@ message Spec {
 
 // Operator represents the operator definition data model
 message OperatorDefinition {
+  // Operator View
+  enum View {
+    // View: UNSPECIFIED
+    VIEW_UNSPECIFIED = 0;
+    // View: BASIC
+    VIEW_BASIC = 1;
+    // View: FULL
+    VIEW_FULL = 2;
+  }
+
   option (google.api.resource) = {
     type: "api.instill.tech/Operator"
     pattern:
@@ -47,7 +56,7 @@ message OperatorDefinition {
   // Operator icon
   string icon = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Operator spec
-  Spec spec = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  OperatorSpec spec = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Operator tombstone, i.e., if not set or false, the
   // configuration is active, or otherwise, if true, this configuration is
   // permanently off
@@ -77,7 +86,7 @@ message ListOperatorDefinitionsRequest {
   // Page token
   optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
   // Definition view (default is DEFINITION_VIEW_BASIC)
-  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  optional OperatorDefinition.View view = 3 [(google.api.field_behavior) = OPTIONAL];
   // Filter expression to list operator definitions
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
 }
@@ -107,7 +116,7 @@ message GetOperatorDefinitionRequest {
   ];
   // Operator resource view (default is
   // DEFINITION_VIEW_BASIC)
-  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+  optional OperatorDefinition.View view = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetOperatorDefinitionResponse represents a
@@ -124,7 +133,7 @@ message LookUpOperatorDefinitionAdminRequest {
   // "operator-definitions/{uid}"
   string permalink = 1 [(google.api.field_behavior) = REQUIRED];
   // Operator view (default is VIEW_BASIC)
-  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+  optional OperatorDefinition.View view = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // LookUpOperatorAdminResponse represents a response for a
