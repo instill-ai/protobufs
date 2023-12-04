@@ -4227,32 +4227,6 @@ paths:
           default: VIEW_UNSPECIFIED
       tags:
         - MgmtPublicService
-  /v1alpha/{user.name}/exist:
-    get:
-      summary: |-
-        ExistUsername method receives a ExistUsernameRequest message and returns a
-        ExistUsernameResponse
-      operationId: MgmtPublicService_ExistUsername
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaExistUsernameResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user.name
-          description: |-
-            The resource name of the user to check,
-            for example: "users/local-user"
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-      tags:
-        - MgmtPublicService
   /v1alpha/admin/{model_permalink}/check:
     get:
       summary: |-
@@ -5179,6 +5153,30 @@ paths:
           description: An unexpected error response.
           schema:
             $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - MgmtPublicService
+  /v1alpha/check-namespace:
+    post:
+      summary: Check namespace
+      operationId: MgmtPublicService_CheckNamespace
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCheckNamespaceResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespace
+          description: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CheckNamespaceRequestCheckNamespaceRequestBody'
+            required:
+              - namespace
       tags:
         - MgmtPublicService
   /v1alpha/connector-definitions:
@@ -6206,6 +6204,31 @@ definitions:
         format: int32
         title: exp
     title: UnsignedAccessToken
+  CheckNamespaceRequestCheckNamespaceRequestBody:
+    type: object
+    properties:
+      id:
+        type: string
+        title: The resource id of to check,
+    title: CheckNamespaceRequestBody
+    required:
+      - id
+  CheckNamespaceResponseNamespace:
+    type: string
+    enum:
+      - NAMESPACE_UNSPECIFIED
+      - NAMESPACE_AVAILABLE
+      - NAMESPACE_USER
+      - NAMESPACE_ORGANIZATION
+      - NAMESPACE_RESERVED
+    default: NAMESPACE_UNSPECIFIED
+    description: |-
+      - NAMESPACE_UNSPECIFIED: UNSPECIFIED
+       - NAMESPACE_AVAILABLE: Available
+       - NAMESPACE_USER: User
+       - NAMESPACE_ORGANIZATION: Org
+       - NAMESPACE_RESERVED: Reserved
+    title: Namespace type
   HealthCheckResponseServingStatus:
     type: string
     enum:
@@ -6924,6 +6947,15 @@ definitions:
     title: |-
       CheckModelAdminResponse represents a response to fetch a model's
       current state and longrunning progress
+  v1alphaCheckNamespaceResponse:
+    type: object
+    properties:
+      type:
+        $ref: '#/definitions/CheckNamespaceResponseNamespace'
+        title: A boolean value indicating whether the username has been occupied
+    title: |-
+      CheckNamespaceResponse represents a response about whether
+      the queried username has been occupied
   v1alphaClassificationInput:
     type: object
     properties:
@@ -7638,15 +7670,6 @@ definitions:
     title: |-
       ExecuteUserConnectorResponse represents a response for execution
       output
-  v1alphaExistUsernameResponse:
-    type: object
-    properties:
-      exists:
-        type: boolean
-        title: A boolean value indicating whether the username has been occupied
-    title: |-
-      ExistUsernameResponse represents a response about whether
-      the queried username has been occupied
   v1alphaExtraParamObject:
     type: object
     properties:

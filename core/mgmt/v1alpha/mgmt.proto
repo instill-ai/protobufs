@@ -311,25 +311,36 @@ message PatchAuthenticatedUserResponse {
   User user = 1;
 }
 
-// ExistUsernameRequest represents a request to verify if
-// a username has been occupied
-message ExistUsernameRequest {
-  // The resource name of the user to check,
-  // for example: "users/local-user"
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/User",
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user.name"}
-    }
-  ];
+// CheckNamespaceRequest represents a request to verify if
+// a namespace has been occupied and know its type
+message CheckNamespaceRequest {
+  // CheckNamespaceRequestBody
+  message CheckNamespaceRequestBody {
+    // The resource id of to check,
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
+  }
+  // body
+  CheckNamespaceRequestBody namespace = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-// ExistUsernameResponse represents a response about whether
+// CheckNamespaceResponse represents a response about whether
 // the queried username has been occupied
-message ExistUsernameResponse {
+message CheckNamespaceResponse {
+  // Namespace type
+  enum Namespace {
+    // UNSPECIFIED
+    NAMESPACE_UNSPECIFIED = 0;
+    // Available
+    NAMESPACE_AVAILABLE = 1;
+    // User
+    NAMESPACE_USER = 2;
+    // Org
+    NAMESPACE_ORGANIZATION = 3;
+    // Reserved
+    NAMESPACE_RESERVED = 4;
+  }
   // A boolean value indicating whether the username has been occupied
-  bool exists = 1;
+  Namespace type = 1;
 }
 
 // ApiToken represents the content of a API token
