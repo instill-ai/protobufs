@@ -6353,7 +6353,7 @@ definitions:
         title: UID for the executed connector
       execute_uid:
         type: string
-        title: UID for the trigger log
+        title: UID for the execute log
       execute_time:
         type: string
         format: date-time
@@ -6364,6 +6364,12 @@ definitions:
       status:
         $ref: '#/definitions/mgmtv1betaStatus'
         title: Final status of the execution
+      user_uid:
+        type: string
+        title: UUID of the user who execute the connector
+      user_type:
+        $ref: '#/definitions/v1betaOwnerType'
+        title: Type of the user who execute the connector
     title: Per execute usage metadata
     required:
       - connector_uid
@@ -6371,6 +6377,8 @@ definitions:
       - execute_time
       - connector_definition_uid
       - status
+      - user_uid
+      - user_type
   UserUsageDataModelTriggerData:
     type: object
     properties:
@@ -6393,6 +6401,12 @@ definitions:
       status:
         $ref: '#/definitions/mgmtv1betaStatus'
         title: Final status of the execution
+      user_uid:
+        type: string
+        title: UUID of the user who trigger the model
+      user_type:
+        $ref: '#/definitions/v1betaOwnerType'
+        title: Type of the user who trigger the model
     title: Per trigger usage metadata
     required:
       - model_uid
@@ -6401,6 +6415,8 @@ definitions:
       - model_definition_uid
       - model_task
       - status
+      - user_uid
+      - user_type
   UserUsageDataPipelineTriggerData:
     type: object
     properties:
@@ -6426,6 +6442,12 @@ definitions:
       pipeline_release_uid:
         type: string
         title: UID for the triggered release pipeline, empty string if not release
+      user_uid:
+        type: string
+        title: UUID of the user who trigger the pipeline
+      user_type:
+        $ref: '#/definitions/v1betaOwnerType'
+        title: Type of the user who trigger the pipeline
     title: Per trigger usage metadata
     required:
       - pipeline_uid
@@ -6435,6 +6457,8 @@ definitions:
       - status
       - pipeline_release_id
       - pipeline_release_uid
+      - user_uid
+      - user_type
   controllerv1alphaDeleteResourceResponse:
     type: object
     title: DeleteResourceResponse represents an empty response
@@ -8704,19 +8728,23 @@ definitions:
   v1betaConnectorUsageDataUserUsageData:
     type: object
     properties:
-      user_uid:
+      owner_uid:
         type: string
-        title: User UUID
+        title: Owner UUID
       connector_execute_data:
         type: array
         items:
           type: object
           $ref: '#/definitions/UserUsageDataConnectorExecuteData'
         title: Execution data for each user
+      owner_type:
+        $ref: '#/definitions/v1betaOwnerType'
+        title: Owner type
     title: Per user usage data in the connector service
     required:
-      - user_uid
+      - owner_uid
       - connector_execute_data
+      - owner_type
   v1betaConnectorView:
     type: string
     enum:
@@ -9984,19 +10012,23 @@ definitions:
   v1betaModelUsageDataUserUsageData:
     type: object
     properties:
-      user_uid:
+      owner_uid:
         type: string
-        title: User UUID
+        title: Owner UUID
       model_trigger_data:
         type: array
         items:
           type: object
           $ref: '#/definitions/UserUsageDataModelTriggerData'
         title: Trigger data for each user
+      owner_type:
+        $ref: '#/definitions/v1betaOwnerType'
+        title: Owner type
     title: Per user usage data in the model service
     required:
-      - user_uid
+      - owner_uid
       - model_trigger_data
+      - owner_type
   v1betaModelUsageRecord:
     type: object
     properties:
@@ -10181,6 +10213,18 @@ definitions:
     title: Membership represents the content of a membership
     required:
       - role
+  v1betaOwnerType:
+    type: string
+    enum:
+      - OWNER_TYPE_UNSPECIFIED
+      - OWNER_TYPE_USER
+      - OWNER_TYPE_ORGANIZATION
+    default: OWNER_TYPE_UNSPECIFIED
+    description: |-
+      - OWNER_TYPE_UNSPECIFIED: OwnerType: UNSPECIFIED
+       - OWNER_TYPE_USER: OwnerType: USER
+       - OWNER_TYPE_ORGANIZATION: OwnerType: ORGANIZATION
+    title: OwnerType enumerates the owner type of any resource
   v1betaPatchAuthenticatedUserResponse:
     type: object
     properties:
@@ -10467,19 +10511,23 @@ definitions:
   v1betaPipelineUsageDataUserUsageData:
     type: object
     properties:
-      user_uid:
+      owner_uid:
         type: string
-        title: User UUID
+        title: Owner UUID
       pipeline_trigger_data:
         type: array
         items:
           type: object
           $ref: '#/definitions/UserUsageDataPipelineTriggerData'
         title: Trigger data for each user
+      owner_type:
+        $ref: '#/definitions/v1betaOwnerType'
+        title: Owner type
     title: Per user usage data in the pipeline service
     required:
-      - user_uid
+      - owner_uid
       - pipeline_trigger_data
+      - owner_type
   v1betaPipelineUsageRecord:
     type: object
     properties:
