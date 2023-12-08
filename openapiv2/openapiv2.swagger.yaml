@@ -3410,6 +3410,28 @@ paths:
               - release
       tags:
         - PipelinePublicService
+  /v1beta/{parent_1}/subscription:
+    get:
+      summary: GetOrganizationSubscription
+      operationId: MgmtPublicService_GetOrganizationSubscription
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationSubscriptionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: parent
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+      tags:
+        - MgmtPublicService
   /v1beta/{parent}/connectors:
     get:
       summary: |-
@@ -3738,6 +3760,28 @@ paths:
               - release
       tags:
         - PipelinePublicService
+  /v1beta/{parent}/subscription:
+    get:
+      summary: GetUserSubscription
+      operationId: MgmtPublicService_GetUserSubscription
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserSubscriptionResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: parent
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - MgmtPublicService
   /v1beta/{permalink_1}/lookUp:
     get:
       summary: |-
@@ -4694,6 +4738,50 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
           default: VIEW_UNSPECIFIED
+      tags:
+        - MgmtPrivateService
+  /v1beta/admin/{parent_1}/subscription:
+    get:
+      summary: GetOrganizationSubscriptionAdmin
+      operationId: MgmtPrivateService_GetOrganizationSubscriptionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationSubscriptionAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent_1
+          description: parent
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+      tags:
+        - MgmtPrivateService
+  /v1beta/admin/{parent}/subscription:
+    get:
+      summary: GetUserSubscriptionAdmin
+      operationId: MgmtPrivateService_GetUserSubscriptionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserSubscriptionAdminResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: parent
+          description: parent
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
       tags:
         - MgmtPrivateService
   /v1beta/admin/{permalink_1}/lookUp:
@@ -6333,6 +6421,22 @@ definitions:
         $ref: '#/definitions/v1betaRole'
         title: role
     title: Share Code
+  QuotaPipelineTrigger:
+    type: object
+    properties:
+      quota:
+        type: integer
+        format: int32
+        title: quota
+      used:
+        type: integer
+        format: int32
+        title: used
+      remain:
+        type: integer
+        format: int32
+        title: remain
+    title: PipelineTrigger
   SessionService:
     type: string
     enum:
@@ -6349,6 +6453,13 @@ definitions:
        - SERVICE_MODEL: Service: MODEL
        - SERVICE_PIPELINE: Service: PIPELINE
     title: Service enumerates the services to collect data from
+  SubscriptionQuota:
+    type: object
+    properties:
+      pipeline_trigger:
+        $ref: '#/definitions/QuotaPipelineTrigger'
+        title: pipeline
+    title: Quota
   UserUsageDataConnectorExecuteData:
     type: object
     properties:
@@ -9274,6 +9385,20 @@ definitions:
         $ref: '#/definitions/v1betaOrganization'
         title: A organization resource
     title: GetOrganizationResponse represents a response for a organization resource
+  v1betaGetOrganizationSubscriptionAdminResponse:
+    type: object
+    properties:
+      subscription:
+        $ref: '#/definitions/v1betaSubscription'
+        title: Subscription
+    title: GetOrganizationSubscriptionAdminResponse
+  v1betaGetOrganizationSubscriptionResponse:
+    type: object
+    properties:
+      subscription:
+        $ref: '#/definitions/v1betaSubscription'
+        title: Subscription
+    title: GetOrganizationSubscriptionResponse
   v1betaGetPipelineTriggerPriceRequest:
     type: object
     properties:
@@ -9433,6 +9558,20 @@ definitions:
         $ref: '#/definitions/mgmtv1betaUser'
         title: A user resource
     title: GetUserResponse represents a response for a user resource
+  v1betaGetUserSubscriptionAdminResponse:
+    type: object
+    properties:
+      subscription:
+        $ref: '#/definitions/v1betaSubscription'
+        title: Subscription
+    title: GetUserSubscriptionAdminResponse
+  v1betaGetUserSubscriptionResponse:
+    type: object
+    properties:
+      subscription:
+        $ref: '#/definitions/v1betaSubscription'
+        title: Subscription
+    title: GetUserSubscriptionResponse
   v1betaHealthCheckRequest:
     type: object
     properties:
@@ -10879,6 +11018,16 @@ definitions:
       - token
       - pow
       - session
+  v1betaSubscription:
+    type: object
+    properties:
+      plan:
+        type: string
+        title: plan
+      quota:
+        $ref: '#/definitions/SubscriptionQuota'
+        title: plan
+    title: Subscription
   v1betaTestOrganizationConnectorResponse:
     type: object
     properties:
