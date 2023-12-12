@@ -8900,7 +8900,17 @@ definitions:
        - VISIBILITY_PRIVATE: Visibility: PRIVATE
        - VISIBILITY_PUBLIC: Visibility: PUBLIC
     title: Connector visibility including public or private
-  v1betaCreateOrganizationConnectorResponse:
+  v1alphaConversationObject:
+    type: object
+    properties:
+      role:
+        type: string
+        title: Role name of the conversation
+      content:
+        type: string
+        title: Content of the conversation
+    title: Conversation based prompt for text generation model
+  v1alphaCreateOrganizationConnectorResponse:
     type: object
     properties:
       connector:
@@ -9037,7 +9047,28 @@ definitions:
     title: |-
       ExecuteUserConnectorResponse represents a response for execution
       output
-  v1betaGetBulkCumulativeModelOnlineRecordsResponse:
+  v1alphaExistUsernameResponse:
+    type: object
+    properties:
+      exists:
+        type: boolean
+        title: A boolean value indicating whether the username has been occupied
+    title: |-
+      ExistUsernameResponse represents a response about whether
+      the queried username has been occupied
+  v1alphaExtraParamObject:
+    type: object
+    properties:
+      param_name:
+        type: string
+        title: Name of the hyperparameter
+      param_value:
+        type: string
+        title: Value of the hyperparameter
+    title: |-
+      Additional hyperparameters for model inferences
+      or other configuration not listsed in protobuf
+  v1alphaGetBulkCumulativeModelOnlineRecordsResponse:
     type: object
     properties:
       bulk_cumulative_records:
@@ -9593,7 +9624,196 @@ definitions:
         $ref: '#/definitions/HealthCheckResponseServingStatus'
         title: Status is the instance of the enum type ServingStatus
     title: HealthCheckResponse represents a response for a service heath status
-  v1betaListConnectorDefinitionsResponse:
+  v1alphaImageToImageInput:
+    type: object
+    properties:
+      prompt_image_url:
+        type: string
+        title: Image type URL
+      prompt_image_base64:
+        type: string
+        title: Image type base64
+      prompt:
+        type: string
+        title: The prompt text
+      steps:
+        type: integer
+        format: int32
+        title: The steps, default is 5
+      cfg_scale:
+        type: number
+        format: float
+        title: The guidance scale, default is 7.5
+      seed:
+        type: integer
+        format: int32
+        title: The seed, default is 0
+      samples:
+        type: integer
+        format: int32
+        title: The number of generated samples, default is 1
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
+    title: ImageToImageInput represents the input of image to image task
+    required:
+      - prompt
+  v1alphaImageToImageOutput:
+    type: object
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        title: List of generated images
+        readOnly: true
+    title: ImageToImageOutput represents the output of image to image task
+  v1alphaInstanceSegmentationInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: InstanceSegmentationInput represents the input of instance segmentation task
+  v1alphaInstanceSegmentationInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: |-
+      InstanceSegmentationInputStream represents the input of instance segmentation
+      task when using stream method
+    required:
+      - file_lengths
+      - content
+  v1alphaInstanceSegmentationObject:
+    type: object
+    properties:
+      rle:
+        type: string
+        title: Instance RLE segmentation mask
+        readOnly: true
+      category:
+        type: string
+        title: Instance category
+        readOnly: true
+      score:
+        type: number
+        format: float
+        title: Instance score
+        readOnly: true
+      bounding_box:
+        $ref: '#/definitions/v1alphaBoundingBox'
+        title: Instance bounding box
+        readOnly: true
+    title: InstanceSegmentationObject corresponding to a instance segmentation object
+  v1alphaInstanceSegmentationOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaInstanceSegmentationObject'
+        title: A list of instance segmentation objects
+        readOnly: true
+    title: |-
+      InstanceSegmentationOutput represents the output of instance segmentation
+      task
+  v1alphaKeypoint:
+    type: object
+    properties:
+      x:
+        type: number
+        format: float
+        title: x coordinate
+        readOnly: true
+      "y":
+        type: number
+        format: float
+        title: y coordinate
+        readOnly: true
+      v:
+        type: number
+        format: float
+        title: visibility
+        readOnly: true
+    title: Keypoint structure which include coordinate and keypoint visibility
+  v1alphaKeypointInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: KeypointInput represents the input of keypoint detection task
+  v1alphaKeypointInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: |-
+      KeypointInputStream represents the input of keypoint detection task when
+      using stream method
+    required:
+      - file_lengths
+      - content
+  v1alphaKeypointObject:
+    type: object
+    properties:
+      keypoints:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKeypoint'
+        title: Keypoints
+        readOnly: true
+      score:
+        type: number
+        format: float
+        title: Keypoint score
+        readOnly: true
+      bounding_box:
+        $ref: '#/definitions/v1alphaBoundingBox'
+        title: Bounding box object
+        readOnly: true
+    title: KeypointObject corresponding to a person object
+  v1alphaKeypointOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKeypointObject'
+        title: A list of keypoint objects
+        readOnly: true
+    title: KeypointOutput represents the output of keypoint detection task
+  v1alphaListConnectorDefinitionsResponse:
     type: object
     properties:
       connector_definitions:
@@ -11029,17 +11249,173 @@ definitions:
       - token
       - pow
       - session
-  v1betaSubscription:
+  v1alphaTask:
+    type: string
+    enum:
+      - TASK_UNSPECIFIED
+      - TASK_CLASSIFICATION
+      - TASK_DETECTION
+      - TASK_KEYPOINT
+      - TASK_OCR
+      - TASK_INSTANCE_SEGMENTATION
+      - TASK_SEMANTIC_SEGMENTATION
+      - TASK_TEXT_TO_IMAGE
+      - TASK_TEXT_GENERATION
+      - TASK_TEXT_GENERATION_CHAT
+      - TASK_VISUAL_QUESTION_ANSWERING
+      - TASK_IMAGE_TO_IMAGE
+      - TASK_TEXT_EMBEDDINGS
+      - TASK_SPEECH_RECOGNITION
+    default: TASK_UNSPECIFIED
+    description: |-
+      - TASK_UNSPECIFIED: Task: UNSPECIFIED
+       - TASK_CLASSIFICATION: Task: CLASSIFICATION
+       - TASK_DETECTION: Task: DETECTION
+       - TASK_KEYPOINT: Task: KEYPOINT
+       - TASK_OCR: Task: OCR
+       - TASK_INSTANCE_SEGMENTATION: Task: INSTANCE SEGMENTATION
+       - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
+       - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
+       - TASK_TEXT_GENERATION: Task: TEXT GENERATION
+       - TASK_TEXT_GENERATION_CHAT: Task: TEXT GENERATION CHAT
+       - TASK_VISUAL_QUESTION_ANSWERING: Task: VISUAL QUESTION ANSWERING
+       - TASK_IMAGE_TO_IMAGE: Task: IMAGE TO IMAGE
+       - TASK_TEXT_EMBEDDINGS: Task: TEXT EMBEDDINGS
+       - TASK_SPEECH_RECOGNITION: Task: SPEECH RECOGNITION
+    title: Task enumerates the AI task type
+  v1alphaTaskInput:
     type: object
     properties:
-      plan:
-        type: string
-        title: plan
-      quota:
-        $ref: '#/definitions/SubscriptionQuota'
-        title: plan
-    title: Subscription
-  v1betaTestOrganizationConnectorResponse:
+      classification:
+        $ref: '#/definitions/v1alphaClassificationInput'
+        title: The classification input
+      detection:
+        $ref: '#/definitions/v1alphaDetectionInput'
+        title: The detection input
+      keypoint:
+        $ref: '#/definitions/v1alphaKeypointInput'
+        title: The keypoint input
+      ocr:
+        $ref: '#/definitions/v1alphaOcrInput'
+        title: The ocr input
+      instance_segmentation:
+        $ref: '#/definitions/v1alphaInstanceSegmentationInput'
+        title: The instance segmentation input
+      semantic_segmentation:
+        $ref: '#/definitions/v1alphaSemanticSegmentationInput'
+        title: The semantic segmentation input
+      text_to_image:
+        $ref: '#/definitions/v1alphaTextToImageInput'
+        title: The text to image input
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageInput'
+        title: The image to image input
+      text_generation:
+        $ref: '#/definitions/v1alphaTextGenerationInput'
+        title: The text generation input
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatInput'
+        title: The text generation chat input
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+        title: The visual question answering input
+      unspecified:
+        $ref: '#/definitions/v1alphaUnspecifiedInput'
+        title: The unspecified task input
+    title: Input represents the input to trigger a model
+  v1alphaTaskInputStream:
+    type: object
+    properties:
+      classification:
+        $ref: '#/definitions/v1alphaClassificationInputStream'
+        title: The classification input
+      detection:
+        $ref: '#/definitions/v1alphaDetectionInputStream'
+        title: The detection input
+      keypoint:
+        $ref: '#/definitions/v1alphaKeypointInputStream'
+        title: The keypoint input
+      ocr:
+        $ref: '#/definitions/v1alphaOcrInputStream'
+        title: The ocr input
+      instance_segmentation:
+        $ref: '#/definitions/v1alphaInstanceSegmentationInputStream'
+        title: The instance segmentation input
+      semantic_segmentation:
+        $ref: '#/definitions/v1alphaSemanticSegmentationInputStream'
+        title: The semantic segmentation input
+      text_to_image:
+        $ref: '#/definitions/v1alphaTextToImageInput'
+        title: The text to image input
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageInput'
+        title: The image to image input
+      text_generation:
+        $ref: '#/definitions/v1alphaTextGenerationInput'
+        title: The text generation input
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatInput'
+        title: The text generation chat input
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+        title: The visual question answering input
+      unspecified:
+        $ref: '#/definitions/v1alphaUnspecifiedInput'
+        title: The unspecified task input
+    title: TaskInputStream represents the input to trigger a model with stream method
+  v1alphaTaskOutput:
+    type: object
+    properties:
+      classification:
+        $ref: '#/definitions/v1alphaClassificationOutput'
+        title: The classification output
+        readOnly: true
+      detection:
+        $ref: '#/definitions/v1alphaDetectionOutput'
+        title: The detection output
+        readOnly: true
+      keypoint:
+        $ref: '#/definitions/v1alphaKeypointOutput'
+        title: The keypoint output
+        readOnly: true
+      ocr:
+        $ref: '#/definitions/v1alphaOcrOutput'
+        title: The ocr output
+        readOnly: true
+      instance_segmentation:
+        $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
+        title: The instance segmentation output
+        readOnly: true
+      semantic_segmentation:
+        $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
+        title: The semantic segmentation output
+        readOnly: true
+      text_to_image:
+        $ref: '#/definitions/v1alphaTextToImageOutput'
+        title: The text to image output
+        readOnly: true
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageOutput'
+        title: The image to image output
+        readOnly: true
+      text_generation:
+        $ref: '#/definitions/v1alphaTextGenerationOutput'
+        title: The text generation output
+        readOnly: true
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatOutput'
+        title: The text generation output
+        readOnly: true
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringOutput'
+        title: The text generation output
+        readOnly: true
+      unspecified:
+        $ref: '#/definitions/v1alphaUnspecifiedOutput'
+        title: The unspecified task output
+        readOnly: true
+    title: TaskOutput represents the output of a CV Task result from a model
+  v1alphaTestOrganizationConnectorResponse:
     type: object
     properties:
       state:
@@ -11057,7 +11433,171 @@ definitions:
     title: |-
       TestUserConnectorResponse represents a response containing a
       connector's current state
-  v1betaTimeInterval:
+  v1alphaTestUserModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TestUserModelBinaryFileUploadResponse represents a response for the
+      output for testing a model
+    required:
+      - task
+      - task_outputs
+  v1alphaTestUserModelResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TestUserModelResponse represents a response for the output for
+      testing a model
+    required:
+      - task
+      - task_outputs
+  v1alphaTextGenerationChatInput:
+    type: object
+    properties:
+      conversation:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaConversationObject'
+        title: The prompt text
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
+    title: TextGenerationChatInput represents the input of text generation chat task
+    required:
+      - conversation
+  v1alphaTextGenerationChatOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        title: The text generated by the model
+        readOnly: true
+    title: TextGenerationChatOutput represents the output of text generation chat task
+  v1alphaTextGenerationInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
+    title: TextGenerationInput represents the input of text generation task
+    required:
+      - prompt
+  v1alphaTextGenerationOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        title: The text generated by the model
+        readOnly: true
+    title: TextGenerationOutput represents the output of text generation task
+  v1alphaTextToImageInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_image_url:
+        type: string
+        title: Image type URL
+      prompt_image_base64:
+        type: string
+        title: Image type base64
+      steps:
+        type: integer
+        format: int32
+        title: The steps, default is 5
+      cfg_scale:
+        type: number
+        format: float
+        title: The guidance scale, default is 7.5
+      seed:
+        type: integer
+        format: int32
+        title: The seed, default is 0
+      samples:
+        type: integer
+        format: int32
+        title: The number of generated samples, default is 1
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
+    title: TextToImageInput represents the input of text to image task
+    required:
+      - prompt
+  v1alphaTextToImageOutput:
+    type: object
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        title: List of generated images
+        readOnly: true
+    title: TextToImageOutput represents the output of text to image task
+  v1alphaTimeInterval:
     type: object
     properties:
       start_time:
@@ -11358,7 +11898,52 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         title: A pipeline resource
     title: ValidateUserPipelineResponse represents an response of validated pipeline
-  v1betaWatchOrganizationConnectorResponse:
+  v1alphaVisualQuestionAnsweringInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_image_url:
+        type: string
+        title: Image type URL
+      prompt_image_base64:
+        type: string
+        title: Image type base64
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaExtraParamObject'
+        title: The extra parameters
+    title: VisualQuestionAnsweringInput represents the input of visaul question answering task
+    required:
+      - prompt
+  v1alphaVisualQuestionAnsweringOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        title: The text generated by the model
+        readOnly: true
+    title: VisualQuestionAnsweringOutput represents the output of visaul question answering task
+  v1alphaWatchOrganizationConnectorResponse:
     type: object
     properties:
       state:
