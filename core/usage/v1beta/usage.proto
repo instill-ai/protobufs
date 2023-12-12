@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package core.usage.v1alpha;
+package core.usage.v1beta;
 
-import "common/healthcheck/v1alpha/healthcheck.proto";
+import "common/healthcheck/v1beta/healthcheck.proto";
 import "common/task/v1alpha/task.proto";
-import "core/mgmt/v1alpha/metric.proto";
-import "core/mgmt/v1alpha/mgmt.proto";
+import "core/mgmt/v1beta/metric.proto";
+import "core/mgmt/v1beta/mgmt.proto";
 import "google/api/field_behavior.proto";
 // Google API
 import "google/api/resource.proto";
@@ -15,25 +15,25 @@ import "google/protobuf/timestamp.proto";
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1beta.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // LivenessResponse represents a response for a service liveness status
 message LivenessResponse {
   // HealthCheckResponse message
-  common.healthcheck.v1alpha.HealthCheckResponse health_check_response = 1;
+  common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
 }
 
 // ReadinessRequest represents a request to check a service readiness status
 message ReadinessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1beta.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ReadinessResponse represents a response for a service readiness status
 message ReadinessResponse {
   // HealthCheckResponse message
-  common.healthcheck.v1alpha.HealthCheckResponse health_check_response = 1;
+  common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
 }
 
 // Session represents a unique session whenever a new instance of VDP service
@@ -91,7 +91,7 @@ message Session {
 // Management service usage data
 message MgmtUsageData {
   // Repeated user usage data
-  repeated core.mgmt.v1alpha.User usages = 1;
+  repeated core.mgmt.v1beta.User usages = 1;
 }
 
 // Connector service usage data
@@ -102,19 +102,25 @@ message ConnectorUsageData {
     message ConnectorExecuteData {
       // UID for the executed connector
       string connector_uid = 1 [(google.api.field_behavior) = REQUIRED];
-      // UID for the trigger log
+      // UID for the execute log
       string execute_uid = 2 [(google.api.field_behavior) = REQUIRED];
       // Timestamp for the execution
       google.protobuf.Timestamp execute_time = 3 [(google.api.field_behavior) = REQUIRED];
       // Definition UID of the connector
       string connector_definition_uid = 4 [(google.api.field_behavior) = REQUIRED];
       // Final status of the execution
-      core.mgmt.v1alpha.Status status = 5 [(google.api.field_behavior) = REQUIRED];
+      core.mgmt.v1beta.Status status = 5 [(google.api.field_behavior) = REQUIRED];
+      // UUID of the user who execute the connector
+      string user_uid = 8 [(google.api.field_behavior) = REQUIRED];
+      // Type of the user who execute the connector
+      core.mgmt.v1beta.OwnerType user_type = 9 [(google.api.field_behavior) = REQUIRED];
     }
-    // User UUID
-    string user_uid = 1 [(google.api.field_behavior) = REQUIRED];
+    // Owner UUID
+    string owner_uid = 1 [(google.api.field_behavior) = REQUIRED];
     // Execution data for each user
     repeated ConnectorExecuteData connector_execute_data = 2 [(google.api.field_behavior) = REQUIRED];
+    // Owner type
+    core.mgmt.v1beta.OwnerType owner_type = 3 [(google.api.field_behavior) = REQUIRED];
   }
   // Usage data of all users in the connector service
   repeated UserUsageData usages = 1;
@@ -137,12 +143,18 @@ message ModelUsageData {
       // Task of the model
       common.task.v1alpha.Task model_task = 5 [(google.api.field_behavior) = REQUIRED];
       // Final status of the execution
-      core.mgmt.v1alpha.Status status = 6 [(google.api.field_behavior) = REQUIRED];
+      core.mgmt.v1beta.Status status = 6 [(google.api.field_behavior) = REQUIRED];
+      // UUID of the user who trigger the model
+      string user_uid = 7 [(google.api.field_behavior) = REQUIRED];
+      // Type of the user who trigger the model
+      core.mgmt.v1beta.OwnerType user_type = 8 [(google.api.field_behavior) = REQUIRED];
     }
-    // User UUID
-    string user_uid = 1 [(google.api.field_behavior) = REQUIRED];
+    // Owner UUID
+    string owner_uid = 1 [(google.api.field_behavior) = REQUIRED];
     // Trigger data for each user
     repeated ModelTriggerData model_trigger_data = 2 [(google.api.field_behavior) = REQUIRED];
+    // Owner type
+    core.mgmt.v1beta.OwnerType owner_type = 3 [(google.api.field_behavior) = REQUIRED];
   }
   // Usage data of all users in the model service
   repeated UserUsageData usages = 1;
@@ -161,18 +173,24 @@ message PipelineUsageData {
       // Timestamp for the trigger
       google.protobuf.Timestamp trigger_time = 3 [(google.api.field_behavior) = REQUIRED];
       // Trigger mode
-      core.mgmt.v1alpha.Mode trigger_mode = 4 [(google.api.field_behavior) = REQUIRED];
+      core.mgmt.v1beta.Mode trigger_mode = 4 [(google.api.field_behavior) = REQUIRED];
       // Final status of the execution
-      core.mgmt.v1alpha.Status status = 5 [(google.api.field_behavior) = REQUIRED];
+      core.mgmt.v1beta.Status status = 5 [(google.api.field_behavior) = REQUIRED];
       // Version for the triggered release pipeline, empty string if not release
       string pipeline_release_id = 6 [(google.api.field_behavior) = REQUIRED];
       // UID for the triggered release pipeline, empty string if not release
       string pipeline_release_uid = 7 [(google.api.field_behavior) = REQUIRED];
+      // UUID of the user who trigger the pipeline
+      string user_uid = 8 [(google.api.field_behavior) = REQUIRED];
+      // Type of the user who trigger the pipeline
+      core.mgmt.v1beta.OwnerType user_type = 9 [(google.api.field_behavior) = REQUIRED];
     }
-    // User UUID
-    string user_uid = 1 [(google.api.field_behavior) = REQUIRED];
+    // Owner UUID
+    string owner_uid = 1 [(google.api.field_behavior) = REQUIRED];
     // Trigger data for each user
     repeated PipelineTriggerData pipeline_trigger_data = 2 [(google.api.field_behavior) = REQUIRED];
+    // Owner type
+    core.mgmt.v1beta.OwnerType owner_type = 3 [(google.api.field_behavior) = REQUIRED];
   }
   // Usage data of all users in the pipeline service
   repeated UserUsageData usages = 1;

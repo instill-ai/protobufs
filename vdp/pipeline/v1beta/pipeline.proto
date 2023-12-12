@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package vdp.pipeline.v1alpha;
+package vdp.pipeline.v1beta;
 
-import "common/healthcheck/v1alpha/healthcheck.proto";
+import "common/healthcheck/v1beta/healthcheck.proto";
 import "google/api/field_behavior.proto";
 // Google API
 import "google/api/resource.proto";
@@ -12,33 +12,33 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
-import "vdp/pipeline/v1alpha/common.proto";
-import "vdp/pipeline/v1alpha/connector.proto";
-import "vdp/pipeline/v1alpha/connector_definition.proto";
-import "vdp/pipeline/v1alpha/operator_definition.proto";
+import "vdp/pipeline/v1beta/common.proto";
+import "vdp/pipeline/v1beta/connector.proto";
+import "vdp/pipeline/v1beta/connector_definition.proto";
+import "vdp/pipeline/v1beta/operator_definition.proto";
 
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1beta.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // LivenessResponse represents a response for a service liveness status
 message LivenessResponse {
   // HealthCheckResponse message
-  common.healthcheck.v1alpha.HealthCheckResponse health_check_response = 1;
+  common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
 }
 
 // ReadinessRequest represents a request to check a service readiness status
 message ReadinessRequest {
   // HealthCheckRequest message
-  optional common.healthcheck.v1alpha.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional common.healthcheck.v1beta.HealthCheckRequest health_check_request = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ReadinessResponse represents a response for a service readiness status
 message ReadinessResponse {
   // HealthCheckResponse message
-  common.healthcheck.v1alpha.HealthCheckResponse health_check_response = 1;
+  common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
 }
 
 // ComponentType
@@ -134,20 +134,6 @@ message Pipeline {
   // Pipeline recipe
   Recipe recipe = 5 [(google.api.field_behavior) = IMMUTABLE];
 
-  // Pipeline owner
-  oneof owner {
-    // The resource name with UUID of a user, e.g.,
-    // "users/bfb978f8-78d3-4338-aa2b-a6c699cb07c5".
-    string user = 8 [
-      (google.api.resource_reference).type = "api.instill.tech/User",
-      (google.api.field_behavior) = OUTPUT_ONLY
-    ];
-    // The resource name with UUID of an organization
-    string organization = 9 [
-      (google.api.resource_reference).type = "api.instill.tech/Organization",
-      (google.api.field_behavior) = OUTPUT_ONLY
-    ];
-  }
   // Pipeline creation time
   google.protobuf.Timestamp create_time = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Pipeline update time
@@ -160,6 +146,14 @@ message Pipeline {
   Permission permission = 15;
   // Metadata: store Console-related data such as pipeline builder layout
   google.protobuf.Struct metadata = 16;
+  // Owner Name
+  string owner_name = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Owner details
+  google.protobuf.Struct owner = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Releases
+  repeated PipelineRelease releases = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // readme
+  string readme = 20 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // The metadata
@@ -170,8 +164,19 @@ message TriggerMetadata {
 
 // Trace for the intermediate component
 message Trace {
-  // Success or not
-  bool success = 1;
+  // Status
+  enum Status {
+    // UNSPECIFIED
+    STATUS_UNSPECIFIED = 0;
+    // COMPLETED
+    STATUS_COMPLETED = 1;
+    // SKIPPED
+    STATUS_SKIPPED = 2;
+    // ERROR
+    STATUS_ERROR = 3;
+  }
+  // status
+  repeated Status statuses = 1;
   // Inputs of the component
   repeated google.protobuf.Struct inputs = 2;
   // Outputs of the component
@@ -212,6 +217,8 @@ message PipelineRelease {
   string alias = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Metadata: store Console-related data such as pipeline builder layout
   google.protobuf.Struct metadata = 12;
+  // readme
+  string readme = 13 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListPipelinesRequest represents a request to list pipelines
