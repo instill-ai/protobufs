@@ -10,6 +10,9 @@ info:
   license:
     name: Elastic License 2.0 (ELv2)
     url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
+tags:
+  - name: PipelinePrivateService
+    description: Private methods to interact with Pipeline resources.
 host: https://api.instill.tech
 schemes:
   - http
@@ -18,7 +21,406 @@ consumes:
   - application/json
 produces:
   - application/json
-paths: {}
+paths:
+  /v1beta/admin/{connector_definition.permalink}/lookUp:
+    get:
+      summary: Get a connector definition by UID (admin only).
+      description: |-
+        This is a *private* method that allows admin users to access a connector
+        definition by its UID.
+      operationId: PipelinePrivateService_LookUpConnectorDefinitionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaLookUpConnectorDefinitionAdminResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector_definition.permalink
+          description: |-
+            The permalink of the connector definition, which allows its access by UID.
+            - Format: `connector-definitions/{uid}`
+          in: path
+          required: true
+          type: string
+          pattern: connector-definitions/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired connector definition view in
+            the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - PipelinePrivateService
+  /v1beta/admin/{operator_definition.permalink}/lookUp:
+    get:
+      summary: Get an operator definition by UID (admin only).
+      description: |-
+        This is a *private* method that allows admin users to access an operator
+        definition by its UID.
+      operationId: PipelinePrivateService_LookUpOperatorDefinitionAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaLookUpOperatorDefinitionAdminResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: operator_definition.permalink
+          description: |-
+            The permalink of the operator definition, which allows its access by UID.
+            - Format: `operator-definitions/{uid}`.
+          in: path
+          required: true
+          type: string
+          pattern: operator-definitions/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired operator definition view in the
+            response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - PipelinePrivateService
+  /v1beta/admin/{permalink}/check:
+    get:
+      summary: Get a connector current state (admin only).
+      description: |-
+        This is a *private* method that allows admin users to access the state of
+        a connector by its UID.
+      operationId: PipelinePrivateService_CheckConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCheckConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink
+          description: |-
+            The permalink of the connector, which allows its access by UID.
+            - Format: `connectors/{uid}`.
+          in: path
+          required: true
+          type: string
+          pattern: connectors/[^/]+
+      tags:
+        - PipelinePrivateService
+  /v1beta/admin/{permalink}/lookUp:
+    get:
+      summary: Get a connector by UID (admin only).
+      description: |-
+        This is a *private* method that allows admin users to access a connector
+        by its UID.
+      operationId: PipelinePrivateService_LookUpConnectorAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaLookUpConnectorAdminResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink
+          description: |-
+            Permalink of a connector. For example:
+            "connectors/{uid}"
+          in: path
+          required: true
+          type: string
+          pattern: connectors/[^/]+
+        - name: view
+          description: |-
+            Connector view (default is VIEW_BASIC)
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+      tags:
+        - PipelinePrivateService
+  /v1beta/admin/{pipeline.permalink}/lookUp:
+    get:
+      summary: Get a pipeline by UID (admin only).
+      description: |-
+        This is a *private* method that allows admin users to access any pipeline
+        resource by its UID.
+      operationId: PipelinePrivateService_LookUpPipelineAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaLookUpPipelineAdminResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline.permalink
+          description: |-
+            The permalink of the pipeline, which allows its access by UID.
+            - Format: `pipelines/{uid}`.
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - PipelinePrivateService
+  /v1beta/admin/connectors:
+    get:
+      summary: List connectors (admin only).
+      description: This is a *private* method that allows admin users to list *all* connectors.
+      operationId: PipelinePrivateService_ListConnectorsAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListConnectorsAdminResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of connectors to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired connector view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePrivateService
+  /v1beta/admin/pipelines:
+    get:
+      summary: List pipelines (admin only).
+      description: |-
+        This is a *private* method that allows admin users and internal clients to
+        list *all* pipeline resources.
+      operationId: PipelinePrivateService_ListPipelinesAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelinesAdminResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of pipelines to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            - Example: `recipe.components.definition_name:"operator-definitions/2ac8be70-0f7a-4b61-a33d-098b8acfa6f3"`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePrivateService
+  /v1beta/admin/releases:
+    get:
+      summary: List pipeline releases (admin only).
+      description: |-
+        This is a *private* method that allows admin users to list *all* pipeline
+        releases.
+      operationId: PipelinePrivateService_ListPipelineReleasesAdmin
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineReleasesAdminResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of releases to return. If this parameter is
+            unspecified, at most 10 releases will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePrivateService
 definitions:
   AuthTokenIssuerResponseUnsignedAccessToken:
     type: object
@@ -2057,10 +2459,8 @@ definitions:
     properties:
       state:
         $ref: '#/definitions/v1betaConnectorState'
-        title: Retrieved connector state
-    title: |-
-      CheckConnectorResponse represents a response to fetch a
-      connector's current state
+        description: Connector state.
+    description: CheckConnectorResponse contains the connector's current state.
   v1betaCheckNamespaceResponse:
     type: object
     properties:
@@ -2142,74 +2542,83 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          connector name. It must have the format of
-          "connectors/*"
+        description: |-
+          The name of the connector, defined by its ID.
+          - Format: `connectors/{id}`.
         readOnly: true
       uid:
         type: string
-        title: Connector UUID
+        description: Connector UUID.
         readOnly: true
       id:
         type: string
         description: |-
-          connector ID (the last segment of the resource name)
-          used to construct the resource name. This conforms to RFC-1034, which
-          restricts to letters, numbers, and hyphen, with the first character a
-          letter, the last a letter or a number, and a 63 character maximum.
+          Connector resource ID (used in the name as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
       connector_definition_name:
         type: string
-        title: ConnectorDefinition resource
+        description: ConnectorDefinition that describes the connector configuration.
       type:
         $ref: '#/definitions/v1betaConnectorType'
-        title: Connector Type
+        description: Connector type.
         readOnly: true
       description:
         type: string
-        title: Connector description
+        description: Connector description.
       configuration:
         type: object
-        title: Connector configuration in JSON format
+        description: Connector configuration in JSON format.
       state:
         $ref: '#/definitions/v1betaConnectorState'
-        title: Connector state
+        description: Connector state.
         readOnly: true
       tombstone:
         type: boolean
-        title: Connector tombstone
+        description: |-
+          Connector tombstone. If true, this configuration is permanently off.
+          Otherwise, the configuration is active.
         readOnly: true
       create_time:
         type: string
         format: date-time
-        title: Connector creation time
+        description: Connector creation time.
         readOnly: true
       update_time:
         type: string
         format: date-time
-        title: Connector update time
+        description: Connector update time.
         readOnly: true
       visibility:
         $ref: '#/definitions/v1betaConnectorVisibility'
-        title: Connector visibility including public or private
+        description: Connector visibility.
         readOnly: true
       connector_definition:
         $ref: '#/definitions/v1betaConnectorDefinition'
-        title: Embed the content of the connector_definition
+        description: Embed content of the ConnectorDefinition.
         readOnly: true
       delete_time:
         type: string
         format: date-time
-        title: Connector delete time
+        description: Connector deletion time.
         readOnly: true
       owner_name:
         type: string
-        title: Owner Name
+        description: Owner name.
         readOnly: true
       owner:
         type: object
-        title: Owner details
+        description: Owner details.
         readOnly: true
-    title: Connector represents a connector data model
+    description: |-
+      A Connector is a type of pipeline component that queries, processes or sends
+      the ingested unstructured data to a service or app. Users need to configure
+      their connectors (e.g. by providing an API token to a remote service).
+
+      For more information, see
+      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      in the official documentation.
     required:
       - configuration
   v1betaConnectorDefinition:
@@ -2217,84 +2626,91 @@ definitions:
     properties:
       name:
         type: string
-        title: |-
-          ConnectorDefinition resource name. It must have the format of
-          "connector-definitions/*"
+        description: |-
+          The name of the connector definition.
+          - Format: `connector-definitions/*`.
         readOnly: true
       uid:
         type: string
-        title: ConnectorDefinition UUID
+        description: Connector definition UUID.
         readOnly: true
       id:
         type: string
         description: |-
-          ConnectorDefinition resource ID (the last segment of the
-          resource name) used to construct the resource name. This conforms to
-          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
-          character a letter, the last a letter or a number, and a 63 character
-          maximum.
+          Connector definition resource ID (used in the name as the last segment). This
+          conforms to RFC-1034, which restricts to letters, numbers, and hyphen,
+          with the first character a letter, the last a letter or a number, and a 63
+          character maximum.
       title:
         type: string
-        title: ConnectorDefinition title
+        description: Connector definition title.
         readOnly: true
       documentation_url:
         type: string
-        title: ConnectorDefinition documentation URL
+        description: Connector definition documentation URL.
         readOnly: true
       icon:
         type: string
-        title: ConnectorDefinition icon
+        description: Connector definition icon.
         readOnly: true
       spec:
         $ref: '#/definitions/v1betaConnectorSpec'
-        title: ConnectorDefinition spec
+        description: Connector definition specification.
         readOnly: true
       type:
         $ref: '#/definitions/v1betaConnectorType'
-        title: Connector Type
+        description: Connector definition type.
         readOnly: true
       tombstone:
         type: boolean
-        title: |-
-          ConnectorDefinition tombstone, i.e., if not set or false, the
-          configuration is active, or otherwise, if true, this configuration is
-          permanently off
+        description: |-
+          Connector definition tombstone. If true, this configuration is permanently
+          off. Otherwise, the configuration is active.
         readOnly: true
       public:
         type: boolean
-        title: |-
-          ConnectorDefinition public flag, i.e., true if this connector
-          definition is available to all workspaces
+        description: |-
+          The public flag determines whether this connector definition is available
+          to all workspaces.
         readOnly: true
       custom:
         type: boolean
-        title: |-
-          ConnectorDefinition custom flag, i.e., whether this is a custom
-          connector definition
+        description: |-
+          Connector definition custom flag, i.e., whether this is a custom
+          connector definition.
         readOnly: true
       icon_url:
         type: string
-        title: ConnectorDefinition iconUrl
+        description: Connector definition icon URL.
         readOnly: true
       vendor:
         type: string
-        title: ConnectorDefinition vendor name
+        description: Connector definition vendor name.
         readOnly: true
       vendor_attributes:
         type: object
-        title: ConnectorDefinition vendorAttributes, i.e. the vendor-specific attributes
+        description: Vendor-specific attributes.
         readOnly: true
-    title: ConnectorDefinition represents the connector definition data model
+    description: |-
+      A Connector is a type of pipeline component that queries, processes or sends
+      the ingested unstructured data to a service or app. Users need to configure
+      their connectors (e.g. by providing an API token to a remote service). A
+      ConnectorDefinition describes a certain type of Connector.
+
+      For more information, see
+      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      in the official documentation.
   v1betaConnectorDefinitionView:
     type: string
     enum:
       - VIEW_BASIC
       - VIEW_FULL
     description: |-
-      - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-    title: View enumerates the definition views
+      View defines how a connector definition is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
   v1betaConnectorExecuteChartRecord:
     type: object
     properties:
@@ -2418,11 +2834,12 @@ definitions:
       - STATE_CONNECTED
       - STATE_ERROR
     description: |-
-      - STATE_UNSPECIFIED: State: UNSPECIFIED
-       - STATE_DISCONNECTED: State: DISCONNECTED
-       - STATE_CONNECTED: State: CONNECTED
-       - STATE_ERROR: State: ERROR
-    title: State enumerates the connector state
+      State describes the state of the connector.
+
+       - STATE_UNSPECIFIED: Unspecified.
+       - STATE_DISCONNECTED: Disconnected.
+       - STATE_CONNECTED: Connected.
+       - STATE_ERROR: The connector suffered an error.
   v1betaConnectorType:
     type: string
     enum:
@@ -2433,14 +2850,15 @@ definitions:
       - CONNECTOR_TYPE_DATA
       - CONNECTOR_TYPE_OPERATOR
     description: |-
-      - CONNECTOR_TYPE_UNSPECIFIED: ConnectorType: UNSPECIFIED
-       - CONNECTOR_TYPE_SOURCE: ConnectorType: SOURCE
-       - CONNECTOR_TYPE_DESTINATION: ConnectorType: DESTINATION
-       - CONNECTOR_TYPE_AI: ConnectorType: AI
-       - CONNECTOR_TYPE_BLOCKCHAIN: ConnectorType: Blockchain
-       - CONNECTOR_TYPE_DATA: ConnectorType: DATA
-       - CONNECTOR_TYPE_OPERATOR: ConnectorType: OPERATOR
-    title: ConnectorType enumerates connector types
+      ConnectorType holds the different connector types based on their tasks.
+
+       - CONNECTOR_TYPE_UNSPECIFIED: Unspecified.
+       - CONNECTOR_TYPE_SOURCE: Source connector.
+       - CONNECTOR_TYPE_DESTINATION: Destination connector.
+       - CONNECTOR_TYPE_AI: AI connector.
+       - CONNECTOR_TYPE_BLOCKCHAIN: Blockchain connector.
+       - CONNECTOR_TYPE_DATA: Data connector.
+       - CONNECTOR_TYPE_OPERATOR: Operator connector.
   v1betaConnectorUsageData:
     type: object
     properties:
@@ -2478,21 +2896,23 @@ definitions:
       - VIEW_FULL
       - VIEW_CONFIGURATION
     description: |-
-      - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-       - VIEW_CONFIGURATION: View: CONFIGURATION
-    title: View enumerates the definition views
+      View defines how a connector is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
+       - VIEW_CONFIGURATION: Contains the connector configuration.
   v1betaConnectorVisibility:
     type: string
     enum:
       - VISIBILITY_PRIVATE
       - VISIBILITY_PUBLIC
     description: |-
-      - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
-       - VISIBILITY_PRIVATE: Visibility: PRIVATE
-       - VISIBILITY_PUBLIC: Visibility: PUBLIC
-    title: Connector visibility including public or private
+      Visibility defines who can access the connector.
+
+       - VISIBILITY_UNSPECIFIED: Unspecified, equivalent to PRIVATE.
+       - VISIBILITY_PRIVATE: Only the user can see the connector.
+       - VISIBILITY_PUBLIC: Other users can see the connector.
   v1betaCreateOrganizationConnectorResponse:
     type: object
     properties:
@@ -3263,17 +3683,17 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1betaConnector'
-        title: A list of connectors
+        description: A list of connectors.
       next_page_token:
         type: string
-        title: Next page token
+        description: Next page token.
       total_size:
         type: integer
         format: int32
-        title: Total count of connectors
-    title: |-
-      ListConnectorsAdminResponse represents a response for a list of
-      connectors
+        description: Total number of connectors.
+    description: |-
+      ListConnectorsAdminResponse contains a list of connectors requested by an
+      admin.
   v1betaListConnectorsResponse:
     type: object
     properties:
@@ -3417,18 +3837,19 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1betaPipelineRelease'
-        title: A list of pipeline resources
+        description: A list of pipeline releases.
       next_page_token:
         type: string
-        title: Next page token
+        description: Next page token.
       total_size:
         type: integer
         format: int32
-        title: Total count of pipeline resources
-    title: |-
-      ListPipelineReleasesAdminResponse represents a response for a list of pipeline_releases
-      The recipe returned will be permaLinks instead of resourceName temporary,
-      this will be refactored soon
+        description: Total number of pipeline releases.
+    description: |-
+      ListPipelineReleasesAdminResponse contains a list of pipeline releases
+      requested by an admin user.
+      For the moment, the pipeline recipes will be UID-based (permalink) instead
+      of name-based. This is a temporary solution.
   v1betaListPipelineTriggerChartRecordsResponse:
     type: object
     properties:
@@ -3487,18 +3908,19 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1betaPipeline'
-        title: A list of pipeline resources
+        description: A list of pipeline resources.
       next_page_token:
         type: string
-        title: Next page token
+        description: Next page token.
       total_size:
         type: integer
         format: int32
-        title: Total count of pipeline resources
-    title: |-
-      ListPipelinesAdminResponse represents a response for a list of pipelines
-      The recipe returned will be permaLinks instead of resourceName temporary,
-      this will be refactored soon
+        description: Total number of pipelines.
+    description: |-
+      ListPipelinesAdminResponse contains a list of pipelines requested by an
+      admin user.
+      For the moment, the pipeline recipes will be UID-based (permalink) instead
+      of name-based. This is a temporary solution.
   v1betaListPipelinesResponse:
     type: object
     properties:
@@ -3644,28 +4066,26 @@ definitions:
     properties:
       connector_definition:
         $ref: '#/definitions/v1betaConnectorDefinition'
-        title: Connector resource
-    title: |-
+        description: The requested connector.
+    description: |-
       LookUpConnectorDefinitionAdminResponse represents a response for a
-      connector definition
+      connector definition.
   v1betaLookUpConnectorResponse:
     type: object
     properties:
       connector:
         $ref: '#/definitions/v1betaConnector'
-        title: connector
-    title: |-
-      LookUpConnectorResponse represents a response for a
-      connector
+        description: The requested connector.
+    description: LookUpConnectorResponse represents a response for a connector.
   v1betaLookUpOperatorDefinitionAdminResponse:
     type: object
     properties:
       operator_definition:
         $ref: '#/definitions/v1betaOperatorDefinition'
-        title: operator resource
-    title: |-
-      LookUpOperatorAdminResponse represents a response for a
-      operator
+        description: The requested operator definition.
+    description: |-
+      LookUpOperatorDefinitionAdminResponse represents a response for an operator
+      definition.
   v1betaLookUpOrganizationAdminResponse:
     type: object
     properties:
@@ -3678,8 +4098,8 @@ definitions:
     properties:
       pipeline:
         $ref: '#/definitions/v1betaPipeline'
-        title: A pipeline resource
-    title: LookUpPipelineAdminResponse represents a response for a pipeline resource
+        description: The requested pipeline.
+    description: LookUpPipelineAdminResponse represents a response for a pipeline resource.
   v1betaLookUpPipelineResponse:
     type: object
     properties:
@@ -3807,71 +4227,74 @@ definitions:
       name:
         type: string
         title: |-
-          Operator resource name. It must have the format of
-          "operator-definitions/*"
+          The name of the operator definition.
+          - Format: `operator-definitions/*`
         readOnly: true
       uid:
         type: string
-        title: Operator UUID
+        description: Operator definition UUID.
         readOnly: true
       id:
         type: string
         description: |-
-          Operator resource ID (the last segment of the
-          resource name) used to construct the resource name. This conforms to
-          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
-          character a letter, the last a letter or a number, and a 63 character
-          maximum.
+          Operator definition resource ID (used in the name as the last segment).
+          This conforms to RFC-1034, which restricts to letters, numbers, and
+          hyphen, with the first character a letter, the last a letter or a number,
+          and a 63 character maximum.
       title:
         type: string
-        title: Operator title
+        description: Operator definition title.
         readOnly: true
       documentation_url:
         type: string
-        title: Operator documentation URL
+        description: Operator definition documentation URL.
         readOnly: true
       icon:
         type: string
-        title: Operator icon
+        description: Operator definition icon.
         readOnly: true
       spec:
         $ref: '#/definitions/v1betaOperatorSpec'
-        title: Operator spec
+        description: Operator definition specification.
         readOnly: true
       tombstone:
         type: boolean
-        title: |-
-          Operator tombstone, i.e., if not set or false, the
-          configuration is active, or otherwise, if true, this configuration is
-          permanently off
+        description: |-
+          Operator definition tombstone. If true, this configuration is permanently
+          off. Otherwise, the configuration is active.
         readOnly: true
       public:
         type: boolean
-        title: |-
-          Operator public flag, i.e., true if this operator
-          definition is available to all workspaces
+        description: |-
+          The public flag determines whether this operator definition is available
+          to all workspaces.
         readOnly: true
       custom:
         type: boolean
-        title: |-
-          Operator custom flag, i.e., whether this is a custom
-          operator definition
+        description: The custom flag determines whether this is a custom operator definition.
         readOnly: true
       icon_url:
         type: string
-        title: Operator iconUrl
+        description: Operator definition icon URL.
         readOnly: true
-    title: Operator represents the operator definition data model
+    description: |-
+      An Operator is a type of pipeline component that performs data injection and
+      manipulation. OperatorDefinition describes a certain type of operator.
+
+      For more information, see
+      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      in the official documentation.
   v1betaOperatorDefinitionView:
     type: string
     enum:
       - VIEW_BASIC
       - VIEW_FULL
     description: |-
-      - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-    title: Operator View
+      View defines how an operator definition is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
   v1betaOperatorSpec:
     type: object
     properties:
@@ -3995,73 +4418,81 @@ definitions:
     properties:
       name:
         type: string
-        title: Pipeline resource name. It must have the format of "users/{user}/pipelines/*"
+        description: |-
+          The name of the pipeline, defined by its owner and ID.
+          - Format: `users/{user}/pipelines/{id}`.
         readOnly: true
       uid:
         type: string
-        title: Pipeline UUID
+        description: Pipeline UUID.
         readOnly: true
       id:
         type: string
         description: |-
-          Pipeline resource ID (the last segment of the resource name) used to
-          construct the resource name. This conforms to RFC-1034, which restricts to
-          letters, numbers, and hyphen, with the first character a letter, the last a
-          letter or a number, and a 63 character maximum.
+          Pipeline resource ID (used in the name as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
       description:
         type: string
-        title: Pipeline description
+        description: Pipeline description.
       recipe:
         $ref: '#/definitions/v1betaRecipe'
-        title: Pipeline recipe
+        description: Recipe describes the components of a Pipeline and how they are connected.
       create_time:
         type: string
         format: date-time
-        title: Pipeline creation time
+        description: Pipeline creation time.
         readOnly: true
       update_time:
         type: string
         format: date-time
-        title: Pipeline update time
+        description: Pipeline update time.
         readOnly: true
       openapi_schema:
         type: object
-        title: OpenAPI schema
+        description: OpenAPI schema.
         readOnly: true
       delete_time:
         type: string
         format: date-time
-        title: Pipeline delete time
+        description: Pipeline delete time.
         readOnly: true
       sharing:
         $ref: '#/definitions/v1betaSharing'
-        title: Pipeline sharing
+        description: Pipeline sharing.
       metadata:
         type: object
-        title: 'Metadata: store Console-related data such as pipeline builder layout'
+        description: 'Metadata: store Console-related data such as pipeline builder layout.'
       owner_name:
         type: string
-        title: Owner Name
+        description: Owner Name.
         readOnly: true
       owner:
         type: object
-        title: Owner details
+        description: Owner details.
         readOnly: true
       releases:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1betaPipelineRelease'
-        title: Releases
+        description: Releases.
         readOnly: true
       readme:
         type: string
-        title: readme
+        description: README.
       permission:
         $ref: '#/definitions/v1betaPermission'
-        title: Permission
+        description: Permission.
         readOnly: true
-    title: Pipeline represents the content of a pipeline
+    description: |-
+      A Pipeline is an end-to-end workflow that automates a sequence of components
+      to process data.
+
+      For more information, see
+      [Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline) in
+      the official documentation.
   v1betaPipelineData:
     type: object
     properties:
@@ -4084,54 +4515,60 @@ definitions:
     properties:
       name:
         type: string
-        title: PipelineRelease resource name. It must have the format of "users/*/pipelines/*/releases/*"
+        title: |-
+          The name of the release, defined by its owner and ID.
+          - Format: `users/{user}/pipelines/{pipeline_id}/releases/{release_id}
         readOnly: true
       uid:
         type: string
-        title: PipelineRelease UUID
+        description: Release UUID.
         readOnly: true
       id:
         type: string
-        title: |-
-          PipelineRelease resource ID (the last segment of the resource name) used to
-          construct the resource name. Must be a sematic version vX.Y.Z
+        description: |-
+          Release resource ID (used in the name as the last segment). It must be a
+          sematic version vX.Y.Z.
       description:
         type: string
-        title: PipelineRelease description
+        description: Release description.
       recipe:
         $ref: '#/definitions/v1betaRecipe'
-        title: Pipeline recipe snapshot
+        description: Recipe of the versioned pipeline.
         readOnly: true
       create_time:
         type: string
         format: date-time
-        title: Pipeline creation time
+        description: Pipeline creation time.
         readOnly: true
       update_time:
         type: string
         format: date-time
-        title: Pipeline update time
+        description: Pipeline update time.
         readOnly: true
       openapi_schema:
         type: object
-        title: OpenAPI schema
+        description: OpenAPI schema.
         readOnly: true
       delete_time:
         type: string
         format: date-time
-        title: Pipeline delete time
+        description: Pipeline deletion time.
         readOnly: true
       alias:
         type: string
-        title: Alias
+        description: Alias.
         readOnly: true
       metadata:
         type: object
-        title: 'Metadata: store Console-related data such as pipeline builder layout'
+        description: |-
+          Key-value object with console-related data such as the pipeline builder
+          layout.
       readme:
         type: string
-        title: readme
-    title: PipelineRelease represents the content of a pipeline release
+        description: README.
+    description: |-
+      Pipeline releases contain the version control information of a pipeline.
+      This allows users to track changes in the pipeline over time.
   v1betaPipelineTriggerChartRecord:
     type: object
     properties:
@@ -4318,11 +4755,12 @@ definitions:
       - VIEW_FULL
       - VIEW_RECIPE
     description: |-
-      - VIEW_UNSPECIFIED: View: UNSPECIFIED
-       - VIEW_BASIC: View: BASIC
-       - VIEW_FULL: View: FULL
-       - VIEW_RECIPE: View: RECIPE: will return recipe
-    title: Pipeline View
+      View defines how a Pipeline is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
+       - VIEW_RECIPE: Contains the recipe of the resource.
   v1betaPriceData:
     type: object
     properties:
