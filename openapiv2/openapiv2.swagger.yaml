@@ -7147,16 +7147,6 @@ definitions:
         $ref: '#/definitions/v1alphaPromptImage'
         title: Content of Image
     title: Content used for chat history in text generation model
-  v1alphaConversationObject:
-    type: object
-    properties:
-      role:
-        type: string
-        title: Role name of the conversation
-      content:
-        type: string
-        title: Content of the conversation
-    title: Conversation based prompt for text generation model
   v1alphaCreateUserModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -7249,18 +7239,6 @@ definitions:
         title: A list of detection objects
         readOnly: true
     title: DetectionOutput represents the output of detection task
-  v1alphaExtraParamObject:
-    type: object
-    properties:
-      param_name:
-        type: string
-        title: Name of the hyperparameter
-      param_value:
-        type: string
-        title: Value of the hyperparameter
-    title: |-
-      Additional hyperparameters for model inferences
-      or other configuration not listsed in protobuf
   v1alphaGetModelDefinitionResponse:
     type: object
     properties:
@@ -7318,10 +7296,7 @@ definitions:
         format: int32
         title: The number of generated samples, default is 1
       extra_params:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaExtraParamObject'
+        type: object
         title: The extra parameters
     title: ImageToImageInput represents the input of image to image task
     required:
@@ -8095,12 +8070,24 @@ definitions:
   v1alphaTextGenerationChatInput:
     type: object
     properties:
-      conversation:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_images:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaConversationObject'
-        title: The prompt text
+          $ref: '#/definitions/v1alphaPromptImage'
+        title: The prompt images
+      chat_history:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaContent'
+        title: The chat history
+      system_message:
+        type: string
+        title: The system message
       max_new_tokens:
         type: integer
         format: int32
@@ -8118,14 +8105,11 @@ definitions:
         format: int32
         title: The seed
       extra_params:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaExtraParamObject'
+        type: object
         title: The extra parameters
     title: TextGenerationChatInput represents the input of text generation chat task
     required:
-      - conversation
+      - prompt
   v1alphaTextGenerationChatOutput:
     type: object
     properties:
@@ -8214,10 +8198,7 @@ definitions:
         format: int32
         title: The number of generated samples, default is 1
       extra_params:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaExtraParamObject'
+        type: object
         title: The extra parameters
     title: TextToImageInput represents the input of text to image task
     required:
@@ -8320,12 +8301,21 @@ definitions:
       prompt:
         type: string
         title: The prompt text
-      prompt_image_url:
+      prompt_images:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPromptImage'
+        title: The prompt images
+      chat_history:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaContent'
+        title: The chat history
+      system_message:
         type: string
-        title: Image type URL
-      prompt_image_base64:
-        type: string
-        title: Image type base64
+        title: The system message
       max_new_tokens:
         type: integer
         format: int32
@@ -8343,10 +8333,7 @@ definitions:
         format: int32
         title: The seed
       extra_params:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaExtraParamObject'
+        type: object
         title: The extra parameters
     title: VisualQuestionAnsweringInput represents the input of visaul question answering task
     required:
