@@ -10,11 +10,11 @@ import "google/protobuf/struct.proto";
 // OpenAPI definition
 import "protoc-gen-openapiv2/options/annotations.proto";
 
-// View enumerates the definition views
+// OperatorSpec represents a specification data model.
 message OperatorSpec {
-  // Spec operator specification
+  // Component specification.
   google.protobuf.Struct component_specification = 1 [(google.api.field_behavior) = REQUIRED];
-  // Spec openapi specification
+  // OpenAPI specification.
   google.protobuf.Struct openapi_specifications = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -48,7 +48,7 @@ message OperatorDefinition {
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Operator definition UUID.
   string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Operator definition resource ID (used in the name as the last segment).
+  // Operator definition resource ID (used in `name` as the last segment).
   // This conforms to RFC-1034, which restricts to letters, numbers, and
   // hyphen, with the first character a letter, the last a letter or a number,
   // and a 63 character maximum.
@@ -77,38 +77,39 @@ message OperatorDefinition {
 // RPC messages
 ///////////////////////////////////////////////////////////////////////
 
-// ListOperatorDefinitionsRequest represents a request to list
-// OperatorDefinitions
+// ListOperatorDefinitionsRequest represents a request to list operator
+// definitions.
 message ListOperatorDefinitionsRequest {
   // The maximum number of OperatorDefinitions to return. The
   // service may return fewer than this value. If unspecified, at most 10
   // OperatorDefinitions will be returned. The maximum value is 100;
   // values above 100 will be coerced to 100.
   optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-  // Page token
+  // Page token.
   optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
-  // Definition view (default is DEFINITION_VIEW_BASIC)
+  // View allows clients to specify the desired resource view in the response.
   optional OperatorDefinition.View view = 3 [(google.api.field_behavior) = OPTIONAL];
-  // Filter expression to list operator definitions
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ListOperatorDefinitionsResponse represents a response for a list
-// of OperatorDefinitions
+// ListOperatorDefinitionsResponse contains a list of operator definitions.
 message ListOperatorDefinitionsResponse {
-  // A list of Operator resources
+  // A list of operator definition resources.
   repeated OperatorDefinition operator_definitions = 1;
-  // Next page token
+  // Next page token.
   string next_page_token = 2;
-  // Total count of Operator resources
+  // Total number of operator definitions.
   int32 total_size = 3;
 }
 
-// GetOperatorDefinitionRequest represents a request to query a
-// Operator resource
+// GetOperatorDefinitionRequest represents a request to fetch the details of a
+// operator definition.
 message GetOperatorDefinitionRequest {
-  // Operator resource name. It must have the format of
-  // "operator-definitions/*"
+  // The resource name of the operator definition, which allows its access by ID.
+  // - Format: `operator-definitions/{id}`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/OperatorDefinition"},
@@ -116,15 +117,13 @@ message GetOperatorDefinitionRequest {
       field_configuration: {path_param_name: "operator_definition.name"}
     }
   ];
-  // Operator resource view (default is
-  // DEFINITION_VIEW_BASIC)
+  // View allows clients to specify the desired resource view in the response.
   optional OperatorDefinition.View view = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// GetOperatorDefinitionResponse represents a
-// Operator response
+// GetOperatorDefinitionResponse contains the requested operator definition.
 message GetOperatorDefinitionResponse {
-  // A Operator resource
+  // The operator definition resource.
   OperatorDefinition operator_definition = 1;
 }
 
