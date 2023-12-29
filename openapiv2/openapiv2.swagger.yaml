@@ -7134,19 +7134,6 @@ definitions:
         title: Classification score
         readOnly: true
     title: ClassificationOutput represents the output of classification task
-  v1alphaContent:
-    type: object
-    properties:
-      type:
-        type: string
-        title: Type of Content
-      content:
-        type: string
-        title: Content of Text Message
-      prompt_image:
-        $ref: '#/definitions/v1alphaPromptImage'
-        title: Content of Image
-    title: Content used for chat history in text generation model
   v1alphaCreateUserModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -7267,6 +7254,16 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: The retrieved model
     title: GetUserModelResponse represents a response for a model
+  v1alphaImageContent:
+    type: object
+    properties:
+      image_url:
+        $ref: '#/definitions/v1alphaPromptImage'
+        title: Image url or base64 code of Message Content
+      detail:
+        type: string
+        title: Additinoal information for Image Content
+    title: Image content for Message Content
   v1alphaImageToImageInput:
     type: object
     properties:
@@ -7537,6 +7534,32 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         title: A model resource
     title: LookUpModelResponse represents a response for a model
+  v1alphaMessage:
+    type: object
+    properties:
+      role:
+        type: string
+        title: The Role of a message
+      content:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessageContent'
+        title: The context of the message
+    title: Message used for chat history in text generation model
+  v1alphaMessageContent:
+    type: object
+    properties:
+      type:
+        type: string
+        title: Type of Content
+      image_url:
+        $ref: '#/definitions/v1alphaImageContent'
+        title: Image Url is the naming convention by openAi but not necessarily a url
+      text:
+        type: string
+        title: Field for text
+    title: Content used for chat history message in text generation model
   v1alphaModel:
     type: object
     properties:
@@ -8083,7 +8106,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaContent'
+          $ref: '#/definitions/v1alphaMessage'
         title: The chat history
       system_message:
         type: string
@@ -8134,7 +8157,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaContent'
+          $ref: '#/definitions/v1alphaMessage'
         title: The chat history
       system_message:
         type: string
@@ -8311,7 +8334,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaContent'
+          $ref: '#/definitions/v1alphaMessage'
         title: The chat history
       system_message:
         type: string

@@ -37,12 +37,31 @@ message PromptImage {
   }
 }
 
-// Content used for chat history in text generation model
-message Content {
+// Image content for Message Content
+message ImageContent {
+  // Image url or base64 code of Message Content
+  PromptImage image_url = 1;
+  // Additinoal information for Image Content
+  optional string detail = 2;
+}
+
+// Content used for chat history message in text generation model
+message MessageContent {
   // Type of Content
   string type = 1;
   // Content of Text Message
-  string content = 2;
-  // Content of Image
-  PromptImage prompt_image = 3;
+  oneof content {
+    // Image Url is the naming convention by openAi but not necessarily a url
+    ImageContent image_url = 2;
+    // Field for text
+    string text = 3;
+  }
+}
+
+// Message used for chat history in text generation model
+message Message {
+  // The Role of a message
+  string role = 1;
+  // The context of the message
+  repeated MessageContent content = 2;
 }
