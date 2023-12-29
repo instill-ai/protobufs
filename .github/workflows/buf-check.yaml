@@ -1,15 +1,20 @@
-name: Check buf
+name: Check proto definitions
 
 on:
   pull_request:
+    paths:
+      - '**.proto'
+      - 'buf.gen.yaml'
 
 jobs:
-  check-buf:
+  buf-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: bufbuild/buf-setup-action@v1
-      - uses: bufbuild/buf-lint-action@v1
-      - uses: bufbuild/buf-breaking-action@v1
+      - name: Lint proto definitions
+        uses: bufbuild/buf-lint-action@v1
+      - name: Check breaking changes against main
+        uses: bufbuild/buf-breaking-action@v1
         with:
-          against: "https://github.com/instill-ai/protobufs.git#branch=main,ref=HEAD~1"
+          against: 'https://github.com/instill-ai/protobufs.git#branch=main,ref=HEAD~1'
