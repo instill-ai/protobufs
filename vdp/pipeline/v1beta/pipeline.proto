@@ -132,6 +132,16 @@ message Pipeline {
     VIEW_RECIPE = 3;
   }
 
+  // Visibility defines who can access the pipeline.
+  enum Visibility {
+    // Unspecified, equivalent to PRIVATE.
+    VISIBILITY_UNSPECIFIED = 0;
+    // Only the user can see the pipeline.
+    VISIBILITY_PRIVATE = 1;
+    // Other users can see the pipeline.
+    VISIBILITY_PUBLIC = 2;
+  }
+
   // The name of the pipeline, defined by its owner and ID.
   // - Format: `users/{user.id}/pipelines/{pipeline.id}`.
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -168,6 +178,8 @@ message Pipeline {
   string readme = 20 [(google.api.field_behavior) = OPTIONAL];
   // Permission defines how a pipeline can be used.
   Permission permission = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline visibility.
+  Visibility visibility = 22 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // TriggerMetadata contains the traces of the pipeline inference.
@@ -257,6 +269,8 @@ message ListPipelinesRequest {
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
   // Include soft-deleted pipelines in the result.
   optional bool show_deleted = 5 [(google.api.field_behavior) = OPTIONAL];
+  // Limit results to pipelines with the specified visibility.
+  optional Pipeline.Visibility visibility = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListPipelinesResponse contains a list of pipelines.
