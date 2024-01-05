@@ -2153,6 +2153,10 @@ paths:
                 $ref: '#/definitions/v1betaPermission'
                 description: Permission defines how a pipeline can be used.
                 readOnly: true
+              visibility:
+                $ref: '#/definitions/v1betaPipelineVisibility'
+                description: Pipeline visibility.
+                readOnly: true
             title: The pipeline fields that will replace the existing ones.
       tags:
         - PipelinePublicService
@@ -2258,6 +2262,10 @@ paths:
               permission:
                 $ref: '#/definitions/v1betaPermission'
                 description: Permission defines how a pipeline can be used.
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1betaPipelineVisibility'
+                description: Pipeline visibility.
                 readOnly: true
             title: The pipeline fields that will replace the existing ones.
       tags:
@@ -4598,6 +4606,19 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: visibility
+          description: |-
+            Limit results to pipelines with the specified visibility.
+
+             - VISIBILITY_UNSPECIFIED: Unspecified, equivalent to PRIVATE.
+             - VISIBILITY_PRIVATE: Only the user can see the pipeline.
+             - VISIBILITY_PUBLIC: Other users can see the pipeline.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VISIBILITY_PRIVATE
+            - VISIBILITY_PUBLIC
       tags:
         - PipelinePublicService
   /v1beta/tokens:
@@ -5308,8 +5329,7 @@ definitions:
 
           Note: this functionality is not currently available in the official
           protobuf release, and it is not used for type URLs beginning with
-          type.googleapis.com. As of May 2023, there are no widely used type server
-          implementations and no plans to implement one.
+          type.googleapis.com.
 
           Schemes other than `http`, `https` (or the empty scheme) might be
           used with implementation specific semantics.
@@ -5344,7 +5364,7 @@ definitions:
             foo = any.unpack(Foo.getDefaultInstance());
           }
 
-       Example 3: Pack and unpack a message in Python.
+      Example 3: Pack and unpack a message in Python.
 
           foo = Foo(...)
           any = Any()
@@ -5354,7 +5374,7 @@ definitions:
             any.Unpack(foo)
             ...
 
-       Example 4: Pack and unpack a message in Go
+      Example 4: Pack and unpack a message in Go
 
            foo := &pb.Foo{...}
            any, err := anypb.New(foo)
@@ -5374,7 +5394,7 @@ definitions:
       name "y.z".
 
       JSON
-      ====
+
       The JSON representation of an `Any` value uses the regular
       representation of the deserialized, embedded message, with an
       additional field `@type` which contains the type URL. Example:
@@ -5406,7 +5426,7 @@ definitions:
       `NullValue` is a singleton enumeration to represent the null value for the
       `Value` type union.
 
-      The JSON representation for `NullValue` is JSON `null`.
+       The JSON representation for `NullValue` is JSON `null`.
 
        - NULL_VALUE: Null value.
   v1alphaBoundingBox:
@@ -8863,6 +8883,10 @@ definitions:
         $ref: '#/definitions/v1betaPermission'
         description: Permission defines how a pipeline can be used.
         readOnly: true
+      visibility:
+        $ref: '#/definitions/v1betaPipelineVisibility'
+        description: Pipeline visibility.
+        readOnly: true
     description: |-
       A Pipeline is an end-to-end workflow that automates a sequence of components
       to process data.
@@ -9138,6 +9162,17 @@ definitions:
        - VIEW_BASIC: Default view, only includes basic information.
        - VIEW_FULL: Full representation.
        - VIEW_RECIPE: Contains the recipe of the resource.
+  v1betaPipelineVisibility:
+    type: string
+    enum:
+      - VISIBILITY_PRIVATE
+      - VISIBILITY_PUBLIC
+    description: |-
+      Visibility defines who can access the pipeline.
+
+       - VISIBILITY_UNSPECIFIED: Unspecified, equivalent to PRIVATE.
+       - VISIBILITY_PRIVATE: Only the user can see the pipeline.
+       - VISIBILITY_PUBLIC: Other users can see the pipeline.
   v1betaPriceData:
     type: object
     properties:
