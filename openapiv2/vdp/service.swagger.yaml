@@ -1,0 +1,5233 @@
+swagger: "2.0"
+info:
+  title: "\U0001F4A7 VDP"
+  description: VDP endpoints to manage pipeline resources
+  version: v0.9.0-beta
+  contact:
+    name: Instill AI
+    url: https://github.com/instill-ai
+    email: hello@instill.tech
+  license:
+    name: Elastic License 2.0 (ELv2)
+    url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
+tags:
+  - name: PipelinePublicService
+    description: Public VDP endpoints
+host: api.instill.tech
+basePath: /vdp
+schemes:
+  - https
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /v1beta/{connector.name_1}:
+    patch:
+      summary: Update a connector owned by an organization.
+      description: |-
+        Updates an organization-owned connector.
+
+        In REST requests, only the supplied connector fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name_1
+          description: |-
+            The name of the connector, defined by its ID.
+            - Format: `connectors/{id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: connector
+          description: The connector fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Connector UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Connector resource ID (used in `name` as the last segment). This conforms
+                  to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+                  first character a letter, the last a letter or a number, and a 63
+                  character maximum.
+              connector_definition_name:
+                type: string
+                description: Connector definition that describes the connector configuration.
+              type:
+                $ref: '#/definitions/v1betaConnectorType'
+                description: Connector type.
+                readOnly: true
+              description:
+                type: string
+                description: Connector description.
+              configuration:
+                type: object
+                description: Connector configuration in JSON format.
+              state:
+                $ref: '#/definitions/v1betaConnectorState'
+                description: Connector state.
+                readOnly: true
+              tombstone:
+                type: boolean
+                description: |-
+                  Connector tombstone. If true, this configuration is permanently off.
+                  Otherwise, the configuration is active.
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                description: Connector creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Connector update time.
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1betaConnectorVisibility'
+                description: Connector visibility.
+                readOnly: true
+              connector_definition:
+                $ref: '#/definitions/v1betaConnectorDefinition'
+                description: Embed content of the ConnectorDefinition.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Connector deletion time.
+                readOnly: true
+              owner_name:
+                type: string
+                description: Owner name.
+                readOnly: true
+              owner:
+                type: object
+                description: Owner details.
+                readOnly: true
+            title: The connector fields that will replace the existing ones.
+            required:
+              - configuration
+      tags:
+        - PipelinePublicService
+  /v1beta/{connector.name}:
+    patch:
+      summary: Update a connector owned by a user.
+      description: |-
+        Updates a user-owned connector. The authebnticated user must be the parent
+        of the connector.
+
+        In REST requests, only the supplied connector fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector.name
+          description: |-
+            The name of the connector, defined by its ID.
+            - Format: `connectors/{id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: connector
+          description: The connector fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Connector UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Connector resource ID (used in `name` as the last segment). This conforms
+                  to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+                  first character a letter, the last a letter or a number, and a 63
+                  character maximum.
+              connector_definition_name:
+                type: string
+                description: Connector definition that describes the connector configuration.
+              type:
+                $ref: '#/definitions/v1betaConnectorType'
+                description: Connector type.
+                readOnly: true
+              description:
+                type: string
+                description: Connector description.
+              configuration:
+                type: object
+                description: Connector configuration in JSON format.
+              state:
+                $ref: '#/definitions/v1betaConnectorState'
+                description: Connector state.
+                readOnly: true
+              tombstone:
+                type: boolean
+                description: |-
+                  Connector tombstone. If true, this configuration is permanently off.
+                  Otherwise, the configuration is active.
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                description: Connector creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Connector update time.
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1betaConnectorVisibility'
+                description: Connector visibility.
+                readOnly: true
+              connector_definition:
+                $ref: '#/definitions/v1betaConnectorDefinition'
+                description: Embed content of the ConnectorDefinition.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Connector deletion time.
+                readOnly: true
+              owner_name:
+                type: string
+                description: Owner name.
+                readOnly: true
+              owner:
+                type: object
+                description: Owner details.
+                readOnly: true
+            title: The connector fields that will replace the existing ones.
+            required:
+              - configuration
+      tags:
+        - PipelinePublicService
+  /v1beta/{connector_definition.name}:
+    get:
+      summary: Get connector definition
+      description: Returns the details of a connector definition.
+      operationId: PipelinePublicService_GetConnectorDefinition
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetConnectorDefinitionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector_definition.name
+          description: |-
+            The resource name of the connector definition, which allows its access by ID.
+            - Format: `connector-definitions/{id}`.
+          in: path
+          required: true
+          type: string
+          pattern: connector-definitions/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - PipelinePublicService
+  /v1beta/{name}:
+    get:
+      summary: Get the details of a long-running operation
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations such as asynchronous pipeline triggers.
+      operationId: PipelinePublicService_GetOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the operation resource. Asynchronous methods will contain this
+            information in their response.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{operator_definition.name}:
+    get:
+      summary: Get operator definition
+      description: Returns the details of an operator definition.
+      operationId: PipelinePublicService_GetOperatorDefinition
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOperatorDefinitionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: operator_definition.name
+          description: |-
+            The resource name of the operator definition, which allows its access by ID.
+            - Format: `operator-definitions/{id}`.
+          in: path
+          required: true
+          type: string
+          pattern: operator-definitions/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - PipelinePublicService
+  /v1beta/{operator_definition.permalink}/lookUp:
+    get:
+      summary: Get a connector by UID
+      description: Returns the details of a connector by UID.
+      operationId: PipelinePublicService_LookUpConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaLookUpConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: operator_definition.permalink
+          description: |-
+            The permalink of the connector, which allows its access by UID.
+            - Format: `connectors/{uid}`.
+          in: path
+          required: true
+          type: string
+          pattern: connectors/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired connector view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization.name}/connectors:
+    get:
+      summary: List organization connectors
+      description: |-
+        Returns a paginated list of connectors that belong to the specified
+        organization.
+      operationId: PipelinePublicService_ListOrganizationConnectors
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListOrganizationConnectorsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            The parent resource, i.e., the organization that created the connectors.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of connectors to return. If this parameter is
+            unspecified, at most 10 connectors will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+        - name: filter
+          description: Filter expression to list connectors
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted connectors in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Create a new organization connector
+      description: Creates a new connector under the parenthood of an organization.
+      operationId: PipelinePublicService_CreateOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            The parent resource, i.e., the organization that creates the connector.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: connector
+          description: The properties of the connector to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaConnector'
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization.name}/pipelines:
+    get:
+      summary: List organization pipelines
+      description: |-
+        Returns a paginated list of pipelines that belong to the specified
+        organization.
+      operationId: PipelinePublicService_ListOrganizationPipelines
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListOrganizationPipelinesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            The parent resource, i.e., the organization that created the pipelines.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of pipelines to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            - Example:
+            `recipe.components.definition_name:"operator-definitions/2ac8be70-0f7a-4b61-a33d-098b8acfa6f3"`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Create a new organization pipeline
+      description: Creates a new pipeline under the parenthood of an organization.
+      operationId: PipelinePublicService_CreateOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            The parent resource, i.e., the organization that creates the pipeline.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: pipeline
+          description: The properties of the pipeline to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipeline'
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization.name}/releases:
+    get:
+      summary: List the releases in a pipeline owned by an organization
+      description: |-
+        Lists the commited versions of a pipeline, identified by its resource name,
+        which is formed by the parent organization and ID of the pipeline.
+      operationId: PipelinePublicService_ListOrganizationPipelineReleases
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListOrganizationPipelineReleasesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            The parent resource where this pipeline release will be created.
+            Format: `organizations/{organization.id}/pipelines/{pipeline.id}`
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of releases to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Release a version of a pipeline owned by an organization
+      description: |-
+        Commits the version of a pipeline, identified by its resource name, which is
+        formed by the parent organization and ID of the pipeline.
+      operationId: PipelinePublicService_CreateOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization.name
+          description: |-
+            Name of the pipeline for which the release will be created.
+            Format: `organizations/{organization.id}/pipelines/{pipeline.id}`
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: release
+          description: The release information.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipelineRelease'
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector.name}:
+    get:
+      summary: Get a connector owned by an organization.
+      description: Returns the details of an organization-owned connector.
+      operationId: PipelinePublicService_GetOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a connector owned by an organization
+      description: Deletes a connector.
+      operationId: PipelinePublicService_DeleteOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector.name}/connect:
+    post:
+      summary: Connect a connector owned by an organization
+      description: |-
+        Transitions the state of a connector from `DISCONNECTED` to `CONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_ConnectOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaConnectOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              ConnectOrganizationConnectorRequest represents a request to connect a
+              connector owned by an organization.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector.name}/disconnect:
+    post:
+      summary: Disconnect a connector owned by an organization
+      description: |-
+        Transitions the state of a connector from `CONNECTED` to `DISCONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_DisconnectOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDisconnectOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              DisconnectOrganizationConnectorRequest represents a request to disconnect a
+              connector owned by an organization.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector.name}/execute:
+    post:
+      summary: Execute a connector owned by an organization
+      description: Executes a task in an organization-owned connector.
+      operationId: PipelinePublicService_ExecuteOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaExecuteOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Connector input parameters.
+              task:
+                type: string
+                description: Task to be passed to the connector (e.g. `TASK_TEXT_GENERATION`).
+            description: |-
+              ExecuteOrganizationConnectorRequest represents a request to execute a
+              connector owned by an organization.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector.name}/rename:
+    post:
+      summary: Rename a connector owned by an organization
+      description: |-
+        Updates the ID of a connector. Since this is an output-only field, a custom
+        method is required to modify it.
+
+        The connector name will be updated accordingly, as it is  composed by the
+        parent organization and ID of the connector (e.g.
+        `organizations/indiana-jones/connector/whip`).
+      operationId: PipelinePublicService_RenameOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_connector_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `organizations/{organization.id}/connectors/{new_connector_id}`.
+            description: |-
+              RenameOrganizationConnectorRequest represents a request to rename the name
+              of a connector owned by an organization.
+            required:
+              - new_connector_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector.name}/testConnection:
+    post:
+      summary: Test a connector owned by an organization
+      description: Tests the connection on an organization-owned connector.
+      operationId: PipelinePublicService_TestOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTestOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector.name}/watch:
+    get:
+      summary: Get the state of a connector owned by an organization
+      description: Gets the state of an organization-owned connector.
+      operationId: PipelinePublicService_WatchOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaWatchOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            connector and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline.name}:
+    get:
+      summary: Get a pipeline owned by an organization
+      description: |-
+        Returns the details of an organization-owned pipeline by its resource name,
+        which is defined by the parent organization and the ID of the pipeline.
+      operationId: PipelinePublicService_GetOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a pipeline owned by an organization
+      description: |-
+        Deletes a pipeline, accesing it by its resource name, which is defined by
+        the parent organization and the ID of the pipeline.
+      operationId: PipelinePublicService_DeleteOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline.name}/rename:
+    post:
+      summary: Rename a pipeline owned by an organization
+      description: |-
+        Updates the ID of a pipeline. Since this is an output-only field, a custom
+        method is required to modify it.
+
+        The pipeline name will be updated accordingly, as it is  composed by the
+        parent organization and ID of the pipeline (e.g.
+        `organizations/luigi/pipelines/pizza-recipe-generator`).
+      operationId: PipelinePublicService_RenameOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_pipeline_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `organizations/{organization.id}/pipelines/{new_pipeline_id}`.
+            description: |-
+              RenameOrganizationPipelineRequest represents a request to rename the name of
+              a pipeline owned by an organization.
+            required:
+              - new_pipeline_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline.name}/trigger:
+    post:
+      summary: Trigger a pipeline owned by an organization
+      description: |-
+        Triggers the execution of a pipeline synchronously, i.e., the result is sent
+        back to the organization right after the data is processed. This method is
+        intended for real-time inference when low latency is of concern.
+
+        The pipeline is identified by its resource name, formed by the parent
+        organization and ID of the pipeline.
+
+        For more information, see [Trigger
+        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+      operationId: PipelinePublicService_TriggerOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerOrganizationPipelineRequest represents a request to trigger an
+              organization-owned pipeline synchronously.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline.name}/triggerAsync:
+    post:
+      summary: Trigger a pipeline owned by an organization asynchronously
+      description: |-
+        Triggers the execution of a pipeline asynchronously, i.e., the result
+        contains the necessary information to access the result and status of the
+        operation. This method is intended for cases that require long-running
+        workloads.
+
+        The pipeline is identified by its resource name, formed by the parent
+        organization and ID of the pipeline.
+
+        For more information, see [Trigger
+        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+      operationId: PipelinePublicService_TriggerAsyncOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerAsyncOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerOrganizationPipelineRequest represents a request to trigger an
+              organization-owned pipeline synchronously.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline.name}/validate:
+    post:
+      summary: Validate a pipeline a pipeline owned by an organization
+      description: |-
+        Validates a pipeline by its resource name, which is defined by the parent
+        organization and the ID of the pipeline.
+
+        Validation checks the recipe of the pipeline and the status of its
+        components.
+      operationId: PipelinePublicService_ValidateOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaValidateOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              ValidateOrganizationPipelineRequest represents a request to validate a
+              pipeline owned by an organization.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline_release.name}:
+    get:
+      summary: Get a release in a pipeline owned by an organization
+      description: |-
+        Gets the details of a pipeline release, where the pipeline is identified by
+        its resource name, formed by its parent organization and ID.
+      operationId: PipelinePublicService_GetOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format:
+            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a release in a pipeline owned by an organization
+      description: |-
+        Deletes a pipeline release, where the pipeline is identified by its resource
+        name, formed by its parent organization and ID.
+      operationId: PipelinePublicService_DeleteOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format:
+            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline_release.name}/rename:
+    post:
+      summary: Rename a release in a pipeline owned by an organization
+      description: |-
+        Updates the ID of a pipeline release, where the pipeline is identified by
+        its resource name, formed by the parent organization and ID. Since this is
+        an output-only field, a custom method is required to modify it.
+
+        The pipeline release name will be updated accordingly, as it is  composed by
+        the pipeline name and the ID of the release (e.g.
+        `organizations/luigi/pipelines/pizza-recipe-generator/releases/v0.2.1`).
+      operationId: PipelinePublicService_RenameOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format:
+            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_pipeline_release_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `organizations/{organization.id}/pipelines/{pipeline.id}/releases{new_release_id}`.
+            description: |-
+              RenameOrganizationPipelineReleaseRequest represents a request to rename a
+              release in an organization-owned pipeline.
+            required:
+              - new_pipeline_release_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline_release.name}/restore:
+    post:
+      summary: Set the version of a pipeline owned by an organization to a pinned release
+      description: |-
+        Sets the pipeline configuration to a pinned version defined by a release.
+
+        The pipeline is identified by its resource name, formed by its parent
+        organization and ID.
+      operationId: PipelinePublicService_RestoreOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRestoreOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format:
+            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline_release.name}/trigger:
+    post:
+      summary: Trigger a version of a pipeline owned by an organization
+      description: |-
+        Triggers the synchronous execution of of a pipeline. While the trigger
+        endpoint (where the release version isn't specified) triggers the pipeline
+        at its latest release, this method allows the client to specified any
+        committed release.
+
+        The pipeline is identified by its resource name, formed by its parent
+        organization and ID.
+      operationId: PipelinePublicService_TriggerOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format:
+            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerOrganizationPipelineReleaseRequest represents a request to trigger a
+              pinned release of an organization-owned pipeline.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline_release.name}/triggerAsync:
+    post:
+      summary: Trigger a version of a pipeline owned by an organization asynchronously
+      description: |-
+        Triggers the asynchronous execution of of a pipeline. While the trigger
+        endpoint (where the release version isn't specified) triggers the pipeline
+        at its latest release, this method allows the client to specified any
+        committed release.
+
+        The pipeline is identified by its resource name, formed by its parent
+        organization and ID.
+      operationId: PipelinePublicService_TriggerAsyncOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerAsyncOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format:
+            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerOrganizationPipelineReleaseRequest represents a request to trigger a
+              pinned release of an organization-owned pipeline asynchronously.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_pipeline_release.name}/watch:
+    get:
+      summary: Get the state of a release in a pipeline owned by an organization
+      description: |-
+        Gets the state of a pipeline release, where the pipeline is identified by
+        its resource name, formed by the parent organization and ID of the pipeline.
+      operationId: PipelinePublicService_WatchOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaWatchOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format:
+            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{permalink}/lookUp:
+    get:
+      summary: Get a pipeline by UID
+      description: |-
+        Returns the details of a pipeline by a permalink defined by the resource
+        UID.
+      operationId: PipelinePublicService_LookUpPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaLookUpPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: permalink
+          description: |-
+            The permalink of the pipeline, which allows its access by UID.
+            - Format: `pipelines/{pipeline.uid}`.
+          in: path
+          required: true
+          type: string
+          pattern: pipelines/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - PipelinePublicService
+  /v1beta/{pipeline.name_1}:
+    patch:
+      summary: Update a pipeline owned by an organization
+      description: |-
+        Udpates a pipeline, accessing it by its resource name, which is defined by
+
+        In REST requests, only the supplied pipeline fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateOrganizationPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateOrganizationPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline.name_1
+          description: |-
+            The name of the pipeline, defined by its owner and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: pipeline
+          description: The pipeline fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Pipeline UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Pipeline resource ID (used in `name` as the last segment). This conforms
+                  to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+                  first character a letter, the last a letter or a number, and a 63
+                  character maximum.
+              description:
+                type: string
+                description: Pipeline description.
+              recipe:
+                $ref: '#/definitions/v1betaRecipe'
+                description: Recipe describes the components of a Pipeline and how they are connected.
+              create_time:
+                type: string
+                format: date-time
+                description: Pipeline creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Pipeline update time.
+                readOnly: true
+              openapi_schema:
+                type: object
+                description: OpenAPI schema.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Pipeline delete time.
+                readOnly: true
+              sharing:
+                $ref: '#/definitions/v1betaSharing'
+                description: Pipeline sharing information.
+              metadata:
+                type: object
+                description: Metadata holds console-related data such as the pipeline builder layout.
+              owner_name:
+                type: string
+                description: Owner Name.
+                readOnly: true
+              owner:
+                type: object
+                description: Owner details.
+                readOnly: true
+              releases:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/definitions/v1betaPipelineRelease'
+                description: Releases holds the history of pipeline versions.
+                readOnly: true
+              readme:
+                type: string
+                description: README holds the pipeline documentation.
+              permission:
+                $ref: '#/definitions/v1betaPermission'
+                description: Permission defines how a pipeline can be used.
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1betaPipelineVisibility'
+                description: Pipeline visibility.
+                readOnly: true
+            title: The pipeline fields that will replace the existing ones.
+      tags:
+        - PipelinePublicService
+  /v1beta/{pipeline.name}:
+    patch:
+      summary: Update a pipeline owned by a user
+      description: |-
+        Udpates a pipeline, accessing it by its resource name, which is defined by
+        the parent user and the ID of the pipeline. The authenticated user must be
+        the parent of the pipeline in order to modify it.
+
+        In REST requests, only the supplied pipeline fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipeline.name
+          description: |-
+            The name of the pipeline, defined by its owner and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: pipeline
+          description: The pipeline fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Pipeline UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Pipeline resource ID (used in `name` as the last segment). This conforms
+                  to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+                  first character a letter, the last a letter or a number, and a 63
+                  character maximum.
+              description:
+                type: string
+                description: Pipeline description.
+              recipe:
+                $ref: '#/definitions/v1betaRecipe'
+                description: Recipe describes the components of a Pipeline and how they are connected.
+              create_time:
+                type: string
+                format: date-time
+                description: Pipeline creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Pipeline update time.
+                readOnly: true
+              openapi_schema:
+                type: object
+                description: OpenAPI schema.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Pipeline delete time.
+                readOnly: true
+              sharing:
+                $ref: '#/definitions/v1betaSharing'
+                description: Pipeline sharing information.
+              metadata:
+                type: object
+                description: Metadata holds console-related data such as the pipeline builder layout.
+              owner_name:
+                type: string
+                description: Owner Name.
+                readOnly: true
+              owner:
+                type: object
+                description: Owner details.
+                readOnly: true
+              releases:
+                type: array
+                items:
+                  type: object
+                  $ref: '#/definitions/v1betaPipelineRelease'
+                description: Releases holds the history of pipeline versions.
+                readOnly: true
+              readme:
+                type: string
+                description: README holds the pipeline documentation.
+              permission:
+                $ref: '#/definitions/v1betaPermission'
+                description: Permission defines how a pipeline can be used.
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1betaPipelineVisibility'
+                description: Pipeline visibility.
+                readOnly: true
+            title: The pipeline fields that will replace the existing ones.
+      tags:
+        - PipelinePublicService
+  /v1beta/{release.name_1}:
+    patch:
+      summary: Update a release in a pipeline owned by an organization
+      description: |-
+        Updates the details of a pipeline release, where the pipeline is identified
+        by its resource name, formed by its parent organization and ID.
+      operationId: PipelinePublicService_UpdateOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: release.name_1
+          description: |-
+            The name of the release, defined by its owner and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}
+          in: path
+          required: true
+          type: string
+          pattern: organizationsr/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: release
+          description: |-
+            The pipeline release fields that will replace the existing ones.
+            A pipeline release resource to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Release UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Release resource ID (used in `name` as the last segment). It must be a
+                  sematic version vX.Y.Z.
+              description:
+                type: string
+                description: Release description.
+              recipe:
+                $ref: '#/definitions/v1betaRecipe'
+                description: Recipe of the versioned pipeline.
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                description: Pipeline creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Pipeline update time.
+                readOnly: true
+              openapi_schema:
+                type: object
+                description: OpenAPI schema.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Pipeline deletion time.
+                readOnly: true
+              alias:
+                type: string
+                description: Alias.
+                readOnly: true
+              metadata:
+                type: object
+                description: |-
+                  Key-value object with console-related data such as the pipeline builder
+                  layout.
+              readme:
+                type: string
+                description: README.
+            title: |-
+              The pipeline release fields that will replace the existing ones.
+              A pipeline release resource to update
+      tags:
+        - PipelinePublicService
+  /v1beta/{release.name}:
+    patch:
+      summary: Update a release in a pipeline owned by a user
+      description: |-
+        Updates the details of a pipeline release, where the pipeline is
+        identified by its resource name, formed by its parent user and ID.
+
+        The authenticated user must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_UpdateUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: release.name
+          description: |-
+            The name of the release, defined by its owner and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}
+          in: path
+          required: true
+          type: string
+          pattern: usersr/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: release
+          description: |-
+            The pipeline release fields that will replace the existing ones.
+            A pipeline release resource to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Release UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Release resource ID (used in `name` as the last segment). It must be a
+                  sematic version vX.Y.Z.
+              description:
+                type: string
+                description: Release description.
+              recipe:
+                $ref: '#/definitions/v1betaRecipe'
+                description: Recipe of the versioned pipeline.
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                description: Pipeline creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Pipeline update time.
+                readOnly: true
+              openapi_schema:
+                type: object
+                description: OpenAPI schema.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Pipeline deletion time.
+                readOnly: true
+              alias:
+                type: string
+                description: Alias.
+                readOnly: true
+              metadata:
+                type: object
+                description: |-
+                  Key-value object with console-related data such as the pipeline builder
+                  layout.
+              readme:
+                type: string
+                description: README.
+            title: |-
+              The pipeline release fields that will replace the existing ones.
+              A pipeline release resource to update
+      tags:
+        - PipelinePublicService
+  /v1beta/{user.name}/connectors:
+    get:
+      summary: List user connectors
+      description: Returns a paginated list of connectors that belong to the specified user.
+      operationId: PipelinePublicService_ListUserConnectors
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListUserConnectorsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            The parent resource, i.e., the user that created the connectors.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of connectors to return. If this parameter is
+            unspecified, at most 10 connectors will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+        - name: filter
+          description: Filter expression to list connectors
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted connectors in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Create a new user connector
+      description: |-
+        Creates a new connector under the parenthood of a user. Users can only
+        create a connector parents of that resource (i.e. the authenticated user
+        must match the `parent` path parameter).
+      operationId: PipelinePublicService_CreateUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            The parent resource, i.e., the user that creates the connector.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: connector
+          description: The properties of the connector to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaConnector'
+      tags:
+        - PipelinePublicService
+  /v1beta/{user.name}/pipelines:
+    get:
+      summary: List user pipelines
+      description: |-
+        Returns a paginated list of pipelines that belong to the specified user.
+        The parent user may be different from the authenticated user, in which
+        case the results will contain the pipelines that are visible to the
+        latter.
+      operationId: PipelinePublicService_ListUserPipelines
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListUserPipelinesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            The parent resource, i.e., the user that created the pipelines.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of pipelines to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            - Example:
+            `recipe.components.definition_name:"operator-definitions/2ac8be70-0f7a-4b61-a33d-098b8acfa6f3"`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Create a new user pipeline
+      description: |-
+        Creates a new pipeline under the parenthood of a user. Users can only
+        create a pipeline as the parent of that resource (i.e. the authenticated
+        user must match the `parent` path parameter).
+      operationId: PipelinePublicService_CreateUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            The parent resource, i.e., the user that creates the pipeline.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: pipeline
+          description: The properties of the pipeline to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipeline'
+      tags:
+        - PipelinePublicService
+  /v1beta/{user.name}/releases:
+    get:
+      summary: List the releases in a pipeline owned by a user
+      description: |-
+        Lists the commited versions of a pipeline, identified by its resource
+        name, which is formed by the parent user and ID of the pipeline.
+      operationId: PipelinePublicService_ListUserPipelineReleases
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListUserPipelineReleasesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            The parent resource where this pipeline release will be created.
+            Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of releases to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Release a version of a pipeline owned by a user
+      description: |-
+        Commits the version of a pipeline, identified by its resource name, which
+        is formed by the parent user and ID of the pipeline.
+
+        The authenticated user must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_CreateUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user.name
+          description: |-
+            Name of the pipeline for which the release will be created.
+            Format: `users/{user.id}/pipelines/{pipeline.id}`
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: release
+          description: The release information.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipelineRelease'
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector.name}:
+    get:
+      summary: Get a connector owned by a user.
+      description: Returns the details of a user-owned connector.
+      operationId: PipelinePublicService_GetUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a connector owned by a user
+      description: |-
+        Deletes a connector. The authenticated user must be the parent of the
+        connector in order to delete it.
+      operationId: PipelinePublicService_DeleteUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector.name}/connect:
+    post:
+      summary: Connect a connector owned by a user
+      description: |-
+        Transitions the state of a connector from `DISCONNECTED` to `CONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_ConnectUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaConnectUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              ConnectUserConnectorRequest represents a request to connect a connector
+              owned by a user.
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector.name}/disconnect:
+    post:
+      summary: Disconnect a connector owned by a user
+      description: |-
+        Transitions the state of a connector from `CONNECTED` to `DISCONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_DisconnectUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDisconnectUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              DisconnectUserConnectorRequest represents a request to disconnect a
+              connector owned by a user.
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector.name}/execute:
+    post:
+      summary: Execute a connector owned by a user
+      description: Executes a task in a user-owned connector.
+      operationId: PipelinePublicService_ExecuteUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaExecuteUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Connector input parameters.
+              task:
+                type: string
+                description: Task to be passed to the connector (e.g. `TASK_TEXT_GENERATION`).
+            description: |-
+              ExecuteUserConnectorRequest represents a request to execute a connector
+              owned by a user.
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector.name}/rename:
+    post:
+      summary: Rename a connector owned by a user
+      description: |-
+        Updates the ID of a connector. Since this is an output-only field, a custom
+        method is required to modify it.
+
+        The connector name will be updated accordingly, as it is  composed by the
+        parent user and ID of the connector (e.g.
+        `users/indiana-jones/connector/whip`).
+
+        The authenticated user must be the parent of the connector in order to
+        perform this action.
+      operationId: PipelinePublicService_RenameUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_connector_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `users/{user.id}/connectors/{new_connector_id}`.
+            description: |-
+              RenameUserConnectorRequest represents a request to rename the name of a
+              connector owned by a user.
+            required:
+              - new_connector_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector.name}/testConnection:
+    post:
+      summary: Test a connector owned by a user
+      description: Tests the connection on a user-owned connector.
+      operationId: PipelinePublicService_TestUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTestUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector.name}/watch:
+    get:
+      summary: Get the state of a connector owned by a user
+      description: Gets the state of a user-owned connector.
+      operationId: PipelinePublicService_WatchUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaWatchUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector.name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            connector and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline.name}:
+    get:
+      summary: Get a pipeline owned by a user
+      description: |-
+        Returns the details of a user-owned pipeline by its resource name, which is defined
+        by the parent user and the ID of the pipeline.
+      operationId: PipelinePublicService_GetUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a pipeline owned by a user
+      description: |-
+        Deletes a pipeline, accesing it by its resource name, which is defined by
+        the parent user and the ID of the pipeline. The authenticated user must be
+        the parent of the pipeline in order to delete it.
+      operationId: PipelinePublicService_DeleteUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline.name}/rename:
+    post:
+      summary: Rename a pipeline owned by a user
+      description: |-
+        Updates the ID of a pipeline. Since this is an output-only field, a custom
+        method is required to modify it.
+
+        The pipeline name will be updated accordingly, as it is  composed by the
+        parent user and ID of the pipeline (e.g.
+        `users/luigi/pipelines/pizza-recipe-generator`).
+
+        The authenticated user must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_RenameUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_pipeline_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `users/{user.id}/pipelines/{new_pipeline_id}`.
+            description: |-
+              RenameUserPipelineRequest represents a request to rename the name of a
+              pipeline owned by a user.
+            required:
+              - new_pipeline_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline.name}/trigger:
+    post:
+      summary: Trigger a pipeline owned by a user
+      description: |-
+        Triggers the execution of a pipeline synchronously, i.e., the result is
+        sent back to the user right after the data is processed. This method is
+        intended for real-time inference when low latency is of concern.
+
+        The pipeline is identified by its resource name, formed by the parent user
+        and ID of the pipeline.
+
+        For more information, see [Trigger
+        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+      operationId: PipelinePublicService_TriggerUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerUserPipelineRequest represents a request to trigger a user-owned
+              pipeline synchronously.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline.name}/triggerAsync:
+    post:
+      summary: Trigger a pipeline owned by a user asynchronously
+      description: |-
+        Triggers the execution of a pipeline asynchronously, i.e., the result
+        contains the necessary information to access the result and status of the
+        operation. This method is intended for cases that require long-running
+        workloads.
+
+        The pipeline is identified by its resource name, formed by the parent user
+        and ID of the pipeline.
+
+        For more information, see [Trigger
+        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+      operationId: PipelinePublicService_TriggerAsyncUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerAsyncUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerUserPipelineRequest represents a request to trigger a user-owned
+              pipeline synchronously.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline.name}/validate:
+    post:
+      summary: Validate a pipeline a pipeline owned by a user
+      description: |-
+        Validates a pipeline by its resource name, which is defined by the parent
+        user and the ID of the pipeline.
+
+        Validation checks the recipe of the pipeline and the status of its components.
+      operationId: PipelinePublicService_ValidateUserPipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaValidateUserPipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline.name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              ValidateUserPipelineRequest represents a request to validate a pipeline
+              owned by a user.
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline_release.name}:
+    get:
+      summary: Get a release in a pipeline owned by a user
+      description: |-
+        Gets the details of a pipeline release, where the pipeline is identified
+        by its resource name, formed by its parent user and ID.
+      operationId: PipelinePublicService_GetUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a release in a pipeline owned by a user
+      description: |-
+        Deletes a pipeline release, where the pipeline is identified by its
+        resource name, formed by its parent user and ID.
+
+        The authenticated user must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_DeleteUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline_release.name}/rename:
+    post:
+      summary: Rename a release in a pipeline owned by a user
+      description: |-
+        Updates the ID of a pipeline release, where the pipeline is identified by
+        its resource name, formed by the parent user and ID. Since this is an
+        output-only field, a custom method is required to modify it.
+
+        The pipeline release name will be updated accordingly, as it is  composed
+        by the pipeline name and the ID of the release (e.g.
+        `users/luigi/pipelines/pizza-recipe-generator/releases/v0.2.1`).
+
+        The authenticated user must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_RenameUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_pipeline_release_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `users/{user.id}/pipelines/{pipeline.id}/releases{new_release_id}`.
+            description: |-
+              RenameUserPipelineReleaseRequest represents a request to rename a release in
+              a user-owned pipeline.
+            required:
+              - new_pipeline_release_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline_release.name}/restore:
+    post:
+      summary: Set the version of a pipeline owned by a user to a pinned release
+      description: |-
+        Sets the pipeline configuration to a pinned version defined by a release.
+
+        The pipeline is identified by its resource name, formed by its parent user
+        and ID.
+
+        The authenticated user must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_RestoreUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRestoreUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline_release.name}/trigger:
+    post:
+      summary: Trigger a version of a pipeline owned by a user
+      description: |-
+        Triggers the synchronous execution of of a pipeline. While the trigger
+        endpoint (where the release version isn't specified) triggers the pipeline
+        at its latest release, this method allows the client to specified any
+        committed release.
+
+        The pipeline is identified by its resource name, formed by its parent user
+        and ID.
+      operationId: PipelinePublicService_TriggerUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerUserPipelineReleaseRequest represents a request to trigger a pinned
+              release of a user-owned pipeline.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline_release.name}/triggerAsync:
+    post:
+      summary: Trigger a version of a pipeline owned by a user asynchronously
+      description: |-
+        Triggers the asynchronous execution of of a pipeline. While the trigger
+        endpoint (where the release version isn't specified) triggers the pipeline
+        at its latest release, this method allows the client to specified any
+        committed release.
+
+        The pipeline is identified by its resource name, formed by its parent user
+        and ID.
+      operationId: PipelinePublicService_TriggerAsyncUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerAsyncUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Pipeline input parameters.
+            description: |-
+              TriggerUserPipelineReleaseRequest represents a request to trigger a pinned
+              release of a user-owned pipeline asynchronously.
+            required:
+              - inputs
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_pipeline_release.name}/watch:
+    get:
+      summary: Get the state of a release in a pipeline owned by a user
+      description: |-
+        Gets the state of a pipeline release, where the pipeline is identified by
+        its resource name, formed by the parent user and ID of the pipeline.
+      operationId: PipelinePublicService_WatchUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaWatchUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release.name
+          description: |-
+            The resource name of the pipeline release, which allows its access by
+            parent pipeline and ID.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/connector-definitions:
+    get:
+      summary: List connector definitions
+      description: Returns a paginated list of connector definitions.
+      operationId: PipelinePublicService_ListConnectorDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListConnectorDefinitionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of connector definitions to return. If this parameter
+            is unspecified, at most 10 pipelines will be returned. The cap value for
+            this parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - PipelinePublicService
+  /v1beta/connectors:
+    get:
+      summary: List connectors
+      description: Returns all the connectors that are visible to the authenticated user.
+      operationId: PipelinePublicService_ListConnectors
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListConnectorsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of connectors to return. The service may return fewer
+            than this value. If unspecified, at most 10 connectors will be returned.
+            The maximum value is 100; values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted connectors in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - PipelinePublicService
+  /v1beta/operator-definitions:
+    get:
+      summary: List operator definitions
+      description: Returns a paginated list of operator definitions.
+      operationId: PipelinePublicService_ListOperatorDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListOperatorDefinitionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of OperatorDefinitions to return. The
+            service may return fewer than this value. If unspecified, at most 10
+            OperatorDefinitions will be returned. The maximum value is 100;
+            values above 100 will be coerced to 100.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - PipelinePublicService
+  /v1beta/pipelines:
+    get:
+      summary: List accessible pipelines
+      description: Returns a paginated list of pipelines that are visible to the requester.
+      operationId: PipelinePublicService_ListPipelines
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelinesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of pipelines to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            - Example:
+            `recipe.components.definition_name:"operator-definitions/2ac8be70-0f7a-4b61-a33d-098b8acfa6f3"`.
+          in: query
+          required: false
+          type: string
+        - name: show_deleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+        - name: visibility
+          description: |-
+            Limit results to pipelines with the specified visibility.
+
+             - VISIBILITY_UNSPECIFIED: Unspecified, equivalent to PRIVATE.
+             - VISIBILITY_PRIVATE: Only the user can see the pipeline.
+             - VISIBILITY_PUBLIC: Other users can see the pipeline.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VISIBILITY_PRIVATE
+            - VISIBILITY_PUBLIC
+      tags:
+        - PipelinePublicService
+definitions:
+  HealthCheckResponseServingStatus:
+    type: string
+    enum:
+      - SERVING_STATUS_SERVING
+      - SERVING_STATUS_NOT_SERVING
+    description: |-
+      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
+       - SERVING_STATUS_SERVING: Serving status: SERVING
+       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
+    title: ServingStatus enumerates the status of a queried service
+  SharingShareCode:
+    type: object
+    properties:
+      user:
+        type: string
+        description: |-
+          Defines which users will be able to access the resource through the
+          code. This is a pattern that will be checked against user names.
+
+          For now, the only accepted value is `*/*`.
+      code:
+        type: string
+        description: The public URL that allows users to access the resource.
+      enabled:
+        type: boolean
+        description: Defines whether the sharing option via link is enabled.
+      role:
+        $ref: '#/definitions/v1betaRole'
+        description: Defines the role users will have over the resource.
+    description: ShareCode describes a sharing configuration through a link.
+  SharingUser:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+        description: Defines whether the sharing option with this user is enabled.
+      role:
+        $ref: '#/definitions/v1betaRole'
+        description: Defines the role the user will have over the resource.
+    description: Describes the sharing configuration with a given user.
+  googlelongrunningOperation:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The server-assigned name, which is only unique within the same service that
+          originally returns it. If you use the default HTTP mapping, the
+          `name` should be a resource name ending with `operations/{unique_id}`.
+      metadata:
+        $ref: '#/definitions/protobufAny'
+        description: |-
+          Service-specific metadata associated with the operation.  It typically
+          contains progress information and common metadata such as create time.
+          Some services might not provide such metadata.  Any method that returns a
+          long-running operation should document the metadata type, if any.
+      done:
+        type: boolean
+        description: |-
+          If the value is `false`, it means the operation is still in progress.
+          If `true`, the operation is completed, and either `error` or `response` is
+          available.
+      error:
+        $ref: '#/definitions/googlerpcStatus'
+        description: The error result of the operation in case of failure or cancellation.
+      response:
+        $ref: '#/definitions/protobufAny'
+        description: |-
+          The normal response of the operation in case of success.  If the original
+          method returns no data on success, such as `Delete`, the response is
+          `google.protobuf.Empty`.  If the original method is standard
+          `Get`/`Create`/`Update`, the response should be the resource.  For other
+          methods, the response should have the type `XxxResponse`, where `Xxx`
+          is the original method name.  For example, if the original method name
+          is `TakeSnapshot()`, the inferred response type is
+          `TakeSnapshotResponse`.
+    description: |-
+      This resource represents a long-running operation that is the result of a
+      network API call.
+  googlerpcStatus:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+        description: |-
+          The status code, which should be an enum value of
+          [google.rpc.Code][google.rpc.Code].
+      message:
+        type: string
+        description: |-
+          A developer-facing error message, which should be in English. Any
+          user-facing error message should be localized and sent in the
+          [google.rpc.Status.details][google.rpc.Status.details] field, or localized
+          by the client.
+      details:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/protobufAny'
+        description: |-
+          A list of messages that carry the error details.  There is a common set of
+          message types for APIs to use.
+    description: |-
+      The `Status` type defines a logical error model that is suitable for
+      different programming environments, including REST APIs and RPC APIs. It is
+      used by [gRPC](https://github.com/grpc). Each `Status` message contains
+      three pieces of data: error code, error message, and error details.
+
+      You can find out more about this error model and how to work with it in the
+      [API Design Guide](https://cloud.google.com/apis/design/errors).
+  pipelinev1betaState:
+    type: string
+    enum:
+      - STATE_INACTIVE
+      - STATE_ACTIVE
+      - STATE_ERROR
+    description: |-
+      State describes the state of a pipeline.
+
+       - STATE_UNSPECIFIED: Unspecified.
+       - STATE_INACTIVE: Inactive.
+       - STATE_ACTIVE: Active.
+       - STATE_ERROR: The pipeline has an error.
+  protobufAny:
+    type: object
+    properties:
+      '@type':
+        type: string
+        description: |-
+          A URL/resource name that uniquely identifies the type of the serialized
+          protocol buffer message. This string must contain at least
+          one "/" character. The last segment of the URL's path must represent
+          the fully qualified name of the type (as in
+          `path/google.protobuf.Duration`). The name should be in a canonical form
+          (e.g., leading "." is not accepted).
+
+          In practice, teams usually precompile into the binary all types that they
+          expect it to use in the context of Any. However, for URLs which use the
+          scheme `http`, `https`, or no scheme, one can optionally set up a type
+          server that maps type URLs to message definitions as follows:
+
+          * If no scheme is provided, `https` is assumed.
+          * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+            value in binary format, or produce an error.
+          * Applications are allowed to cache lookup results based on the
+            URL, or have them precompiled into a binary to avoid any
+            lookup. Therefore, binary compatibility needs to be preserved
+            on changes to types. (Use versioned type names to manage
+            breaking changes.)
+
+          Note: this functionality is not currently available in the official
+          protobuf release, and it is not used for type URLs beginning with
+          type.googleapis.com. As of May 2023, there are no widely used type server
+          implementations and no plans to implement one.
+
+          Schemes other than `http`, `https` (or the empty scheme) might be
+          used with implementation specific semantics.
+    additionalProperties: {}
+    description: |-
+      `Any` contains an arbitrary serialized protocol buffer message along with a
+      URL that describes the type of the serialized message.
+
+      Protobuf library provides support to pack/unpack Any values in the form
+      of utility functions or additional generated methods of the Any type.
+
+      Example 1: Pack and unpack a message in C++.
+
+          Foo foo = ...;
+          Any any;
+          any.PackFrom(foo);
+          ...
+          if (any.UnpackTo(&foo)) {
+            ...
+          }
+
+      Example 2: Pack and unpack a message in Java.
+
+          Foo foo = ...;
+          Any any = Any.pack(foo);
+          ...
+          if (any.is(Foo.class)) {
+            foo = any.unpack(Foo.class);
+          }
+          // or ...
+          if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+            foo = any.unpack(Foo.getDefaultInstance());
+          }
+
+       Example 3: Pack and unpack a message in Python.
+
+          foo = Foo(...)
+          any = Any()
+          any.Pack(foo)
+          ...
+          if any.Is(Foo.DESCRIPTOR):
+            any.Unpack(foo)
+            ...
+
+       Example 4: Pack and unpack a message in Go
+
+           foo := &pb.Foo{...}
+           any, err := anypb.New(foo)
+           if err != nil {
+             ...
+           }
+           ...
+           foo := &pb.Foo{}
+           if err := any.UnmarshalTo(foo); err != nil {
+             ...
+           }
+
+      The pack methods provided by protobuf library will by default use
+      'type.googleapis.com/full.type.name' as the type URL and the unpack
+      methods only use the fully qualified type name after the last '/'
+      in the type URL, for example "foo.bar.com/x/y.z" will yield type
+      name "y.z".
+
+      JSON
+      ====
+      The JSON representation of an `Any` value uses the regular
+      representation of the deserialized, embedded message, with an
+      additional field `@type` which contains the type URL. Example:
+
+          package google.profile;
+          message Person {
+            string first_name = 1;
+            string last_name = 2;
+          }
+
+          {
+            "@type": "type.googleapis.com/google.profile.Person",
+            "firstName": <string>,
+            "lastName": <string>
+          }
+
+      If the embedded message type is well-known and has a custom JSON
+      representation, that representation will be embedded adding a field
+      `value` which holds the custom JSON in addition to the `@type`
+      field. Example (for message [google.protobuf.Duration][]):
+
+          {
+            "@type": "type.googleapis.com/google.protobuf.Duration",
+            "value": "1.212s"
+          }
+  protobufNullValue:
+    type: string
+    description: |-
+      `NullValue` is a singleton enumeration to represent the null value for the
+      `Value` type union.
+
+      The JSON representation for `NullValue` is JSON `null`.
+
+       - NULL_VALUE: Null value.
+  v1betaCheckConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1betaConnectorState'
+        description: Connector state.
+    description: CheckConnectorResponse contains the connector's current state.
+  v1betaComponent:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Component ID, provided by the user on creation.
+      resource_name:
+        type: string
+        description: Resource name.
+      resource:
+        $ref: '#/definitions/v1betaConnector'
+        description: |-
+          If the component is a connector, describes the connector details (e.g. the
+          configuration to connect with an AI model).
+        readOnly: true
+      configuration:
+        type: object
+        description: Describes the component configuration.
+      type:
+        $ref: '#/definitions/v1betaComponentType'
+        description: Defines the type of task the component will perform.
+        readOnly: true
+      definition_name:
+        type: string
+        description: |-
+          The name of the component definition. It references the connector or
+          operator definition on top of which a connector is built.
+      operator_definition:
+        $ref: '#/definitions/v1betaOperatorDefinition'
+        title: operator definition detail
+        readOnly: true
+      connector_definition:
+        $ref: '#/definitions/v1betaConnectorDefinition'
+        title: connector definition detail
+        readOnly: true
+    description: |-
+      Component is the fundamental building block in pipelines.
+
+      For more information, see [Pipeline
+      Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+    required:
+      - id
+      - definition_name
+  v1betaComponentType:
+    type: string
+    enum:
+      - COMPONENT_TYPE_CONNECTOR_AI
+      - COMPONENT_TYPE_CONNECTOR_DATA
+      - COMPONENT_TYPE_CONNECTOR_BLOCKCHAIN
+      - COMPONENT_TYPE_OPERATOR
+    description: |-
+      ComponentType defines the component type based on its task features.
+
+       - COMPONENT_TYPE_UNSPECIFIED: Unspecified.
+       - COMPONENT_TYPE_CONNECTOR_AI: Connect with an AI model.
+       - COMPONENT_TYPE_CONNECTOR_DATA: Connect with a remote data source.
+       - COMPONENT_TYPE_CONNECTOR_BLOCKCHAIN: Connect with a blockchain service.
+       - COMPONENT_TYPE_OPERATOR: Manipulate data.
+  v1betaConnectOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The connector resource.
+    description: ConnectOrganizationConnectorResponse contains the connector details.
+  v1betaConnectUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The connector resource.
+    description: ConnectUserConnectorResponse contains the connector details.
+  v1betaConnector:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the connector, defined by its ID.
+          - Format: `connectors/{id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: Connector UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Connector resource ID (used in `name` as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
+      connector_definition_name:
+        type: string
+        description: Connector definition that describes the connector configuration.
+      type:
+        $ref: '#/definitions/v1betaConnectorType'
+        description: Connector type.
+        readOnly: true
+      description:
+        type: string
+        description: Connector description.
+      configuration:
+        type: object
+        description: Connector configuration in JSON format.
+      state:
+        $ref: '#/definitions/v1betaConnectorState'
+        description: Connector state.
+        readOnly: true
+      tombstone:
+        type: boolean
+        description: |-
+          Connector tombstone. If true, this configuration is permanently off.
+          Otherwise, the configuration is active.
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        description: Connector creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Connector update time.
+        readOnly: true
+      visibility:
+        $ref: '#/definitions/v1betaConnectorVisibility'
+        description: Connector visibility.
+        readOnly: true
+      connector_definition:
+        $ref: '#/definitions/v1betaConnectorDefinition'
+        description: Embed content of the ConnectorDefinition.
+        readOnly: true
+      delete_time:
+        type: string
+        format: date-time
+        description: Connector deletion time.
+        readOnly: true
+      owner_name:
+        type: string
+        description: Owner name.
+        readOnly: true
+      owner:
+        type: object
+        description: Owner details.
+        readOnly: true
+    description: |-
+      A Connector is a type of pipeline component that queries, processes or sends
+      the ingested unstructured data to a service or app. Users need to configure
+      their connectors (e.g. by providing an API token to a remote service).
+
+      For more information, see
+      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      in the official documentation.
+    required:
+      - configuration
+  v1betaConnectorDefinition:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the connector definition.
+          - Format: `connector-definitions/*`.
+        readOnly: true
+      uid:
+        type: string
+        description: Connector definition UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Connector definition resource ID (used in `name` as the last segment). This
+          conforms to RFC-1034, which restricts to letters, numbers, and hyphen,
+          with the first character a letter, the last a letter or a number, and a 63
+          character maximum.
+      title:
+        type: string
+        description: Connector definition title.
+        readOnly: true
+      documentation_url:
+        type: string
+        description: Connector definition documentation URL.
+        readOnly: true
+      icon:
+        type: string
+        description: Connector definition icon.
+        readOnly: true
+      spec:
+        $ref: '#/definitions/v1betaConnectorSpec'
+        description: Connector definition specification.
+        readOnly: true
+      type:
+        $ref: '#/definitions/v1betaConnectorType'
+        description: Connector definition type.
+        readOnly: true
+      tombstone:
+        type: boolean
+        description: |-
+          Connector definition tombstone. If true, this configuration is permanently
+          off. Otherwise, the configuration is active.
+        readOnly: true
+      public:
+        type: boolean
+        description: |-
+          The public flag determines whether this connector definition is available
+          to all workspaces.
+        readOnly: true
+      custom:
+        type: boolean
+        description: |-
+          Connector definition custom flag, i.e., whether this is a custom
+          connector definition.
+        readOnly: true
+      icon_url:
+        type: string
+        description: Connector definition icon URL.
+        readOnly: true
+      vendor:
+        type: string
+        description: Connector definition vendor name.
+        readOnly: true
+      vendor_attributes:
+        type: object
+        description: Vendor-specific attributes.
+        readOnly: true
+    description: |-
+      A Connector is a type of pipeline component that queries, processes or sends
+      the ingested unstructured data to a service or app. Users need to configure
+      their connectors (e.g. by providing an API token to a remote service). A
+      ConnectorDefinition describes a certain type of Connector.
+
+      For more information, see
+      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      in the official documentation.
+  v1betaConnectorDefinitionView:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+    description: |-
+      View defines how a connector definition is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
+  v1betaConnectorSpec:
+    type: object
+    properties:
+      resource_specification:
+        type: object
+        description: Resource specification.
+      component_specification:
+        type: object
+        description: Component specification.
+      openapi_specifications:
+        type: object
+        description: OpenAPI specification.
+    description: ConnectorSpec represents a specification data model.
+    required:
+      - resource_specification
+      - component_specification
+      - openapi_specifications
+  v1betaConnectorState:
+    type: string
+    enum:
+      - STATE_DISCONNECTED
+      - STATE_CONNECTED
+      - STATE_ERROR
+    description: |-
+      State describes the state of the connector.
+
+       - STATE_UNSPECIFIED: Unspecified.
+       - STATE_DISCONNECTED: Disconnected.
+       - STATE_CONNECTED: Connected.
+       - STATE_ERROR: The connector suffered an error.
+  v1betaConnectorType:
+    type: string
+    enum:
+      - CONNECTOR_TYPE_SOURCE
+      - CONNECTOR_TYPE_DESTINATION
+      - CONNECTOR_TYPE_AI
+      - CONNECTOR_TYPE_BLOCKCHAIN
+      - CONNECTOR_TYPE_DATA
+      - CONNECTOR_TYPE_OPERATOR
+    description: |-
+      ConnectorType defines the connector type based on its task features.
+
+       - CONNECTOR_TYPE_UNSPECIFIED: Unspecified.
+       - CONNECTOR_TYPE_SOURCE: Source connector.
+       - CONNECTOR_TYPE_DESTINATION: Destination connector.
+       - CONNECTOR_TYPE_AI: AI connector.
+       - CONNECTOR_TYPE_BLOCKCHAIN: Blockchain connector.
+       - CONNECTOR_TYPE_DATA: Data connector.
+       - CONNECTOR_TYPE_OPERATOR: Operator connector.
+  v1betaConnectorView:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_CONFIGURATION
+    description: |-
+      View defines how a connector is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
+       - VIEW_CONFIGURATION: Contains the connector configuration.
+  v1betaConnectorVisibility:
+    type: string
+    enum:
+      - VISIBILITY_PRIVATE
+      - VISIBILITY_PUBLIC
+    description: |-
+      Visibility defines who can access the connector.
+
+       - VISIBILITY_UNSPECIFIED: Unspecified, equivalent to PRIVATE.
+       - VISIBILITY_PRIVATE: Only the user can see the connector.
+       - VISIBILITY_PUBLIC: Other users can see the connector.
+  v1betaCreateOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The created connector resource.
+    description: CreateOrganizationConnectorResponse contains the created connector.
+  v1betaCreateOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The created pipeline release object.
+    description: CreateOrganizationPipelineReleaseResponse contains the created release.
+  v1betaCreateOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The created pipeline resource.
+    description: CreateOrganizationPipelineResponse contains the created pipeline.
+  v1betaCreateUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The created connector resource.
+    description: CreateUserConnectorResponse contains the created connector.
+  v1betaCreateUserPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The created pipeline release object.
+    description: CreateUserPipelineReleaseResponse contains the created release.
+  v1betaCreateUserPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The created pipeline resource.
+    description: CreateUserPipelineResponse contains the created pipeline.
+  v1betaDeleteOrganizationConnectorResponse:
+    type: object
+    description: DeleteOrganizationConnectorResponse is an empty response.
+  v1betaDeleteOrganizationPipelineReleaseResponse:
+    type: object
+    description: DeleteOrganizationPipelineReleaseResponse is an empty response.
+  v1betaDeleteOrganizationPipelineResponse:
+    type: object
+    description: DeleteOrganizationPipelineResponse is an empty response.
+  v1betaDeleteResourceResponse:
+    type: object
+    title: DeleteResourceResponse represents an empty response
+  v1betaDeleteUserConnectorResponse:
+    type: object
+    description: DeleteUserConnectorResponse is an empty response.
+  v1betaDeleteUserPipelineReleaseResponse:
+    type: object
+    description: DeleteUserPipelineReleaseResponse is an empty response.
+  v1betaDeleteUserPipelineResponse:
+    type: object
+    description: DeleteUserPipelineResponse is an empty response.
+  v1betaDisconnectOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        title: A connector
+    description: DisconnectOrganizationConnectorResponse contains the connector details.
+  v1betaDisconnectUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        title: A connector
+    description: DisconnectUserConnectorResponse contains the connector details.
+  v1betaExecuteOrganizationConnectorResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: The execution outputs.
+    description: ExecuteOrganizationConnectorResponse contains the outcome of the execution.
+  v1betaExecuteUserConnectorResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: The execution outputs.
+    description: ExecuteUserConnectorResponse contains the outcome of the execution.
+  v1betaGetConnectorDefinitionResponse:
+    type: object
+    properties:
+      connector_definition:
+        $ref: '#/definitions/v1betaConnectorDefinition'
+        description: The connector definition resource.
+    description: GetConnectorDefinitionResponse contains the requested connector definition.
+  v1betaGetOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: The long-running operation.
+        readOnly: true
+    description: GetOperationResponse contains the long-running operation details.
+  v1betaGetOperatorDefinitionResponse:
+    type: object
+    properties:
+      operator_definition:
+        $ref: '#/definitions/v1betaOperatorDefinition'
+        description: The operator definition resource.
+    description: GetOperatorDefinitionResponse contains the requested operator definition.
+  v1betaGetOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The connector resource.
+    description: GetOrganizationConnectorResponse contains the requested connector.
+  v1betaGetOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The pipeline release resource.
+    description: GetOrganizationPipelineReleaseResponse contains the requested pipeline release.
+  v1betaGetOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The pipeline resource.
+    description: GetOrganizationPipelineResponse contains the requested pipeline.
+  v1betaGetResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1betaResource'
+        title: Retrieved resource state
+    title: GetResourceResponse represents a response to fetch a resource's state
+  v1betaGetUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The connector resource.
+    description: GetUserConnectorResponse contains the requested connector.
+  v1betaGetUserPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The pipeline release resource.
+    description: GetUserPipelineReleaseResponse contains the requested pipeline release.
+  v1betaGetUserPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The pipeline resource.
+    description: GetUserPipelineResponse contains the requested pipeline.
+  v1betaHealthCheckRequest:
+    type: object
+    properties:
+      service:
+        type: string
+        title: Service name to check for its readiness status
+    title: HealthCheckRequest represents a request to health check a service
+  v1betaHealthCheckResponse:
+    type: object
+    properties:
+      status:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Status is the instance of the enum type ServingStatus
+    title: HealthCheckResponse represents a response for a service heath status
+  v1betaListConnectorDefinitionsResponse:
+    type: object
+    properties:
+      connector_definitions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaConnectorDefinition'
+        description: A list of connector definition resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of connector definitions.
+    description: ListConnectorDefinitionsResponse contains a list of connector definitions.
+  v1betaListConnectorsAdminResponse:
+    type: object
+    properties:
+      connectors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaConnector'
+        description: A list of connector resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of connectors.
+    description: |-
+      ListConnectorsAdminResponse contains a list of connectors requested by an
+      admin.
+  v1betaListConnectorsResponse:
+    type: object
+    properties:
+      connectors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaConnector'
+        description: A list of connector resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of connectors.
+    title: |-
+      ListConnectorsResponse represents a response for a list of
+      connectors
+  v1betaListOperatorDefinitionsResponse:
+    type: object
+    properties:
+      operator_definitions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaOperatorDefinition'
+        description: A list of operator definition resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of operator definitions.
+    description: ListOperatorDefinitionsResponse contains a list of operator definitions.
+  v1betaListOrganizationConnectorsResponse:
+    type: object
+    properties:
+      connectors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaConnector'
+        description: A list of connector resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of connectors
+    description: ListOrganizationConnectorsResponse contains a list of connectors.
+  v1betaListOrganizationPipelineReleasesResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRelease'
+        description: A list of pipeline release resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipeline releases.
+    description: ListOrganizationPipelineReleasesResponse contains a list of pipeline releases.
+  v1betaListOrganizationPipelinesResponse:
+    type: object
+    properties:
+      pipelines:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipeline'
+        description: A list of pipeline resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipelines.
+    description: ListOrganizationPipelinesResponse contains a list of pipelines.
+  v1betaListPipelineReleasesAdminResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRelease'
+        description: A list of pipeline releases.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipeline releases.
+    description: |-
+      ListPipelineReleasesAdminResponse contains a list of pipeline releases
+      requested by an admin user.
+      For the moment, the pipeline recipes will be UID-based (permalink) instead
+      of name-based. This is a temporary solution.
+  v1betaListPipelinesAdminResponse:
+    type: object
+    properties:
+      pipelines:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipeline'
+        description: A list of pipeline resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipelines.
+    description: |-
+      ListPipelinesAdminResponse contains a list of pipelines requested by an
+      admin user.
+      For the moment, the pipeline recipes will be UID-based (permalink) instead
+      of name-based. This is a temporary solution.
+  v1betaListPipelinesResponse:
+    type: object
+    properties:
+      pipelines:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipeline'
+        description: A list of pipeline resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipelines.
+    description: ListPipelinesResponse contains a list of pipelines.
+  v1betaListUserConnectorsResponse:
+    type: object
+    properties:
+      connectors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaConnector'
+        description: A list of connector resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of connectors
+    description: ListUserConnectorsResponse contains a list of connectors.
+  v1betaListUserPipelineReleasesResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRelease'
+        description: A list of pipeline release resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipeline releases.
+    description: ListUserPipelineReleasesResponse contains a list of pipeline releases.
+  v1betaListUserPipelinesResponse:
+    type: object
+    properties:
+      pipelines:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipeline'
+        description: A list of pipeline resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipelines.
+    description: ListUserPipelinesResponse contains a list of pipelines.
+  v1betaLookUpConnectorAdminResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        title: connector
+    description: |-
+      LookUpConnectorAdminResponse represents a response for a
+      connector.
+  v1betaLookUpConnectorDefinitionAdminResponse:
+    type: object
+    properties:
+      connector_definition:
+        $ref: '#/definitions/v1betaConnectorDefinition'
+        description: The requested connector.
+    description: |-
+      LookUpConnectorDefinitionAdminResponse represents a response for a
+      connector definition.
+  v1betaLookUpConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The requested connector.
+    description: LookUpConnectorResponse represents a response for a connector.
+  v1betaLookUpOperatorDefinitionAdminResponse:
+    type: object
+    properties:
+      operator_definition:
+        $ref: '#/definitions/v1betaOperatorDefinition'
+        description: The requested operator definition.
+    description: |-
+      LookUpOperatorDefinitionAdminResponse represents a response for an operator
+      definition.
+  v1betaLookUpPipelineAdminResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The requested pipeline.
+    description: LookUpPipelineAdminResponse contains the requested pipeline.
+  v1betaLookUpPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The requested pipeline.
+    description: LookUpPipelineResponse contains the requested pipeline.
+  v1betaOperatorDefinition:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the operator definition.
+          - Format: `operator-definitions/*`
+        readOnly: true
+      uid:
+        type: string
+        description: Operator definition UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Operator definition resource ID (used in `name` as the last segment).
+          This conforms to RFC-1034, which restricts to letters, numbers, and
+          hyphen, with the first character a letter, the last a letter or a number,
+          and a 63 character maximum.
+      title:
+        type: string
+        description: Operator definition title.
+        readOnly: true
+      documentation_url:
+        type: string
+        description: Operator definition documentation URL.
+        readOnly: true
+      icon:
+        type: string
+        description: Operator definition icon.
+        readOnly: true
+      spec:
+        $ref: '#/definitions/v1betaOperatorSpec'
+        description: Operator definition specification.
+        readOnly: true
+      tombstone:
+        type: boolean
+        description: |-
+          Operator definition tombstone. If true, this configuration is permanently
+          off. Otherwise, the configuration is active.
+        readOnly: true
+      public:
+        type: boolean
+        description: |-
+          The public flag determines whether this operator definition is available
+          to all workspaces.
+        readOnly: true
+      custom:
+        type: boolean
+        description: The custom flag determines whether this is a custom operator definition.
+        readOnly: true
+      icon_url:
+        type: string
+        description: Operator definition icon URL.
+        readOnly: true
+    description: |-
+      An Operator is a type of pipeline component that performs data injection and
+      manipulation. OperatorDefinition describes a certain type of operator.
+
+      For more information, see
+      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      in the official documentation.
+  v1betaOperatorDefinitionView:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+    description: |-
+      View defines how an operator definition is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
+  v1betaOperatorSpec:
+    type: object
+    properties:
+      component_specification:
+        type: object
+        description: Component specification.
+      openapi_specifications:
+        type: object
+        description: OpenAPI specification.
+    description: OperatorSpec represents a specification data model.
+    required:
+      - component_specification
+      - openapi_specifications
+  v1betaPermission:
+    type: object
+    properties:
+      can_edit:
+        type: boolean
+        description: Defines whether the resource can be modified.
+      can_trigger:
+        type: boolean
+        description: Defines whether the resource can be executed.
+    description: Permission defines how a resource can be used.
+  v1betaPipeline:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the pipeline, defined by its owner and ID.
+          - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: Pipeline UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Pipeline resource ID (used in `name` as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
+      description:
+        type: string
+        description: Pipeline description.
+      recipe:
+        $ref: '#/definitions/v1betaRecipe'
+        description: Recipe describes the components of a Pipeline and how they are connected.
+      create_time:
+        type: string
+        format: date-time
+        description: Pipeline creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Pipeline update time.
+        readOnly: true
+      openapi_schema:
+        type: object
+        description: OpenAPI schema.
+        readOnly: true
+      delete_time:
+        type: string
+        format: date-time
+        description: Pipeline delete time.
+        readOnly: true
+      sharing:
+        $ref: '#/definitions/v1betaSharing'
+        description: Pipeline sharing information.
+      metadata:
+        type: object
+        description: Metadata holds console-related data such as the pipeline builder layout.
+      owner_name:
+        type: string
+        description: Owner Name.
+        readOnly: true
+      owner:
+        type: object
+        description: Owner details.
+        readOnly: true
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRelease'
+        description: Releases holds the history of pipeline versions.
+        readOnly: true
+      readme:
+        type: string
+        description: README holds the pipeline documentation.
+      permission:
+        $ref: '#/definitions/v1betaPermission'
+        description: Permission defines how a pipeline can be used.
+        readOnly: true
+      visibility:
+        $ref: '#/definitions/v1betaPipelineVisibility'
+        description: Pipeline visibility.
+        readOnly: true
+    description: |-
+      A Pipeline is an end-to-end workflow that automates a sequence of components
+      to process data.
+
+      For more information, see
+      [Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline) in
+      the official documentation.
+  v1betaPipelineRelease:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the release, defined by its owner and ID.
+          - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}
+        readOnly: true
+      uid:
+        type: string
+        description: Release UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Release resource ID (used in `name` as the last segment). It must be a
+          sematic version vX.Y.Z.
+      description:
+        type: string
+        description: Release description.
+      recipe:
+        $ref: '#/definitions/v1betaRecipe'
+        description: Recipe of the versioned pipeline.
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        description: Pipeline creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Pipeline update time.
+        readOnly: true
+      openapi_schema:
+        type: object
+        description: OpenAPI schema.
+        readOnly: true
+      delete_time:
+        type: string
+        format: date-time
+        description: Pipeline deletion time.
+        readOnly: true
+      alias:
+        type: string
+        description: Alias.
+        readOnly: true
+      metadata:
+        type: object
+        description: |-
+          Key-value object with console-related data such as the pipeline builder
+          layout.
+      readme:
+        type: string
+        description: README.
+    description: |-
+      Pipeline releases contain the version control information of a pipeline.
+      This allows users to track changes in the pipeline over time.
+  v1betaPipelineView:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_RECIPE
+    description: |-
+      View defines how a Pipeline is presented.
+
+       - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_FULL: Full representation.
+       - VIEW_RECIPE: Contains the recipe of the resource.
+  v1betaPipelineVisibility:
+    type: string
+    enum:
+      - VISIBILITY_PRIVATE
+      - VISIBILITY_PUBLIC
+    description: |-
+      Visibility defines who can access the pipeline.
+
+       - VISIBILITY_UNSPECIFIED: Unspecified, equivalent to PRIVATE.
+       - VISIBILITY_PRIVATE: Only the user can see the pipeline.
+       - VISIBILITY_PUBLIC: Other users can see the pipeline.
+  v1betaRecipe:
+    type: object
+    properties:
+      version:
+        type: string
+        description: Recipe schema version.
+      components:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaComponent'
+        description: List of pipeline components.
+    description: Recipe describes the components of a Pipeline and how they are connected.
+  v1betaRenameOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The renamed connector resource.
+    description: RenameOrganizationConnectorResponse contains a renamed connector.
+  v1betaRenameOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The renamed pipeline release.
+    description: RenameOrganizationPipelineReleaseResponse contains a renamed pipeline release.
+  v1betaRenameOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The renamed pipeline resource.
+    description: RenameOrganizationPipelineResponse contains a renamed pipeline.
+  v1betaRenameUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The renamed connector resource.
+    description: RenameUserConnectorResponse contains a renamed connector.
+  v1betaRenameUserPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The renamed pipeline release.
+    description: RenameUserPipelineReleaseResponse contains a renamed pipeline release.
+  v1betaRenameUserPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The renamed pipeline resource.
+    description: RenameUserPipelineResponse contains a renamed pipeline.
+  v1betaResource:
+    type: object
+    properties:
+      resource_permalink:
+        type: string
+        title: |-
+          Permalink of a resouce. For example:
+          "resources/{resource_uuid}/types/{type}"
+      pipeline_state:
+        $ref: '#/definitions/pipelinev1betaState'
+        title: Pipeline state
+      connector_state:
+        $ref: '#/definitions/v1betaConnectorState'
+        title: Connector state
+      backend_state:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Backend service state
+      progress:
+        type: integer
+        format: int32
+        title: Resource longrunning progress
+    title: Resource represents the current information of a resource
+    required:
+      - resource_permalink
+  v1betaRestoreOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The pipeline release resource.
+    description: |-
+      RestoreOrganizationPipelineReleaseResponse contains the requested pipeline
+      release.
+  v1betaRestoreUserPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The pipeline release resource.
+    description: RestoreUserPipelineReleaseResponse contains the requested pipeline release.
+  v1betaRole:
+    type: string
+    enum:
+      - ROLE_VIEWER
+      - ROLE_EXECUTOR
+    description: |-
+      Role describes the permissions a user has over a resource.
+
+       - ROLE_UNSPECIFIED: Unspecified, equivalent to VIEWER.
+       - ROLE_VIEWER: Viewers can see the resource properties.
+       - ROLE_EXECUTOR: Executors can execute the resource (e.g. trigger a pipeline).
+  v1betaSharing:
+    type: object
+    properties:
+      users:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/SharingUser'
+        description: |-
+          Defines sharing rules for a set of user resource names.
+
+          Each key in this object should contain a pattern that can be matched
+          against user names.
+
+          Each value is a user sharing configuration.
+
+          **NOTE**: For now, the only accepted key is `*/*`.
+      share_code:
+        $ref: '#/definitions/SharingShareCode'
+        description: Defines the configuration to share a resource via link.
+    description: |-
+      Sharing contains the information to share a resource with other users.
+
+      For more information, see [Share Pipelines](https://www.instill.tech/docs/latest/vdp/share).
+  v1betaTestOrganizationConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1betaConnectorState'
+        description: The connector state.
+    description: TestOrganizationConnectorResponse contains the connection state.
+  v1betaTestUserConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1betaConnectorState'
+        description: The connector state.
+    description: TestUserConnectorResponse contains the connection state.
+  v1betaTrace:
+    type: object
+    properties:
+      statuses:
+        type: array
+        items:
+          $ref: '#/definitions/v1betaTraceStatus'
+        description: Statuses contains an execution status per input.
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Component inputs.
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Component outputs.
+      error:
+        type: object
+        description: Error details.
+      compute_time_in_seconds:
+        type: number
+        format: float
+        description: Computation time in seconds.
+    description: Trace contains the execution details of a component.
+  v1betaTraceStatus:
+    type: string
+    enum:
+      - STATUS_COMPLETED
+      - STATUS_SKIPPED
+      - STATUS_ERROR
+    description: |-
+      Status holds the the component execution outcome.
+
+       - STATUS_UNSPECIFIED: Unspecified.
+       - STATUS_COMPLETED: Successfully completed.
+       - STATUS_SKIPPED: Skipped.
+       - STATUS_ERROR: Aborted with error.
+  v1betaTriggerAsyncOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      TriggerAsyncOrganizationPipelineReleaseResponse contains the information to
+      access the status of an asynchronous pipeline execution.
+  v1betaTriggerAsyncOrganizationPipelineResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      TriggerAsyncOrganizationPipelineResponse contains the information to access
+      the status of an asynchronous pipeline execution.
+  v1betaTriggerAsyncUserPipelineReleaseResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      TriggerAsyncUserPipelineReleaseResponse contains the information to access
+      the status of an asynchronous pipeline execution.
+  v1betaTriggerAsyncUserPipelineResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      TriggerAsyncUserPipelineResponse contains the information to access the
+      status of an asynchronous pipeline execution.
+  v1betaTriggerMetadata:
+    type: object
+    properties:
+      traces:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/v1betaTrace'
+        description: |-
+          Each key in the `traces` object is a component ID. The value is a Trace
+          object containing the execution details.
+    description: TriggerMetadata contains the traces of the pipeline inference.
+  v1betaTriggerOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+      metadata:
+        $ref: '#/definitions/v1betaTriggerMetadata'
+        description: Traces of the pipeline inference.
+    description: |-
+      TriggerOrganizationPipelineReleaseResponse contains the pipeline execution
+      results, i.e., the multiple model inference outputs.
+  v1betaTriggerOrganizationPipelineResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+      metadata:
+        $ref: '#/definitions/v1betaTriggerMetadata'
+        description: Traces of the pipeline inference.
+    description: |-
+      TriggerOrganizationPipelineResponse contains the pipeline execution results,
+      i.e., the multiple model inference outputs.
+  v1betaTriggerUserPipelineReleaseResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+      metadata:
+        $ref: '#/definitions/v1betaTriggerMetadata'
+        description: Traces of the pipeline inference.
+    description: |-
+      TriggerUserPipelineReleaseResponse contains the pipeline execution results,
+      i.e., the multiple model inference outputs.
+  v1betaTriggerUserPipelineResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+      metadata:
+        $ref: '#/definitions/v1betaTriggerMetadata'
+        description: Traces of the pipeline inference.
+    description: |-
+      TriggerUserPipelineResponse contains the pipeline execution results, i.e.,
+      the multiple model inference outputs.
+  v1betaUpdateOrganizationConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The updated connector resource.
+    description: UpdateOrganizationConnectorResponse contains the updated connector.
+  v1betaUpdateOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The updated pipeline release resource.
+    description: |-
+      UpdateOrganizationPipelineReleaseResponse contains the updated pipeline
+      release.
+  v1betaUpdateOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The updated pipeline resource.
+    description: UpdateOrganizationPipelineResponse contains the updated pipeline.
+  v1betaUpdateResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1betaResource'
+        title: Updated resource state
+    title: UpdateResourceResponse represents a response to update a resource's state
+  v1betaUpdateUserConnectorResponse:
+    type: object
+    properties:
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: The updated connector resource.
+    description: UpdateUserConnectorResponse contains the updated connector.
+  v1betaUpdateUserPipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        $ref: '#/definitions/v1betaPipelineRelease'
+        description: The updated pipeline release resource.
+    description: UpdateUserPipelineReleaseResponse contains the updated pipeline release.
+  v1betaUpdateUserPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The updated pipeline resource.
+    description: UpdateUserPipelineResponse contains the updated pipeline.
+  v1betaValidateOrganizationPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The validated pipeline resource.
+    description: ValidateOrganizationPipelineResponse contains a validated pipeline.
+  v1betaValidateUserPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        $ref: '#/definitions/v1betaPipeline'
+        description: The validated pipeline resource.
+    description: ValidateUserPipelineResponse contains a validated pipeline.
+  v1betaWatchOrganizationConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1betaConnectorState'
+        description: The connector state.
+    description: WatchOrganizationConnectorResponse contains the connector current state.
+  v1betaWatchOrganizationPipelineReleaseResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/pipelinev1betaState'
+        description: The pipeline release state.
+    description: |-
+      WatchOrganizationPipelineReleaseResponse contains the pipeline release
+      current state.
+  v1betaWatchUserConnectorResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/v1betaConnectorState'
+        description: The connector state.
+    description: WatchUserConnectorResponse contains the connector current state.
+  v1betaWatchUserPipelineReleaseResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/pipelinev1betaState'
+        description: The pipeline release state.
+    description: |-
+      WatchUserPipelineReleaseResponse contains the pipeline release current
+      state.
+  vdpcontrollerv1betaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1betaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  vdpcontrollerv1betaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1betaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    description: Enter the token with the `Bearer ` prefix, e.g. `Bearer abcde12345`
+    name: Authorization
+    in: header
+security:
+  - Bearer: []
+externalDocs:
+  description: More about Instill AI
+  url: https://www.instill.tech/docs
