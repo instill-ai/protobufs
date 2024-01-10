@@ -23,11 +23,18 @@ jobs:
           git_tag_gpgsign: true
       - name: Generate OpenAPI definitions
         run: |
-          buf generate
+          make openapi
+
+          # Pass generated files to linter step
+          echo 'FILE_LIST<<EOF' >> $GITHUB_ENV
+          find openapiv2 -type f >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
       - name: Lint generated OpenAPI definitions
         uses: mbowman100/swagger-validator-action@master
         with:
-          files: openapiv2/openapiv2.swagger.yaml
+          # Uses the same linter than swagger-cli but spares us the
+          # installation.
+          files: ${{ env.FILE_LIST }}
       - name: Commit and push
         run: |
           if [[ `git status --porcelain` ]]; then

@@ -1,0 +1,1629 @@
+swagger: "2.0"
+info:
+  title: model/model/v1alpha/model_definition.proto
+  version: version not set
+consumes:
+  - application/json
+produces:
+  - application/json
+paths: {}
+definitions:
+  HealthCheckResponseServingStatus:
+    type: string
+    enum:
+      - SERVING_STATUS_SERVING
+      - SERVING_STATUS_NOT_SERVING
+    description: |-
+      - SERVING_STATUS_UNSPECIFIED: Serving status: UNSPECIFIED
+       - SERVING_STATUS_SERVING: Serving status: SERVING
+       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
+    title: ServingStatus enumerates the status of a queried service
+  ModelState:
+    type: string
+    enum:
+      - STATE_OFFLINE
+      - STATE_ONLINE
+      - STATE_ERROR
+    description: |-
+      - STATE_UNSPECIFIED: State: UNSPECIFIED
+       - STATE_OFFLINE: State: OFFLINE
+       - STATE_ONLINE: State: ONLINE
+       - STATE_ERROR: State: ERROR
+    title: State enumerates a model state
+  googlelongrunningOperation:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The server-assigned name, which is only unique within the same service that
+          originally returns it. If you use the default HTTP mapping, the
+          `name` should be a resource name ending with `operations/{unique_id}`.
+      metadata:
+        $ref: '#/definitions/protobufAny'
+        description: |-
+          Service-specific metadata associated with the operation.  It typically
+          contains progress information and common metadata such as create time.
+          Some services might not provide such metadata.  Any method that returns a
+          long-running operation should document the metadata type, if any.
+      done:
+        type: boolean
+        description: |-
+          If the value is `false`, it means the operation is still in progress.
+          If `true`, the operation is completed, and either `error` or `response` is
+          available.
+      error:
+        $ref: '#/definitions/rpcStatus'
+        description: The error result of the operation in case of failure or cancellation.
+      response:
+        $ref: '#/definitions/protobufAny'
+        description: |-
+          The normal response of the operation in case of success.  If the original
+          method returns no data on success, such as `Delete`, the response is
+          `google.protobuf.Empty`.  If the original method is standard
+          `Get`/`Create`/`Update`, the response should be the resource.  For other
+          methods, the response should have the type `XxxResponse`, where `Xxx`
+          is the original method name.  For example, if the original method name
+          is `TakeSnapshot()`, the inferred response type is
+          `TakeSnapshotResponse`.
+    description: |-
+      This resource represents a long-running operation that is the result of a
+      network API call.
+  modelcontrollerv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1betaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  modelcontrollerv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1betaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
+  modelmodelv1alphaLivenessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1betaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: LivenessResponse represents a response for a service liveness status
+  modelmodelv1alphaReadinessResponse:
+    type: object
+    properties:
+      health_check_response:
+        $ref: '#/definitions/v1betaHealthCheckResponse'
+        title: HealthCheckResponse message
+    title: ReadinessResponse represents a response for a service readiness status
+  protobufAny:
+    type: object
+    properties:
+      '@type':
+        type: string
+        description: |-
+          A URL/resource name that uniquely identifies the type of the serialized
+          protocol buffer message. This string must contain at least
+          one "/" character. The last segment of the URL's path must represent
+          the fully qualified name of the type (as in
+          `path/google.protobuf.Duration`). The name should be in a canonical form
+          (e.g., leading "." is not accepted).
+
+          In practice, teams usually precompile into the binary all types that they
+          expect it to use in the context of Any. However, for URLs which use the
+          scheme `http`, `https`, or no scheme, one can optionally set up a type
+          server that maps type URLs to message definitions as follows:
+
+          * If no scheme is provided, `https` is assumed.
+          * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+            value in binary format, or produce an error.
+          * Applications are allowed to cache lookup results based on the
+            URL, or have them precompiled into a binary to avoid any
+            lookup. Therefore, binary compatibility needs to be preserved
+            on changes to types. (Use versioned type names to manage
+            breaking changes.)
+
+          Note: this functionality is not currently available in the official
+          protobuf release, and it is not used for type URLs beginning with
+          type.googleapis.com. As of May 2023, there are no widely used type server
+          implementations and no plans to implement one.
+
+          Schemes other than `http`, `https` (or the empty scheme) might be
+          used with implementation specific semantics.
+    additionalProperties: {}
+    description: |-
+      `Any` contains an arbitrary serialized protocol buffer message along with a
+      URL that describes the type of the serialized message.
+
+      Protobuf library provides support to pack/unpack Any values in the form
+      of utility functions or additional generated methods of the Any type.
+
+      Example 1: Pack and unpack a message in C++.
+
+          Foo foo = ...;
+          Any any;
+          any.PackFrom(foo);
+          ...
+          if (any.UnpackTo(&foo)) {
+            ...
+          }
+
+      Example 2: Pack and unpack a message in Java.
+
+          Foo foo = ...;
+          Any any = Any.pack(foo);
+          ...
+          if (any.is(Foo.class)) {
+            foo = any.unpack(Foo.class);
+          }
+          // or ...
+          if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+            foo = any.unpack(Foo.getDefaultInstance());
+          }
+
+       Example 3: Pack and unpack a message in Python.
+
+          foo = Foo(...)
+          any = Any()
+          any.Pack(foo)
+          ...
+          if any.Is(Foo.DESCRIPTOR):
+            any.Unpack(foo)
+            ...
+
+       Example 4: Pack and unpack a message in Go
+
+           foo := &pb.Foo{...}
+           any, err := anypb.New(foo)
+           if err != nil {
+             ...
+           }
+           ...
+           foo := &pb.Foo{}
+           if err := any.UnmarshalTo(foo); err != nil {
+             ...
+           }
+
+      The pack methods provided by protobuf library will by default use
+      'type.googleapis.com/full.type.name' as the type URL and the unpack
+      methods only use the fully qualified type name after the last '/'
+      in the type URL, for example "foo.bar.com/x/y.z" will yield type
+      name "y.z".
+
+      JSON
+      ====
+      The JSON representation of an `Any` value uses the regular
+      representation of the deserialized, embedded message, with an
+      additional field `@type` which contains the type URL. Example:
+
+          package google.profile;
+          message Person {
+            string first_name = 1;
+            string last_name = 2;
+          }
+
+          {
+            "@type": "type.googleapis.com/google.profile.Person",
+            "firstName": <string>,
+            "lastName": <string>
+          }
+
+      If the embedded message type is well-known and has a custom JSON
+      representation, that representation will be embedded adding a field
+      `value` which holds the custom JSON in addition to the `@type`
+      field. Example (for message [google.protobuf.Duration][]):
+
+          {
+            "@type": "type.googleapis.com/google.protobuf.Duration",
+            "value": "1.212s"
+          }
+  protobufNullValue:
+    type: string
+    description: |-
+      `NullValue` is a singleton enumeration to represent the null value for the
+      `Value` type union.
+
+      The JSON representation for `NullValue` is JSON `null`.
+
+       - NULL_VALUE: Null value.
+  rpcStatus:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+        description: |-
+          The status code, which should be an enum value of
+          [google.rpc.Code][google.rpc.Code].
+      message:
+        type: string
+        description: |-
+          A developer-facing error message, which should be in English. Any
+          user-facing error message should be localized and sent in the
+          [google.rpc.Status.details][google.rpc.Status.details] field, or localized
+          by the client.
+      details:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/protobufAny'
+        description: |-
+          A list of messages that carry the error details.  There is a common set of
+          message types for APIs to use.
+    description: |-
+      The `Status` type defines a logical error model that is suitable for
+      different programming environments, including REST APIs and RPC APIs. It is
+      used by [gRPC](https://github.com/grpc). Each `Status` message contains
+      three pieces of data: error code, error message, and error details.
+
+      You can find out more about this error model and how to work with it in the
+      [API Design Guide](https://cloud.google.com/apis/design/errors).
+  v1alphaBoundingBox:
+    type: object
+    properties:
+      top:
+        type: number
+        format: float
+        title: Bounding box top y-axis value
+        readOnly: true
+      left:
+        type: number
+        format: float
+        title: Bounding box left x-axis value
+        readOnly: true
+      width:
+        type: number
+        format: float
+        title: Bounding box width value
+        readOnly: true
+      height:
+        type: number
+        format: float
+        title: Bounding box height value
+        readOnly: true
+    title: BoundingBox represents the bounding box data structure
+  v1alphaCheckModelAdminResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/ModelState'
+        title: Retrieved model state
+    title: |-
+      CheckModelAdminResponse represents a response to fetch a model's
+      current state and longrunning progress
+  v1alphaClassificationInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: ClassificationInput represents the input of classification task
+  v1alphaClassificationInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: |-
+      ClassificationInputStream represents the input of classification task when
+      using stream method
+    required:
+      - file_lengths
+      - content
+  v1alphaClassificationOutput:
+    type: object
+    properties:
+      category:
+        type: string
+        title: Classification category
+        readOnly: true
+      score:
+        type: number
+        format: float
+        title: Classification score
+        readOnly: true
+    title: ClassificationOutput represents the output of classification task
+  v1alphaCreateUserModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Create model operation message
+        readOnly: true
+    title: CreateUserModelBinaryFileUploadResponse represents a response for a model
+  v1alphaCreateUserModelResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Create model operation message
+        readOnly: true
+    title: CreateUserModelResponse represents a response for a model
+  v1alphaDeleteResourceResponse:
+    type: object
+    title: DeleteResourceResponse represents an empty response
+  v1alphaDeleteUserModelResponse:
+    type: object
+    title: DeleteUserModelResponse represents an empty response
+  v1alphaDeployModelAdminResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Deploy operation message
+    title: DeployModelAdminResponse represents a response for a deployed model
+  v1alphaDeployUserModelResponse:
+    type: object
+    properties:
+      model_id:
+        type: string
+        title: |-
+          Deployed model's id
+          Format: users/{user}/models/{model}
+    title: DeployUserModelResponse represents a response for a deployed model
+  v1alphaDetectionInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: DetectionInput represents the input of detection task
+  v1alphaDetectionInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: |-
+      DetectionInputStream represents the input of detection task when using stream
+      method
+    required:
+      - file_lengths
+      - content
+  v1alphaDetectionObject:
+    type: object
+    properties:
+      category:
+        type: string
+        title: Detection object category
+        readOnly: true
+      score:
+        type: number
+        format: float
+        title: Detection object score
+        readOnly: true
+      bounding_box:
+        $ref: '#/definitions/v1alphaBoundingBox'
+        title: Detection bounding box
+        readOnly: true
+    title: DetectionObject represents a predicted object
+  v1alphaDetectionOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaDetectionObject'
+        title: A list of detection objects
+        readOnly: true
+    title: DetectionOutput represents the output of detection task
+  v1alphaGetModelDefinitionResponse:
+    type: object
+    properties:
+      model_definition:
+        $ref: '#/definitions/v1alphaModelDefinition'
+        title: A model definition instance
+    title: GetModelDefinitionResponse represents a response for a model definition
+  v1alphaGetModelOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: The retrieved model operation
+    title: GetModelOperationResponse represents a response for a model operation
+  v1alphaGetResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Retrieved resource state
+    title: GetResourceResponse represents a response to fetch a resource's state
+  v1alphaGetUserModelCardResponse:
+    type: object
+    properties:
+      readme:
+        $ref: '#/definitions/v1alphaModelCard'
+        title: Retrieved model card
+    title: GetUserModelCardResponse represents a response to fetch a model's README card
+  v1alphaGetUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: The retrieved model
+    title: GetUserModelResponse represents a response for a model
+  v1alphaImageContent:
+    type: object
+    properties:
+      image_url:
+        $ref: '#/definitions/v1alphaPromptImage'
+        title: Image url or base64 code of Message Content
+      detail:
+        type: string
+        title: Additinoal information for Image Content
+    title: Image content for Message Content
+  v1alphaImageToImageInput:
+    type: object
+    properties:
+      prompt_image_url:
+        type: string
+        title: Image type URL
+      prompt_image_base64:
+        type: string
+        title: Image type base64
+      prompt:
+        type: string
+        title: The prompt text
+      steps:
+        type: integer
+        format: int32
+        title: The steps, default is 5
+      cfg_scale:
+        type: number
+        format: float
+        title: The guidance scale, default is 7.5
+      seed:
+        type: integer
+        format: int32
+        title: The seed, default is 0
+      samples:
+        type: integer
+        format: int32
+        title: The number of generated samples, default is 1
+      extra_params:
+        type: object
+        title: The extra parameters
+    title: ImageToImageInput represents the input of image to image task
+    required:
+      - prompt
+  v1alphaImageToImageOutput:
+    type: object
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        title: List of generated images
+        readOnly: true
+    title: ImageToImageOutput represents the output of image to image task
+  v1alphaInstanceSegmentationInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: InstanceSegmentationInput represents the input of instance segmentation task
+  v1alphaInstanceSegmentationInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: |-
+      InstanceSegmentationInputStream represents the input of instance segmentation
+      task when using stream method
+    required:
+      - file_lengths
+      - content
+  v1alphaInstanceSegmentationObject:
+    type: object
+    properties:
+      rle:
+        type: string
+        title: Instance RLE segmentation mask
+        readOnly: true
+      category:
+        type: string
+        title: Instance category
+        readOnly: true
+      score:
+        type: number
+        format: float
+        title: Instance score
+        readOnly: true
+      bounding_box:
+        $ref: '#/definitions/v1alphaBoundingBox'
+        title: Instance bounding box
+        readOnly: true
+    title: InstanceSegmentationObject corresponding to a instance segmentation object
+  v1alphaInstanceSegmentationOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaInstanceSegmentationObject'
+        title: A list of instance segmentation objects
+        readOnly: true
+    title: |-
+      InstanceSegmentationOutput represents the output of instance segmentation
+      task
+  v1alphaKeypoint:
+    type: object
+    properties:
+      x:
+        type: number
+        format: float
+        title: x coordinate
+        readOnly: true
+      "y":
+        type: number
+        format: float
+        title: y coordinate
+        readOnly: true
+      v:
+        type: number
+        format: float
+        title: visibility
+        readOnly: true
+    title: Keypoint structure which include coordinate and keypoint visibility
+  v1alphaKeypointInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: KeypointInput represents the input of keypoint detection task
+  v1alphaKeypointInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: |-
+      KeypointInputStream represents the input of keypoint detection task when
+      using stream method
+    required:
+      - file_lengths
+      - content
+  v1alphaKeypointObject:
+    type: object
+    properties:
+      keypoints:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKeypoint'
+        title: Keypoints
+        readOnly: true
+      score:
+        type: number
+        format: float
+        title: Keypoint score
+        readOnly: true
+      bounding_box:
+        $ref: '#/definitions/v1alphaBoundingBox'
+        title: Bounding box object
+        readOnly: true
+    title: KeypointObject corresponding to a person object
+  v1alphaKeypointOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKeypointObject'
+        title: A list of keypoint objects
+        readOnly: true
+    title: KeypointOutput represents the output of keypoint detection task
+  v1alphaListModelDefinitionsResponse:
+    type: object
+    properties:
+      model_definitions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelDefinition'
+        title: a list of ModelDefinition instances
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of model definitions
+    title: |-
+      ListModelDefinitionsResponse represents a response to list all supported
+      model definitions
+  v1alphaListModelsAdminResponse:
+    type: object
+    properties:
+      models:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModel'
+        title: a list of Models
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of models
+    title: ListModelsAdminResponse represents a response for a list of models
+  v1alphaListModelsResponse:
+    type: object
+    properties:
+      models:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModel'
+        title: a list of Models
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of models
+    title: ListModelsResponse represents a response for a list of models
+  v1alphaListUserModelsResponse:
+    type: object
+    properties:
+      models:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModel'
+        title: a list of Models
+      next_page_token:
+        type: string
+        title: Next page token
+      total_size:
+        type: integer
+        format: int32
+        title: Total count of models
+    title: ListUserModelsResponse represents a response for a list of models
+  v1alphaLookUpModelAdminResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: A model resource
+    title: LookUpModelResponse represents a response for a model
+  v1alphaLookUpModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: A model resource
+    title: LookUpModelResponse represents a response for a model
+  v1alphaMessage:
+    type: object
+    properties:
+      role:
+        type: string
+        title: The Role of a message
+      content:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessageContent'
+        title: The context of the message
+    title: Message used for chat history in text generation model
+  v1alphaMessageContent:
+    type: object
+    properties:
+      type:
+        type: string
+        title: Type of Content
+      image_url:
+        $ref: '#/definitions/v1alphaImageContent'
+        title: Image Url is the naming convention by openAi but not necessarily a url
+      text:
+        type: string
+        title: Field for text
+    title: Content used for chat history message in text generation model
+  v1alphaModel:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          Resource name. It must have the format of "users/{user}/models/{model}".
+          For example: "users/instill-ai/models/yolov4"
+        readOnly: true
+      uid:
+        type: string
+        title: Model ID in UUIDv4
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Resource ID (the last segment of the resource name) used to construct the
+          resource name. This conforms to RFC-1034, which restricts to letters,
+          numbers, and hyphen, with the first character a letter, the last a letter
+          or a number, and a 63 character maximum.
+      description:
+        type: string
+        title: Model description
+      model_definition:
+        type: string
+        title: Model definition resource name
+      configuration:
+        type: object
+        title: |-
+          Model configuration represents the configuration JSON that has been
+          validated using the `model_spec` JSON schema of a ModelDefinition
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: Model task
+        readOnly: true
+      state:
+        $ref: '#/definitions/ModelState'
+        title: Model state
+        readOnly: true
+      visibility:
+        $ref: '#/definitions/v1alphaModelVisibility'
+        title: Model visibility including public or private
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        title: Model create time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: Model update time
+        readOnly: true
+      delete_time:
+        type: string
+        format: date-time
+        title: Model delete time
+        readOnly: true
+      owner_name:
+        type: string
+        title: Owner Name
+        readOnly: true
+      owner:
+        type: object
+        title: Owner details
+        readOnly: true
+    title: Model represents a model
+  v1alphaModelCard:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          Resource name. It must have the format of
+          "users/{user}/models/{model}/readme"
+        readOnly: true
+      size:
+        type: integer
+        format: int32
+        title: Size of the file
+        readOnly: true
+      type:
+        type: string
+        description: Type of the resource. Fixed to "file".
+        readOnly: true
+      content:
+        type: string
+        format: byte
+        title: Content of the README file in bytes and base64 format
+        readOnly: true
+      encoding:
+        type: string
+        description: Encoding type of the content. Fixed to "base64".
+        readOnly: true
+    description: |-
+      ModelCard represents the README card for a model. There
+      exists one and exactly one README card per model.
+  v1alphaModelDefinition:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          ModelDefinition resource name. It must have the format of
+          "model-definitions/{model-definition}"
+        readOnly: true
+      uid:
+        type: string
+        title: ModelDefinition ID in UUIDv4
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          ModelDefinition resource ID (the last segment of the resource name) used to
+          construct the resource name.
+        readOnly: true
+      title:
+        type: string
+        title: ModelDefinition display official title
+        readOnly: true
+      documentation_url:
+        type: string
+        title: ModelDefinition documentation url
+        readOnly: true
+      icon:
+        type: string
+        title: ModelDefinition icon
+        readOnly: true
+      release_stage:
+        $ref: '#/definitions/v1alphaReleaseStage'
+        title: ModelDefinition release stage
+        readOnly: true
+      model_spec:
+        type: object
+        description: |-
+          ModelDefinition model specification represents the JSON schema used to
+          validate the JSON configurations of a model created from a specific model
+          source. Must be a valid JSON that includes what fields are needed to
+          create/display a model.
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        title: ModelDefinition create time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: ModelDefinition update time
+        readOnly: true
+    title: |-
+      /////////////////////////////////////////////////////////////////
+      ModelDefinition represents the definition of a model
+  v1alphaModelVisibility:
+    type: string
+    enum:
+      - VISIBILITY_PRIVATE
+      - VISIBILITY_PUBLIC
+    description: |-
+      - VISIBILITY_UNSPECIFIED: Visibility: UNSPECIFIED, equivalent to PRIVATE.
+       - VISIBILITY_PRIVATE: Visibility: PRIVATE
+       - VISIBILITY_PUBLIC: Visibility: PUBLIC
+    title: Model visibility including public or private
+  v1alphaOcrInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: OcrInput represents the input of ocr task
+  v1alphaOcrInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: OcrInputStream represents the input of ocr task when using stream method
+    required:
+      - file_lengths
+      - content
+  v1alphaOcrObject:
+    type: object
+    properties:
+      text:
+        type: string
+        title: OCR text
+        readOnly: true
+      score:
+        type: number
+        format: float
+        title: OCR text score
+        readOnly: true
+      bounding_box:
+        $ref: '#/definitions/v1alphaBoundingBox'
+        title: OCR bounding box
+        readOnly: true
+    title: OcrObject represents a predicted ocr object
+  v1alphaOcrOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaOcrObject'
+        title: A list of OCR objects
+        readOnly: true
+    title: OcrOutput represents the output of ocr task
+  v1alphaPromptImage:
+    type: object
+    properties:
+      prompt_image_url:
+        type: string
+        title: Image URL
+      prompt_image_base64:
+        type: string
+        title: Base64 encoded Image
+    title: Prompt Image for text generation model
+  v1alphaPublishUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: Published model
+    title: PublishUserModelResponse represents a response for the published model
+  v1alphaReleaseStage:
+    type: string
+    enum:
+      - RELEASE_STAGE_ALPHA
+      - RELEASE_STAGE_BETA
+      - RELEASE_STAGE_GENERALLY_AVAILABLE
+      - RELEASE_STAGE_CUSTOM
+    description: |-
+      - RELEASE_STAGE_UNSPECIFIED: ReleaseStage: UNSPECIFIED
+       - RELEASE_STAGE_ALPHA: ReleaseStage: ALPHA
+       - RELEASE_STAGE_BETA: ReleaseStage: BETA
+       - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
+       - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
+    title: ReleaseStage enumerates the release stages
+  v1alphaRenameUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: Renamed model
+    title: RenameUserModelResponse represents a response for a model
+  v1alphaResource:
+    type: object
+    properties:
+      resource_permalink:
+        type: string
+        title: |-
+          Permalink of a resource. For example:
+          "resources/{resource_uuid}/types/{type}"
+      model_state:
+        $ref: '#/definitions/ModelState'
+        title: Model state
+      backend_state:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Backend service state
+      progress:
+        type: integer
+        format: int32
+        title: Resource longrunning progress
+    title: Resource represents the current information of a resource
+    required:
+      - resource_permalink
+  v1alphaSemanticSegmentationInput:
+    type: object
+    properties:
+      image_url:
+        type: string
+        title: Image type URL
+      image_base64:
+        type: string
+        title: Image type base64
+    title: SemanticSegmentationInput represents the input of semantic segmentation task
+  v1alphaSemanticSegmentationInputStream:
+    type: object
+    properties:
+      file_lengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        title: The list of file length for each uploaded binary file
+      content:
+        type: string
+        format: byte
+        title: Content of images in bytes
+    title: |-
+      SemanticSegmentationInputStream represents the input of semantic segmentation
+      task when using stream method
+    required:
+      - file_lengths
+      - content
+  v1alphaSemanticSegmentationOutput:
+    type: object
+    properties:
+      stuffs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaSemanticSegmentationStuff'
+        title: A list of semantic segmentation stuffs
+        readOnly: true
+    title: |-
+      SemanticSegmentationOutput represents the output of semantic segmentation
+      task
+  v1alphaSemanticSegmentationStuff:
+    type: object
+    properties:
+      rle:
+        type: string
+        title: RLE segmentation mask
+        readOnly: true
+      category:
+        type: string
+        title: Stuff category
+        readOnly: true
+    title: SemanticSegmentationStuff corresponding to a semantic segmentation stuff
+  v1alphaTask:
+    type: string
+    enum:
+      - TASK_CLASSIFICATION
+      - TASK_DETECTION
+      - TASK_KEYPOINT
+      - TASK_OCR
+      - TASK_INSTANCE_SEGMENTATION
+      - TASK_SEMANTIC_SEGMENTATION
+      - TASK_TEXT_TO_IMAGE
+      - TASK_TEXT_GENERATION
+      - TASK_TEXT_GENERATION_CHAT
+      - TASK_VISUAL_QUESTION_ANSWERING
+      - TASK_IMAGE_TO_IMAGE
+      - TASK_TEXT_EMBEDDINGS
+      - TASK_SPEECH_RECOGNITION
+    description: |-
+      - TASK_UNSPECIFIED: Task: UNSPECIFIED
+       - TASK_CLASSIFICATION: Task: CLASSIFICATION
+       - TASK_DETECTION: Task: DETECTION
+       - TASK_KEYPOINT: Task: KEYPOINT
+       - TASK_OCR: Task: OCR
+       - TASK_INSTANCE_SEGMENTATION: Task: INSTANCE SEGMENTATION
+       - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
+       - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
+       - TASK_TEXT_GENERATION: Task: TEXT GENERATION
+       - TASK_TEXT_GENERATION_CHAT: Task: TEXT GENERATION CHAT
+       - TASK_VISUAL_QUESTION_ANSWERING: Task: VISUAL QUESTION ANSWERING
+       - TASK_IMAGE_TO_IMAGE: Task: IMAGE TO IMAGE
+       - TASK_TEXT_EMBEDDINGS: Task: TEXT EMBEDDINGS
+       - TASK_SPEECH_RECOGNITION: Task: SPEECH RECOGNITION
+    title: Task enumerates the AI task type
+  v1alphaTaskInput:
+    type: object
+    properties:
+      classification:
+        $ref: '#/definitions/v1alphaClassificationInput'
+        title: The classification input
+      detection:
+        $ref: '#/definitions/v1alphaDetectionInput'
+        title: The detection input
+      keypoint:
+        $ref: '#/definitions/v1alphaKeypointInput'
+        title: The keypoint input
+      ocr:
+        $ref: '#/definitions/v1alphaOcrInput'
+        title: The ocr input
+      instance_segmentation:
+        $ref: '#/definitions/v1alphaInstanceSegmentationInput'
+        title: The instance segmentation input
+      semantic_segmentation:
+        $ref: '#/definitions/v1alphaSemanticSegmentationInput'
+        title: The semantic segmentation input
+      text_to_image:
+        $ref: '#/definitions/v1alphaTextToImageInput'
+        title: The text to image input
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageInput'
+        title: The image to image input
+      text_generation:
+        $ref: '#/definitions/v1alphaTextGenerationInput'
+        title: The text generation input
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatInput'
+        title: The text generation chat input
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+        title: The visual question answering input
+      unspecified:
+        $ref: '#/definitions/v1alphaUnspecifiedInput'
+        title: The unspecified task input
+    title: Input represents the input to trigger a model
+  v1alphaTaskInputStream:
+    type: object
+    properties:
+      classification:
+        $ref: '#/definitions/v1alphaClassificationInputStream'
+        title: The classification input
+      detection:
+        $ref: '#/definitions/v1alphaDetectionInputStream'
+        title: The detection input
+      keypoint:
+        $ref: '#/definitions/v1alphaKeypointInputStream'
+        title: The keypoint input
+      ocr:
+        $ref: '#/definitions/v1alphaOcrInputStream'
+        title: The ocr input
+      instance_segmentation:
+        $ref: '#/definitions/v1alphaInstanceSegmentationInputStream'
+        title: The instance segmentation input
+      semantic_segmentation:
+        $ref: '#/definitions/v1alphaSemanticSegmentationInputStream'
+        title: The semantic segmentation input
+      text_to_image:
+        $ref: '#/definitions/v1alphaTextToImageInput'
+        title: The text to image input
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageInput'
+        title: The image to image input
+      text_generation:
+        $ref: '#/definitions/v1alphaTextGenerationInput'
+        title: The text generation input
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatInput'
+        title: The text generation chat input
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+        title: The visual question answering input
+      unspecified:
+        $ref: '#/definitions/v1alphaUnspecifiedInput'
+        title: The unspecified task input
+    title: TaskInputStream represents the input to trigger a model with stream method
+  v1alphaTaskOutput:
+    type: object
+    properties:
+      classification:
+        $ref: '#/definitions/v1alphaClassificationOutput'
+        title: The classification output
+        readOnly: true
+      detection:
+        $ref: '#/definitions/v1alphaDetectionOutput'
+        title: The detection output
+        readOnly: true
+      keypoint:
+        $ref: '#/definitions/v1alphaKeypointOutput'
+        title: The keypoint output
+        readOnly: true
+      ocr:
+        $ref: '#/definitions/v1alphaOcrOutput'
+        title: The ocr output
+        readOnly: true
+      instance_segmentation:
+        $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
+        title: The instance segmentation output
+        readOnly: true
+      semantic_segmentation:
+        $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
+        title: The semantic segmentation output
+        readOnly: true
+      text_to_image:
+        $ref: '#/definitions/v1alphaTextToImageOutput'
+        title: The text to image output
+        readOnly: true
+      image_to_image:
+        $ref: '#/definitions/v1alphaImageToImageOutput'
+        title: The image to image output
+        readOnly: true
+      text_generation:
+        $ref: '#/definitions/v1alphaTextGenerationOutput'
+        title: The text generation output
+        readOnly: true
+      text_generation_chat:
+        $ref: '#/definitions/v1alphaTextGenerationChatOutput'
+        title: The text generation output
+        readOnly: true
+      visual_question_answering:
+        $ref: '#/definitions/v1alphaVisualQuestionAnsweringOutput'
+        title: The text generation output
+        readOnly: true
+      unspecified:
+        $ref: '#/definitions/v1alphaUnspecifiedOutput'
+        title: The unspecified task output
+        readOnly: true
+    title: TaskOutput represents the output of a CV Task result from a model
+  v1alphaTestUserModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TestUserModelBinaryFileUploadResponse represents a response for the
+      output for testing a model
+    required:
+      - task
+      - task_outputs
+  v1alphaTestUserModelResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TestUserModelResponse represents a response for the output for
+      testing a model
+    required:
+      - task
+      - task_outputs
+  v1alphaTextGenerationChatInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_images:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPromptImage'
+        title: The prompt images
+      chat_history:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessage'
+        title: The chat history
+      system_message:
+        type: string
+        title: The system message
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: object
+        title: The extra parameters
+    title: TextGenerationChatInput represents the input of text generation chat task
+    required:
+      - prompt
+  v1alphaTextGenerationChatOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        title: The text generated by the model
+        readOnly: true
+    title: TextGenerationChatOutput represents the output of text generation chat task
+  v1alphaTextGenerationInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_images:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPromptImage'
+        title: The prompt images
+      chat_history:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessage'
+        title: The chat history
+      system_message:
+        type: string
+        title: The system message
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: object
+        title: The extra parameters
+    title: TextGenerationInput represents the input of text generation task
+    required:
+      - prompt
+  v1alphaTextGenerationOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        title: The text generated by the model
+        readOnly: true
+    title: TextGenerationOutput represents the output of text generation task
+  v1alphaTextToImageInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_image_url:
+        type: string
+        title: Image type URL
+      prompt_image_base64:
+        type: string
+        title: Image type base64
+      steps:
+        type: integer
+        format: int32
+        title: The steps, default is 5
+      cfg_scale:
+        type: number
+        format: float
+        title: The guidance scale, default is 7.5
+      seed:
+        type: integer
+        format: int32
+        title: The seed, default is 0
+      samples:
+        type: integer
+        format: int32
+        title: The number of generated samples, default is 1
+      extra_params:
+        type: object
+        title: The extra parameters
+    title: TextToImageInput represents the input of text to image task
+    required:
+      - prompt
+  v1alphaTextToImageOutput:
+    type: object
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        title: List of generated images
+        readOnly: true
+    title: TextToImageOutput represents the output of text to image task
+  v1alphaTriggerUserModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TriggerUserModelBinaryFileUploadResponse represents a response for the
+      output for testing a model
+    required:
+      - task
+      - task_outputs
+  v1alphaTriggerUserModelResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        title: The task type
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: The task output from a model
+    title: |-
+      TriggerUserModelResponse represents a response for the output for
+      triggering a model
+  v1alphaUndeployModelAdminResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        title: Undeploy operation message
+    title: UndeployModelAdminResponse represents a response for a undeployed model
+  v1alphaUndeployUserModelResponse:
+    type: object
+    properties:
+      model_id:
+        type: string
+        title: |-
+          Undeployed model's id
+          Format: users/{user}/models/{model}
+    title: UndeployUserModelResponse represents a response for a undeployed model
+  v1alphaUnpublishUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: Unpublished model
+    title: UnpublishUserModelResponse represents a response for the unpublished model
+  v1alphaUnspecifiedInput:
+    type: object
+    properties:
+      raw_inputs:
+        type: array
+        items:
+          type: object
+        title: A list of unspecified task inputs
+    title: UnspecifiedInput represents the input of unspecified task
+  v1alphaUnspecifiedOutput:
+    type: object
+    properties:
+      raw_outputs:
+        type: array
+        items:
+          type: object
+        title: A list of unspecified task outputs
+        readOnly: true
+    title: UnspecifiedOutput represents the output of unspecified task
+  v1alphaUpdateResourceResponse:
+    type: object
+    properties:
+      resource:
+        $ref: '#/definitions/v1alphaResource'
+        title: Updated resource state
+    title: UpdateResourceResponse represents a response to update a resource's state
+  v1alphaUpdateUserModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        title: The updated model
+    title: UpdateUserModelResponse represents a response for a model
+  v1alphaView:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+    description: |-
+      View represents a view of any resource. The resource view is implemented by
+      adding a parameter to the method request which allows the client to specify
+      which view of the resource it wants to receive in the response.
+
+       - VIEW_UNSPECIFIED: View: UNSPECIFIED, equivalent to BASIC.
+       - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
+       - VIEW_FULL: View: FULL, full representation of the resource
+  v1alphaVisualQuestionAnsweringInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        title: The prompt text
+      prompt_images:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPromptImage'
+        title: The prompt images
+      chat_history:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessage'
+        title: The chat history
+      system_message:
+        type: string
+        title: The system message
+      max_new_tokens:
+        type: integer
+        format: int32
+        title: The maximum number of tokens for model to generate
+      temperature:
+        type: number
+        format: float
+        title: The temperature for sampling
+      top_k:
+        type: integer
+        format: int32
+        title: Top k for sampling
+      seed:
+        type: integer
+        format: int32
+        title: The seed
+      extra_params:
+        type: object
+        title: The extra parameters
+    title: VisualQuestionAnsweringInput represents the input of visaul question answering task
+    required:
+      - prompt
+  v1alphaVisualQuestionAnsweringOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        title: The text generated by the model
+        readOnly: true
+    title: VisualQuestionAnsweringOutput represents the output of visaul question answering task
+  v1alphaWatchUserModelResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/ModelState'
+        title: Retrieved model state
+      progress:
+        type: integer
+        format: int32
+        title: Retrieved model logrunning progress
+    title: |-
+      WatchUserModelResponse represents a public response to
+      fetch a model current state and longrunning progress
+  v1betaHealthCheckRequest:
+    type: object
+    properties:
+      service:
+        type: string
+        title: Service name to check for its readiness status
+    title: HealthCheckRequest represents a request to health check a service
+  v1betaHealthCheckResponse:
+    type: object
+    properties:
+      status:
+        $ref: '#/definitions/HealthCheckResponseServingStatus'
+        title: Status is the instance of the enum type ServingStatus
+    title: HealthCheckResponse represents a response for a service heath status
