@@ -23,7 +23,48 @@ consumes:
 produces:
   - application/json
 paths:
-  /v1beta/{connector.name_1}:
+  /v1beta/{connector_definition_name}:
+    get:
+      summary: Get connector definition
+      description: Returns the details of a connector definition.
+      operationId: PipelinePublicService_GetConnectorDefinition
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetConnectorDefinitionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connector_definition_name
+          description: |-
+            The resource name of the connector definition, which allows its access by ID.
+            - Format: `connector-definitions/{id}`.
+          in: path
+          required: true
+          type: string
+          pattern: connector-definitions/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - PipelinePublicService
+  /v1beta/{connector_name_1}:
     patch:
       summary: Update a connector owned by an organization.
       description: |-
@@ -45,7 +86,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: connector.name_1
+        - name: connector_name_1
           description: |-
             The name of the connector, defined by its ID.
             - Format: `connectors/{id}`.
@@ -130,7 +171,7 @@ paths:
               - configuration
       tags:
         - PipelinePublicService
-  /v1beta/{connector.name}:
+  /v1beta/{connector_name}:
     patch:
       summary: Update a connector owned by a user.
       description: |-
@@ -153,7 +194,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: connector.name
+        - name: connector_name
           description: |-
             The name of the connector, defined by its ID.
             - Format: `connectors/{id}`.
@@ -238,47 +279,6 @@ paths:
               - configuration
       tags:
         - PipelinePublicService
-  /v1beta/{connector_definition.name}:
-    get:
-      summary: Get connector definition
-      description: Returns the details of a connector definition.
-      operationId: PipelinePublicService_GetConnectorDefinition
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetConnectorDefinitionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: connector_definition.name
-          description: |-
-            The resource name of the connector definition, which allows its access by ID.
-            - Format: `connector-definitions/{id}`.
-          in: path
-          required: true
-          type: string
-          pattern: connector-definitions/[^/]+
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - PipelinePublicService
   /v1beta/{name}:
     get:
       summary: Get the details of a long-running operation
@@ -309,7 +309,7 @@ paths:
           pattern: operations/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{operator_definition.name}:
+  /v1beta/{operator_definition_name}:
     get:
       summary: Get operator definition
       description: Returns the details of an operator definition.
@@ -327,7 +327,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: operator_definition.name
+        - name: operator_definition_name
           description: |-
             The resource name of the operator definition, which allows its access by ID.
             - Format: `operator-definitions/{id}`.
@@ -350,7 +350,7 @@ paths:
             - VIEW_FULL
       tags:
         - PipelinePublicService
-  /v1beta/{operator_definition.permalink}/lookUp:
+  /v1beta/{operator_definition_permalink}/lookUp:
     get:
       summary: Get a connector by UID
       description: Returns the details of a connector by UID.
@@ -368,7 +368,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: operator_definition.permalink
+        - name: operator_definition_permalink
           description: |-
             The permalink of the connector, which allows its access by UID.
             - Format: `connectors/{uid}`.
@@ -393,7 +393,314 @@ paths:
             - VIEW_CONFIGURATION
       tags:
         - PipelinePublicService
-  /v1beta/{organization.name}/connectors:
+  /v1beta/{organization_connector_name}:
+    get:
+      summary: Get a connector owned by an organization.
+      description: Returns the details of an organization-owned connector.
+      operationId: PipelinePublicService_GetOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a connector owned by an organization
+      description: Deletes a connector.
+      operationId: PipelinePublicService_DeleteOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector_name}/connect:
+    post:
+      summary: Connect a connector owned by an organization
+      description: |-
+        Transitions the state of a connector from `DISCONNECTED` to `CONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_ConnectOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaConnectOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              ConnectOrganizationConnectorRequest represents a request to connect a
+              connector owned by an organization.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector_name}/disconnect:
+    post:
+      summary: Disconnect a connector owned by an organization
+      description: |-
+        Transitions the state of a connector from `CONNECTED` to `DISCONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_DisconnectOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDisconnectOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              DisconnectOrganizationConnectorRequest represents a request to disconnect a
+              connector owned by an organization.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector_name}/execute:
+    post:
+      summary: Execute a connector owned by an organization
+      description: Executes a task in an organization-owned connector.
+      operationId: PipelinePublicService_ExecuteOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaExecuteOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Connector input parameters.
+              task:
+                type: string
+                description: Task to be passed to the connector (e.g. `TASK_TEXT_GENERATION`).
+            description: |-
+              ExecuteOrganizationConnectorRequest represents a request to execute a
+              connector owned by an organization.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector_name}/rename:
+    post:
+      summary: Rename a connector owned by an organization
+      description: |-
+        Updates the ID of a connector. Since this is an output-only field, a custom
+        method is required to modify it.
+
+        The connector name will be updated accordingly, as it is  composed by the
+        parent organization and ID of the connector (e.g.
+        `organizations/indiana-jones/connector/whip`).
+      operationId: PipelinePublicService_RenameOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_connector_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `organizations/{organization.id}/connectors/{new_connector_id}`.
+            description: |-
+              RenameOrganizationConnectorRequest represents a request to rename the name
+              of a connector owned by an organization.
+            required:
+              - new_connector_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector_name}/testConnection:
+    post:
+      summary: Test a connector owned by an organization
+      description: Tests the connection on an organization-owned connector.
+      operationId: PipelinePublicService_TestOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTestOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_connector_name}/watch:
+    get:
+      summary: Get the state of a connector owned by an organization
+      description: Gets the state of an organization-owned connector.
+      operationId: PipelinePublicService_WatchOrganizationConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaWatchOrganizationConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            connector and ID.
+            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_name}/connectors:
     get:
       summary: List organization connectors
       description: |-
@@ -413,7 +720,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The parent resource, i.e., the organization that created the connectors.
             - Format: `organizations/{organization.id}`.
@@ -479,7 +786,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The parent resource, i.e., the organization that creates the connector.
             - Format: `organizations/{organization.id}`.
@@ -495,7 +802,7 @@ paths:
             $ref: '#/definitions/v1betaConnector'
       tags:
         - PipelinePublicService
-  /v1beta/{organization.name}/pipelines:
+  /v1beta/{organization_name}/pipelines:
     get:
       summary: List organization pipelines
       description: |-
@@ -515,7 +822,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The parent resource, i.e., the organization that created the pipelines.
             - Format: `organizations/{organization.id}`.
@@ -586,7 +893,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The parent resource, i.e., the organization that creates the pipeline.
             - Format: `organizations/{organization.id}`.
@@ -602,7 +909,7 @@ paths:
             $ref: '#/definitions/v1betaPipeline'
       tags:
         - PipelinePublicService
-  /v1beta/{organization.name}/releases:
+  /v1beta/{organization_name}/releases:
     get:
       summary: List the releases in a pipeline owned by an organization
       description: |-
@@ -622,7 +929,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The parent resource where this pipeline release will be created.
             Format: `organizations/{organization.id}/pipelines/{pipeline.id}`
@@ -693,7 +1000,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             Name of the pipeline for which the release will be created.
             Format: `organizations/{organization.id}/pipelines/{pipeline.id}`
@@ -709,314 +1016,7 @@ paths:
             $ref: '#/definitions/v1betaPipelineRelease'
       tags:
         - PipelinePublicService
-  /v1beta/{organization_connector.name}:
-    get:
-      summary: Get a connector owned by an organization.
-      description: Returns the details of an organization-owned connector.
-      operationId: PipelinePublicService_GetOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            organization and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-             - VIEW_CONFIGURATION: Contains the connector configuration.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-      tags:
-        - PipelinePublicService
-    delete:
-      summary: Delete a connector owned by an organization
-      description: Deletes a connector.
-      operationId: PipelinePublicService_DeleteOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaDeleteOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            organization and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-      tags:
-        - PipelinePublicService
-  /v1beta/{organization_connector.name}/connect:
-    post:
-      summary: Connect a connector owned by an organization
-      description: |-
-        Transitions the state of a connector from `DISCONNECTED` to `CONNECTED`. If
-        the state of the connector is different when the request is made, an error
-        is returned.
-      operationId: PipelinePublicService_ConnectOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaConnectOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            organization and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            description: |-
-              ConnectOrganizationConnectorRequest represents a request to connect a
-              connector owned by an organization.
-      tags:
-        - PipelinePublicService
-  /v1beta/{organization_connector.name}/disconnect:
-    post:
-      summary: Disconnect a connector owned by an organization
-      description: |-
-        Transitions the state of a connector from `CONNECTED` to `DISCONNECTED`. If
-        the state of the connector is different when the request is made, an error
-        is returned.
-      operationId: PipelinePublicService_DisconnectOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaDisconnectOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            organization and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            description: |-
-              DisconnectOrganizationConnectorRequest represents a request to disconnect a
-              connector owned by an organization.
-      tags:
-        - PipelinePublicService
-  /v1beta/{organization_connector.name}/execute:
-    post:
-      summary: Execute a connector owned by an organization
-      description: Executes a task in an organization-owned connector.
-      operationId: PipelinePublicService_ExecuteOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaExecuteOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            organization and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              inputs:
-                type: array
-                items:
-                  type: object
-                description: Connector input parameters.
-              task:
-                type: string
-                description: Task to be passed to the connector (e.g. `TASK_TEXT_GENERATION`).
-            description: |-
-              ExecuteOrganizationConnectorRequest represents a request to execute a
-              connector owned by an organization.
-      tags:
-        - PipelinePublicService
-  /v1beta/{organization_connector.name}/rename:
-    post:
-      summary: Rename a connector owned by an organization
-      description: |-
-        Updates the ID of a connector. Since this is an output-only field, a custom
-        method is required to modify it.
-
-        The connector name will be updated accordingly, as it is  composed by the
-        parent organization and ID of the connector (e.g.
-        `organizations/indiana-jones/connector/whip`).
-      operationId: PipelinePublicService_RenameOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaRenameOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            organization and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              new_connector_id:
-                type: string
-                description: |-
-                  The new resource ID. This will transform the resource name into
-                  `organizations/{organization.id}/connectors/{new_connector_id}`.
-            description: |-
-              RenameOrganizationConnectorRequest represents a request to rename the name
-              of a connector owned by an organization.
-            required:
-              - new_connector_id
-      tags:
-        - PipelinePublicService
-  /v1beta/{organization_connector.name}/testConnection:
-    post:
-      summary: Test a connector owned by an organization
-      description: Tests the connection on an organization-owned connector.
-      operationId: PipelinePublicService_TestOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaTestOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            organization and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-      tags:
-        - PipelinePublicService
-  /v1beta/{organization_connector.name}/watch:
-    get:
-      summary: Get the state of a connector owned by an organization
-      description: Gets the state of an organization-owned connector.
-      operationId: PipelinePublicService_WatchOrganizationConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaWatchOrganizationConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            connector and ID.
-            - Format: `organizations/{organization.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/connectors/[^/]+
-      tags:
-        - PipelinePublicService
-  /v1beta/{organization_pipeline.name}:
+  /v1beta/{organization_pipeline_name}:
     get:
       summary: Get a pipeline owned by an organization
       description: |-
@@ -1036,7 +1036,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline.name
+        - name: organization_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent
             organization and ID.
@@ -1081,7 +1081,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline.name
+        - name: organization_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent
             organization and ID.
@@ -1092,7 +1092,7 @@ paths:
           pattern: organizations/[^/]+/pipelines/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline.name}/rename:
+  /v1beta/{organization_pipeline_name}/rename:
     post:
       summary: Rename a pipeline owned by an organization
       description: |-
@@ -1116,7 +1116,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline.name
+        - name: organization_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent
             organization and ID.
@@ -1143,7 +1143,7 @@ paths:
               - new_pipeline_id
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline.name}/trigger:
+  /v1beta/{organization_pipeline_name}/trigger:
     post:
       summary: Trigger a pipeline owned by an organization
       description: |-
@@ -1170,7 +1170,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline.name
+        - name: organization_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent
             organization and ID.
@@ -1197,7 +1197,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline.name}/triggerAsync:
+  /v1beta/{organization_pipeline_name}/triggerAsync:
     post:
       summary: Trigger a pipeline owned by an organization asynchronously
       description: |-
@@ -1225,7 +1225,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline.name
+        - name: organization_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent
             organization and ID.
@@ -1252,7 +1252,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline.name}/validate:
+  /v1beta/{organization_pipeline_name}/validate:
     post:
       summary: Validate a pipeline a pipeline owned by an organization
       description: |-
@@ -1275,7 +1275,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline.name
+        - name: organization_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent
             organization and ID.
@@ -1294,7 +1294,7 @@ paths:
               pipeline owned by an organization.
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline_release.name}:
+  /v1beta/{organization_pipeline_release_name}:
     get:
       summary: Get a release in a pipeline owned by an organization
       description: |-
@@ -1314,7 +1314,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline_release.name
+        - name: organization_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -1360,7 +1360,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline_release.name
+        - name: organization_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -1372,7 +1372,7 @@ paths:
           pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline_release.name}/rename:
+  /v1beta/{organization_pipeline_release_name}/rename:
     post:
       summary: Rename a release in a pipeline owned by an organization
       description: |-
@@ -1397,7 +1397,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline_release.name
+        - name: organization_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -1425,7 +1425,7 @@ paths:
               - new_pipeline_release_id
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline_release.name}/restore:
+  /v1beta/{organization_pipeline_release_name}/restore:
     post:
       summary: Set the version of a pipeline owned by an organization to a pinned release
       description: |-
@@ -1447,7 +1447,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline_release.name
+        - name: organization_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -1459,7 +1459,7 @@ paths:
           pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline_release.name}/trigger:
+  /v1beta/{organization_pipeline_release_name}/trigger:
     post:
       summary: Trigger a version of a pipeline owned by an organization
       description: |-
@@ -1484,7 +1484,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline_release.name
+        - name: organization_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -1512,7 +1512,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline_release.name}/triggerAsync:
+  /v1beta/{organization_pipeline_release_name}/triggerAsync:
     post:
       summary: Trigger a version of a pipeline owned by an organization asynchronously
       description: |-
@@ -1537,7 +1537,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline_release.name
+        - name: organization_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -1565,7 +1565,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline_release.name}/watch:
+  /v1beta/{organization_pipeline_release_name}/watch:
     get:
       summary: Get the state of a release in a pipeline owned by an organization
       description: |-
@@ -1585,7 +1585,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_pipeline_release.name
+        - name: organization_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -1642,7 +1642,7 @@ paths:
             - VIEW_RECIPE
       tags:
         - PipelinePublicService
-  /v1beta/{pipeline.name_1}:
+  /v1beta/{pipeline_name_1}:
     patch:
       summary: Update a pipeline owned by an organization
       description: |-
@@ -1664,10 +1664,10 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: pipeline.name_1
+        - name: pipeline_name_1
           description: |-
-            The name of the pipeline, defined by its owner and ID.
-            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+            The name of the pipeline, defined by its parent and ID.
+            - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}`.
           in: path
           required: true
           type: string
@@ -1750,7 +1750,7 @@ paths:
             title: The pipeline fields that will replace the existing ones.
       tags:
         - PipelinePublicService
-  /v1beta/{pipeline.name}:
+  /v1beta/{pipeline_name}:
     patch:
       summary: Update a pipeline owned by a user
       description: |-
@@ -1774,10 +1774,10 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: pipeline.name
+        - name: pipeline_name
           description: |-
-            The name of the pipeline, defined by its owner and ID.
-            - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+            The name of the pipeline, defined by its parent and ID.
+            - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}`.
           in: path
           required: true
           type: string
@@ -1860,7 +1860,7 @@ paths:
             title: The pipeline fields that will replace the existing ones.
       tags:
         - PipelinePublicService
-  /v1beta/{release.name_1}:
+  /v1beta/{pipeline_release_name_1}:
     patch:
       summary: Update a release in a pipeline owned by an organization
       description: |-
@@ -1880,14 +1880,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: release.name_1
+        - name: pipeline_release_name_1
           description: |-
-            The name of the release, defined by its owner and ID.
-            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}
+            The name of the release, defined by its parent and ID.
+            - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}/releases/{release.id}
           in: path
           required: true
           type: string
-          pattern: organizationsr/[^/]+/pipelines/[^/]+/releases/[^/]+
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: release
           description: |-
             The pipeline release fields that will replace the existing ones.
@@ -1949,7 +1949,7 @@ paths:
               A pipeline release resource to update
       tags:
         - PipelinePublicService
-  /v1beta/{release.name}:
+  /v1beta/{pipeline_release_name}:
     patch:
       summary: Update a release in a pipeline owned by a user
       description: |-
@@ -1972,14 +1972,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: release.name
+        - name: pipeline_release_name
           description: |-
-            The name of the release, defined by its owner and ID.
-            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}
+            The name of the release, defined by its parent and ID.
+            - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}/releases/{release.id}
           in: path
           required: true
           type: string
-          pattern: usersr/[^/]+/pipelines/[^/]+/releases/[^/]+
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: release
           description: |-
             The pipeline release fields that will replace the existing ones.
@@ -2041,7 +2041,319 @@ paths:
               A pipeline release resource to update
       tags:
         - PipelinePublicService
-  /v1beta/{user.name}/connectors:
+  /v1beta/{user_connector_name}:
+    get:
+      summary: Get a connector owned by a user.
+      description: Returns the details of a user-owned connector.
+      operationId: PipelinePublicService_GetUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_CONFIGURATION: Contains the connector configuration.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_CONFIGURATION
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a connector owned by a user
+      description: |-
+        Deletes a connector. The authenticated user must be the parent of the
+        connector in order to delete it.
+      operationId: PipelinePublicService_DeleteUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector_name}/connect:
+    post:
+      summary: Connect a connector owned by a user
+      description: |-
+        Transitions the state of a connector from `DISCONNECTED` to `CONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_ConnectUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaConnectUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              ConnectUserConnectorRequest represents a request to connect a connector
+              owned by a user.
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector_name}/disconnect:
+    post:
+      summary: Disconnect a connector owned by a user
+      description: |-
+        Transitions the state of a connector from `CONNECTED` to `DISCONNECTED`. If
+        the state of the connector is different when the request is made, an error
+        is returned.
+      operationId: PipelinePublicService_DisconnectUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDisconnectUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            description: |-
+              DisconnectUserConnectorRequest represents a request to disconnect a
+              connector owned by a user.
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector_name}/execute:
+    post:
+      summary: Execute a connector owned by a user
+      description: Executes a task in a user-owned connector.
+      operationId: PipelinePublicService_ExecuteUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaExecuteUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              inputs:
+                type: array
+                items:
+                  type: object
+                description: Connector input parameters.
+              task:
+                type: string
+                description: Task to be passed to the connector (e.g. `TASK_TEXT_GENERATION`).
+            description: |-
+              ExecuteUserConnectorRequest represents a request to execute a connector
+              owned by a user.
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector_name}/rename:
+    post:
+      summary: Rename a connector owned by a user
+      description: |-
+        Updates the ID of a connector. Since this is an output-only field, a custom
+        method is required to modify it.
+
+        The connector name will be updated accordingly, as it is  composed by the
+        parent user and ID of the connector (e.g.
+        `users/indiana-jones/connector/whip`).
+
+        The authenticated user must be the parent of the connector in order to
+        perform this action.
+      operationId: PipelinePublicService_RenameUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              new_connector_id:
+                type: string
+                description: |-
+                  The new resource ID. This will transform the resource name into
+                  `users/{user.id}/connectors/{new_connector_id}`.
+            description: |-
+              RenameUserConnectorRequest represents a request to rename the name of a
+              connector owned by a user.
+            required:
+              - new_connector_id
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector_name}/testConnection:
+    post:
+      summary: Test a connector owned by a user
+      description: Tests the connection on a user-owned connector.
+      operationId: PipelinePublicService_TestUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTestUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_connector_name}/watch:
+    get:
+      summary: Get the state of a connector owned by a user
+      description: Gets the state of a user-owned connector.
+      operationId: PipelinePublicService_WatchUserConnector
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaWatchUserConnectorResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_connector_name
+          description: |-
+            The resource name of the connector, which allows its access by parent
+            connector and ID.
+            - Format: `users/{user.id}/connectors/{connector.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/connectors/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_name}/connectors:
     get:
       summary: List user connectors
       description: Returns a paginated list of connectors that belong to the specified user.
@@ -2059,7 +2371,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user.name
+        - name: user_name
           description: |-
             The parent resource, i.e., the user that created the connectors.
             - Format: `users/{user.id}`.
@@ -2128,7 +2440,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user.name
+        - name: user_name
           description: |-
             The parent resource, i.e., the user that creates the connector.
             - Format: `users/{user.id}`.
@@ -2144,7 +2456,7 @@ paths:
             $ref: '#/definitions/v1betaConnector'
       tags:
         - PipelinePublicService
-  /v1beta/{user.name}/pipelines:
+  /v1beta/{user_name}/pipelines:
     get:
       summary: List user pipelines
       description: |-
@@ -2166,7 +2478,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user.name
+        - name: user_name
           description: |-
             The parent resource, i.e., the user that created the pipelines.
             - Format: `users/{user.id}`.
@@ -2240,7 +2552,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user.name
+        - name: user_name
           description: |-
             The parent resource, i.e., the user that creates the pipeline.
             - Format: `users/{user.id}`.
@@ -2256,7 +2568,7 @@ paths:
             $ref: '#/definitions/v1betaPipeline'
       tags:
         - PipelinePublicService
-  /v1beta/{user.name}/releases:
+  /v1beta/{user_name}/releases:
     get:
       summary: List the releases in a pipeline owned by a user
       description: |-
@@ -2276,7 +2588,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user.name
+        - name: user_name
           description: |-
             The parent resource where this pipeline release will be created.
             Format: `users/{user.id}/pipelines/{pipeline.id}`.
@@ -2350,7 +2662,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user.name
+        - name: user_name
           description: |-
             Name of the pipeline for which the release will be created.
             Format: `users/{user.id}/pipelines/{pipeline.id}`
@@ -2366,319 +2678,7 @@ paths:
             $ref: '#/definitions/v1betaPipelineRelease'
       tags:
         - PipelinePublicService
-  /v1beta/{user_connector.name}:
-    get:
-      summary: Get a connector owned by a user.
-      description: Returns the details of a user-owned connector.
-      operationId: PipelinePublicService_GetUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-             - VIEW_CONFIGURATION: Contains the connector configuration.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_CONFIGURATION
-      tags:
-        - PipelinePublicService
-    delete:
-      summary: Delete a connector owned by a user
-      description: |-
-        Deletes a connector. The authenticated user must be the parent of the
-        connector in order to delete it.
-      operationId: PipelinePublicService_DeleteUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaDeleteUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-      tags:
-        - PipelinePublicService
-  /v1beta/{user_connector.name}/connect:
-    post:
-      summary: Connect a connector owned by a user
-      description: |-
-        Transitions the state of a connector from `DISCONNECTED` to `CONNECTED`. If
-        the state of the connector is different when the request is made, an error
-        is returned.
-      operationId: PipelinePublicService_ConnectUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaConnectUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            description: |-
-              ConnectUserConnectorRequest represents a request to connect a connector
-              owned by a user.
-      tags:
-        - PipelinePublicService
-  /v1beta/{user_connector.name}/disconnect:
-    post:
-      summary: Disconnect a connector owned by a user
-      description: |-
-        Transitions the state of a connector from `CONNECTED` to `DISCONNECTED`. If
-        the state of the connector is different when the request is made, an error
-        is returned.
-      operationId: PipelinePublicService_DisconnectUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaDisconnectUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            description: |-
-              DisconnectUserConnectorRequest represents a request to disconnect a
-              connector owned by a user.
-      tags:
-        - PipelinePublicService
-  /v1beta/{user_connector.name}/execute:
-    post:
-      summary: Execute a connector owned by a user
-      description: Executes a task in a user-owned connector.
-      operationId: PipelinePublicService_ExecuteUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaExecuteUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              inputs:
-                type: array
-                items:
-                  type: object
-                description: Connector input parameters.
-              task:
-                type: string
-                description: Task to be passed to the connector (e.g. `TASK_TEXT_GENERATION`).
-            description: |-
-              ExecuteUserConnectorRequest represents a request to execute a connector
-              owned by a user.
-      tags:
-        - PipelinePublicService
-  /v1beta/{user_connector.name}/rename:
-    post:
-      summary: Rename a connector owned by a user
-      description: |-
-        Updates the ID of a connector. Since this is an output-only field, a custom
-        method is required to modify it.
-
-        The connector name will be updated accordingly, as it is  composed by the
-        parent user and ID of the connector (e.g.
-        `users/indiana-jones/connector/whip`).
-
-        The authenticated user must be the parent of the connector in order to
-        perform this action.
-      operationId: PipelinePublicService_RenameUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaRenameUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              new_connector_id:
-                type: string
-                description: |-
-                  The new resource ID. This will transform the resource name into
-                  `users/{user.id}/connectors/{new_connector_id}`.
-            description: |-
-              RenameUserConnectorRequest represents a request to rename the name of a
-              connector owned by a user.
-            required:
-              - new_connector_id
-      tags:
-        - PipelinePublicService
-  /v1beta/{user_connector.name}/testConnection:
-    post:
-      summary: Test a connector owned by a user
-      description: Tests the connection on a user-owned connector.
-      operationId: PipelinePublicService_TestUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaTestUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-      tags:
-        - PipelinePublicService
-  /v1beta/{user_connector.name}/watch:
-    get:
-      summary: Get the state of a connector owned by a user
-      description: Gets the state of a user-owned connector.
-      operationId: PipelinePublicService_WatchUserConnector
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaWatchUserConnectorResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_connector.name
-          description: |-
-            The resource name of the connector, which allows its access by parent
-            connector and ID.
-            - Format: `users/{user.id}/connectors/{connector.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/connectors/[^/]+
-      tags:
-        - PipelinePublicService
-  /v1beta/{user_pipeline.name}:
+  /v1beta/{user_pipeline_name}:
     get:
       summary: Get a pipeline owned by a user
       description: |-
@@ -2698,7 +2698,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline.name
+        - name: user_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent user
             and ID.
@@ -2744,7 +2744,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline.name
+        - name: user_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent user
             and ID.
@@ -2755,7 +2755,7 @@ paths:
           pattern: users/[^/]+/pipelines/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline.name}/rename:
+  /v1beta/{user_pipeline_name}/rename:
     post:
       summary: Rename a pipeline owned by a user
       description: |-
@@ -2782,7 +2782,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline.name
+        - name: user_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent user
             and ID.
@@ -2809,7 +2809,7 @@ paths:
               - new_pipeline_id
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline.name}/trigger:
+  /v1beta/{user_pipeline_name}/trigger:
     post:
       summary: Trigger a pipeline owned by a user
       description: |-
@@ -2836,7 +2836,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline.name
+        - name: user_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent user
             and ID.
@@ -2863,7 +2863,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline.name}/triggerAsync:
+  /v1beta/{user_pipeline_name}/triggerAsync:
     post:
       summary: Trigger a pipeline owned by a user asynchronously
       description: |-
@@ -2891,7 +2891,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline.name
+        - name: user_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent user
             and ID.
@@ -2918,7 +2918,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline.name}/validate:
+  /v1beta/{user_pipeline_name}/validate:
     post:
       summary: Validate a pipeline a pipeline owned by a user
       description: |-
@@ -2940,7 +2940,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline.name
+        - name: user_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent user
             and ID.
@@ -2959,7 +2959,7 @@ paths:
               owned by a user.
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline_release.name}:
+  /v1beta/{user_pipeline_release_name}:
     get:
       summary: Get a release in a pipeline owned by a user
       description: |-
@@ -2979,7 +2979,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_release.name
+        - name: user_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -3027,7 +3027,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_release.name
+        - name: user_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -3038,7 +3038,7 @@ paths:
           pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline_release.name}/rename:
+  /v1beta/{user_pipeline_release_name}/rename:
     post:
       summary: Rename a release in a pipeline owned by a user
       description: |-
@@ -3066,7 +3066,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_release.name
+        - name: user_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -3093,7 +3093,7 @@ paths:
               - new_pipeline_release_id
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline_release.name}/restore:
+  /v1beta/{user_pipeline_release_name}/restore:
     post:
       summary: Set the version of a pipeline owned by a user to a pinned release
       description: |-
@@ -3118,7 +3118,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_release.name
+        - name: user_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -3129,7 +3129,7 @@ paths:
           pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline_release.name}/trigger:
+  /v1beta/{user_pipeline_release_name}/trigger:
     post:
       summary: Trigger a version of a pipeline owned by a user
       description: |-
@@ -3154,7 +3154,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_release.name
+        - name: user_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -3181,7 +3181,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline_release.name}/triggerAsync:
+  /v1beta/{user_pipeline_release_name}/triggerAsync:
     post:
       summary: Trigger a version of a pipeline owned by a user asynchronously
       description: |-
@@ -3206,7 +3206,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_release.name
+        - name: user_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -3233,7 +3233,7 @@ paths:
               - inputs
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline_release.name}/watch:
+  /v1beta/{user_pipeline_release_name}/watch:
     get:
       summary: Get the state of a release in a pipeline owned by a user
       description: |-
@@ -3253,7 +3253,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_release.name
+        - name: user_pipeline_release_name
           description: |-
             The resource name of the pipeline release, which allows its access by
             parent pipeline and ID.
@@ -4659,8 +4659,8 @@ definitions:
       name:
         type: string
         description: |-
-          The name of the pipeline, defined by its owner and ID.
-          - Format: `users/{user.id}/pipelines/{pipeline.id}`.
+          The name of the pipeline, defined by its parent and ID.
+          - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}`.
         readOnly: true
       uid:
         type: string
@@ -4743,8 +4743,8 @@ definitions:
       name:
         type: string
         title: |-
-          The name of the release, defined by its owner and ID.
-          - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}
+          The name of the release, defined by its parent and ID.
+          - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}/releases/{release.id}
         readOnly: true
       uid:
         type: string
