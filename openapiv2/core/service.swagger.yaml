@@ -23,7 +23,76 @@ consumes:
 produces:
   - application/json
 paths:
-  /v1beta/{membership.name_1}:
+  /v1beta/{organization_membership_name}:
+    get:
+      summary: Get a an organization membership
+      description: Returns the details of a user membership within an organization.
+      operationId: MgmtPublicService_GetOrganizationMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationMembershipResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_membership_name
+          description: |-
+            The resource name of the membership, which allows its access by
+            organization and user ID.
+            - Format: `organizations/{organization.id}/memberships/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/memberships/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - MgmtPublicService
+    delete:
+      summary: Delete an organization membership
+      description: Deletes a user membership within an organization.
+      operationId: MgmtPublicService_DeleteOrganizationMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteOrganizationMembershipResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_membership_name
+          description: |-
+            The resource name of the membership, which allows its access by
+            organization and user ID.
+            - Format: `organizations/{organization.id}/memberships/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/memberships/[^/]+
+      tags:
+        - MgmtPublicService
     put:
       summary: Uppdate an organization membership
       description: Updates a user membership within an organization.
@@ -41,7 +110,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: membership.name_1
+        - name: organization_membership_name
           description: |-
             The resource name of the membership, which allows its access by
             organization and user ID.
@@ -86,70 +155,7 @@ paths:
           type: string
       tags:
         - MgmtPublicService
-  /v1beta/{membership.name}:
-    put:
-      summary: Update a user membership
-      description: Accesses and updates a user membership by parent and membership IDs.
-      operationId: MgmtPublicService_UpdateUserMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaUpdateUserMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: membership.name
-          description: |-
-            The resource name of the membership, which allows its access by user and
-            organization ID.
-            - Format: `users/{user.id}/memberships/{organization.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/memberships/[^/]+
-        - name: membership
-          description: The membership fields to update.
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              role:
-                type: string
-                description: Role of the user in the organization.
-                readOnly: true
-              state:
-                $ref: '#/definitions/v1betaMembershipState'
-                description: State of the membership.
-              user:
-                $ref: '#/definitions/v1betaUser'
-                description: User information.
-                readOnly: true
-              organization:
-                $ref: '#/definitions/v1betaOrganization'
-                description: Organization information.
-                readOnly: true
-            title: The membership fields to update.
-            required:
-              - state
-        - name: update_mask
-          description: |-
-            The update mask specifies the subset of fields that should be modified.
-
-            For more information about this field, see
-            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
-          in: query
-          required: true
-          type: string
-      tags:
-        - MgmtPublicService
-  /v1beta/{organization.name}:
+  /v1beta/{organization_name}:
     get:
       summary: Get an organization
       description: Returns the organization details by its ID.
@@ -167,7 +173,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The resource name of the organization, which allows its access by ID.
             - Format: `organizations/{organization.id}`.
@@ -207,7 +213,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The resource name of the organization, which allows its access by ID.
             - Format: `organizations/{organization.id}`.
@@ -238,7 +244,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The name of the organization, defined by its ID.
             - Format: `organization/{organization.id}`.
@@ -298,7 +304,7 @@ paths:
               - id
       tags:
         - MgmtPublicService
-  /v1beta/{organization.name}/memberships:
+  /v1beta/{organization_name}/memberships:
     get:
       summary: List organization memberships
       description: Returns a paginated list of the user memberships in an organization.
@@ -316,7 +322,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The parent resource, i.e., the organization to which the memberships
             belong.
@@ -327,7 +333,7 @@ paths:
           pattern: organizations/[^/]+
       tags:
         - MgmtPublicService
-  /v1beta/{organization.name}/subscription:
+  /v1beta/{organization_name}/subscription:
     get:
       summary: Get an organization subscription
       description: Returns the subscription details of an organization.
@@ -345,7 +351,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization.name
+        - name: organization_name
           description: |-
             The parent resource, i.e., the organization to which the subscription
             refers.
@@ -356,77 +362,7 @@ paths:
           pattern: organizations/[^/]+
       tags:
         - MgmtPublicService
-  /v1beta/{organization_membership.name}:
-    get:
-      summary: Get a an organization membership
-      description: Returns the details of a user membership within an organization.
-      operationId: MgmtPublicService_GetOrganizationMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetOrganizationMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_membership.name
-          description: |-
-            The resource name of the membership, which allows its access by
-            organization and user ID.
-            - Format: `organizations/{organization.id}/memberships/{user.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/memberships/[^/]+
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - MgmtPublicService
-    delete:
-      summary: Delete an organization membership
-      description: Deletes a user membership within an organization.
-      operationId: MgmtPublicService_DeleteOrganizationMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaDeleteOrganizationMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_membership.name
-          description: |-
-            The resource name of the membership, which allows its access by
-            organization and user ID.
-            - Format: `organizations/{organization.id}/memberships/{user.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/memberships/[^/]+
-      tags:
-        - MgmtPublicService
-  /v1beta/{token.name}:
+  /v1beta/{token_name}:
     get:
       summary: Get an API token
       description: Returns the details of an API token.
@@ -444,7 +380,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: token.name
+        - name: token_name
           description: |-
             The resource name of the token, which allows its access by ID.
             - Format: `tokens/{token.id}`.
@@ -471,7 +407,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: token.name
+        - name: token_name
           description: |-
             The resource name of the token, which allows its access by ID.
             - Format: `tokens/{token.id}`.
@@ -481,104 +417,7 @@ paths:
           pattern: tokens/[^/]+
       tags:
         - MgmtPublicService
-  /v1beta/{user.name}:
-    get:
-      summary: Get a user
-      description: Returns the details of a user by their ID.
-      operationId: MgmtPublicService_GetUser
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetUserResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user.name
-          description: |-
-            The resource name of the user, which allows its access by ID.
-            - Format: `users/{user.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - MgmtPublicService
-  /v1beta/{user.name}/memberships:
-    get:
-      summary: List user memberships
-      description: Returns the memberships of a user.
-      operationId: MgmtPublicService_ListUserMemberships
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaListUserMembershipsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user.name
-          description: |-
-            The parent resource, i.e., the user to which the memberships belong.
-            Format: `users/{user.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-      tags:
-        - MgmtPublicService
-  /v1beta/{user.name}/subscription:
-    get:
-      summary: Get a user subscription
-      description: Returns the subscription details of a user.
-      operationId: MgmtPublicService_GetUserSubscription
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetUserSubscriptionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user.name
-          description: |-
-            The parent resource, i.e., the user to which the subscription refers.
-            Format: `users/{user.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+
-      tags:
-        - MgmtPublicService
-  /v1beta/{user_membership.name}:
+  /v1beta/{user_membership_name}:
     get:
       summary: Get a user membership
       description: |-
@@ -598,7 +437,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_membership.name
+        - name: user_membership_name
           description: |-
             The resource name of the membership, which allows its access by user and
             organization ID.
@@ -639,7 +478,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_membership.name
+        - name: user_membership_name
           description: |-
             The resource name of the membership, which allows its access by user and
             organization ID.
@@ -648,6 +487,165 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+/memberships/[^/]+
+      tags:
+        - MgmtPublicService
+    put:
+      summary: Update a user membership
+      description: Accesses and updates a user membership by parent and membership IDs.
+      operationId: MgmtPublicService_UpdateUserMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateUserMembershipResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_membership_name
+          description: |-
+            The resource name of the membership, which allows its access by user and
+            organization ID.
+            - Format: `users/{user.id}/memberships/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/memberships/[^/]+
+        - name: membership
+          description: The membership fields to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              role:
+                type: string
+                description: Role of the user in the organization.
+                readOnly: true
+              state:
+                $ref: '#/definitions/v1betaMembershipState'
+                description: State of the membership.
+              user:
+                $ref: '#/definitions/v1betaUser'
+                description: User information.
+                readOnly: true
+              organization:
+                $ref: '#/definitions/v1betaOrganization'
+                description: Organization information.
+                readOnly: true
+            title: The membership fields to update.
+            required:
+              - state
+        - name: update_mask
+          description: |-
+            The update mask specifies the subset of fields that should be modified.
+
+            For more information about this field, see
+            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
+          in: query
+          required: true
+          type: string
+      tags:
+        - MgmtPublicService
+  /v1beta/{user_name}:
+    get:
+      summary: Get a user
+      description: Returns the details of a user by their ID.
+      operationId: MgmtPublicService_GetUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_name
+          description: |-
+            The resource name of the user, which allows its access by ID.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_UNSPECIFIED: Unspecified, equivalent to BASIC.
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - MgmtPublicService
+  /v1beta/{user_name}/memberships:
+    get:
+      summary: List user memberships
+      description: Returns the memberships of a user.
+      operationId: MgmtPublicService_ListUserMemberships
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListUserMembershipsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_name
+          description: |-
+            The parent resource, i.e., the user to which the memberships belong.
+            Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - MgmtPublicService
+  /v1beta/{user_name}/subscription:
+    get:
+      summary: Get a user subscription
+      description: Returns the subscription details of a user.
+      operationId: MgmtPublicService_GetUserSubscription
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserSubscriptionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_name
+          description: |-
+            The parent resource, i.e., the user to which the subscription refers.
+            Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
       tags:
         - MgmtPublicService
   /v1beta/check-namespace:
