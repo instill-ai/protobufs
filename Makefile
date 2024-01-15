@@ -12,7 +12,7 @@ endif
 openapi:
 	# Generate an OpenAPI definition for each directory at the root that
 	# contains at least one public proto file.
-	find . -name '*public*proto' | cut -d'/' -f 2-2 | sort | uniq | xargs -I '{}' buf generate --template buf.gen.openapi.yaml --path {} -o openapiv2/{}
+	find . -name '*public*proto' | cut -d'/' -f 2-2 | sort | uniq | xargs -I '{}' buf generate --template buf.gen.openapi.yaml --path {} --path common -o openapiv2/{}
 
 	# grpc-ecosystem/openapiv2:v2.19.0 will define protobufNullValue as an
 	# empty enum, which isn't allowed by the linter we use. This linter is
