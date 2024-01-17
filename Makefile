@@ -9,7 +9,7 @@ ifeq (${OS_NAME}, darwin)
 	SED_IN_PLACE += ''
 endif
 openapi:
-	@# Inject common API configuration into each OpeAPI proto template.
+	@# Inject common API configuration into each OpenAPI proto template.
 	./scripts/generate-openapi-doc-info.sh
 
 	@# Generate an OpenAPI definition for each directory at the root that
@@ -26,6 +26,3 @@ openapi:
 openapi-lint:
 	@# Lint each file under openapiv2.
 	find openapiv2 -type f | xargs -I '{}' swagger-cli validate {}
-openapi-info:
-	@# ESCAPED_INFO=$(sed 's/\//\\\//g'  common/openapi/v1beta/api_info.conf | sed 's/$/\\n/g' | tr -d '\n')
-	@# sed "s/{{\$info}}/$ESCAPED_INFO/g" model/model/v1alpha/openapi.proto.templ > model/model/v1alpha/openapi.proto
