@@ -1,12 +1,808 @@
 swagger: "2.0"
 info:
-  title: model/model/v1alpha/model_definition.proto
-  version: version not set
+  title: ⚗️ Model
+  description: Endpoints to manage the AI model-related resources and features working with Instill VDP.
+  version: v0.10.0-beta
+  contact:
+    name: Instill AI
+    url: https://github.com/instill-ai
+    email: hello@instill.tech
+  license:
+    name: Elastic License 2.0 (ELv2)
+    url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
+tags:
+  - name: ModelPublicService
+    description: Public Model endpoints
+host: api.instill.tech
+basePath: /model
+schemes:
+  - https
+  - http
 consumes:
   - application/json
 produces:
   - application/json
-paths: {}
+paths:
+  /v1alpha/model-definitions:
+    get:
+      summary: List model definitions
+      description: Returns a paginated list of model definitions.
+      operationId: ModelPublicService_ListModelDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListModelDefinitionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of model definitions to return. If this parameter
+            is unspecified, at most 10 pipelines will be returned. The cap value for
+            this parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - ModelPublicService
+  /v1alpha/{model_definition_name}:
+    get:
+      summary: Get a model definition
+      description: Returns the details of a model definition.
+      operationId: ModelPublicService_GetModelDefinition
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelDefinitionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_definition_name
+          description: |-
+            The resource name of the model definition, which allows its access by ID.
+            - Format: `model-definitions/{id}`.
+          in: path
+          required: true
+          type: string
+          pattern: model-definitions/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - ModelPublicService
+  /v1alpha/models:
+    get:
+      summary: List models
+      description: Returns a paginated list of models.
+      operationId: ModelPublicService_ListModels
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListModelsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of models to return. If this parameter is unspecified,
+            at most 10 models will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: show_deleted
+          description: Include soft-deleted models in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - ModelPublicService
+  /v1alpha/{permalink}/lookUp:
+    get:
+      summary: Get a model by UID
+      description: Returns the details of a model by a permalink defined by the resource UID.
+      operationId: ModelPublicService_LookUpModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaLookUpModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: permalink
+          description: |-
+            The permalink of the model, which allows its access by UID.
+            - Format: `models/{model.uid}`.
+          in: path
+          required: true
+          type: string
+          pattern: models/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_name}/models:
+    get:
+      summary: List user models
+      description: |-
+        Returns a paginated list of models that belong to the specified user. The
+        parent user may be different from the authenticated user, in which case
+        the results will contain the models that are visible to the latter.
+      operationId: ModelPublicService_ListUserModels
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListUserModelsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_name
+          description: |-
+            The parent resource, i.e., the user that created the models.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of models to return. If this parameter is unspecified,
+            at most 10 models will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: show_deleted
+          description: Include soft-deleted models in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - ModelPublicService
+    post:
+      summary: Create a new model
+      description: |-
+        Creates a new model under the parenthood of a user. This is an
+        asynchronous endpoint, i.e., the server will not wait for the model to be
+        created in order to respond. Instead, it will return a response with the
+        necessary information to access the result and status of the creation
+        operation.
+      operationId: ModelPublicService_CreateUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_name
+          description: |-
+            The parent resource, i.e., the user that creates the model.
+            Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: model
+          description: The properties of the model to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaModel'
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}:
+    get:
+      summary: Get a model
+      description: Returns the detail of a model, accessing it by the model ID and its parent user.
+      operationId: ModelPublicService_GetUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - ModelPublicService
+    delete:
+      summary: Delete a model
+      description: |-
+        Deletes a model, accesing it by its resource name, which is defined by the
+        parent user and the ID of the model.
+      operationId: ModelPublicService_DeleteUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+      tags:
+        - ModelPublicService
+  /v1alpha/{model_name}:
+    patch:
+      summary: Update a model
+      description: |-
+        Updates a model, accessing it by its resource name, which is defined by
+        the parent user and the ID of the model.
+
+        In REST requests, only the supplied model fields will be taken into
+        account when updating the resource.
+      operationId: ModelPublicService_UpdateUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_name
+          description: |-
+            The resource name of the model, which allows its access by owner and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: model
+          description: The model to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Model UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Model resource ID (used in `name` as the last segment). This conforms to
+                  RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+                  character a letter, the last a letter or a number, and a 63 character
+                  maximum.
+              description:
+                type: string
+                description: Model description.
+              model_definition:
+                type: string
+                description: The model definition that has been used to import the model.
+              configuration:
+                type: object
+                description: |-
+                  Model configuration. This field is validated against the model
+                  specification in the model definition (i.e. the `model_spec` field in the
+                  model definition).
+              task:
+                $ref: '#/definitions/v1alphaTask'
+                description: Model task.
+                readOnly: true
+              state:
+                $ref: '#/definitions/ModelState'
+                description: Model state.
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1alphaModelVisibility'
+                description: Model visibility.
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                description: Model creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Model update time.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Model deletion time.
+                readOnly: true
+              owner_name:
+                type: string
+                description: Resource name of the owner.
+                readOnly: true
+              owner:
+                type: object
+                description: Owner details, such as the profile data.
+                readOnly: true
+            title: The model to update
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/rename:
+    post:
+      summary: Rename a model
+      description: |-
+        Renames a model, accesing it by its resource name, which is defined by the
+        parent user and the ID of the model.
+      operationId: ModelPublicService_RenameUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceRenameUserModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/publish:
+    post:
+      summary: Publish a model
+      description: |-
+        Updates the visibility in a model to PUBLIC. The model is accessed by its
+        resource name, defined by the model ID and its parent user.
+      operationId: ModelPublicService_PublishUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaPublishUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServicePublishUserModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/unpublish:
+    post:
+      summary: Unpublish a model
+      description: |-
+        Updates the visibility in a model to PRIVATE. The model is accessed by its
+        resource name, defined by the model ID and its parent user.
+      operationId: ModelPublicService_UnpublishUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUnpublishUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceUnpublishUserModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/deploy:
+    post:
+      summary: Deploy a model
+      description: |-
+        Transitions the model into an ONLINE state. The model is accessed by its
+        resource name, defined by the model ID and its parent user.
+
+        While this operation is being performed, the state of the model will
+        transition to UNSPECIFIED. As completing the deployment might take time,
+        the server will not wait to complete the operation to return a response.
+        The state of the model can be used to track the completion of the
+        operation. This can be done by using the `watch` operation on the model.
+      operationId: ModelPublicService_DeployUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeployUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceDeployUserModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/undeploy:
+    post:
+      summary: Undeploy a model
+      description: |-
+        Transitions the model into an OFFLINE state. The model is accessed by its
+        resource name, defined by the model ID and its parent user.
+
+        While this operation is being performed, the state of the model will
+        transition to UNSPECIFIED. As completing the teardown might take time,
+        the server will not wait to complete the operation to return a response.
+        The state of the model can be used to track the completion of the
+        operation. This can be done by using the `watch` operation on the model.
+      operationId: ModelPublicService_UndeployUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUndeployUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceUndeployUserModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_card_name}:
+    get:
+      summary: Get a model card
+      description: |-
+        Returns the README file that accompanies a model, describing it and
+        enhancing it with metadata. The model is accessed by its resource name.
+      operationId: ModelPublicService_GetUserModelCard
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetUserModelCardResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_card_name
+          description: |-
+            The resource name of the model card, which allows its access by parent
+            user and model ID.
+            - Format: `users/{user.id}/models/{model.id}/readme`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+/readme
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/watch:
+    get:
+      summary: Watch the state of a model
+      description: |-
+        Returns the state of a model. The deploy / undeploy actions take some
+        time, during which a model will be in an UNSPECIFIED state. This endpoint
+        allows clients to track the state and progress of the model.
+      operationId: ModelPublicService_WatchUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/trigger:
+    post:
+      summary: Trigger model inference
+      description: |-
+        Triggers a deployed model to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerUserModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerUserModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model , which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerUserModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{name}:
+    get:
+      summary: Get the details of a long-running operation
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations in a model, such as deployment.
+      operationId: ModelPublicService_GetModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The resource name of the model, which allows its access ID.
+            - Format: `operations/{operation.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - ModelPublicService
 definitions:
   HealthCheckResponseServingStatus:
     type: string
@@ -17,6 +813,45 @@ definitions:
       - SERVING_STATUS_SERVING: Serving status: SERVING
        - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
     title: ServingStatus enumerates the status of a queried service
+  ModelPublicServiceDeployUserModelBody:
+    type: object
+    description: |-
+      DeployUserModelRequest represents a request to set a model to an ONLINE
+      state.
+  ModelPublicServicePublishUserModelBody:
+    type: object
+    description: PublisUserhModelRequest represents a request to publish a model.
+  ModelPublicServiceRenameUserModelBody:
+    type: object
+    properties:
+      new_model_id:
+        type: string
+        description: |-
+          The new resource ID. This will transform the resource name into
+          `users/{user.id}/models/{new_model_id}`.
+    title: RenameUserModelRequest represents a request to rename a model
+    required:
+      - new_model_id
+  ModelPublicServiceTriggerUserModelBody:
+    type: object
+    properties:
+      task_inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: TriggerUserModelRequest represents a request to trigger a model inference.
+    required:
+      - task_inputs
+  ModelPublicServiceUndeployUserModelBody:
+    type: object
+    description: |-
+      UndeployUserModelRequest represents a request to set a model to an OFFLINE
+      state.
+  ModelPublicServiceUnpublishUserModelBody:
+    type: object
+    description: UnpublishUserModelRequest represents a request to unpublish a model.
   ModelState:
     type: string
     enum:
@@ -24,10 +859,16 @@ definitions:
       - STATE_ONLINE
       - STATE_ERROR
     description: |-
-      - STATE_OFFLINE: State: OFFLINE
-       - STATE_ONLINE: State: ONLINE
-       - STATE_ERROR: State: ERROR
-    title: State enumerates a model state
+      State describes the state of a model. See [Deploy
+      Models](https://www.instill.tech/docs/latest/model/deploy) for more
+      information.
+
+       - STATE_OFFLINE: Offline is the default state when a model is initially created. A model
+      can be switched from ONLINE to this state by using the `undeploy`
+      method.
+       - STATE_ONLINE: Online is the state of a model when it has been deployed (i.e. when the
+      `deploy` method has been used on an OFFLINE model).
+       - STATE_ERROR: Error is the state when the model is undeployable on Instill Model.
   googlelongrunningOperation:
     type: object
     properties:
@@ -75,20 +916,6 @@ definitions:
         title: HealthCheckResponse message
     title: LivenessResponse represents a response for a service liveness status
   modelcontrollerv1alphaReadinessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1betaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
-  modelmodelv1alphaLivenessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1betaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  modelmodelv1alphaReadinessResponse:
     type: object
     properties:
       health_check_response:
@@ -261,24 +1088,26 @@ definitions:
       top:
         type: number
         format: float
-        title: Bounding box top y-axis value
+        description: Top Y-axis.
         readOnly: true
       left:
         type: number
         format: float
-        title: Bounding box left x-axis value
+        description: Left X-axis.
         readOnly: true
       width:
         type: number
         format: float
-        title: Bounding box width value
+        description: Width.
         readOnly: true
       height:
         type: number
         format: float
-        title: Bounding box height value
+        description: Height.
         readOnly: true
-    title: BoundingBox represents the bounding box data structure
+    description: |-
+      BoundingBox represents a frame in an image that can be drawn when detecting
+      patterns in objects.
   v1alphaCheckModelAdminResponse:
     type: object
     properties:
@@ -293,11 +1122,11 @@ definitions:
     properties:
       image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       image_base64:
         type: string
-        title: Image type base64
-    title: ClassificationInput represents the input of classification task
+        description: Base64-encoded image.
+    description: ClassificationInput is the input of an image classification task.
   v1alphaClassificationInputStream:
     type: object
     properties:
@@ -306,14 +1135,14 @@ definitions:
         items:
           type: integer
           format: int64
-        title: The list of file length for each uploaded binary file
+        description: File length for each uploaded binary file.
       content:
         type: string
         format: byte
-        title: Content of images in bytes
-    title: |-
-      ClassificationInputStream represents the input of classification task when
-      using stream method
+        description: Byte representation of the images.
+    description: |-
+      ClassificationInputStream represents the input of an image classification
+      task when the input is streamed as a binary files.
     required:
       - file_lengths
       - content
@@ -322,36 +1151,40 @@ definitions:
     properties:
       category:
         type: string
-        title: Classification category
+        description: Category.
         readOnly: true
       score:
         type: number
         format: float
-        title: Classification score
+        description: Score.
         readOnly: true
-    title: ClassificationOutput represents the output of classification task
+    description: ClassificationOutput contains the result of an image classification task.
   v1alphaCreateUserModelBinaryFileUploadResponse:
     type: object
     properties:
       operation:
         $ref: '#/definitions/googlelongrunningOperation'
-        title: Create model operation message
+        description: Long-running operation information.
         readOnly: true
-    title: CreateUserModelBinaryFileUploadResponse represents a response for a model
+    description: |-
+      CreateUserModelBinaryFileUploadResponse contains the information to access
+      the status of the model creation operation.
   v1alphaCreateUserModelResponse:
     type: object
     properties:
       operation:
         $ref: '#/definitions/googlelongrunningOperation'
-        title: Create model operation message
+        description: Long-running operation information.
         readOnly: true
-    title: CreateUserModelResponse represents a response for a model
+    description: |-
+      CreateUserModelResponse contains the information to access the status of the
+      model creation operation.
   v1alphaDeleteResourceResponse:
     type: object
     title: DeleteResourceResponse represents an empty response
   v1alphaDeleteUserModelResponse:
     type: object
-    title: DeleteUserModelResponse represents an empty response
+    description: DeleteUserModelResponse is an empty response.
   v1alphaDeployModelAdminResponse:
     type: object
     properties:
@@ -364,20 +1197,18 @@ definitions:
     properties:
       model_id:
         type: string
-        title: |-
-          Deployed model's id
-          Format: users/{user}/models/{model}
-    title: DeployUserModelResponse represents a response for a deployed model
+        description: ID of the deployed model, e.g. `llava-7b`.
+    description: DeployUserModelResponse contains the ID of the deployed model.
   v1alphaDetectionInput:
     type: object
     properties:
       image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       image_base64:
         type: string
-        title: Image type base64
-    title: DetectionInput represents the input of detection task
+        description: Base64-encoded image.
+    description: DetectionInput represents the input of an object detection task.
   v1alphaDetectionInputStream:
     type: object
     properties:
@@ -386,14 +1217,14 @@ definitions:
         items:
           type: integer
           format: int64
-        title: The list of file length for each uploaded binary file
+        description: File length for each uploaded binary file.
       content:
         type: string
         format: byte
-        title: Content of images in bytes
-    title: |-
-      DetectionInputStream represents the input of detection task when using stream
-      method
+        description: Byte representation of the images.
+    description: |-
+      DetectionInputStream represents the input of an object detection task when
+      the input is streamed as binary files.
     required:
       - file_lengths
       - content
@@ -402,18 +1233,18 @@ definitions:
     properties:
       category:
         type: string
-        title: Detection object category
+        description: Category.
         readOnly: true
       score:
         type: number
         format: float
-        title: Detection object score
+        description: Score.
         readOnly: true
       bounding_box:
         $ref: '#/definitions/v1alphaBoundingBox'
-        title: Detection bounding box
+        description: Bounding box.
         readOnly: true
-    title: DetectionObject represents a predicted object
+    description: DetectionObject represents an identified object in an image.
   v1alphaDetectionOutput:
     type: object
     properties:
@@ -422,23 +1253,25 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaDetectionObject'
-        title: A list of detection objects
+        description: A list of detected objects.
         readOnly: true
-    title: DetectionOutput represents the output of detection task
+    description: DetectionOutput contains the result of an object detection task.
   v1alphaGetModelDefinitionResponse:
     type: object
     properties:
       model_definition:
         $ref: '#/definitions/v1alphaModelDefinition'
-        title: A model definition instance
-    title: GetModelDefinitionResponse represents a response for a model definition
+        description: The model definition resource.
+    description: GetModelDefinitionResponse contains the requested model definition.
   v1alphaGetModelOperationResponse:
     type: object
     properties:
       operation:
         $ref: '#/definitions/googlelongrunningOperation'
-        title: The retrieved model operation
-    title: GetModelOperationResponse represents a response for a model operation
+        description: The long-running operation.
+    description: |-
+      GetModelOperationRequest represents a request to query a long-running
+      operation.
   v1alphaGetResourceResponse:
     type: object
     properties:
@@ -451,57 +1284,61 @@ definitions:
     properties:
       readme:
         $ref: '#/definitions/v1alphaModelCard'
-        title: Retrieved model card
-    title: GetUserModelCardResponse represents a response to fetch a model's README card
+        description: A model card resource.
+    description: GetUserModelCardResponse contains the model's README card.
   v1alphaGetUserModelResponse:
     type: object
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
-        title: The retrieved model
-    title: GetUserModelResponse represents a response for a model
+        description: The model resource.
+    description: GetUserModelResponse contains the requested model.
   v1alphaImageContent:
     type: object
     properties:
       image_url:
         $ref: '#/definitions/v1alphaPromptImage'
-        title: Image url or base64 code of Message Content
+        description: |-
+          Image as URL or base64 code.
+
+          NOTE: the `image_url` name comes from a convention from OpenAI, it doesn't
+          determine the format of the image.
       detail:
         type: string
-        title: Additinoal information for Image Content
-    title: Image content for Message Content
+        description: Additional information.
+    description: ImageContent holds an image with some details in plain text.
   v1alphaImageToImageInput:
     type: object
     properties:
       prompt_image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       prompt_image_base64:
         type: string
-        title: Image type base64
+        description: Base64-encoded image.
       prompt:
         type: string
-        title: The prompt text
+        description: Input text.
       steps:
         type: integer
         format: int32
-        title: The steps, default is 5
+        description: Steps, defaults to 5.
       cfg_scale:
         type: number
         format: float
-        title: The guidance scale, default is 7.5
+        title: Guidance scale, defaults to 7.5
       seed:
         type: integer
         format: int32
-        title: The seed, default is 0
+        description: Seed, defaults to 0.
       samples:
         type: integer
         format: int32
-        title: The number of generated samples, default is 1
+        description: Number of generated samples, defaults to 1.
       extra_params:
         type: object
-        title: The extra parameters
-    title: ImageToImageInput represents the input of image to image task
+        description: Extra parameters.
+    description: ImageToImageInput represents the input of an image-to-image task.
     required:
       - prompt
   v1alphaImageToImageOutput:
@@ -511,19 +1348,21 @@ definitions:
         type: array
         items:
           type: string
-        title: List of generated images
+        description: A list of generated images.
         readOnly: true
-    title: ImageToImageOutput represents the output of image to image task
+    description: ImageToImageOutput contains the result of an image-to-image task.
   v1alphaInstanceSegmentationInput:
     type: object
     properties:
       image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       image_base64:
         type: string
-        title: Image type base64
-    title: InstanceSegmentationInput represents the input of instance segmentation task
+        description: Base64-encoded image.
+    description: |-
+      InstanceSegmentationInput represents the input of an instance segmentation
+      task.
   v1alphaInstanceSegmentationInputStream:
     type: object
     properties:
@@ -532,14 +1371,14 @@ definitions:
         items:
           type: integer
           format: int64
-        title: The list of file length for each uploaded binary file
+        description: File length for each uploaded binary file.
       content:
         type: string
         format: byte
-        title: Content of images in bytes
-    title: |-
-      InstanceSegmentationInputStream represents the input of instance segmentation
-      task when using stream method
+        description: Byte representation of the images.
+    description: |-
+      InstanceSegmentationInputStream represents the input of an instance
+      segmentation task when the input is streamed as binary files.
     required:
       - file_lengths
       - content
@@ -548,22 +1387,24 @@ definitions:
     properties:
       rle:
         type: string
-        title: Instance RLE segmentation mask
+        description: RLE segmentation mask.
         readOnly: true
       category:
         type: string
-        title: Instance category
+        description: Category.
         readOnly: true
       score:
         type: number
         format: float
-        title: Instance score
+        description: Score.
         readOnly: true
       bounding_box:
         $ref: '#/definitions/v1alphaBoundingBox'
-        title: Instance bounding box
+        description: Bounding box.
         readOnly: true
-    title: InstanceSegmentationObject corresponding to a instance segmentation object
+    description: |-
+      InstanceSegmentationObject is an object in an image, localized and
+      delineated.
   v1alphaInstanceSegmentationOutput:
     type: object
     properties:
@@ -572,40 +1413,40 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaInstanceSegmentationObject'
-        title: A list of instance segmentation objects
+        description: A list of instance segmentation objects.
         readOnly: true
-    title: |-
-      InstanceSegmentationOutput represents the output of instance segmentation
-      task
+    description: |-
+      InstanceSegmentationOutput contains the result of an instance segmentation
+      task.
   v1alphaKeypoint:
     type: object
     properties:
       x:
         type: number
         format: float
-        title: x coordinate
+        description: X coordinate.
         readOnly: true
       "y":
         type: number
         format: float
-        title: y coordinate
+        description: Y coordinate.
         readOnly: true
       v:
         type: number
         format: float
-        title: visibility
+        description: Visibility.
         readOnly: true
-    title: Keypoint structure which include coordinate and keypoint visibility
+    description: Keypoint contains the coordinates and visibility of a keypoint in an object.
   v1alphaKeypointInput:
     type: object
     properties:
       image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       image_base64:
         type: string
-        title: Image type base64
-    title: KeypointInput represents the input of keypoint detection task
+        description: Base64-encoded image.
+    description: KeypointInput represents the input of a keypoint detection task.
   v1alphaKeypointInputStream:
     type: object
     properties:
@@ -614,14 +1455,14 @@ definitions:
         items:
           type: integer
           format: int64
-        title: The list of file length for each uploaded binary file
+        description: File length for each uploaded binary file.
       content:
         type: string
         format: byte
-        title: Content of images in bytes
-    title: |-
-      KeypointInputStream represents the input of keypoint detection task when
-      using stream method
+        description: Byte representation of the images.
+    description: |-
+      KeypointInputStream represents the input of a keypoint detection task when
+      the input is streamed as binary files.
     required:
       - file_lengths
       - content
@@ -633,18 +1474,20 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaKeypoint'
-        title: Keypoints
+        description: Keypoints.
         readOnly: true
       score:
         type: number
         format: float
-        title: Keypoint score
+        description: Score.
         readOnly: true
       bounding_box:
         $ref: '#/definitions/v1alphaBoundingBox'
-        title: Bounding box object
+        description: Bounding box.
         readOnly: true
-    title: KeypointObject corresponding to a person object
+    description: |-
+      KeypointObject is a detected object with its keypoints, e.g. a detected
+      human shape with its legs, arms, core, etc.
   v1alphaKeypointOutput:
     type: object
     properties:
@@ -653,9 +1496,9 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaKeypointObject'
-        title: A list of keypoint objects
+        description: A list of keypoint objects.
         readOnly: true
-    title: KeypointOutput represents the output of keypoint detection task
+    description: KeypointOutput represents the result of a keypoint detection task.
   v1alphaListModelDefinitionsResponse:
     type: object
     properties:
@@ -664,17 +1507,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaModelDefinition'
-        title: a list of ModelDefinition instances
+        description: A list of model definition resources.
       next_page_token:
         type: string
-        title: Next page token
+        description: Next page token.
       total_size:
         type: integer
         format: int32
-        title: Total count of model definitions
-    title: |-
-      ListModelDefinitionsResponse represents a response to list all supported
-      model definitions
+        description: Total number of model definitions.
+    description: ListModelDefinitionsResponse contains a list of model definitions.
   v1alphaListModelsAdminResponse:
     type: object
     properties:
@@ -690,7 +1531,7 @@ definitions:
       total_size:
         type: integer
         format: int32
-        title: Total count of models
+        description: Total number of models.
     title: ListModelsAdminResponse represents a response for a list of models
   v1alphaListModelsResponse:
     type: object
@@ -700,15 +1541,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaModel'
-        title: a list of Models
+        description: A list of model resources.
       next_page_token:
         type: string
-        title: Next page token
+        description: Next page token.
       total_size:
         type: integer
         format: int32
-        title: Total count of models
-    title: ListModelsResponse represents a response for a list of models
+        description: Total number of models.
+    description: ListModelsResponse contains a list of models.
   v1alphaListUserModelsResponse:
     type: object
     properties:
@@ -717,15 +1558,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaModel'
-        title: a list of Models
+        description: A list of model resources.
       next_page_token:
         type: string
-        title: Next page token
+        description: Next page token.
       total_size:
         type: integer
         format: int32
-        title: Total count of models
-    title: ListUserModelsResponse represents a response for a list of models
+        description: Total number of models.
+    description: ListUserModelsResponse contains a list of models.
   v1alphaLookUpModelAdminResponse:
     type: object
     properties:
@@ -738,206 +1579,221 @@ definitions:
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
-        title: A model resource
-    title: LookUpModelResponse represents a response for a model
+        description: The requested model.
+    description: LookUpModelResponse contains the requested model.
   v1alphaMessage:
     type: object
     properties:
       role:
         type: string
-        title: The Role of a message
+        description: The Role of a message, e.g. `system`, `user`, etc. Defines the way the model answers questions.
       content:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaMessageContent'
-        title: The context of the message
-    title: Message used for chat history in text generation model
+        description: Message content.
+    description: Message is used in chat history in text generation models.
   v1alphaMessageContent:
     type: object
     properties:
       type:
         type: string
-        title: Type of Content
+        description: Content type.
       image_url:
         $ref: '#/definitions/v1alphaImageContent'
-        title: Image Url is the naming convention by openAi but not necessarily a url
+        description: |-
+          Image content.
+
+          NOTE: the `image_url` name comes from a convention from OpenAI, it doesn't
+          determine the format of the image.
       text:
         type: string
-        title: Field for text
-    title: Content used for chat history message in text generation model
+        description: Text content.
+    description: |-
+      MessageContent is a message in a chat history message, used in text
+      generation models.
   v1alphaModel:
     type: object
     properties:
       name:
         type: string
-        title: |-
-          Resource name. It must have the format of "users/{user}/models/{model}".
-          For example: "users/instill-ai/models/yolov4"
+        description: |-
+          The resource name of the model, which allows its access by owner and ID.
+          - Format: `users/{user.id}/models/{model.id}`.
         readOnly: true
       uid:
         type: string
-        title: Model ID in UUIDv4
+        description: Model UUID.
         readOnly: true
       id:
         type: string
         description: |-
-          Resource ID (the last segment of the resource name) used to construct the
-          resource name. This conforms to RFC-1034, which restricts to letters,
-          numbers, and hyphen, with the first character a letter, the last a letter
-          or a number, and a 63 character maximum.
+          Model resource ID (used in `name` as the last segment). This conforms to
+          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+          character a letter, the last a letter or a number, and a 63 character
+          maximum.
       description:
         type: string
-        title: Model description
+        description: Model description.
       model_definition:
         type: string
-        title: Model definition resource name
+        description: The model definition that has been used to import the model.
       configuration:
         type: object
-        title: |-
-          Model configuration represents the configuration JSON that has been
-          validated using the `model_spec` JSON schema of a ModelDefinition
+        description: |-
+          Model configuration. This field is validated against the model
+          specification in the model definition (i.e. the `model_spec` field in the
+          model definition).
       task:
         $ref: '#/definitions/v1alphaTask'
-        title: Model task
+        description: Model task.
         readOnly: true
       state:
         $ref: '#/definitions/ModelState'
-        title: Model state
+        description: Model state.
         readOnly: true
       visibility:
         $ref: '#/definitions/v1alphaModelVisibility'
-        title: Model visibility including public or private
+        description: Model visibility.
         readOnly: true
       create_time:
         type: string
         format: date-time
-        title: Model create time
+        description: Model creation time.
         readOnly: true
       update_time:
         type: string
         format: date-time
-        title: Model update time
+        description: Model update time.
         readOnly: true
       delete_time:
         type: string
         format: date-time
-        title: Model delete time
+        description: Model deletion time.
         readOnly: true
       owner_name:
         type: string
-        title: Owner Name
+        description: Resource name of the owner.
         readOnly: true
       owner:
         type: object
-        title: Owner details
+        description: Owner details, such as the profile data.
         readOnly: true
-    title: Model represents a model
+    title: |-
+      Model represents an AI model, i.e. a program that performs tasks as decision
+      making or or pattern recognition based on its training data
   v1alphaModelCard:
     type: object
     properties:
       name:
         type: string
-        title: |-
-          Resource name. It must have the format of
-          "users/{user}/models/{model}/readme"
+        description: |-
+          The resource name of the model card, which allows its access by parent
+          user and model ID.
+          - Format: `users/{user.id}/models/{model.id}/readme`.
         readOnly: true
       size:
         type: integer
         format: int32
-        title: Size of the file
+        description: Size of the file in bytes.
         readOnly: true
       type:
         type: string
-        description: Type of the resource. Fixed to "file".
+        description: Type of the resource. Its value is fixed to `file`.
         readOnly: true
       content:
         type: string
         format: byte
-        title: Content of the README file in bytes and base64 format
+        description: Content of the README file in bytes and base64 format.
         readOnly: true
       encoding:
         type: string
-        description: Encoding type of the content. Fixed to "base64".
+        description: Encoding type of the content. Its value is fixed to `base64`.
         readOnly: true
     description: |-
-      ModelCard represents the README card for a model. There
-      exists one and exactly one README card per model.
+      ModelCard represents a README.md file that accompanies the model to describe
+      handy information with additional model metadata. Under the hood, a model
+      card is associated with a specific model. It is an crucial for
+      reproducibility, sharing and discoverability.
+
+      Each model has exactly one README card.
   v1alphaModelDefinition:
     type: object
     properties:
       name:
         type: string
-        title: |-
-          ModelDefinition resource name. It must have the format of
-          "model-definitions/{model-definition}"
+        description: |-
+          The resource name of the model, which allows its access by ID.
+          - Format: `model-definitions/{id}`.
         readOnly: true
       uid:
         type: string
-        title: ModelDefinition ID in UUIDv4
+        description: Model definition UUID.
         readOnly: true
       id:
         type: string
         description: |-
-          ModelDefinition resource ID (the last segment of the resource name) used to
-          construct the resource name.
+          Model definition resource ID (used in `name` as the last segment). This
+          conforms to RFC-1034, which restricts to letters, numbers, and hyphen,
+          with the first character a letter, the last a letter or a number, and a 63
+          character maximum.
         readOnly: true
       title:
         type: string
-        title: ModelDefinition display official title
+        description: Official display title.
         readOnly: true
       documentation_url:
         type: string
-        title: ModelDefinition documentation url
+        description: Documentation URL.
         readOnly: true
       icon:
         type: string
-        title: ModelDefinition icon
+        description: Display icon.
         readOnly: true
       release_stage:
         $ref: '#/definitions/v1alphaReleaseStage'
-        title: ModelDefinition release stage
+        description: Release stage.
         readOnly: true
       model_spec:
         type: object
         description: |-
-          ModelDefinition model specification represents the JSON schema used to
+          The model specification represented by a JSON schema. It is used to
           validate the JSON configurations of a model created from a specific model
-          source. Must be a valid JSON that includes what fields are needed to
-          create/display a model.
+          source. It must be a valid JSON that includes what fields are needed to
+          create or display a model.
         readOnly: true
       create_time:
         type: string
         format: date-time
-        title: ModelDefinition create time
+        description: Creation time.
         readOnly: true
       update_time:
         type: string
         format: date-time
-        title: ModelDefinition update time
+        description: Update time.
         readOnly: true
-    title: |-
-      /////////////////////////////////////////////////////////////////
-      ModelDefinition represents the definition of a model
+    description: ModelDefinition defines how to configure and import a model.
   v1alphaModelVisibility:
     type: string
     enum:
       - VISIBILITY_PRIVATE
       - VISIBILITY_PUBLIC
     description: |-
-      - VISIBILITY_PRIVATE: Visibility: PRIVATE
-       - VISIBILITY_PUBLIC: Visibility: PUBLIC
-    title: Model visibility including public or private
+      Visibility defines who can access the model.
+
+       - VISIBILITY_PRIVATE: Only the owner can see the model.
+       - VISIBILITY_PUBLIC: Other users can see the model.
   v1alphaOcrInput:
     type: object
     properties:
       image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       image_base64:
         type: string
-        title: Image type base64
-    title: OcrInput represents the input of ocr task
+        description: Base64-encoded image.
+    description: OcrInput represents the input of an OCR task.
   v1alphaOcrInputStream:
     type: object
     properties:
@@ -946,12 +1802,14 @@ definitions:
         items:
           type: integer
           format: int64
-        title: The list of file length for each uploaded binary file
+        description: File length for each uploaded binary file.
       content:
         type: string
         format: byte
-        title: Content of images in bytes
-    title: OcrInputStream represents the input of ocr task when using stream method
+        description: Byte representation of the images.
+    description: |-
+      OcrInputStream represents the input of an OCR task when the input is
+      streamed as binary files.
     required:
       - file_lengths
       - content
@@ -960,18 +1818,20 @@ definitions:
     properties:
       text:
         type: string
-        title: OCR text
+        description: Text.
         readOnly: true
       score:
         type: number
         format: float
-        title: OCR text score
+        description: Score.
         readOnly: true
       bounding_box:
         $ref: '#/definitions/v1alphaBoundingBox'
-        title: OCR bounding box
+        description: Bounding box.
         readOnly: true
-    title: OcrObject represents a predicted ocr object
+    description: |-
+      OcrObject is a text object within an image. OCR stands for Optical Character
+      Recognition.
   v1alphaOcrOutput:
     type: object
     properties:
@@ -980,26 +1840,26 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaOcrObject'
-        title: A list of OCR objects
+        description: A list of text objects.
         readOnly: true
-    title: OcrOutput represents the output of ocr task
+    description: OcrOutput contains the result of an OCR task.
   v1alphaPromptImage:
     type: object
     properties:
       prompt_image_url:
         type: string
-        title: Image URL
+        description: Image URL.
       prompt_image_base64:
         type: string
-        title: Base64 encoded Image
-    title: Prompt Image for text generation model
+        description: Base64-encoded image.
+    description: PromptImage is an image input for model inference.
   v1alphaPublishUserModelResponse:
     type: object
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
-        title: Published model
-    title: PublishUserModelResponse represents a response for the published model
+        description: The published model resource.
+    description: PublishUserModelResponse contains a published model.
   v1alphaReleaseStage:
     type: string
     enum:
@@ -1008,18 +1868,19 @@ definitions:
       - RELEASE_STAGE_GENERALLY_AVAILABLE
       - RELEASE_STAGE_CUSTOM
     description: |-
-      - RELEASE_STAGE_ALPHA: ReleaseStage: ALPHA
-       - RELEASE_STAGE_BETA: ReleaseStage: BETA
-       - RELEASE_STAGE_GENERALLY_AVAILABLE: ReleaseStage: GENERALLY_AVAILABLE
-       - RELEASE_STAGE_CUSTOM: ReleaseStage: CUSTOM
-    title: ReleaseStage enumerates the release stages
+      ReleaseStage defines the stage of a release.
+
+       - RELEASE_STAGE_ALPHA: Alpha.
+       - RELEASE_STAGE_BETA: Beta.
+       - RELEASE_STAGE_GENERALLY_AVAILABLE: Generally available.
+       - RELEASE_STAGE_CUSTOM: Custom.
   v1alphaRenameUserModelResponse:
     type: object
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
-        title: Renamed model
-    title: RenameUserModelResponse represents a response for a model
+        description: The renamed model resource.
+    description: RenameUserModelResponse contains a renamed model.
   v1alphaResource:
     type: object
     properties:
@@ -1046,11 +1907,13 @@ definitions:
     properties:
       image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       image_base64:
         type: string
-        title: Image type base64
-    title: SemanticSegmentationInput represents the input of semantic segmentation task
+        description: Base64-encoded image.
+    description: |-
+      SemanticSegmentationInput represents the input of a semantic segmentation
+      task.
   v1alphaSemanticSegmentationInputStream:
     type: object
     properties:
@@ -1059,14 +1922,14 @@ definitions:
         items:
           type: integer
           format: int64
-        title: The list of file length for each uploaded binary file
+        description: File length for each uploaded binary file.
       content:
         type: string
         format: byte
-        title: Content of images in bytes
-    title: |-
-      SemanticSegmentationInputStream represents the input of semantic segmentation
-      task when using stream method
+        description: Byte representation of the images.
+    description: |-
+      SemanticSegmentationInputStream represents the input of a semantic
+      segmentation task when the input is streamed as a binary files.
     required:
       - file_lengths
       - content
@@ -1078,23 +1941,25 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alphaSemanticSegmentationStuff'
-        title: A list of semantic segmentation stuffs
+        description: A list of detected objects classified into categories.
         readOnly: true
-    title: |-
-      SemanticSegmentationOutput represents the output of semantic segmentation
-      task
+    description: |-
+      SemanticSegmentationOutput represents the output of a semantic segmentation
+      task.
   v1alphaSemanticSegmentationStuff:
     type: object
     properties:
       rle:
         type: string
-        title: RLE segmentation mask
+        description: RLE segmentation mask.
         readOnly: true
       category:
         type: string
-        title: Stuff category
+        description: Category.
         readOnly: true
-    title: SemanticSegmentationStuff corresponding to a semantic segmentation stuff
+    description: |-
+      SemanticSegmentationStuff is an object detected within an image and
+      classified into a predefined category.
   v1alphaTask:
     type: string
     enum:
@@ -1112,60 +1977,61 @@ definitions:
       - TASK_TEXT_EMBEDDINGS
       - TASK_SPEECH_RECOGNITION
     description: |-
-      - TASK_CLASSIFICATION: Task: CLASSIFICATION
-       - TASK_DETECTION: Task: DETECTION
-       - TASK_KEYPOINT: Task: KEYPOINT
-       - TASK_OCR: Task: OCR
-       - TASK_INSTANCE_SEGMENTATION: Task: INSTANCE SEGMENTATION
-       - TASK_SEMANTIC_SEGMENTATION: Task: SEMANTIC SEGMENTATION
-       - TASK_TEXT_TO_IMAGE: Task: TEXT TO IMAGE
-       - TASK_TEXT_GENERATION: Task: TEXT GENERATION
-       - TASK_TEXT_GENERATION_CHAT: Task: TEXT GENERATION CHAT
-       - TASK_VISUAL_QUESTION_ANSWERING: Task: VISUAL QUESTION ANSWERING
-       - TASK_IMAGE_TO_IMAGE: Task: IMAGE TO IMAGE
-       - TASK_TEXT_EMBEDDINGS: Task: TEXT EMBEDDINGS
-       - TASK_SPEECH_RECOGNITION: Task: SPEECH RECOGNITION
-    title: Task enumerates the AI task type
+      Task enumerates the AI task that a model is designed to solve.
+
+       - TASK_CLASSIFICATION: Image Classification - classify images into predefined categories.
+       - TASK_DETECTION: Object Detection - detect and localize multiple objects in images.
+       - TASK_KEYPOINT: Keypoint Detection - detect and localize multiple keypoints of objects in images.
+       - TASK_OCR: OCR (Optical Character Recognition) - detect and recognize text in images.
+       - TASK_INSTANCE_SEGMENTATION: Instance Segmentation - detect, localize and delineate multiple objects in images.
+       - TASK_SEMANTIC_SEGMENTATION: Semantic Segmentation - classify image pixels into predefined categories.
+       - TASK_TEXT_TO_IMAGE: Text to Image - generate images from input text prompts.
+       - TASK_TEXT_GENERATION: Text Generation - generate texts from input text prompts.
+       - TASK_TEXT_GENERATION_CHAT: Conversational Text Generation - generate text as responses to a dialog input.
+       - TASK_VISUAL_QUESTION_ANSWERING: Visual Question Answering - generate text as a response to a visual prompt.
+       - TASK_IMAGE_TO_IMAGE: Image to Image - generate an image from another image.
+       - TASK_TEXT_EMBEDDINGS: Text Embeddings - generate an embedding (a representation as coordinates) from a text input.
+       - TASK_SPEECH_RECOGNITION: Speech Recognition - transcribe the words in an audio input.
   v1alphaTaskInput:
     type: object
     properties:
       classification:
         $ref: '#/definitions/v1alphaClassificationInput'
-        title: The classification input
+        description: Image classification input.
       detection:
         $ref: '#/definitions/v1alphaDetectionInput'
-        title: The detection input
+        description: Object detection input.
       keypoint:
         $ref: '#/definitions/v1alphaKeypointInput'
-        title: The keypoint input
+        description: Keypoint detection input.
       ocr:
         $ref: '#/definitions/v1alphaOcrInput'
-        title: The ocr input
+        description: Optical Character Recognition input.
       instance_segmentation:
         $ref: '#/definitions/v1alphaInstanceSegmentationInput'
-        title: The instance segmentation input
+        description: Instance segmentation input.
       semantic_segmentation:
         $ref: '#/definitions/v1alphaSemanticSegmentationInput'
-        title: The semantic segmentation input
+        description: Semantic segmentation input.
       text_to_image:
         $ref: '#/definitions/v1alphaTextToImageInput'
-        title: The text to image input
+        description: Text to image input.
       image_to_image:
         $ref: '#/definitions/v1alphaImageToImageInput'
-        title: The image to image input
+        description: Image to image input.
       text_generation:
         $ref: '#/definitions/v1alphaTextGenerationInput'
-        title: The text generation input
+        description: Text generation input.
       text_generation_chat:
         $ref: '#/definitions/v1alphaTextGenerationChatInput'
-        title: The text generation chat input
+        description: Conversational text generation input.
       visual_question_answering:
         $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
-        title: The visual question answering input
+        description: Visual question answering input.
       unspecified:
         $ref: '#/definitions/v1alphaUnspecifiedInput'
-        title: The unspecified task input
-    title: Input represents the input to trigger a model
+        description: Unspecified task input.
+    description: TaskInput represents a question or task for an AI model.
   v1alphaTaskInputStream:
     type: object
     properties:
@@ -1211,130 +2077,96 @@ definitions:
     properties:
       classification:
         $ref: '#/definitions/v1alphaClassificationOutput'
-        title: The classification output
+        description: Image classification output.
         readOnly: true
       detection:
         $ref: '#/definitions/v1alphaDetectionOutput'
-        title: The detection output
+        description: Object detection output.
         readOnly: true
       keypoint:
         $ref: '#/definitions/v1alphaKeypointOutput'
-        title: The keypoint output
+        description: Keypoint detection output.
         readOnly: true
       ocr:
         $ref: '#/definitions/v1alphaOcrOutput'
-        title: The ocr output
+        description: Optical Character Recognition output.
         readOnly: true
       instance_segmentation:
         $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
-        title: The instance segmentation output
+        description: Instance segmentation output.
         readOnly: true
       semantic_segmentation:
         $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
-        title: The semantic segmentation output
+        description: Semantic segmentation output.
         readOnly: true
       text_to_image:
         $ref: '#/definitions/v1alphaTextToImageOutput'
-        title: The text to image output
+        description: Text to image output.
         readOnly: true
       image_to_image:
         $ref: '#/definitions/v1alphaImageToImageOutput'
-        title: The image to image output
+        description: Image to image output.
         readOnly: true
       text_generation:
         $ref: '#/definitions/v1alphaTextGenerationOutput'
-        title: The text generation output
+        description: Text generation output.
         readOnly: true
       text_generation_chat:
         $ref: '#/definitions/v1alphaTextGenerationChatOutput'
-        title: The text generation output
+        description: Conversational text generation output.
         readOnly: true
       visual_question_answering:
         $ref: '#/definitions/v1alphaVisualQuestionAnsweringOutput'
-        title: The text generation output
+        description: Visual question answering output.
         readOnly: true
       unspecified:
         $ref: '#/definitions/v1alphaUnspecifiedOutput'
-        title: The unspecified task output
+        description: Unspecified task output.
         readOnly: true
-    title: TaskOutput represents the output of a CV Task result from a model
-  v1alphaTestUserModelBinaryFileUploadResponse:
-    type: object
-    properties:
-      task:
-        $ref: '#/definitions/v1alphaTask'
-        title: The task type
-      task_outputs:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaTaskOutput'
-        title: The task output from a model
-    title: |-
-      TestUserModelBinaryFileUploadResponse represents a response for the
-      output for testing a model
-    required:
-      - task
-      - task_outputs
-  v1alphaTestUserModelResponse:
-    type: object
-    properties:
-      task:
-        $ref: '#/definitions/v1alphaTask'
-        title: The task type
-      task_outputs:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaTaskOutput'
-        title: The task output from a model
-    title: |-
-      TestUserModelResponse represents a response for the output for
-      testing a model
-    required:
-      - task
-      - task_outputs
+    description: TaskOutput represents the result of an AI task performed by a model.
   v1alphaTextGenerationChatInput:
     type: object
     properties:
       prompt:
         type: string
-        title: The prompt text
+        description: Prompt text.
       prompt_images:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaPromptImage'
-        title: The prompt images
+        description: Prompt images.
       chat_history:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaMessage'
-        title: The chat history
+        description: Chat history.
       system_message:
         type: string
-        title: The system message
+        description: System message, which sets the behaviour of the assistant.
       max_new_tokens:
         type: integer
         format: int32
-        title: The maximum number of tokens for model to generate
+        description: Maximum number of generation tokens.
       temperature:
         type: number
         format: float
-        title: The temperature for sampling
+        description: Sampling temperature.
       top_k:
         type: integer
         format: int32
-        title: Top k for sampling
+        description: |-
+          Sampling Top K, number of tokens at the top from which the model will
+          sample.
       seed:
         type: integer
         format: int32
-        title: The seed
+        description: Seed.
       extra_params:
         type: object
-        title: The extra parameters
-    title: TextGenerationChatInput represents the input of text generation chat task
+        description: Extra parameters.
+    description: TextGenerationChatInput represents the input of a text generation chat task.
     required:
       - prompt
   v1alphaTextGenerationChatOutput:
@@ -1342,50 +2174,52 @@ definitions:
     properties:
       text:
         type: string
-        title: The text generated by the model
+        description: Text generated by the model.
         readOnly: true
-    title: TextGenerationChatOutput represents the output of text generation chat task
+    description: TextGenerationChatOutput contains the result of a text generation chat task.
   v1alphaTextGenerationInput:
     type: object
     properties:
       prompt:
         type: string
-        title: The prompt text
+        description: Prompt text.
       prompt_images:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaPromptImage'
-        title: The prompt images
+        description: Prompt images.
       chat_history:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaMessage'
-        title: The chat history
+        description: Chat history.
       system_message:
         type: string
-        title: The system message
+        description: System message, which sets the behaviour of the assistant.
       max_new_tokens:
         type: integer
         format: int32
-        title: The maximum number of tokens for model to generate
+        description: Maximum number of generation tokens.
       temperature:
         type: number
         format: float
-        title: The temperature for sampling
+        description: Sampling temperature.
       top_k:
         type: integer
         format: int32
-        title: Top k for sampling
+        description: |-
+          Sampling Top K, number of tokens at the top from which the model will
+          sample.
       seed:
         type: integer
         format: int32
-        title: The seed
+        description: Seed.
       extra_params:
         type: object
-        title: The extra parameters
-    title: TextGenerationInput represents the input of text generation task
+        description: Extra parameters.
+    description: TextGenerationInput represents the input of a text generation task.
     required:
       - prompt
   v1alphaTextGenerationOutput:
@@ -1393,41 +2227,41 @@ definitions:
     properties:
       text:
         type: string
-        title: The text generated by the model
+        description: Text generated by the model.
         readOnly: true
-    title: TextGenerationOutput represents the output of text generation task
+    description: TextGenerationOutput contains the result of a text generation task.
   v1alphaTextToImageInput:
     type: object
     properties:
       prompt:
         type: string
-        title: The prompt text
+        description: Prompt text.
       prompt_image_url:
         type: string
-        title: Image type URL
+        description: Image URL.
       prompt_image_base64:
         type: string
-        title: Image type base64
+        description: Base64-encoded image.
       steps:
         type: integer
         format: int32
-        title: The steps, default is 5
+        description: Steps, defaults to 5.
       cfg_scale:
         type: number
         format: float
-        title: The guidance scale, default is 7.5
+        description: Guidance scale, defaults to 7.5.
       seed:
         type: integer
         format: int32
-        title: The seed, default is 0
+        description: Seed, defaults to 0.
       samples:
         type: integer
         format: int32
-        title: The number of generated samples, default is 1
+        description: Number of generated samples, default is 1.
       extra_params:
         type: object
-        title: The extra parameters
-    title: TextToImageInput represents the input of text to image task
+        description: Extra parameters.
+    description: TextToImageInput represents the input of a text-to-image task.
     required:
       - prompt
   v1alphaTextToImageOutput:
@@ -1437,24 +2271,22 @@ definitions:
         type: array
         items:
           type: string
-        title: List of generated images
+        description: A list of generated images, encoded in base64.
         readOnly: true
-    title: TextToImageOutput represents the output of text to image task
+    description: TextToImageOutput contains the result of a text-to-image task.
   v1alphaTriggerUserModelBinaryFileUploadResponse:
     type: object
     properties:
       task:
         $ref: '#/definitions/v1alphaTask'
-        title: The task type
+        description: Task type.
       task_outputs:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaTaskOutput'
-        title: The task output from a model
-    title: |-
-      TriggerUserModelBinaryFileUploadResponse represents a response for the
-      output for testing a model
+        description: Model inference outputs.
+    description: TriggerUserModelBinaryFileUploadResponse contains the model inference results.
     required:
       - task
       - task_outputs
@@ -1463,16 +2295,14 @@ definitions:
     properties:
       task:
         $ref: '#/definitions/v1alphaTask'
-        title: The task type
+        description: Task type.
       task_outputs:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaTaskOutput'
-        title: The task output from a model
-    title: |-
-      TriggerUserModelResponse represents a response for the output for
-      triggering a model
+        description: Model inference outputs.
+    description: TriggerUserModelResponse contains the model inference results.
   v1alphaUndeployModelAdminResponse:
     type: object
     properties:
@@ -1485,17 +2315,15 @@ definitions:
     properties:
       model_id:
         type: string
-        title: |-
-          Undeployed model's id
-          Format: users/{user}/models/{model}
-    title: UndeployUserModelResponse represents a response for a undeployed model
+        description: ID of the undeployed model, e.g. `llava-7b`.
+    description: UndeployUserModelResponse contains the ID of the undeployed model.
   v1alphaUnpublishUserModelResponse:
     type: object
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
-        title: Unpublished model
-    title: UnpublishUserModelResponse represents a response for the unpublished model
+        description: The unpublished model resource.
+    description: UnpublishUserModelResponse contains an unpublished model.
   v1alphaUnspecifiedInput:
     type: object
     properties:
@@ -1503,8 +2331,8 @@ definitions:
         type: array
         items:
           type: object
-        title: A list of unspecified task inputs
-    title: UnspecifiedInput represents the input of unspecified task
+        description: A list of values for the task.
+    description: UnspecifiedInput represents the input of an unspecified task.
   v1alphaUnspecifiedOutput:
     type: object
     properties:
@@ -1512,9 +2340,9 @@ definitions:
         type: array
         items:
           type: object
-        title: A list of unspecified task outputs
+        description: The task outputs.
         readOnly: true
-    title: UnspecifiedOutput represents the output of unspecified task
+    description: UnspecifiedOutput contains the result of an unspecified task.
   v1alphaUpdateResourceResponse:
     type: object
     properties:
@@ -1527,61 +2355,63 @@ definitions:
     properties:
       model:
         $ref: '#/definitions/v1alphaModel'
-        title: The updated model
-    title: UpdateUserModelResponse represents a response for a model
+        description: The updated model resource.
+    description: UpdateUserModelResponse contains the updated model.
   v1alphaView:
     type: string
     enum:
       - VIEW_BASIC
       - VIEW_FULL
     description: |-
-      View represents a view of any resource. The resource view is implemented by
-      adding a parameter to the method request which allows the client to specify
-      which view of the resource it wants to receive in the response.
+      View defines how a model definition is presented.
 
-       - VIEW_BASIC: View: BASIC, server response only include basic information of the resource
-       - VIEW_FULL: View: FULL, full representation of the resource
+       - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+       - VIEW_FULL: Full representation.
   v1alphaVisualQuestionAnsweringInput:
     type: object
     properties:
       prompt:
         type: string
-        title: The prompt text
+        description: Prompt text.
       prompt_images:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaPromptImage'
-        title: The prompt images
+        description: Prompt images.
       chat_history:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaMessage'
-        title: The chat history
+        description: Chat history.
       system_message:
         type: string
-        title: The system message
+        description: System message, which sets the behaviour of the assistant.
       max_new_tokens:
         type: integer
         format: int32
-        title: The maximum number of tokens for model to generate
+        description: Maximum number of generation tokens.
       temperature:
         type: number
         format: float
-        title: The temperature for sampling
+        description: Sampling temperature.
       top_k:
         type: integer
         format: int32
-        title: Top k for sampling
+        description: |-
+          Sampling Top K, number of tokens at the top from which the model will
+          sample.
       seed:
         type: integer
         format: int32
-        title: The seed
+        description: Seed.
       extra_params:
         type: object
-        title: The extra parameters
-    title: VisualQuestionAnsweringInput represents the input of visaul question answering task
+        description: Extra parameters.
+    description: |-
+      VisualQuestionAnsweringInput represents the input of a visual
+      question-answering task.
     required:
       - prompt
   v1alphaVisualQuestionAnsweringOutput:
@@ -1589,22 +2419,24 @@ definitions:
     properties:
       text:
         type: string
-        title: The text generated by the model
+        description: The text generated by the model.
         readOnly: true
-    title: VisualQuestionAnsweringOutput represents the output of visaul question answering task
+    description: |-
+      VisualQuestionAnsweringOutput contains the result of a visual
+      question-answering task.
   v1alphaWatchUserModelResponse:
     type: object
     properties:
       state:
         $ref: '#/definitions/ModelState'
-        title: Retrieved model state
+        description: State.
       progress:
         type: integer
         format: int32
-        title: Retrieved model logrunning progress
-    title: |-
-      WatchUserModelResponse represents a public response to
-      fetch a model current state and longrunning progress
+        description: |-
+          Long-running operation progress. If there are no ongoing operations, the
+          value will be 0.
+    description: WatchUserModelResponse contains the state and progress of a model.
   v1betaHealthCheckRequest:
     type: object
     properties:
@@ -1619,3 +2451,14 @@ definitions:
         $ref: '#/definitions/HealthCheckResponseServingStatus'
         title: Status is the instance of the enum type ServingStatus
     title: HealthCheckResponse represents a response for a service heath status
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    description: Enter the token with the `Bearer ` prefix, e.g. `Bearer abcde12345`
+    name: Authorization
+    in: header
+security:
+  - Bearer: []
+externalDocs:
+  description: More about Instill AI
+  url: https://www.instill.tech/docs
