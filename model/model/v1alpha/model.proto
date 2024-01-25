@@ -636,16 +636,311 @@ message TriggerUserModelBinaryFileUploadResponse {
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// TestUserModelRequest represents a request to test a model inference.
-message TestUserModelRequest {
-  // The resource name of the model , which allows its access by parent user
+////////////////////////////////////
+//  Organization methods
+////////////////////////////////////
+
+// CreateOrganizationModelRequest represents a request from an organization to create a model.
+message CreateOrganizationModelRequest {
+  // The properties of the model to be created.
+  Model model = 1;
+  // The parent resource, i.e., the organization that creates the model.
+  // Format: `organizations/{organization.id}`.
+  string parent = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "api.instill.tech/Model"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_name"}
+    }
+  ];
+}
+
+// CreateOrganizationModelResponse contains the information to access the status of the
+// model creation operation.
+message CreateOrganizationModelResponse {
+  // Long-running operation information.
+  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// CreateOrganizationModelBinaryFileUploadRequest represents a request to create a
+// model by uploading its content in bytes.
+message CreateOrganizationModelBinaryFileUploadRequest {
+  // The properties of the model to be created.
+  Model model = 1 [(google.api.field_behavior) = REQUIRED];
+  // Model content in bytes.
+  bytes content = 2 [(google.api.field_behavior) = REQUIRED];
+  // The parent resource, i.e., the organization that creates the model.
+  // Format: `organizations/{organization.id}`.
+  string parent = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "api.instill.tech/Model"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_name"}
+    }
+  ];
+}
+
+// CreateOrganizationModelBinaryFileUploadResponse contains the information to access
+// the status of the model creation operation.
+message CreateOrganizationModelBinaryFileUploadResponse {
+  // Long-running operation information.
+  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListOrganizationModelsRequest represents a request to list the models
+// of an organization.
+message ListOrganizationModelsRequest {
+  // The maximum number of models to return. If this parameter is unspecified,
+  // at most 10 models will be returned. The cap value for this parameter is
+  // 100 (i.e. any value above that will be coerced to 100).
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page token.
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // View allows clients to specify the desired model view in the response.
+  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  // The parent resource, i.e., the organization that created the models.
+  // - Format: `organizations/{organizations.id}`.
+  string parent = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "api.instill.tech/Model"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_name"}
+    }
+  ];
+  // Include soft-deleted models in the result.
+  optional bool show_deleted = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListOrganizationModelsResponse contains a list of models.
+message ListOrganizationModelsResponse {
+  // A list of model resources.
+  repeated Model models = 1;
+  // Next page token.
+  string next_page_token = 2;
+  // Total number of models.
+  int32 total_size = 3;
+}
+
+// GetOrganizationModelRequest represents a request to fetch the details of a model
+// owned by an organization.
+message GetOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
   // and ID.
-  // - Format: `users/{user.id}/models/{model.id}`.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference).type = "api.instill.tech/Model",
     (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_model_name"}
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+  // View allows clients to specify the desired model view in the response.
+  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// GetOrganizationModelResponse contains the requested model.
+message GetOrganizationModelResponse {
+  // The model resource.
+  Model model = 1;
+}
+
+// UpdateOrganizationModelRequest represents a request to update a model owned by an
+// organization.
+message UpdateOrganizationModelRequest {
+  // The model to update
+  Model model = 1 [(google.api.field_behavior) = REQUIRED];
+  // The update mask specifies the subset of fields that should be modified.
+  //
+  // For more information about this field, see
+  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UpdateOrganizationModelResponse contains the updated model.
+message UpdateOrganizationModelResponse {
+  // The updated model resource.
+  Model model = 1;
+}
+
+// DeleteOrganizationModelRequest represents a request to delete a model owned by an
+// organization.
+message DeleteOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+}
+
+// DeleteOrganizationModelResponse is an empty response.
+message DeleteOrganizationModelResponse {}
+
+// RenameOrganizationModelRequest represents a request to rename a model
+message RenameOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+
+  // The new resource ID. This will transform the resource name into
+  // `organizations/{organization.id}/models/{new_model_id}`.
+  string new_model_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// RenameOrganizationModelResponse contains a renamed model.
+message RenameOrganizationModelResponse {
+  // The renamed model resource.
+  Model model = 1;
+}
+
+// PublisOrganizationhModelRequest represents a request to publish a model.
+message PublishOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+}
+
+// PublishOrganizationModelResponse contains a published model.
+message PublishOrganizationModelResponse {
+  // The published model resource.
+  Model model = 1;
+}
+
+// UnpublishOrganizationModelRequest represents a request to unpublish a model.
+message UnpublishOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+}
+
+// UnpublishOrganizationModelResponse contains an unpublished model.
+message UnpublishOrganizationModelResponse {
+  // The unpublished model resource.
+  Model model = 1;
+}
+
+// DeployOrganizationModelRequest represents a request to set a model to an ONLINE
+// state.
+message DeployOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+}
+
+// DeployOrganizationModelResponse contains the ID of the deployed model.
+message DeployOrganizationModelResponse {
+  // ID of the deployed model, e.g. `llava-7b`.
+  string model_id = 1;
+}
+
+// UndeployOrganizationModelRequest represents a request to set a model to an OFFLINE
+// state.
+message UndeployOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+}
+
+// UndeployOrganizationModelResponse contains the ID of the undeployed model.
+message UndeployOrganizationModelResponse {
+  // ID of the undeployed model, e.g. `llava-7b`.
+  string model_id = 1;
+}
+
+// GetOrganizationModelCardRequest represents a request to fetch the README card of a
+// model.
+message GetOrganizationModelCardRequest {
+  // The resource name of the model card, which allows its access by parent
+  // organization and model ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}/readme`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/ModelCard",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_card_name"}
+    }
+  ];
+}
+
+// GetOrganizationModelCardResponse contains the model's README card.
+message GetOrganizationModelCardResponse {
+  // A model card resource.
+  ModelCard readme = 1;
+}
+
+// WatchOrganizationModelRequest represents a request to fetch current state of a model
+// and its long-running operation progress.
+message WatchOrganizationModelRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+}
+
+// WatchOrganizationModelResponse contains the state and progress of a model.
+message WatchOrganizationModelResponse {
+  // State.
+  Model.State state = 1;
+  // Long-running operation progress. If there are no ongoing operations, the
+  // value will be 0.
+  int32 progress = 2;
+}
+
+// TriggerOrganizationModelRequest represents a request to trigger a model inference.
+message TriggerOrganizationModelRequest {
+  // The resource name of the model , which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
 
@@ -653,34 +948,37 @@ message TestUserModelRequest {
   repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// TestUserModelResponse represents a response for the output for
-// testing a model
-message TestUserModelResponse {
-  // The task type
-  common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
-  // The task output from a model
-  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
+// TriggerOrganizationModelResponse contains the model inference results.
+message TriggerOrganizationModelResponse {
+  // Task type.
+  common.task.v1alpha.Task task = 1;
+  // Model inference outputs.
+  repeated TaskOutput task_outputs = 2;
 }
 
-// TestUserModelBinaryFileUploadRequest represents a request to test a
-// model by uploading binary file
-message TestUserModelBinaryFileUploadRequest {
-  // The resource name of the model to trigger.
-  // Format: users/{user}/models/{model}
+// TriggerOrganizationModelBinaryFileUploadRequest represents a request trigger a model
+// inference by uploading a binary file as the input.
+message TriggerOrganizationModelBinaryFileUploadRequest {
+  // The resource name of the model , which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/Model"
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
   ];
-  // Input to trigger the model
+
+  // Inference input as a binary file.
   TaskInputStream task_input = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// TestUserModelBinaryFileUploadResponse represents a response for the
-// output for testing a model
-message TestUserModelBinaryFileUploadResponse {
-  // The task type
+// TriggerOrganizationModelBinaryFileUploadResponse contains the model inference results.
+message TriggerOrganizationModelBinaryFileUploadResponse {
+  // Task type.
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
-  // The task output from a model
+  // Model inference outputs.
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
