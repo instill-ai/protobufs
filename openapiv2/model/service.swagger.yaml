@@ -761,6 +761,567 @@ paths:
             $ref: '#/definitions/ModelPublicServiceTriggerUserModelBody'
       tags:
         - ModelPublicService
+  /v1alpha/{organization_name}/models:
+    get:
+      summary: List organization models
+      description: |-
+        Returns a paginated list of models that belong to the specified organization. The
+        parent organization may be different from the authenticated organization, in which case
+        the results will contain the models that are visible to the latter.
+      operationId: ModelPublicService_ListOrganizationModels
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationModelsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The parent resource, i.e., the organization that created the models.
+            - Format: `organizations/{organizations.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of models to return. If this parameter is unspecified,
+            at most 10 models will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: show_deleted
+          description: Include soft-deleted models in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - ModelPublicService
+    post:
+      summary: Create a new model
+      description: |-
+        Creates a new model under the parenthood of a organization. This is an
+        asynchronous endpoint, i.e., the server will not wait for the model to be
+        created in order to respond. Instead, it will return a response with the
+        necessary information to access the result and status of the creation
+        operation.
+      operationId: ModelPublicService_CreateOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The parent resource, i.e., the organization that creates the model.
+            Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: model
+          description: The properties of the model to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaModel'
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}:
+    get:
+      summary: Get a model
+      description: Returns the detail of a model, accessing it by the model ID and its parent organization.
+      operationId: ModelPublicService_GetOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - ModelPublicService
+    delete:
+      summary: Delete a model
+      description: |-
+        Deletes a model, accesing it by its resource name, which is defined by the
+        parent organization and the ID of the model.
+      operationId: ModelPublicService_DeleteOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+      tags:
+        - ModelPublicService
+  /v1alpha/{model_name_1}:
+    patch:
+      summary: Update a model
+      description: |-
+        Updates a model, accessing it by its resource name, which is defined by
+        the parent organization and the ID of the model.
+
+        In REST requests, only the supplied model fields will be taken into
+        account when updating the resource.
+      operationId: ModelPublicService_UpdateOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: model_name_1
+          description: |-
+            The resource name of the model, which allows its access by owner and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: model
+          description: The model to update
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Model UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Model resource ID (used in `name` as the last segment). This conforms to
+                  RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+                  character a letter, the last a letter or a number, and a 63 character
+                  maximum.
+              description:
+                type: string
+                description: Model description.
+              model_definition:
+                type: string
+                description: The model definition that has been used to import the model.
+              configuration:
+                type: object
+                description: |-
+                  Model configuration. This field is validated against the model
+                  specification in the model definition (i.e. the `model_spec` field in the
+                  model definition).
+              task:
+                $ref: '#/definitions/v1alphaTask'
+                description: Model task.
+                readOnly: true
+              state:
+                $ref: '#/definitions/ModelState'
+                description: Model state.
+                readOnly: true
+              visibility:
+                $ref: '#/definitions/v1alphaModelVisibility'
+                description: Model visibility.
+                readOnly: true
+              create_time:
+                type: string
+                format: date-time
+                description: Model creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Model update time.
+                readOnly: true
+              delete_time:
+                type: string
+                format: date-time
+                description: Model deletion time.
+                readOnly: true
+              owner_name:
+                type: string
+                description: Resource name of the owner.
+                readOnly: true
+              owner:
+                type: object
+                description: Owner details, such as the profile data.
+                readOnly: true
+            title: The model to update
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/rename:
+    post:
+      summary: Rename a model
+      description: |-
+        Renames a model, accesing it by its resource name, which is defined by the
+        parent organization and the ID of the model.
+      operationId: ModelPublicService_RenameOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceRenameOrganizationModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/publish:
+    post:
+      summary: Publish a model
+      description: |-
+        Updates the visibility in a model to PUBLIC. The model is accessed by its
+        resource name, defined by the model ID and its parent organization.
+      operationId: ModelPublicService_PublishOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaPublishOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServicePublishOrganizationModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/unpublish:
+    post:
+      summary: Unpublish a model
+      description: |-
+        Updates the visibility in a model to PRIVATE. The model is accessed by its
+        resource name, defined by the model ID and its parent organization.
+      operationId: ModelPublicService_UnpublishOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUnpublishOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceUnpublishOrganizationModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/deploy:
+    post:
+      summary: Deploy a model
+      description: |-
+        Transitions the model into an ONLINE state. The model is accessed by its
+        resource name, defined by the model ID and its parent organization.
+
+        While this operation is being performed, the state of the model will
+        transition to UNSPECIFIED. As completing the deployment might take time,
+        the server will not wait to complete the operation to return a response.
+        The state of the model can be used to track the completion of the
+        operation. This can be done by using the `watch` operation on the model.
+      operationId: ModelPublicService_DeployOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeployOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceDeployOrganizationModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/undeploy:
+    post:
+      summary: Undeploy a model
+      description: |-
+        Transitions the model into an OFFLINE state. The model is accessed by its
+        resource name, defined by the model ID and its parent organization.
+
+        While this operation is being performed, the state of the model will
+        transition to UNSPECIFIED. As completing the teardown might take time,
+        the server will not wait to complete the operation to return a response.
+        The state of the model can be used to track the completion of the
+        operation. This can be done by using the `watch` operation on the model.
+      operationId: ModelPublicService_UndeployOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUndeployOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceUndeployOrganizationModelBody'
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_card_name}:
+    get:
+      summary: Get a model card
+      description: |-
+        Returns the README file that accompanies a model, describing it and
+        enhancing it with metadata. The model is accessed by its resource name.
+      operationId: ModelPublicService_GetOrganizationModelCard
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOrganizationModelCardResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_card_name
+          description: |-
+            The resource name of the model card, which allows its access by parent
+            organization and model ID.
+            - Format: `organizations/{organization.id}/models/{model.id}/readme`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+/readme
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/watch:
+    get:
+      summary: Watch the state of a model
+      description: |-
+        Returns the state of a model. The deploy / undeploy actions take some
+        time, during which a model will be in an UNSPECIFIED state. This endpoint
+        allows clients to track the state and progress of the model.
+      operationId: ModelPublicService_WatchOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/trigger:
+    post:
+      summary: Trigger model inference
+      description: |-
+        Triggers a deployed model to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerOrganizationModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerOrganizationModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model , which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerOrganizationModelBody'
+      tags:
+        - ModelPublicService
   /v1alpha/{name}:
     get:
       summary: Get the details of a long-running operation
@@ -813,14 +1374,33 @@ definitions:
       - SERVING_STATUS_SERVING: Serving status: SERVING
        - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
     title: ServingStatus enumerates the status of a queried service
+  ModelPublicServiceDeployOrganizationModelBody:
+    type: object
+    description: |-
+      DeployOrganizationModelRequest represents a request to set a model to an ONLINE
+      state.
   ModelPublicServiceDeployUserModelBody:
     type: object
     description: |-
       DeployUserModelRequest represents a request to set a model to an ONLINE
       state.
+  ModelPublicServicePublishOrganizationModelBody:
+    type: object
+    description: PublisOrganizationhModelRequest represents a request to publish a model.
   ModelPublicServicePublishUserModelBody:
     type: object
     description: PublisUserhModelRequest represents a request to publish a model.
+  ModelPublicServiceRenameOrganizationModelBody:
+    type: object
+    properties:
+      new_model_id:
+        type: string
+        description: |-
+          The new resource ID. This will transform the resource name into
+          `organizations/{organization.id}/models/{new_model_id}`.
+    title: RenameOrganizationModelRequest represents a request to rename a model
+    required:
+      - new_model_id
   ModelPublicServiceRenameUserModelBody:
     type: object
     properties:
@@ -832,6 +1412,18 @@ definitions:
     title: RenameUserModelRequest represents a request to rename a model
     required:
       - new_model_id
+  ModelPublicServiceTriggerOrganizationModelBody:
+    type: object
+    properties:
+      task_inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: TriggerOrganizationModelRequest represents a request to trigger a model inference.
+    required:
+      - task_inputs
   ModelPublicServiceTriggerUserModelBody:
     type: object
     properties:
@@ -844,11 +1436,19 @@ definitions:
     description: TriggerUserModelRequest represents a request to trigger a model inference.
     required:
       - task_inputs
+  ModelPublicServiceUndeployOrganizationModelBody:
+    type: object
+    description: |-
+      UndeployOrganizationModelRequest represents a request to set a model to an OFFLINE
+      state.
   ModelPublicServiceUndeployUserModelBody:
     type: object
     description: |-
       UndeployUserModelRequest represents a request to set a model to an OFFLINE
       state.
+  ModelPublicServiceUnpublishOrganizationModelBody:
+    type: object
+    description: UnpublishOrganizationModelRequest represents a request to unpublish a model.
   ModelPublicServiceUnpublishUserModelBody:
     type: object
     description: UnpublishUserModelRequest represents a request to unpublish a model.
@@ -1159,6 +1759,26 @@ definitions:
         description: Score.
         readOnly: true
     description: ClassificationOutput contains the result of an image classification task.
+  v1alphaCreateOrganizationModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      CreateOrganizationModelBinaryFileUploadResponse contains the information to access
+      the status of the model creation operation.
+  v1alphaCreateOrganizationModelResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      CreateOrganizationModelResponse contains the information to access the status of the
+      model creation operation.
   v1alphaCreateUserModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -1179,6 +1799,9 @@ definitions:
     description: |-
       CreateUserModelResponse contains the information to access the status of the
       model creation operation.
+  v1alphaDeleteOrganizationModelResponse:
+    type: object
+    description: DeleteOrganizationModelResponse is an empty response.
   v1alphaDeleteResourceResponse:
     type: object
     title: DeleteResourceResponse represents an empty response
@@ -1192,6 +1815,13 @@ definitions:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Deploy operation message
     title: DeployModelAdminResponse represents a response for a deployed model
+  v1alphaDeployOrganizationModelResponse:
+    type: object
+    properties:
+      model_id:
+        type: string
+        description: ID of the deployed model, e.g. `llava-7b`.
+    description: DeployOrganizationModelResponse contains the ID of the deployed model.
   v1alphaDeployUserModelResponse:
     type: object
     properties:
@@ -1272,6 +1902,20 @@ definitions:
     description: |-
       GetModelOperationRequest represents a request to query a long-running
       operation.
+  v1alphaGetOrganizationModelCardResponse:
+    type: object
+    properties:
+      readme:
+        $ref: '#/definitions/v1alphaModelCard'
+        description: A model card resource.
+    description: GetOrganizationModelCardResponse contains the model's README card.
+  v1alphaGetOrganizationModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        description: The model resource.
+    description: GetOrganizationModelResponse contains the requested model.
   v1alphaGetResourceResponse:
     type: object
     properties:
@@ -1550,6 +2194,23 @@ definitions:
         format: int32
         description: Total number of models.
     description: ListModelsResponse contains a list of models.
+  v1alphaListOrganizationModelsResponse:
+    type: object
+    properties:
+      models:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModel'
+        description: A list of model resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of models.
+    description: ListOrganizationModelsResponse contains a list of models.
   v1alphaListUserModelsResponse:
     type: object
     properties:
@@ -1853,6 +2514,13 @@ definitions:
         type: string
         description: Base64-encoded image.
     description: PromptImage is an image input for model inference.
+  v1alphaPublishOrganizationModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        description: The published model resource.
+    description: PublishOrganizationModelResponse contains a published model.
   v1alphaPublishUserModelResponse:
     type: object
     properties:
@@ -1874,6 +2542,13 @@ definitions:
        - RELEASE_STAGE_BETA: Beta.
        - RELEASE_STAGE_GENERALLY_AVAILABLE: Generally available.
        - RELEASE_STAGE_CUSTOM: Custom.
+  v1alphaRenameOrganizationModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        description: The renamed model resource.
+    description: RenameOrganizationModelResponse contains a renamed model.
   v1alphaRenameUserModelResponse:
     type: object
     properties:
@@ -2274,6 +2949,35 @@ definitions:
         description: A list of generated images, encoded in base64.
         readOnly: true
     description: TextToImageOutput contains the result of a text-to-image task.
+  v1alphaTriggerOrganizationModelBinaryFileUploadResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        description: Task type.
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        description: Model inference outputs.
+    description: TriggerOrganizationModelBinaryFileUploadResponse contains the model inference results.
+    required:
+      - task
+      - task_outputs
+  v1alphaTriggerOrganizationModelResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        description: Task type.
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        description: Model inference outputs.
+    description: TriggerOrganizationModelResponse contains the model inference results.
   v1alphaTriggerUserModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -2310,6 +3014,13 @@ definitions:
         $ref: '#/definitions/googlelongrunningOperation'
         title: Undeploy operation message
     title: UndeployModelAdminResponse represents a response for a undeployed model
+  v1alphaUndeployOrganizationModelResponse:
+    type: object
+    properties:
+      model_id:
+        type: string
+        description: ID of the undeployed model, e.g. `llava-7b`.
+    description: UndeployOrganizationModelResponse contains the ID of the undeployed model.
   v1alphaUndeployUserModelResponse:
     type: object
     properties:
@@ -2317,6 +3028,13 @@ definitions:
         type: string
         description: ID of the undeployed model, e.g. `llava-7b`.
     description: UndeployUserModelResponse contains the ID of the undeployed model.
+  v1alphaUnpublishOrganizationModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        description: The unpublished model resource.
+    description: UnpublishOrganizationModelResponse contains an unpublished model.
   v1alphaUnpublishUserModelResponse:
     type: object
     properties:
@@ -2343,6 +3061,13 @@ definitions:
         description: The task outputs.
         readOnly: true
     description: UnspecifiedOutput contains the result of an unspecified task.
+  v1alphaUpdateOrganizationModelResponse:
+    type: object
+    properties:
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        description: The updated model resource.
+    description: UpdateOrganizationModelResponse contains the updated model.
   v1alphaUpdateResourceResponse:
     type: object
     properties:
@@ -2424,6 +3149,19 @@ definitions:
     description: |-
       VisualQuestionAnsweringOutput contains the result of a visual
       question-answering task.
+  v1alphaWatchOrganizationModelResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/ModelState'
+        description: State.
+      progress:
+        type: integer
+        format: int32
+        description: |-
+          Long-running operation progress. If there are no ongoing operations, the
+          value will be 0.
+    description: WatchOrganizationModelResponse contains the state and progress of a model.
   v1alphaWatchUserModelResponse:
     type: object
     properties:
