@@ -3389,7 +3389,49 @@ paths:
           pattern: organizations/[^/]+/connectors/[^/]+
       tags:
         - PipelinePublicService
+  /v1beta/check-name:
+    post:
+      summary: Check the availibity of a resource name
+      description: |-
+        Check the availibity of a resource name. The name should be in the formats:
+         - users/<user_id>/pipelines/<pipeline_id>
+         - users/<user_id>/connectors/<connector_id>
+         - organizations/<org_id>/pipelines/<pipeline_id>
+         - organizations/<org_id>/connectors/<connector_id>
+      operationId: PipelinePublicService_CheckName
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCheckNameResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          description: |-
+            CheckNameRequest represents a request to verify if a name is
+            available.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaCheckNameRequest'
+      tags:
+        - PipelinePublicService
 definitions:
+  CheckNameResponseName:
+    type: string
+    enum:
+      - NAME_AVAILABLE
+      - NAME_UNAVAILABLE
+    description: |-
+      - NAME_AVAILABLE: Available.
+       - NAME_UNAVAILABLE: Unavailable.
+    title: Availability of Name
   HealthCheckResponseServingStatus:
     type: string
     enum:
@@ -3909,6 +3951,31 @@ definitions:
         $ref: '#/definitions/v1betaConnectorState'
         description: Connector state.
     description: CheckConnectorResponse contains the connector's current state.
+  v1betaCheckNameRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        title: |-
+          The name of the resource to be checked, should be in the formats:
+           - users/<user_id>/pipelines/<pipeline_id>
+           - users/<user_id>/connectors/<connector_id>
+           - organizations/<org_id>/pipelines/<pipeline_id>
+           - organizations/<org_id>/connectors/<connector_id>
+    description: |-
+      CheckNameRequest represents a request to verify if a name is
+      available.
+    required:
+      - name
+  v1betaCheckNameResponse:
+    type: object
+    properties:
+      availability:
+        $ref: '#/definitions/CheckNameResponseName'
+        title: Availability
+    description: |-
+      CheckNameResponse contains the availability of a name
+      of resource that's using it.
   v1betaCloneOrganizationPipelineResponse:
     type: object
     properties:

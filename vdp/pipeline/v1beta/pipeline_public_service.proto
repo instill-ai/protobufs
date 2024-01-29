@@ -9,6 +9,7 @@ import "google/api/visibility.proto";
 // OpenAPI definition
 import "protoc-gen-openapiv2/options/annotations.proto";
 // VDP definitions
+import "vdp/pipeline/v1beta/common.proto";
 import "vdp/pipeline/v1beta/connector.proto";
 import "vdp/pipeline/v1beta/connector_definition.proto";
 import "vdp/pipeline/v1beta/operator_definition.proto";
@@ -890,6 +891,21 @@ service PipelinePublicService {
   // Tests the connection on an organization-owned connector.
   rpc TestOrganizationConnector(TestOrganizationConnectorRequest) returns (TestOrganizationConnectorResponse) {
     option (google.api.http) = {post: "/v1beta/{name=organizations/*/connectors/*}/testConnection"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Check the availibity of a resource name
+  //
+  // Check the availibity of a resource name. The name should be in the formats:
+  //  - users/<user_id>/pipelines/<pipeline_id>
+  //  - users/<user_id>/connectors/<connector_id>
+  //  - organizations/<org_id>/pipelines/<pipeline_id>
+  //  - organizations/<org_id>/connectors/<connector_id>
+  rpc CheckName(CheckNameRequest) returns (CheckNameResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/check-name"
+      body: "*"
+    };
     option (google.api.method_signature) = "name";
   }
 }

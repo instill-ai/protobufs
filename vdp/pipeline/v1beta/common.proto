@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package vdp.pipeline.v1beta;
 
+import "google/api/field_behavior.proto";
+
 // Role describes the permissions a user has over a resource.
 enum Role {
   // Unspecified, equivalent to VIEWER.
@@ -59,4 +61,32 @@ message Permission {
   bool can_edit = 1;
   // Defines whether the resource can be executed.
   bool can_trigger = 2;
+}
+
+// CheckNameRequest represents a request to verify if a name is
+// available.
+message CheckNameRequest {
+  // The name of the resource to be checked, should be in the formats:
+  //  - users/<user_id>/pipelines/<pipeline_id>
+  //  - users/<user_id>/connectors/<connector_id>
+  //  - organizations/<org_id>/pipelines/<pipeline_id>
+  //  - organizations/<org_id>/connectors/<connector_id>
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CheckNameResponse contains the availability of a name
+// of resource that's using it.
+message CheckNameResponse {
+  // Availability of Name
+  enum Name {
+    // Unspecified.
+    NAME_UNSPECIFIED = 0;
+    // Available.
+    NAME_AVAILABLE = 1;
+    // Unavailable.
+    NAME_UNAVAILABLE = 2;
+  }
+
+  // Availability
+  Name availability = 1;
 }
