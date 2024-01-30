@@ -535,7 +535,9 @@ paths:
   /v1beta/{user_pipeline_name}/clone:
     post:
       summary: Clone a pipeline owned by a user
-      description: Clone a pipeline owned by a user, the target pipeline can be under a user or organization namespace.
+      description: |-
+        Clones a pipeline owned by a user. The new pipeline may have a different
+        parent, and this can be either a user or an organization.
       operationId: PipelinePublicService_CloneUserPipeline
       responses:
         "200":
@@ -1508,7 +1510,9 @@ paths:
   /v1beta/{user_pipeline_name_1}/clone:
     post:
       summary: Clone a pipeline owned by an organization
-      description: Clone a pipeline owned by an organization, the target pipeline can be under a user or organization namespace.
+      description: |-
+        Clones a pipeline owned by an organization. The new pipeline may have a
+        different parent, and this can be either a user or an organization.
       operationId: PipelinePublicService_CloneOrganizationPipeline
       responses:
         "200":
@@ -1525,9 +1529,9 @@ paths:
       parameters:
         - name: user_pipeline_name_1
           description: |-
-            The resource name of the pipeline, which allows its access by parent user
-            and ID.
-            - Format: `organizations/{org.id}/pipelines/{pipeline.id}`.
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
           in: path
           required: true
           type: string
@@ -3393,11 +3397,8 @@ paths:
     post:
       summary: Check the availibity of a resource name
       description: |-
-        Check the availibity of a resource name. The name should be in the formats:
-         - users/<user_id>/pipelines/<pipeline_id>
-         - users/<user_id>/connectors/<connector_id>
-         - organizations/<org_id>/pipelines/<pipeline_id>
-         - organizations/<org_id>/connectors/<connector_id>
+        Check whether a resource name is already in use. Currently this endpoint
+        only supports pipeline and connector resource names.
       operationId: PipelinePublicService_CheckName
       responses:
         "200":
@@ -3429,9 +3430,10 @@ definitions:
       - NAME_AVAILABLE
       - NAME_UNAVAILABLE
     description: |-
-      - NAME_AVAILABLE: Available.
+      Name defines the availability of a resource name.
+
+       - NAME_AVAILABLE: Available.
        - NAME_UNAVAILABLE: Unavailable.
-    title: Availability of Name
   HealthCheckResponseServingStatus:
     type: string
     enum:
@@ -3447,9 +3449,13 @@ definitions:
       target:
         type: string
         title: |-
-          The target pipeline
-          - Format: `users/{user.id}/pipelines/{pipeline.id}` or `organizations/{org.id}/pipelines/{pipeline.id}`
-    description: CloneOrganizationPipelineRequest represents a request to clone a pipeline owned by a organization.
+          The target pipeline name. It can be under a user or an organization
+          namespace, so the following formats are accepted:
+          - `users/{user.id}/pipelines/{pipeline.id}`
+          - `organizations/{organization.id}/pipelines/{pipeline.id}`
+    description: |-
+      CloneOrganizationPipelineRequest represents a request to clone a pipeline
+      owned by an organization.
     required:
       - target
   PipelinePublicServiceCloneUserPipelineBody:
@@ -3458,9 +3464,13 @@ definitions:
       target:
         type: string
         title: |-
-          The target pipeline
-          - Format: `users/{user.id}/pipelines/{pipeline.id}` or `organizations/{org.id}/pipelines/{pipeline.id}`
-    description: CloneUserPipelineRequest represents a request to clone a pipeline owned by a user.
+          The target pipeline name. It can be under a user or an organization
+          namespace, so the following formats are accepted:
+          - `users/{user.id}/pipelines/{pipeline.id}`
+          - `organizations/{organization.id}/pipelines/{pipeline.id}`
+    description: |-
+      CloneUserPipelineRequest represents a request to clone a pipeline owned by a
+      user.
     required:
       - target
   PipelinePublicServiceConnectOrganizationConnectorBody:
@@ -3957,11 +3967,12 @@ definitions:
       name:
         type: string
         title: |-
-          The name of the resource to be checked, should be in the formats:
-           - users/<user_id>/pipelines/<pipeline_id>
-           - users/<user_id>/connectors/<connector_id>
-           - organizations/<org_id>/pipelines/<pipeline_id>
-           - organizations/<org_id>/connectors/<connector_id>
+          The name of the resource to be checked. For the moment, only pipeline and
+          connector names can be checked. The following formats are accepted:
+          - `users/{user.id}/pipelines/{pipeline.id}`
+          - `users/{user.id}/connectors/{connector.id}`
+          - `organizations/{organization.id}/pipelines/{pipeline.id}`
+          - `organizations/{organization.id}/connectors/{connector.id}`
     description: |-
       CheckNameRequest represents a request to verify if a name is
       available.
@@ -3972,10 +3983,8 @@ definitions:
     properties:
       availability:
         $ref: '#/definitions/CheckNameResponseName'
-        title: Availability
-    description: |-
-      CheckNameResponse contains the availability of a name
-      of resource that's using it.
+        description: The availability of the requested name.
+    description: CheckNameResponse contains the availability of a resource name.
   v1betaCloneOrganizationPipelineResponse:
     type: object
     properties:
