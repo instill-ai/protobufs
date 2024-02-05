@@ -2160,7 +2160,8 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+            field).
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2208,7 +2209,8 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+            field).
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2255,7 +2257,8 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+            field).
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2303,7 +2306,8 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+            field).
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -4042,6 +4046,24 @@ definitions:
     required:
       - id
       - definition_name
+  v1betaComponentTask:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The task name, e.g. `TASK_TEXT_GENERATION`.
+        readOnly: true
+      title:
+        type: string
+        description: Title is the task name in a human-friendly format.
+        readOnly: true
+      description:
+        type: string
+        description: Description contains information about the task.
+        readOnly: true
+    description: |-
+      ComponentTask contains information about a task that a component can
+      perform.
   v1betaComponentType:
     type: string
     enum:
@@ -4184,7 +4206,10 @@ definitions:
         readOnly: true
       icon:
         type: string
-        description: Connector definition icon.
+        description: |-
+          Connector definition icon. This is a path that's relative to the root of
+          the connector implementation (see `source_url`) and that allows clients
+          frontend applications to pull and locate the icons.
         readOnly: true
       spec:
         $ref: '#/definitions/v1betaConnectorSpec'
@@ -4212,10 +4237,6 @@ definitions:
           Connector definition custom flag, i.e., whether this is a custom
           connector definition.
         readOnly: true
-      icon_url:
-        type: string
-        description: Connector definition icon URL.
-        readOnly: true
       vendor:
         type: string
         description: Connector definition vendor name.
@@ -4223,6 +4244,25 @@ definitions:
       vendor_attributes:
         type: object
         description: Vendor-specific attributes.
+        readOnly: true
+      source_url:
+        type: string
+        description: |-
+          Source code URL. This points to the source code where the connector is
+          implemented.
+        readOnly: true
+      version:
+        type: string
+        description: |-
+          Connector definition version. This is a string that fulfills the SemVer
+          specification (e.g. `1.0.0-beta`).
+        readOnly: true
+      tasks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaComponentTask'
+        description: List of tasks that can be executed by the connector.
         readOnly: true
     description: |-
       A Connector is a type of pipeline component that queries, processes or sends
@@ -4241,7 +4281,8 @@ definitions:
     description: |-
       View defines how a connector definition is presented.
 
-       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+      field).
        - VIEW_FULL: Full representation.
   v1betaConnectorSpec:
     type: object
@@ -4803,7 +4844,10 @@ definitions:
         readOnly: true
       icon:
         type: string
-        description: Operator definition icon.
+        description: |-
+          Operator definition icon. This is a path that's relative to the root of
+          the operator implementation (see `source_url`) and that allows clients
+          frontend applications to pull and locate the icons.
         readOnly: true
       spec:
         $ref: '#/definitions/v1betaOperatorSpec'
@@ -4825,9 +4869,24 @@ definitions:
         type: boolean
         description: The custom flag determines whether this is a custom operator definition.
         readOnly: true
-      icon_url:
+      source_url:
         type: string
-        description: Operator definition icon URL.
+        description: |-
+          Source code URL. This points to the source code where the operator is
+          implemented.
+        readOnly: true
+      version:
+        type: string
+        description: |-
+          Operator definition version. This is a string that fulfills the SemVer
+          specification (e.g. `1.0.0-beta`).
+        readOnly: true
+      tasks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaComponentTask'
+        description: List of tasks that can be executed by the operator.
         readOnly: true
     description: |-
       An Operator is a type of pipeline component that performs data injection and
@@ -4844,7 +4903,8 @@ definitions:
     description: |-
       View defines how an operator definition is presented.
 
-       - VIEW_BASIC: Default view, only includes basic information.
+       - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+      field).
        - VIEW_FULL: Full representation.
   v1betaOperatorSpec:
     type: object
