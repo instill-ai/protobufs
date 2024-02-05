@@ -71,13 +71,20 @@ enum MembershipState {
   MEMBERSHIP_STATE_PENDING = 2;
 }
 
-// User describes an individual that interacts with Instill AI.
-message User {
-  option (google.api.resource) = {
-    type: "api.instill.tech/User"
-    pattern: "users/{user.id}"
-    pattern: "users/{user.uid}"
-  };
+// OnboardingStatus describes the status of the user onboarding process.
+enum OnboardingStatus {
+  // Unspecified.
+  ONBOARDING_STATUS_UNSPECIFIED = 0;
+  // In progress, i.e., the user has initiated the onboarding process
+  // but has not yet completed it.
+  ONBOARDING_STATUS_IN_PROGRESS = 1;
+  // Completed.
+  ONBOARDING_STATUS_COMPLETED = 2;
+}
+
+// AuthenticatedUser describes the authenticated user that interacts with Instill AI.
+message AuthenticatedUser {
+  option (google.api.resource) = {type: "api.instill.tech/AuthenticatedUser"};
 
   // The name of the user, defined by its ID.
   // - Format: `users/{user.id}`.
@@ -105,7 +112,7 @@ message User {
   // Last name.
   optional string last_name = 10 [(google.api.field_behavior) = OPTIONAL];
   // Company or institution name.
-  optional string org_name = 11 [(google.api.field_behavior) = OPTIONAL];
+  optional string company_name = 11 [(google.api.field_behavior) = OPTIONAL];
   // Role.
   //
   // It must be one of the following allowed roles:
@@ -119,12 +126,49 @@ message User {
   optional string role = 12 [(google.api.field_behavior) = OPTIONAL];
   // This defines whether the user is subscribed to Instill AI's newsletter.
   bool newsletter_subscription = 13 [(google.api.field_behavior) = REQUIRED];
-  // Console cookie token.
-  optional string cookie_token = 14 [(google.api.field_behavior) = OPTIONAL];
   // Profile Avatar in base64.
   optional string profile_avatar = 15 [(google.api.field_behavior) = OPTIONAL];
   // Profile Data.
   optional google.protobuf.Struct profile_data = 16 [(google.api.field_behavior) = OPTIONAL];
+  // Onboarding Status.
+  OnboardingStatus onboarding_status = 17 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// User describes an individual that interacts with Instill AI.
+message User {
+  option (google.api.resource) = {
+    type: "api.instill.tech/User"
+    pattern: "users/{user.id}"
+    pattern: "users/{user.uid}"
+  };
+
+  // The name of the user, defined by its ID.
+  // - Format: `users/{user.id}`.
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // User UUID. This field is optionally set by users on creation (it will be
+  // server-generated if unspecified).
+  optional string uid = 2 [(google.api.field_behavior) = IMMUTABLE];
+  // Resource ID (used in `name` as the last segment). This conforms to
+  // RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+  // character a letter, the last a letter or a number, and a 63 character
+  // maximum.
+  //
+  // Note that the ID can be updated.
+  string id = 3 [(google.api.field_behavior) = REQUIRED];
+  // Creation time.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Update time.
+  google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Stripe customer ID. This field is used in Instill Cloud.
+  string customer_id = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // First name.
+  optional string first_name = 7 [(google.api.field_behavior) = OPTIONAL];
+  // Last name.
+  optional string last_name = 8 [(google.api.field_behavior) = OPTIONAL];
+  // Profile Avatar in base64.
+  optional string profile_avatar = 9 [(google.api.field_behavior) = OPTIONAL];
+  // Profile Data.
+  optional google.protobuf.Struct profile_data = 10 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListUsersAdminRequest represents a request to list all users by admin
@@ -300,11 +344,21 @@ message GetUserResponse {
   User user = 1;
 }
 
+// GetAuthenticatedUserRequest represents a request to get the
+// authenticated user.
+message GetAuthenticatedUserRequest {}
+
+// GetAuthenticatedUserResponse contains the requested authenticated user.
+message GetAuthenticatedUserResponse {
+  // The authenticated user resource.
+  AuthenticatedUser user = 1;
+}
+
 // PatchAuthenticatedUserRequest represents a request to update the
 // authenticated user.
 message PatchAuthenticatedUserRequest {
   // The user fields that will replace the existing ones.
-  User user = 1;
+  AuthenticatedUser user = 1;
   // The update mask specifies the subset of fields that should be modified.
   //
   // For more information about this field, see
@@ -316,7 +370,7 @@ message PatchAuthenticatedUserRequest {
 // the authenticated user resource
 message PatchAuthenticatedUserResponse {
   // The updated user resource.
-  User user = 1;
+  AuthenticatedUser user = 1;
 }
 
 // CheckNamespaceRequest represents a request to verify if a namespace is

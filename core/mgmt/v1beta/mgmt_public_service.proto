@@ -64,6 +64,28 @@ service MgmtPublicService {
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
+  // Get the authenticated user
+  //
+  // Accesses the authenticated user.
+  rpc GetAuthenticatedUser(GetAuthenticatedUserRequest) returns (GetAuthenticatedUserResponse) {
+    option (google.api.http) = {get: "/v1beta/user"};
+    option (google.api.method_signature) = "user,update_mask";
+  }
+
+  // Update the authenticated user
+  //
+  // Accesses and updates the authenticated user.
+  //
+  // In REST requests, only the supplied user fields will be taken into account
+  // when updating the resource.
+  rpc PatchAuthenticatedUser(PatchAuthenticatedUserRequest) returns (PatchAuthenticatedUserResponse) {
+    option (google.api.http) = {
+      patch: "/v1beta/user"
+      body: "user"
+    };
+    option (google.api.method_signature) = "user,update_mask";
+  }
+
   // List users
   //
   // Returns a paginated list of users.
@@ -78,21 +100,6 @@ service MgmtPublicService {
     option (google.api.http) = {get: "/v1beta/{name=users/*}"};
     option (google.api.method_signature) = "name";
     option (google.api.method_visibility).restriction = "INTERNAL";
-  }
-
-  // Update a user
-  //
-  // Accesses and updates a user by ID. The authenticated user must match the
-  // target in order to modify it.
-  //
-  // In REST requests, only the supplied user fields will be taken into account
-  // when updating the resource.
-  rpc PatchAuthenticatedUser(PatchAuthenticatedUserRequest) returns (PatchAuthenticatedUserResponse) {
-    option (google.api.http) = {
-      patch: "/v1beta/users/me"
-      body: "user"
-    };
-    option (google.api.method_signature) = "user,update_mask";
   }
 
   // List user memberships
