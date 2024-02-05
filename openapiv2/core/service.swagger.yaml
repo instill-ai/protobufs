@@ -52,6 +52,54 @@ paths:
           pattern: organizations/[^/]+/memberships/[^/]+
       tags:
         - MgmtPublicService
+  /v1beta/user:
+    get:
+      summary: Get the authenticated user
+      description: Accesses the authenticated user.
+      operationId: MgmtPublicService_GetAuthenticatedUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetAuthenticatedUserResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - MgmtPublicService
+    patch:
+      summary: Update the authenticated user
+      description: |-
+        Accesses and updates the authenticated user.
+
+        In REST requests, only the supplied user fields will be taken into account
+        when updating the resource.
+      operationId: MgmtPublicService_PatchAuthenticatedUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaPatchAuthenticatedUserResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user
+          description: The user fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaAuthenticatedUser'
+      tags:
+        - MgmtPublicService
   /v1beta/users:
     get:
       summary: List users
@@ -104,37 +152,6 @@ paths:
           in: query
           required: false
           type: string
-      tags:
-        - MgmtPublicService
-  /v1beta/users/me:
-    patch:
-      summary: Update a user
-      description: |-
-        Accesses and updates a user by ID. The authenticated user must match the
-        target in order to modify it.
-
-        In REST requests, only the supplied user fields will be taken into account
-        when updating the resource.
-      operationId: MgmtPublicService_PatchAuthenticatedUser
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaPatchAuthenticatedUserResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user
-          description: The user fields that will replace the existing ones.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1betaUser'
       tags:
         - MgmtPublicService
   /v1beta/{user_membership_name}:
@@ -389,6 +406,85 @@ definitions:
        - TASK_IMAGE_TO_IMAGE: Image to Image - generate an image from another image.
        - TASK_TEXT_EMBEDDINGS: Text Embeddings - generate an embedding (a representation as coordinates) from a text input.
        - TASK_SPEECH_RECOGNITION: Speech Recognition - transcribe the words in an audio input.
+  v1betaAuthenticatedUser:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the user, defined by its ID.
+          - Format: `users/{user.id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: |-
+          User UUID. This field is optionally set by users on creation (it will be
+          server-generated if unspecified).
+      id:
+        type: string
+        description: |-
+          Resource ID (used in `name` as the last segment). This conforms to
+          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+          character a letter, the last a letter or a number, and a 63 character
+          maximum.
+
+          Note that the ID can be updated.
+      create_time:
+        type: string
+        format: date-time
+        description: Creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Update time.
+        readOnly: true
+      email:
+        type: string
+        description: Email.
+      customer_id:
+        type: string
+        description: Stripe customer ID. This field is used in Instill Cloud.
+        readOnly: true
+      first_name:
+        type: string
+        description: First name.
+      last_name:
+        type: string
+        description: Last name.
+      company_name:
+        type: string
+        description: Company or institution name.
+      role:
+        type: string
+        description: |-
+          Role.
+
+          It must be one of the following allowed roles:
+          - `manager`
+          - `ai-researcher`
+          - `ai-engineer`
+          - `data-engineer`
+          - `data-scientist`
+          - `analytics-engineer`
+          - `hobbyist`
+      newsletter_subscription:
+        type: boolean
+        description: This defines whether the user is subscribed to Instill AI's newsletter.
+      profile_avatar:
+        type: string
+        description: Profile Avatar in base64.
+      profile_data:
+        type: object
+        description: Profile Data.
+      onboarding_status:
+        $ref: '#/definitions/v1betaOnboardingStatus'
+        description: Onboarding Status.
+    description: AuthenticatedUser describes the authenticated user that interacts with Instill AI.
+    required:
+      - id
+      - email
+      - newsletter_subscription
   v1betaConnectorUsageData:
     type: object
     properties:
@@ -432,6 +528,13 @@ definitions:
   v1betaDeleteUserMembershipResponse:
     type: object
     description: DeleteUserMembershipResponse is an empty response.
+  v1betaGetAuthenticatedUserResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v1betaAuthenticatedUser'
+        description: The authenticated user resource.
+    description: GetAuthenticatedUserResponse contains the requested authenticated user.
   v1betaGetBulkCumulativeModelOnlineRecordsResponse:
     type: object
     properties:
@@ -1033,6 +1136,17 @@ definitions:
   v1betaNullMessage:
     type: object
     title: Nul Message for gRPC REQ/RES
+  v1betaOnboardingStatus:
+    type: string
+    enum:
+      - ONBOARDING_STATUS_IN_PROGRESS
+      - ONBOARDING_STATUS_COMPLETED
+    description: |-
+      OnboardingStatus describes the status of the user onboarding process.
+
+       - ONBOARDING_STATUS_IN_PROGRESS: In progress, i.e., the user has initiated the onboarding process
+      but has not yet completed it.
+       - ONBOARDING_STATUS_COMPLETED: Completed.
   v1betaOrganization:
     type: object
     properties:
@@ -1100,7 +1214,7 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1betaUser'
+        $ref: '#/definitions/v1betaAuthenticatedUser'
         description: The updated user resource.
     title: |-
       PatchAuthenticatedUserResponse contains the updated user.
@@ -1452,9 +1566,6 @@ definitions:
         format: date-time
         description: Update time.
         readOnly: true
-      email:
-        type: string
-        description: Email.
       customer_id:
         type: string
         description: Stripe customer ID. This field is used in Instill Cloud.
@@ -1465,28 +1576,6 @@ definitions:
       last_name:
         type: string
         description: Last name.
-      org_name:
-        type: string
-        description: Company or institution name.
-      role:
-        type: string
-        description: |-
-          Role.
-
-          It must be one of the following allowed roles:
-          - `manager`
-          - `ai-researcher`
-          - `ai-engineer`
-          - `data-engineer`
-          - `data-scientist`
-          - `analytics-engineer`
-          - `hobbyist`
-      newsletter_subscription:
-        type: boolean
-        description: This defines whether the user is subscribed to Instill AI's newsletter.
-      cookie_token:
-        type: string
-        description: Console cookie token.
       profile_avatar:
         type: string
         description: Profile Avatar in base64.
@@ -1496,8 +1585,6 @@ definitions:
     description: User describes an individual that interacts with Instill AI.
     required:
       - id
-      - email
-      - newsletter_subscription
   v1betaUserData:
     type: object
     properties:
