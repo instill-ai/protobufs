@@ -8,6 +8,8 @@ import "google/api/resource.proto";
 // Protocol Buffers Well-Known Types
 import "google/protobuf/struct.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+// VDP definitions
+import "vdp/pipeline/v1beta/common.proto";
 
 ////////////////////////////////////
 
@@ -60,7 +62,8 @@ message ConnectorDefinition {
   enum View {
     // Unspecified, equivalent to BASIC.
     VIEW_UNSPECIFIED = 0;
-    // Default view, only includes basic information.
+    // Default view, only includes basic information (removes the `spec`
+    // field).
     VIEW_BASIC = 1;
     // Full representation.
     VIEW_FULL = 2;
@@ -80,7 +83,9 @@ message ConnectorDefinition {
   string title = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Connector definition documentation URL.
   string documentation_url = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Connector definition icon.
+  // Connector definition icon. This is a path that's relative to the root of
+  // the connector implementation (see `source_url`) and that allows clients
+  // frontend applications to pull and locate the icons.
   string icon = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Connector definition specification.
   ConnectorSpec spec = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -95,12 +100,20 @@ message ConnectorDefinition {
   // Connector definition custom flag, i.e., whether this is a custom
   // connector definition.
   bool custom = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Connector definition icon URL.
-  string icon_url = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // field 12 is reserved for 'icon_url'.
+  reserved 12;
   // Connector definition vendor name.
   string vendor = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Vendor-specific attributes.
   google.protobuf.Struct vendor_attributes = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Source code URL. This points to the source code where the connector is
+  // implemented.
+  string source_url = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Connector definition version. This is a string that fulfills the SemVer
+  // specification (e.g. `1.0.0-beta`).
+  string version = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // List of tasks that can be executed by the connector.
+  repeated ComponentTask tasks = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 ///////////////////////////////////////////////////////////////////////
