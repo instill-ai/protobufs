@@ -367,13 +367,6 @@ definitions:
       '@type':
         type: string
     additionalProperties: {}
-  protobufNullValue:
-    type: string
-    description: |-
-      `NullValue` is a singleton enumeration to represent the null value for the
-      `Value` type union.
-
-      The JSON representation for `NullValue` is JSON `null`.
   v1alphaTask:
     type: string
     enum:
@@ -446,15 +439,6 @@ definitions:
         type: string
         description: Stripe customer ID. This field is used in Instill Cloud.
         readOnly: true
-      first_name:
-        type: string
-        description: First name.
-      last_name:
-        type: string
-        description: Last name.
-      company_name:
-        type: string
-        description: Company or institution name.
       role:
         type: string
         description: |-
@@ -471,15 +455,15 @@ definitions:
       newsletter_subscription:
         type: boolean
         description: This defines whether the user is subscribed to Instill AI's newsletter.
-      profile_avatar:
+      cookie_token:
         type: string
-        description: Profile Avatar in base64.
-      profile_data:
-        type: object
-        description: Profile Data.
+        description: Console cookie token.
       onboarding_status:
         $ref: '#/definitions/v1betaOnboardingStatus'
         description: Onboarding Status.
+      profile:
+        $ref: '#/definitions/v1betaUserProfile'
+        description: Profile.
     description: |-
       AuthenticatedUser contains the information of an authenticated user, i.e.,
       the public user information plus some fields that should only be accessed by
@@ -832,7 +816,7 @@ definitions:
     type: object
     properties:
       subscription:
-        $ref: '#/definitions/v1betaSubscription'
+        $ref: '#/definitions/v1betaOrganizationSubscription'
         title: Subscription
     title: GetOrganizationSubscriptionAdminResponse
   v1betaGetPipelineTriggerPriceRequest:
@@ -954,7 +938,7 @@ definitions:
     type: object
     properties:
       subscription:
-        $ref: '#/definitions/v1betaSubscription'
+        $ref: '#/definitions/v1betaUserSubscription'
         title: Subscription
     title: GetUserSubscriptionAdminResponse
   v1betaHealthCheckRequest:
@@ -1182,28 +1166,71 @@ definitions:
         format: date-time
         description: Update time.
         readOnly: true
-      org_name:
-        type: string
-        description: Company or institution name.
-      customer_id:
-        type: string
-        description: Stripe customer ID. This field is used in Instill Cloud.
-        readOnly: true
-      profile_avatar:
-        type: string
-        description: Profile Avatar in base64.
-      profile_data:
-        type: object
-        description: Profile Data.
       owner:
         $ref: '#/definitions/v1betaUser'
         description: The user that owns the organization.
         readOnly: true
+      profile:
+        $ref: '#/definitions/v1betaOrganizationProfile'
+        description: Profile.
     description: |-
       Organizations group several users. As entities, they can own resources such
       as pipelines or releases.
     required:
       - id
+  v1betaOrganizationProfile:
+    type: object
+    properties:
+      display_name:
+        type: string
+        description: Display name.
+      bio:
+        type: string
+        description: Biography.
+      avatar:
+        type: string
+        description: Avatar in base64 format.
+      public_email:
+        type: string
+        description: Public email.
+      social_profile_links:
+        type: object
+        additionalProperties:
+          type: string
+        description: |-
+          Social profile links list the links to the organization's social profiles.
+          The key represents the provider, and the value is the corresponding URL.
+    description: OrganizationProfile describes the public data of an organization.
+  v1betaOrganizationSubscription:
+    type: object
+    properties:
+      plan:
+        $ref: '#/definitions/v1betaOrganizationSubscriptionPlan'
+        description: Plan identifier.
+      detail:
+        $ref: '#/definitions/v1betaStripeSubscriptionDetail'
+        description: Details of the associated Stripe subscription.
+      max_seats:
+        type: integer
+        format: int32
+        description: Maximum number of seats allowed.
+      used_seats:
+        type: integer
+        format: int32
+        description: Number of used seats within the organization subscription.
+    description: OrganizationSubscription details describe the plan (i.e., features) an organization has access to.
+  v1betaOrganizationSubscriptionPlan:
+    type: string
+    enum:
+      - PLAN_FREEMIUM
+      - PLAN_TEAM
+      - PLAN_ENTERPRISE
+    description: |-
+      Enumerates the plan types for the organization subscription.
+
+       - PLAN_FREEMIUM: Freemium plan.
+       - PLAN_TEAM: Team plan.
+       - PLAN_ENTERPRISE: Enterprise plan.
   v1betaOwnerType:
     type: string
     enum:
@@ -1499,13 +1526,30 @@ definitions:
       - token
       - pow
       - session
-  v1betaSubscription:
+  v1betaStripeSubscriptionDetail:
     type: object
     properties:
-      plan:
+      customer_id:
         type: string
-        description: Plan identifier, e.g. `freemium`.
-    description: Subscription details describe the plan (i.e. the features) a user has access to.
+        description: Customer ID associated with the subscription.
+      product_name:
+        type: string
+        description: Product name associated with the subscription in Stripe.
+      id:
+        type: string
+        description: Unique identifier for the subscription.
+      item_id:
+        type: string
+        description: Identifier for the specific item within the subscription.
+      price:
+        type: number
+        format: float
+        description: Price of the subscription.
+      canceled_at:
+        type: integer
+        format: int32
+        description: Optional timestamp indicating when the subscription was canceled, if applicable.
+    description: StripeSubscriptionDetail describes the details of a subscription in Stripe.
   v1betaTimeInterval:
     type: object
     properties:
@@ -1569,22 +1613,9 @@ definitions:
         format: date-time
         description: Update time.
         readOnly: true
-      customer_id:
-        type: string
-        description: Stripe customer ID. This field is used in Instill Cloud.
-        readOnly: true
-      first_name:
-        type: string
-        description: First name.
-      last_name:
-        type: string
-        description: Last name.
-      profile_avatar:
-        type: string
-        description: Profile Avatar in base64.
-      profile_data:
-        type: object
-        description: Profile Data.
+      profile:
+        $ref: '#/definitions/v1betaUserProfile'
+        description: Profile.
     description: |-
       User describes an individual that interacts with Instill AI. It doesn't
       contain any private information about the user.
@@ -1602,6 +1633,52 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1betaUserProfile:
+    type: object
+    properties:
+      display_name:
+        type: string
+        description: Display name.
+      bio:
+        type: string
+        description: Biography.
+      avatar:
+        type: string
+        description: Avatar in base64 format.
+      public_email:
+        type: string
+        description: Public email.
+      company_name:
+        type: string
+        description: Company name.
+      social_profile_links:
+        type: object
+        additionalProperties:
+          type: string
+        description: |-
+          Social profile links list the links to the user's social profiles.
+          The key represents the provider, and the value is the corresponding URL.
+    description: UserProfile describes the public data of a user.
+  v1betaUserSubscription:
+    type: object
+    properties:
+      plan:
+        $ref: '#/definitions/v1betaUserSubscriptionPlan'
+        description: Plan identifier.
+      detail:
+        $ref: '#/definitions/v1betaStripeSubscriptionDetail'
+        description: Details of the associated Stripe subscription.
+    description: UserSubscription details describe the plan (i.e., features) a user has access to.
+  v1betaUserSubscriptionPlan:
+    type: string
+    enum:
+      - PLAN_FREEMIUM
+      - PLAN_PRO
+    description: |-
+      Enumerates the plan types for the user subscription.
+
+       - PLAN_FREEMIUM: Freemium plan.
+       - PLAN_PRO: Pro plan.
   v1betaView:
     type: string
     enum:
