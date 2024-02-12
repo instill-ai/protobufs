@@ -200,11 +200,13 @@ definitions:
       - SERVICE_CONNECTOR
       - SERVICE_MODEL
       - SERVICE_PIPELINE
+      - SERVICE_ARTIFACT
     description: |-
       - SERVICE_MGMT: Service: MGMT
        - SERVICE_CONNECTOR: Service: CONNECTOR
        - SERVICE_MODEL: Service: MODEL
        - SERVICE_PIPELINE: Service: PIPELINE
+       - SERVICE_ARTIFACT: Service: ARTIFACT
     title: Service enumerates the services to collect data from
   UserUsageDataConnectorExecuteData:
     type: object
@@ -399,6 +401,29 @@ definitions:
        - TASK_IMAGE_TO_IMAGE: Image to Image - generate an image from another image.
        - TASK_TEXT_EMBEDDINGS: Text Embeddings - generate an embedding (a representation as coordinates) from a text input.
        - TASK_SPEECH_RECOGNITION: Speech Recognition - transcribe the words in an audio input.
+  v1betaArtifactUsageData:
+    type: object
+    properties:
+      usages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaArtifactUsageDataUserUsageData'
+        title: Usage data of all users in the artifact service
+    title: Artifact service usage data
+  v1betaArtifactUsageDataUserUsageData:
+    type: object
+    properties:
+      owner_uid:
+        type: string
+        title: Owner UUID
+      owner_type:
+        $ref: '#/definitions/v1betaOwnerType'
+        title: Owner type
+    title: Per user usage data in the artifact service
+    required:
+      - owner_uid
+      - owner_type
   v1betaAuthenticatedUser:
     type: object
     properties:
@@ -1518,6 +1543,9 @@ definitions:
       pipeline_usage_data:
         $ref: '#/definitions/v1betaPipelineUsageData'
         title: Pipeline service usage data
+      artifact_usage_data:
+        $ref: '#/definitions/v1betaArtifactUsageData'
+        title: Artifact service usage data
     title: |-
       SessionReport represents a report to be sent to the server that includes the
       usage data of a session
