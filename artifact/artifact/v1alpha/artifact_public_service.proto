@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package artifact.artifact.v1alpha;
+
+// Artifact definitions
+import "artifact/artifact/v1alpha/artifact.proto";
+// Google API
+import "google/api/annotations.proto";
+import "google/api/visibility.proto";
+// OpenAPI definition
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// Artifact
+//
+// ArtifactPublicService exposes the public endpoints that allow clients to
+// manage artifacts.
+service ArtifactPublicService {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {description: "Public Artifact endpoints"};
+
+  // Check if the artifact server is alive
+  //
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md.
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha/__liveness"
+      additional_bindings: [
+        {get: "/v1alpha/health/artifact"}]
+    };
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+  // Check if the artifact server is ready
+  //
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha/__readiness"
+      additional_bindings: [
+        {get: "/v1alpha/ready/artifact"}]
+    };
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+}
