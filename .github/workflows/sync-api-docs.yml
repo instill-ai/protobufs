@@ -1,0 +1,73 @@
+name: Sync docs in ReadMe 🦉
+
+on:
+  push:
+    branches:
+      # This workflow will run every time changes in the OpenAPI docs are
+      # pushed to the `main` branch.
+      - main
+    paths:
+      - 'openapiv2/core/**'
+      - 'openapiv2/model/**'
+      - 'openapiv2/vdp/**'
+
+jobs:
+  sync-openapi-private:
+    name: Keep private (staging) docs in sync with `main`
+    runs-on: ubuntu-latest
+    outputs:
+      should_update_public: ${{ steps.check-new-release.outputs.is_new_release }}
+    steps:
+      - name: Check out repo 📚
+        uses: actions/checkout@v3
+        with:
+          # Needed in checkNewRelease to compare with the previous commit.
+          fetch-depth: 0
+
+      - name: Sync Core 🔮
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/core/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65ca17433dcd850078ffca3f
+
+      - name: Sync Model ⚗️
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/model/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65ca17433dcd850078ffca41
+
+      - name: Sync VDP 💧
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/vdp/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65ca17433dcd850078ffca40
+
+      - name: Check new release 🔍
+        id: check-new-release
+        run: |
+          if [[ `git diff ${{ github.event.before }} ${{ github.event.after }} openapiv2/vdp openapiv2/core openapiv2/model | grep "^+\s\+version"` ]]; then
+            echo 'is_new_release=true' >> $GITHUB_OUTPUT
+          else
+            echo 'is_new_release=false' >> $GITHUB_OUTPUT
+          fi
+
+  sync-openapi-public:
+    name: Sync public docs on new release
+    needs: [sync-openapi-private]
+    runs-on: ubuntu-latest
+    if: needs.sync-openapi-private.outputs.should_update_public == 'true'
+    steps:
+      - name: Check out repo 📚
+        uses: actions/checkout@v3
+
+      - name: Sync Core 🔮
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/core/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=659fcafc3ca8be005651d43f
+
+      - name: Sync Model ⚗️
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/model/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65a6a52ab94959005b83f6fc
+
+      - name: Sync VDP 💧
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/vdp/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65a15372e7857a001655767c
