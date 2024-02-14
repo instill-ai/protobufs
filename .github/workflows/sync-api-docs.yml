@@ -16,6 +16,7 @@ jobs:
     name: Keep private (staging) docs in sync with `main`
     runs-on: ubuntu-latest
     outputs:
+      old_release: ${{ steps.check-new-release.outputs.old_release }}
       new_release: ${{ steps.check-new-release.outputs.new_release }}
     steps:
       - name: Check out repo 📚
@@ -42,10 +43,20 @@ jobs:
       - name: Check new release 🔍
         id: check-new-release
         run: |
-          # If the version in the OpenAPI configuration has changed, set the
-          # new release version (without the "v" prefix) to a variable.
-          if [[ `git diff ${{ github.event.before }} ${{ github.event.after }} common/openapi/v1beta/api_info.conf | grep "^+\s\+version"` ]]; then
-            echo "new_release=$(grep version common/openapi/v1beta/api_info.conf | sed 's/.*\"v\(.*\)\".*/\1/')" >> $GITHUB_OUTPUT
+          # If the version in the OpenAPI configuration has changed, extract
+          # the old and new release versions (without the "v" prefix) to
+          # variables.
+          version_file=common/openapi/v1beta/api_info.conf
+          capture_old='^-\s\+\<version:'
+          capture_new='^+\s\+\<version:'
+          remove_v_prefix='s/.*"v\(.*\)".*/\1/'
+
+          old_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_old | sed $remove_v_prefix)
+          new_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_new | sed $remove_v_prefix)
+
+          if [[ $new_version ]]; then
+            echo "new_release=$new_version" >> $GITHUB_OUTPUT
+            echo "old_release=$old_version" >> $GITHUB_OUTPUT
           fi
 
   sync-openapi-public:
@@ -63,3 +74,9 @@ jobs:
           Release: ${{ needs.sync-openapi-private.outputs.new_release }}
         with:
           rdme: versions:create ${{ env.Release }} --fork 0-beta-staging --codename=${{ env.Release}} --main true --beta true --isPublic true --key=${{ secrets.README_API_KEY }}
+      - name: Delete old version 🧹
+        uses: readmeio/rdme@v8
+        env:
+          OldRelease: ${{ needs.sync-openapi-private.outputs.old_release }}
+        with:
+          rdme: versions:delete ${{ env.OldRelease }} --key=${{ secrets.README_API_KEY }}
