@@ -49,10 +49,10 @@ jobs:
           version_file=common/openapi/v1beta/api_info.conf
           capture_old='^-\s\+\<version:'
           capture_new='^+\s\+\<version:'
-          remove_v_prefix='s/.*"v\(.*\)".*/\1/'
+          extract_version='s/.*"v\(.*\)".*/\1/'
 
-          old_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_old | sed $remove_v_prefix)
-          new_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_new | sed $remove_v_prefix)
+          old_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_old | sed $extract_version)
+          new_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_new | sed $extract_version)
 
           if [[ $new_version ]]; then
             echo "new_release=$new_version" >> $GITHUB_OUTPUT
@@ -74,6 +74,7 @@ jobs:
           Release: ${{ needs.sync-openapi-private.outputs.new_release }}
         with:
           rdme: versions:create ${{ env.Release }} --fork 0-beta-staging --codename=${{ env.Release}} --main true --beta true --isPublic true --key=${{ secrets.README_API_KEY }}
+
       - name: Delete old version 🧹
         uses: readmeio/rdme@v8
         env:
