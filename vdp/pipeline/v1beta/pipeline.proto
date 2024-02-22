@@ -3,6 +3,8 @@ syntax = "proto3";
 package vdp.pipeline.v1beta;
 
 import "common/healthcheck/v1beta/healthcheck.proto";
+// Core definitions
+import "core/mgmt/v1beta/mgmt.proto";
 // Google API
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
@@ -177,8 +179,8 @@ message Pipeline {
   google.protobuf.Struct metadata = 16;
   // Owner Name.
   string owner_name = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Owner details.
-  google.protobuf.Struct owner = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Deleted Fields.
+  reserved 18;
   // Releases holds the history of pipeline versions.
   repeated PipelineRelease releases = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
   // README holds the pipeline documentation.
@@ -187,6 +189,11 @@ message Pipeline {
   Permission permission = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Pipeline visibility.
   Visibility visibility = 22 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline owner.
+  optional core.mgmt.v1beta.Owner owner = 23 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
 }
 
 // TriggerMetadata contains the traces of the pipeline inference.
