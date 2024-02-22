@@ -426,10 +426,6 @@ paths:
                 type: string
                 description: Owner Name.
                 readOnly: true
-              owner:
-                type: object
-                description: Owner details.
-                readOnly: true
               releases:
                 type: array
                 items:
@@ -447,6 +443,10 @@ paths:
               visibility:
                 $ref: '#/definitions/v1betaPipelineVisibility'
                 description: Pipeline visibility.
+                readOnly: true
+              owner:
+                $ref: '#/definitions/v1betaOwner'
+                description: Pipeline owner.
                 readOnly: true
             title: The pipeline fields that will replace the existing ones.
       tags:
@@ -1403,10 +1403,6 @@ paths:
                 type: string
                 description: Owner Name.
                 readOnly: true
-              owner:
-                type: object
-                description: Owner details.
-                readOnly: true
               releases:
                 type: array
                 items:
@@ -1424,6 +1420,10 @@ paths:
               visibility:
                 $ref: '#/definitions/v1betaPipelineVisibility'
                 description: Pipeline visibility.
+                readOnly: true
+              owner:
+                $ref: '#/definitions/v1betaOwner'
+                description: Pipeline owner.
                 readOnly: true
             title: The pipeline fields that will replace the existing ones.
       tags:
@@ -2695,8 +2695,8 @@ paths:
                 description: Owner name.
                 readOnly: true
               owner:
-                type: object
-                description: Owner details.
+                $ref: '#/definitions/v1betaOwner'
+                description: Connector owner.
                 readOnly: true
             title: The connector fields that will replace the existing ones.
             required:
@@ -3183,8 +3183,8 @@ paths:
                 description: Owner name.
                 readOnly: true
               owner:
-                type: object
-                description: Owner details.
+                $ref: '#/definitions/v1betaOwner'
+                description: Connector owner.
                 readOnly: true
             title: The connector fields that will replace the existing ones.
             required:
@@ -3728,16 +3728,6 @@ definitions:
         $ref: '#/definitions/v1betaRole'
         description: Defines the role users will have over the resource.
     description: ShareCode describes a sharing configuration through a link.
-  SharingUser:
-    type: object
-    properties:
-      enabled:
-        type: boolean
-        description: Defines whether the sharing option with this user is enabled.
-      role:
-        $ref: '#/definitions/v1betaRole'
-        description: Defines the role the user will have over the resource.
-    description: Describes the sharing configuration with a given user.
   googlelongrunningOperation:
     type: object
     properties:
@@ -3809,6 +3799,47 @@ definitions:
 
       You can find out more about this error model and how to work with it in the
       [API Design Guide](https://cloud.google.com/apis/design/errors).
+  mgmtv1betaUser:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the user, defined by its ID.
+          - Format: `users/{user.id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: |-
+          User UUID. This field is optionally set by users on creation (it will be
+          server-generated if unspecified).
+      id:
+        type: string
+        description: |-
+          Resource ID (used in `name` as the last segment). This conforms to
+          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+          character a letter, the last a letter or a number, and a 63 character
+          maximum.
+
+          Note that the ID can be updated.
+      create_time:
+        type: string
+        format: date-time
+        description: Creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Update time.
+        readOnly: true
+      profile:
+        $ref: '#/definitions/v1betaUserProfile'
+        description: Profile.
+    description: |-
+      User describes an individual that interacts with Instill AI. It doesn't
+      contain any private information about the user.
+    required:
+      - id
   pipelinev1betaState:
     type: string
     enum:
@@ -4154,8 +4185,8 @@ definitions:
         description: Owner name.
         readOnly: true
       owner:
-        type: object
-        description: Owner details.
+        $ref: '#/definitions/v1betaOwner'
+        description: Connector owner.
         readOnly: true
     description: |-
       A Connector is a type of pipeline component that queries, processes or sends
@@ -4886,6 +4917,85 @@ definitions:
     required:
       - component_specification
       - openapi_specifications
+  v1betaOrganization:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the organization, defined by its ID.
+          - Format: `organization/{organization.id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: Organization UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Resource ID (used in `name` as the last segment). This conforms to
+          RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+          character a letter, the last a letter or a number, and a 63 character
+          maximum.
+
+          Note that the ID can be updated.
+      create_time:
+        type: string
+        format: date-time
+        description: Creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Update time.
+        readOnly: true
+      owner:
+        $ref: '#/definitions/mgmtv1betaUser'
+        description: The user that owns the organization.
+        readOnly: true
+      profile:
+        $ref: '#/definitions/v1betaOrganizationProfile'
+        description: Profile.
+    description: |-
+      Organizations group several users. As entities, they can own resources such
+      as pipelines or releases.
+    required:
+      - id
+  v1betaOrganizationProfile:
+    type: object
+    properties:
+      display_name:
+        type: string
+        description: Display name.
+      bio:
+        type: string
+        description: Biography.
+      avatar:
+        type: string
+        description: Avatar in base64 format.
+      public_email:
+        type: string
+        description: Public email.
+      social_profile_links:
+        type: object
+        additionalProperties:
+          type: string
+        description: |-
+          Social profile links list the links to the organization's social profiles.
+          The key represents the provider, and the value is the corresponding URL.
+    description: OrganizationProfile describes the public data of an organization.
+  v1betaOwner:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/mgmtv1betaUser'
+        description: User.
+        readOnly: true
+      organization:
+        $ref: '#/definitions/v1betaOrganization'
+        description: Organization.
+        readOnly: true
+    description: Owner is a wrapper for User and Organization, used to embed owner information in other resources.
   v1betaPermission:
     type: object
     properties:
@@ -4951,10 +5061,6 @@ definitions:
         type: string
         description: Owner Name.
         readOnly: true
-      owner:
-        type: object
-        description: Owner details.
-        readOnly: true
       releases:
         type: array
         items:
@@ -4972,6 +5078,10 @@ definitions:
       visibility:
         $ref: '#/definitions/v1betaPipelineVisibility'
         description: Pipeline visibility.
+        readOnly: true
+      owner:
+        $ref: '#/definitions/v1betaOwner'
+        description: Pipeline owner.
         readOnly: true
     description: |-
       A Pipeline is an end-to-end workflow that automates a sequence of components
@@ -5148,7 +5258,7 @@ definitions:
       users:
         type: object
         additionalProperties:
-          $ref: '#/definitions/SharingUser'
+          $ref: '#/definitions/v1betaSharingUser'
         description: |-
           Defines sharing rules for a set of user resource names.
 
@@ -5165,6 +5275,16 @@ definitions:
       Sharing contains the information to share a resource with other users.
 
       For more information, see [Share Pipelines](https://www.instill.tech/docs/latest/vdp/share).
+  v1betaSharingUser:
+    type: object
+    properties:
+      enabled:
+        type: boolean
+        description: Defines whether the sharing option with this user is enabled.
+      role:
+        $ref: '#/definitions/v1betaRole'
+        description: Defines the role the user will have over the resource.
+    description: Describes the sharing configuration with a given user.
   v1betaTestOrganizationConnectorResponse:
     type: object
     properties:
@@ -5368,6 +5488,32 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The updated pipeline resource.
     description: UpdateUserPipelineResponse contains the updated pipeline.
+  v1betaUserProfile:
+    type: object
+    properties:
+      display_name:
+        type: string
+        description: Display name.
+      bio:
+        type: string
+        description: Biography.
+      avatar:
+        type: string
+        description: Avatar in base64 format.
+      public_email:
+        type: string
+        description: Public email.
+      company_name:
+        type: string
+        description: Company name.
+      social_profile_links:
+        type: object
+        additionalProperties:
+          type: string
+        description: |-
+          Social profile links list the links to the user's social profiles.
+          The key represents the provider, and the value is the corresponding URL.
+    description: UserProfile describes the public data of a user.
   v1betaValidateOrganizationPipelineResponse:
     type: object
     properties:
