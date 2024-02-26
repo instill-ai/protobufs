@@ -2145,7 +2145,7 @@ paths:
         - name: page_size
           description: |-
             The maximum number of connector definitions to return. If this parameter
-            is unspecified, at most 10 pipelines will be returned. The cap value for
+            is unspecified, at most 10 definitions will be returned. The cap value for
             this parameter is 100 (i.e. any value above that will be coerced to 100).
           in: query
           required: false
@@ -2153,6 +2153,14 @@ paths:
           format: int32
         - name: page_token
           description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
           in: query
           required: false
           type: string
@@ -2169,14 +2177,6 @@ paths:
           enum:
             - VIEW_BASIC
             - VIEW_FULL
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-          in: query
-          required: false
-          type: string
       tags:
         - PipelinePublicService
   /v1beta/{connector_definition_name}:
@@ -2253,6 +2253,64 @@ paths:
           in: query
           required: false
           type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+            field).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - PipelinePublicService
+  /v1beta/component-definitions:
+    get:
+      summary: List component definitions
+      description: |-
+        Returns a paginated list of component definitions, regardless their type.
+        This offers a single source of truth, with pagination and filter
+        capabilities, for the components that might be used in a VDP pipeline.
+      operationId: PipelinePublicService_ListComponentDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListComponentDefinitionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of component definitions to return. If this parameter
+            is unspecified, at most 10 definitions will be returned. The cap value for
+            this parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
         - name: view
           description: |-
             View allows clients to specify the desired resource view in the response.
@@ -2270,7 +2328,8 @@ paths:
           description: |-
             Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
             expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            - Example: `component_type="COMPONENT_TYPE_CONNECTOR_AI"`.
+            - Example: `tasks:"TASK_TEXT_GENERATION"`.
           in: query
           required: false
           type: string
@@ -4068,6 +4127,33 @@ definitions:
     required:
       - id
       - definition_name
+  v1betaComponentDefinition:
+    type: object
+    properties:
+      type:
+        $ref: '#/definitions/v1betaComponentType'
+        description: Defines the type of task the component will perform.
+        readOnly: true
+      operator_definition:
+        $ref: '#/definitions/v1betaOperatorDefinition'
+        title: operator definition detail
+        readOnly: true
+      connector_definition:
+        $ref: '#/definitions/v1betaConnectorDefinition'
+        title: connector definition detail
+        readOnly: true
+    description: ComponentDefinition describes a certain type of Component.
+  v1betaComponentDefinitionView:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+    description: |-
+      View defines how a component definition is presented.
+
+       - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+      field).
+       - VIEW_FULL: Full representation.
   v1betaComponentTask:
     type: object
     properties:
@@ -4091,15 +4177,15 @@ definitions:
     enum:
       - COMPONENT_TYPE_CONNECTOR_AI
       - COMPONENT_TYPE_CONNECTOR_DATA
-      - COMPONENT_TYPE_CONNECTOR_BLOCKCHAIN
       - COMPONENT_TYPE_OPERATOR
+      - COMPONENT_TYPE_CONNECTOR_APPLICATION
     description: |-
       ComponentType defines the component type based on its task features.
 
        - COMPONENT_TYPE_CONNECTOR_AI: Connect with an AI model.
        - COMPONENT_TYPE_CONNECTOR_DATA: Connect with a remote data source.
-       - COMPONENT_TYPE_CONNECTOR_BLOCKCHAIN: Connect with a blockchain service.
        - COMPONENT_TYPE_OPERATOR: Manipulate data.
+       - COMPONENT_TYPE_CONNECTOR_APPLICATION: Connect with an external application.
   v1betaConnectOrganizationConnectorResponse:
     type: object
     properties:
@@ -4295,17 +4381,6 @@ definitions:
       For more information, see
       [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
       in the official documentation.
-  v1betaConnectorDefinitionView:
-    type: string
-    enum:
-      - VIEW_BASIC
-      - VIEW_FULL
-    description: |-
-      View defines how a connector definition is presented.
-
-       - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
-      field).
-       - VIEW_FULL: Full representation.
   v1betaConnectorSpec:
     type: object
     properties:
@@ -4338,21 +4413,17 @@ definitions:
   v1betaConnectorType:
     type: string
     enum:
-      - CONNECTOR_TYPE_SOURCE
-      - CONNECTOR_TYPE_DESTINATION
       - CONNECTOR_TYPE_AI
-      - CONNECTOR_TYPE_BLOCKCHAIN
       - CONNECTOR_TYPE_DATA
       - CONNECTOR_TYPE_OPERATOR
+      - CONNECTOR_TYPE_APPLICATION
     description: |-
       ConnectorType defines the connector type based on its task features.
 
-       - CONNECTOR_TYPE_SOURCE: Source connector.
-       - CONNECTOR_TYPE_DESTINATION: Destination connector.
        - CONNECTOR_TYPE_AI: AI connector.
-       - CONNECTOR_TYPE_BLOCKCHAIN: Blockchain connector.
        - CONNECTOR_TYPE_DATA: Data connector.
        - CONNECTOR_TYPE_OPERATOR: Operator connector.
+       - CONNECTOR_TYPE_APPLICATION: Application connector.
   v1betaConnectorView:
     type: string
     enum:
@@ -4531,6 +4602,23 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The pipeline resource.
     description: GetUserPipelineResponse contains the requested pipeline.
+  v1betaListComponentDefinitionsResponse:
+    type: object
+    properties:
+      component_definitions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaComponentDefinition'
+        description: A list of component definition resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of connector definitions.
+    description: ListComponentDefinitionsResponse contains a list of component definitions.
   v1betaListConnectorDefinitionsResponse:
     type: object
     properties:
@@ -4773,15 +4861,6 @@ definitions:
     description: |-
       LookUpConnectorAdminResponse represents a response for a
       connector.
-  v1betaLookUpConnectorDefinitionAdminResponse:
-    type: object
-    properties:
-      connector_definition:
-        $ref: '#/definitions/v1betaConnectorDefinition'
-        description: The requested connector.
-    description: |-
-      LookUpConnectorDefinitionAdminResponse represents a response for a
-      connector definition.
   v1betaLookUpConnectorResponse:
     type: object
     properties:
@@ -4789,15 +4868,6 @@ definitions:
         $ref: '#/definitions/v1betaConnector'
         description: The requested connector.
     description: LookUpConnectorResponse represents a response for a connector.
-  v1betaLookUpOperatorDefinitionAdminResponse:
-    type: object
-    properties:
-      operator_definition:
-        $ref: '#/definitions/v1betaOperatorDefinition'
-        description: The requested operator definition.
-    description: |-
-      LookUpOperatorDefinitionAdminResponse represents a response for an operator
-      definition.
   v1betaLookUpPipelineAdminResponse:
     type: object
     properties:
@@ -4893,17 +4963,6 @@ definitions:
       For more information, see
       [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
       in the official documentation.
-  v1betaOperatorDefinitionView:
-    type: string
-    enum:
-      - VIEW_BASIC
-      - VIEW_FULL
-    description: |-
-      View defines how an operator definition is presented.
-
-       - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
-      field).
-       - VIEW_FULL: Full representation.
   v1betaOperatorSpec:
     type: object
     properties:
