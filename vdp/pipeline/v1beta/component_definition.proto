@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package vdp.pipeline.v1beta;
+
+import "google/api/field_behavior.proto";
+// VDP definitions
+import "vdp/pipeline/v1beta/connector_definition.proto";
+import "vdp/pipeline/v1beta/operator_definition.proto";
+import "vdp/pipeline/v1beta/pipeline.proto";
+
+// ComponentDefinition describes a certain type of Component.
+message ComponentDefinition {
+  // View defines how a component definition is presented.
+  enum View {
+    // Unspecified, equivalent to BASIC.
+    VIEW_UNSPECIFIED = 0;
+    // Default view, only includes basic information (removes the `spec`
+    // field).
+    VIEW_BASIC = 1;
+    // Full representation.
+    VIEW_FULL = 2;
+  }
+
+  // Defines the type of task the component will perform.
+  ComponentType type = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The component definition details.
+  oneof definition {
+    // operator definition detail
+    OperatorDefinition operator_definition = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // connector definition detail
+    ConnectorDefinition connector_definition = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+}
+// ListComponentDefinitionsRequest represents a request to list component
+// definitions.
+message ListComponentDefinitionsRequest {
+  // The maximum number of component definitions to return. If this parameter
+  // is unspecified, at most 10 definitions will be returned. The cap value for
+  // this parameter is 100 (i.e. any value above that will be coerced to 100).
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page token.
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // View allows clients to specify the desired resource view in the response.
+  optional ComponentDefinition.View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `component_type="COMPONENT_TYPE_CONNECTOR_AI"`.
+  // - Example: `tasks:"TASK_TEXT_GENERATION"`.
+  optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListComponentDefinitionsResponse contains a list of component definitions.
+message ListComponentDefinitionsResponse {
+  // A list of component definition resources.
+  repeated ComponentDefinition component_definitions = 1;
+  // Next page token.
+  string next_page_token = 2;
+  // Total number of connector definitions.
+  int32 total_size = 3;
+}
