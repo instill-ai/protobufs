@@ -204,8 +204,12 @@ message ListComponentDefinitionsRequest {
   // is unspecified, at most 10 definitions will be returned. The cap value for
   // this parameter is 100 (i.e. any value above that will be coerced to 100).
   optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-  // Page token.
-  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Field 2 is reserved for `page_token`. This endpoint initially implemented
+  // cursor-based pagination but it switched to order-based pagination in order
+  // to allow users to grasp the number of components that are implemented by
+  // Instill AI and accessing an arbitrary page without knowing the token or
+  // cursor information from the server.
+  reserved 2;
   // View allows clients to specify the desired resource view in the response.
   optional ComponentDefinition.View view = 3 [(google.api.field_behavior) = OPTIONAL];
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
@@ -213,16 +217,23 @@ message ListComponentDefinitionsRequest {
   // - Example: `component_type="COMPONENT_TYPE_CONNECTOR_AI"`.
   // - Example: `tasks:"TASK_TEXT_GENERATION"`.
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListComponentDefinitionsResponse contains a list of component definitions.
 message ListComponentDefinitionsResponse {
   // A list of component definition resources.
   repeated ComponentDefinition component_definitions = 1;
-  // Next page token.
-  string next_page_token = 2;
+  // Field 2 is reserved for `next_page_token`, which stopped being served
+  // after the endpoint switched to offset-based pagination.
+  reserved 2;
   // Total number of connector definitions.
   int32 total_size = 3;
+  // The requested page size.
+  int32 page_size = 4;
+  // The requested page offset.
+  int32 page = 5;
 }
 
 // ListConnectorDefinitionsRequest represents a request to list connector
