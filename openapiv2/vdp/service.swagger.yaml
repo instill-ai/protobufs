@@ -4091,43 +4091,32 @@ definitions:
       id:
         type: string
         description: Component ID, provided by the user on creation.
-      resource_name:
-        type: string
-        description: Resource name.
-      resource:
-        $ref: '#/definitions/v1betaConnector'
-        description: |-
-          If the component is a connector, describes the connector details (e.g. the
-          configuration to connect with an AI model).
-        readOnly: true
-      configuration:
+      metadata:
         type: object
-        description: Describes the component configuration.
-      type:
-        $ref: '#/definitions/v1betaComponentType'
-        description: Defines the type of task the component will perform.
-        readOnly: true
-      definition_name:
-        type: string
-        description: |-
-          The name of the component definition. It references the connector or
-          operator definition on top of which a connector is built.
-      operator_definition:
-        $ref: '#/definitions/v1betaOperatorDefinition'
-        title: operator definition detail
-        readOnly: true
-      connector_definition:
-        $ref: '#/definitions/v1betaConnectorDefinition'
-        title: connector definition detail
-        readOnly: true
+        description: Metadata of the component.
+      start_component:
+        $ref: '#/definitions/v1betaStartComponent'
+        title: StartComponent
+      end_component:
+        $ref: '#/definitions/v1betaEndComponent'
+        title: EndComponent
+      connector_component:
+        $ref: '#/definitions/v1betaConnectorComponent'
+        title: ConnectorComponent
+      operator_component:
+        $ref: '#/definitions/v1betaOperatorComponent'
+        title: OperatorComponent
+      iterator_component:
+        $ref: '#/definitions/v1betaIteratorComponent'
+        title: IteratorComponent
     description: |-
-      Component is the fundamental building block in pipelines.
+      Component
+      Fundamental building block in pipelines.
 
       For more information, see [Pipeline
       Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
     required:
       - id
-      - definition_name
   v1betaComponentDefinition:
     type: object
     properties:
@@ -4276,15 +4265,45 @@ definitions:
         description: Connector owner.
         readOnly: true
     description: |-
-      A Connector is a type of pipeline component that queries, processes or sends
-      the ingested unstructured data to a service or app. Users need to configure
-      their connectors (e.g. by providing an API token to a remote service).
+      A connector allows users to query, process or send data to a service or app.
+      Users can create and configure connectors that may later be referenced in
+      their pipelines via a connector component in order to process their ingested
+      unstructured data.
 
       For more information, see
       [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
       in the official documentation.
     required:
       - configuration
+  v1betaConnectorComponent:
+    type: object
+    properties:
+      definition_name:
+        type: string
+        description: Definition name.
+      definition:
+        $ref: '#/definitions/v1betaConnectorDefinition'
+        description: Connector definition.
+        readOnly: true
+      connector_name:
+        type: string
+        description: Connector name. Leave empty if not created.
+      connector:
+        $ref: '#/definitions/v1betaConnector'
+        description: Describes the connector details (e.g., configuration to connect with the vendor service).
+        readOnly: true
+      task:
+        type: string
+        description: Task.
+      input:
+        type: object
+        description: Input configuration of the component. JSON schema described in the connector definition.
+      condition:
+        type: string
+        description: Condition statement determining whether the component is executed or not.
+    description: |-
+      ConnectorComponent
+      Configures a connector component. Requires the creation of a connector resource first.
   v1betaConnectorDefinition:
     type: object
     properties:
@@ -4525,6 +4544,37 @@ definitions:
         $ref: '#/definitions/v1betaConnector'
         title: A connector
     description: DisconnectUserConnectorResponse contains the connector details.
+  v1betaEndComponent:
+    type: object
+    properties:
+      fields:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/v1betaEndComponentField'
+        description: |-
+          Fields configuration.
+          Key: Key of the output data.
+          Field: Field settings of the value.
+    description: |-
+      EndComponent
+      Configures the ending point for pipeline triggering.
+  v1betaEndComponentField:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Title of the field.
+      description:
+        type: string
+        description: Description of the field.
+      value:
+        type: string
+        description: Value of the field.
+      instill_ui_order:
+        type: integer
+        format: int32
+        description: Instill UI order.
+    description: Represents a field within the end component.
   v1betaExecuteOrganizationConnectorResponse:
     type: object
     properties:
@@ -4607,6 +4657,44 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The pipeline resource.
     description: GetUserPipelineResponse contains the requested pipeline.
+  v1betaIteratorComponent:
+    type: object
+    properties:
+      input:
+        type: string
+        description: 'Input: The iterator will iterate over the elements of the input (must be an array).'
+      output_elements:
+        type: object
+        additionalProperties:
+          type: string
+        title: |-
+          Output elements: Configure the output arrays of the iterator.
+          The key is the output element variable name, and the value is the data reference of the template.
+          Example:
+          output_elements: {
+            "key1": "${element.output.a}",
+            "key2": "${element.output.b}",
+          }
+          This will create the results:
+          output: {
+            "key1": [ ${element1.output.a},  ${element2.output.a} ... ],
+            "key2": [ ${element1.output.b},  ${element2.output.b} ... ],
+          }
+      components:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaNestedComponent'
+        description: 'Components: These components will be executed for each input element.'
+      condition:
+        type: string
+        description: Condition statement determining whether the component is executed or not.
+    description: |-
+      IteratorComponent
+      Configures an iterator component. An iterator takes an array and executes an
+      operation (defined by a set of nested components) on each of its elements.
+      It can be regarded as triggering a sub-pipeline using the elements of an
+      array as input.
   v1betaListComponentDefinitionsResponse:
     type: object
     properties:
@@ -4892,6 +4980,48 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The requested pipeline.
     description: LookUpPipelineResponse contains the requested pipeline.
+  v1betaNestedComponent:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Component ID, provided by the user on creation.
+      metadata:
+        type: object
+        description: Metadata of the component.
+      connector_component:
+        $ref: '#/definitions/v1betaConnectorComponent'
+        title: ConnectorConfiguration
+      operator_component:
+        $ref: '#/definitions/v1betaOperatorComponent'
+        title: OperatorConfiguration
+    description: |-
+      NestedComponent
+      Fundamental building block in iterator component.
+    required:
+      - id
+  v1betaOperatorComponent:
+    type: object
+    properties:
+      definition_name:
+        type: string
+        description: Definition name.
+      definition:
+        $ref: '#/definitions/v1betaOperatorDefinition'
+        description: Operator definition.
+        readOnly: true
+      task:
+        type: string
+        description: Task.
+      input:
+        type: object
+        description: Input configuration of the component. JSON schema described in the operator definition.
+      condition:
+        type: string
+        description: Condition statement determining whether the component is executed or not.
+    description: |-
+      OperatorComponent
+      Configures an operator component.
   v1betaOperatorDefinition:
     type: object
     properties:
@@ -5358,6 +5488,40 @@ definitions:
         $ref: '#/definitions/v1betaRole'
         description: Defines the role the user will have over the resource.
     description: Describes the sharing configuration with a given user.
+  v1betaStartComponent:
+    type: object
+    properties:
+      fields:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/v1betaStartComponentField'
+        description: |-
+          Fields configuration.
+          Key: Key of the input data.
+          Field: Field settings of the value.
+    description: |-
+      StartComponent
+      Configures the starting point for pipeline triggering.
+  v1betaStartComponentField:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Title of the field.
+      description:
+        type: string
+        description: Description of the field.
+      instill_format:
+        type: string
+        description: Instill format.
+      instill_ui_order:
+        type: integer
+        format: int32
+        description: Instill UI order.
+      instill_ui_multiline:
+        type: boolean
+        description: Instill UI Multiline.
+    description: Represents a field within the start component.
   v1betaTestOrganizationConnectorResponse:
     type: object
     properties:
