@@ -39,14 +39,25 @@ message ComponentDefinition {
   }
 }
 
+// DataSpecification describes the JSON schema of component input and output.
+message DataSpecification {
+  // JSON schema describing the component input data.
+  google.protobuf.Struct input = 1;
+  // JSON schema describing the component output data.
+  google.protobuf.Struct output = 2;
+}
+
 // ConnectorSpec represents a specification data model.
 message ConnectorSpec {
   // Resource specification.
   google.protobuf.Struct resource_specification = 2 [(google.api.field_behavior) = REQUIRED];
   // Component specification.
   google.protobuf.Struct component_specification = 3 [(google.api.field_behavior) = REQUIRED];
-  // OpenAPI specification.
-  google.protobuf.Struct openapi_specifications = 4 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 4;
+  // Data specifications.
+  // The key represents the task, and the value is the corresponding data_specification.
+  map<string, DataSpecification> data_specifications = 5 [(google.api.field_behavior) = REQUIRED];
 }
 
 // ConnectorType defines the connector type based on its task features.
@@ -138,8 +149,11 @@ message ConnectorDefinition {
 message OperatorSpec {
   // Component specification.
   google.protobuf.Struct component_specification = 1 [(google.api.field_behavior) = REQUIRED];
-  // OpenAPI specification.
-  google.protobuf.Struct openapi_specifications = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
+  // Data specifications.
+  // The key represents the task, and the value is the corresponding data_specification.
+  map<string, DataSpecification> data_specifications = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // An Operator is a type of pipeline component that performs data injection and
