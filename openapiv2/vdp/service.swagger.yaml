@@ -407,10 +407,6 @@ paths:
                 format: date-time
                 description: Pipeline update time.
                 readOnly: true
-              openapi_schema:
-                type: object
-                description: OpenAPI schema.
-                readOnly: true
               delete_time:
                 type: string
                 format: date-time
@@ -447,6 +443,10 @@ paths:
               owner:
                 $ref: '#/definitions/v1betaOwner'
                 description: Pipeline owner.
+                readOnly: true
+              data_specification:
+                $ref: '#/definitions/v1betaDataSpecification'
+                description: Data specifications.
                 readOnly: true
             title: The pipeline fields that will replace the existing ones.
       tags:
@@ -908,10 +908,6 @@ paths:
                 format: date-time
                 description: Pipeline update time.
                 readOnly: true
-              openapi_schema:
-                type: object
-                description: OpenAPI schema.
-                readOnly: true
               delete_time:
                 type: string
                 format: date-time
@@ -929,6 +925,10 @@ paths:
               readme:
                 type: string
                 description: README.
+              data_specification:
+                $ref: '#/definitions/v1betaDataSpecification'
+                description: Data specifications.
+                readOnly: true
             title: |-
               The pipeline release fields that will replace the existing ones.
               A pipeline release resource to update
@@ -1384,10 +1384,6 @@ paths:
                 format: date-time
                 description: Pipeline update time.
                 readOnly: true
-              openapi_schema:
-                type: object
-                description: OpenAPI schema.
-                readOnly: true
               delete_time:
                 type: string
                 format: date-time
@@ -1424,6 +1420,10 @@ paths:
               owner:
                 $ref: '#/definitions/v1betaOwner'
                 description: Pipeline owner.
+                readOnly: true
+              data_specification:
+                $ref: '#/definitions/v1betaDataSpecification'
+                description: Data specifications.
                 readOnly: true
             title: The pipeline fields that will replace the existing ones.
       tags:
@@ -1876,10 +1876,6 @@ paths:
                 format: date-time
                 description: Pipeline update time.
                 readOnly: true
-              openapi_schema:
-                type: object
-                description: OpenAPI schema.
-                readOnly: true
               delete_time:
                 type: string
                 format: date-time
@@ -1897,6 +1893,10 @@ paths:
               readme:
                 type: string
                 description: README.
+              data_specification:
+                $ref: '#/definitions/v1betaDataSpecification'
+                description: Data specifications.
+                readOnly: true
             title: |-
               The pipeline release fields that will replace the existing ones.
               A pipeline release resource to update
@@ -4414,14 +4414,18 @@ definitions:
       component_specification:
         type: object
         description: Component specification.
-      openapi_specifications:
+      data_specifications:
         type: object
-        description: OpenAPI specification.
+        additionalProperties:
+          $ref: '#/definitions/v1betaDataSpecification'
+        description: |-
+          Data specifications.
+          The key represents the task, and the value is the corresponding data_specification.
     description: ConnectorSpec represents a specification data model.
     required:
       - resource_specification
       - component_specification
-      - openapi_specifications
+      - data_specifications
   v1betaConnectorState:
     type: string
     enum:
@@ -4512,6 +4516,16 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The created pipeline resource.
     description: CreateUserPipelineResponse contains the created pipeline.
+  v1betaDataSpecification:
+    type: object
+    properties:
+      input:
+        type: object
+        description: JSON schema describing the component input data.
+      output:
+        type: object
+        description: JSON schema describing the component output data.
+    description: DataSpecification describes the JSON schema of component input and output.
   v1betaDeleteOrganizationConnectorResponse:
     type: object
     description: DeleteOrganizationConnectorResponse is an empty response.
@@ -4689,6 +4703,10 @@ definitions:
       condition:
         type: string
         description: Condition statement determining whether the component is executed or not.
+      data_specification:
+        $ref: '#/definitions/v1betaDataSpecification'
+        description: DataSpecification returns the JSON schema for the iterator input and output.
+        readOnly: true
     description: |-
       IteratorComponent
       Configures an iterator component. An iterator takes an array and executes an
@@ -5113,13 +5131,17 @@ definitions:
       component_specification:
         type: object
         description: Component specification.
-      openapi_specifications:
+      data_specifications:
         type: object
-        description: OpenAPI specification.
+        additionalProperties:
+          $ref: '#/definitions/v1betaDataSpecification'
+        description: |-
+          Data specifications.
+          The key represents the task, and the value is the corresponding data_specification.
     description: OperatorSpec represents a specification data model.
     required:
       - component_specification
-      - openapi_specifications
+      - data_specifications
   v1betaOrganization:
     type: object
     properties:
@@ -5245,10 +5267,6 @@ definitions:
         format: date-time
         description: Pipeline update time.
         readOnly: true
-      openapi_schema:
-        type: object
-        description: OpenAPI schema.
-        readOnly: true
       delete_time:
         type: string
         format: date-time
@@ -5285,6 +5303,10 @@ definitions:
       owner:
         $ref: '#/definitions/v1betaOwner'
         description: Pipeline owner.
+        readOnly: true
+      data_specification:
+        $ref: '#/definitions/v1betaDataSpecification'
+        description: Data specifications.
         readOnly: true
     description: |-
       A Pipeline is an end-to-end workflow that automates a sequence of components
@@ -5328,10 +5350,6 @@ definitions:
         format: date-time
         description: Pipeline update time.
         readOnly: true
-      openapi_schema:
-        type: object
-        description: OpenAPI schema.
-        readOnly: true
       delete_time:
         type: string
         format: date-time
@@ -5349,6 +5367,10 @@ definitions:
       readme:
         type: string
         description: README.
+      data_specification:
+        $ref: '#/definitions/v1betaDataSpecification'
+        description: Data specifications.
+        readOnly: true
     description: |-
       Pipeline releases contain the version control information of a pipeline.
       This allows users to track changes in the pipeline over time.
