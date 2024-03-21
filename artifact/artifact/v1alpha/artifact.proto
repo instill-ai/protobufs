@@ -5,6 +5,11 @@ package artifact.artifact.v1alpha;
 import "common/healthcheck/v1beta/healthcheck.proto";
 // Google API
 import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+// OpenAPI definition
+import "protoc-gen-openapiv2/options/annotations.proto";
+// Protocol Buffers Well-Known Types
+import "google/protobuf/timestamp.proto";
 
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
@@ -28,4 +33,49 @@ message ReadinessRequest {
 message ReadinessResponse {
   // HealthCheckResponse message
   common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
+}
+
+// ImageTag contains information about the version of a container image.
+message ImageTag {
+  // The name of the tag, defined by its parent repository and ID.
+  // - Format: `repositories/{repository.id}/tags/{tag.id}`.
+  string name = 1 [(google.api.field_behavior) = IMMUTABLE];
+  // The tag identifier.
+  string id = 2 [(google.api.field_behavior) = IMMUTABLE];
+  // Unique identifier, computed from the manifest the tag refers to.
+  string digest = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Tag update time, i.e. timestamp of the last push.
+  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListRepositoryTagsRequest represents a request to list the tags of a
+// container image repository.
+message ListRepositoryTagsRequest {
+  // The maximum number of tags to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The repository holding the different container image versions.
+  // - Format: `repositories/{repository.id}`.
+  // - Example: `repository/flaming-wombat/llava-34b`.
+  string parent = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Repository"},
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "repository"}
+    }
+  ];
+}
+
+// ListRepositoryTagsResponse contains a list of container image tags.
+message ListRepositoryTagsResponse {
+  // A list of container image tags.
+  repeated ImageTag image_tags = 1;
+  // Total number of tags.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // The requested page offset.
+  int32 page = 4;
 }

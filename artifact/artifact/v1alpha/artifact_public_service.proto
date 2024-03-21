@@ -6,6 +6,7 @@ package artifact.artifact.v1alpha;
 import "artifact/artifact/v1alpha/artifact.proto";
 // Google API
 import "google/api/annotations.proto";
+import "google/api/client.proto";
 import "google/api/visibility.proto";
 // OpenAPI definition
 import "protoc-gen-openapiv2/options/annotations.proto";
@@ -39,5 +40,27 @@ service ArtifactPublicService {
         {get: "/v1alpha/ready/artifact"}]
     };
     option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+  // ----------
+  // Repository
+  // ----------
+  //
+  // The following section documents the public endpoints for content
+  // distribution (namely, container image) repositories. An image repository
+  // contains different (tagged) images that represent versions of a, for
+  // example, model or pipeline.
+  //
+  // TODO: this should be better documented in a Repository entity but for the
+  // current feature specs it is not needed. As this API grows, less or no
+  // context will be needed in this section.
+
+  // List the versions of an image.
+  //
+  // Returns a portion of the tags for the specified container image
+  // repository.
+  rpc ListRepositoryTags(ListRepositoryTagsRequest) returns (ListRepositoryTagsResponse) {
+    option (google.api.http) = {get: "/v1beta/{parent=repositories/*}/tags"};
+    option (google.api.method_signature) = "parent";
   }
 }
