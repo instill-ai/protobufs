@@ -9,7 +9,49 @@ consumes:
   - application/json
 produces:
   - application/json
-paths: {}
+paths:
+  /v1beta/{repository}/tags:
+    get:
+      summary: List the versions of an image.
+      description: |-
+        Returns a portion of the tags for the specified container image
+        repository.
+      operationId: ArtifactPublicService_ListRepositoryTags
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListRepositoryTagsResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: repository
+          description: |-
+            The repository holding the different container image versions.
+            - Format: `repositories/{repository.id}`.
+            - Example: `repository/flaming-wombat/llava-34b`.
+          in: path
+          required: true
+          type: string
+          pattern: repositories/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of tags to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - ArtifactPublicService
 definitions:
   protobufAny:
     type: object
@@ -30,3 +72,46 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
+  v1alphaImageTag:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the tag, defined by its parent repository and ID.
+          - Format: `repositories/{repository.id}/tags/{tag.id}`.
+      id:
+        type: string
+        description: The tag identifier.
+      digest:
+        type: string
+        description: Unique identifier, computed from the manifest the tag refers to.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Tag update time, i.e. timestamp of the last push.
+        readOnly: true
+    description: ImageTag contains information about the version of a container image.
+  v1alphaListRepositoryTagsResponse:
+    type: object
+    properties:
+      image_tags:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaImageTag'
+        description: A list of container image tags.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of tags.
+      page_size:
+        type: integer
+        format: int32
+        description: The requested page size.
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+    description: ListRepositoryTagsResponse contains a list of container image tags.
