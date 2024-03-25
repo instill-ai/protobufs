@@ -436,14 +436,9 @@ paths:
                 $ref: '#/definitions/v1alphaTask'
                 description: Model task.
                 readOnly: true
-              state:
-                $ref: '#/definitions/v1alphaModelState'
-                description: Model state.
-                readOnly: true
               visibility:
                 $ref: '#/definitions/v1alphaModelVisibility'
                 description: Model visibility.
-                readOnly: true
               create_time:
                 type: string
                 format: date-time
@@ -467,7 +462,29 @@ paths:
                 $ref: '#/definitions/v1betaOwner'
                 description: Model owner.
                 readOnly: true
+              region:
+                type: string
+                description: Region of choice for the particular provider to host the model.
+              hardware:
+                type: string
+                description: Hardware of choice to serve the model.
+              readme:
+                type: string
+                description: README holds the model documentation.
+              source_url:
+                type: string
+                description: A link to the source code of the model (e.g. to a GitHub repository).
+              documentation_url:
+                type: string
+                description: A link to any extra information.
+              license:
+                type: string
+                description: License under which the model is distributed.
             title: The model to update
+            required:
+              - visibility
+              - region
+              - hardware
       tags:
         - ModelPublicService
   /v1alpha/{user_model_name}/rename:
@@ -578,90 +595,6 @@ paths:
             $ref: '#/definitions/ModelPublicServiceUnpublishUserModelBody'
       tags:
         - ModelPublicService
-  /v1alpha/{user_model_name}/deploy:
-    post:
-      summary: Deploy a model
-      description: |-
-        Transitions the model into an ONLINE state. The model is accessed by its
-        resource name, defined by the model ID and its parent user.
-
-        While this operation is being performed, the state of the model will
-        transition to UNSPECIFIED. As completing the deployment might take time,
-        the server will not wait to complete the operation to return a response.
-        The state of the model can be used to track the completion of the
-        operation. This can be done by using the `watch` operation on the model.
-      operationId: ModelPublicService_DeployUserModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeployUserModelResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_model_name
-          description: |-
-            The resource name of the model, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/models/{model.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/ModelPublicServiceDeployUserModelBody'
-      tags:
-        - ModelPublicService
-  /v1alpha/{user_model_name}/undeploy:
-    post:
-      summary: Undeploy a model
-      description: |-
-        Transitions the model into an OFFLINE state. The model is accessed by its
-        resource name, defined by the model ID and its parent user.
-
-        While this operation is being performed, the state of the model will
-        transition to UNSPECIFIED. As completing the teardown might take time,
-        the server will not wait to complete the operation to return a response.
-        The state of the model can be used to track the completion of the
-        operation. This can be done by using the `watch` operation on the model.
-      operationId: ModelPublicService_UndeployUserModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaUndeployUserModelResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_model_name
-          description: |-
-            The resource name of the model, which allows its access by parent user
-            and ID.
-            - Format: `users/{user.id}/models/{model.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/ModelPublicServiceUndeployUserModelBody'
-      tags:
-        - ModelPublicService
   /v1alpha/{user_model_card_name}:
     get:
       summary: Get a model card
@@ -693,7 +626,7 @@ paths:
           pattern: users/[^/]+/models/[^/]+/readme
       tags:
         - ModelPublicService
-  /v1alpha/{user_model_name}/watch:
+  /v1alpha/{user_model_name}/{version}/watch:
     get:
       summary: Watch the state of a model
       description: |-
@@ -723,9 +656,15 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+/models/[^/]+
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+          pattern: '[^/]+'
       tags:
         - ModelPublicService
-  /v1alpha/{user_model_name}/trigger:
+  /v1alpha/{user_model_name}/{version}/trigger:
     post:
       summary: Trigger model inference
       description: |-
@@ -754,6 +693,12 @@ paths:
           required: true
           type: string
           pattern: users/[^/]+/models/[^/]+
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+          pattern: '[^/]+'
         - name: body
           in: body
           required: true
@@ -997,14 +942,9 @@ paths:
                 $ref: '#/definitions/v1alphaTask'
                 description: Model task.
                 readOnly: true
-              state:
-                $ref: '#/definitions/v1alphaModelState'
-                description: Model state.
-                readOnly: true
               visibility:
                 $ref: '#/definitions/v1alphaModelVisibility'
                 description: Model visibility.
-                readOnly: true
               create_time:
                 type: string
                 format: date-time
@@ -1028,7 +968,29 @@ paths:
                 $ref: '#/definitions/v1betaOwner'
                 description: Model owner.
                 readOnly: true
+              region:
+                type: string
+                description: Region of choice for the particular provider to host the model.
+              hardware:
+                type: string
+                description: Hardware of choice to serve the model.
+              readme:
+                type: string
+                description: README holds the model documentation.
+              source_url:
+                type: string
+                description: A link to the source code of the model (e.g. to a GitHub repository).
+              documentation_url:
+                type: string
+                description: A link to any extra information.
+              license:
+                type: string
+                description: License under which the model is distributed.
             title: The model to update
+            required:
+              - visibility
+              - region
+              - hardware
       tags:
         - ModelPublicService
   /v1alpha/{organization_model_name}/rename:
@@ -1139,90 +1101,6 @@ paths:
             $ref: '#/definitions/ModelPublicServiceUnpublishOrganizationModelBody'
       tags:
         - ModelPublicService
-  /v1alpha/{organization_model_name}/deploy:
-    post:
-      summary: Deploy a model
-      description: |-
-        Transitions the model into an ONLINE state. The model is accessed by its
-        resource name, defined by the model ID and its parent organization.
-
-        While this operation is being performed, the state of the model will
-        transition to UNSPECIFIED. As completing the deployment might take time,
-        the server will not wait to complete the operation to return a response.
-        The state of the model can be used to track the completion of the
-        operation. This can be done by using the `watch` operation on the model.
-      operationId: ModelPublicService_DeployOrganizationModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaDeployOrganizationModelResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_model_name
-          description: |-
-            The resource name of the model, which allows its access by parent organization
-            and ID.
-            - Format: `organizations/{organization.id}/models/{model.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/ModelPublicServiceDeployOrganizationModelBody'
-      tags:
-        - ModelPublicService
-  /v1alpha/{organization_model_name}/undeploy:
-    post:
-      summary: Undeploy a model
-      description: |-
-        Transitions the model into an OFFLINE state. The model is accessed by its
-        resource name, defined by the model ID and its parent organization.
-
-        While this operation is being performed, the state of the model will
-        transition to UNSPECIFIED. As completing the teardown might take time,
-        the server will not wait to complete the operation to return a response.
-        The state of the model can be used to track the completion of the
-        operation. This can be done by using the `watch` operation on the model.
-      operationId: ModelPublicService_UndeployOrganizationModel
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaUndeployOrganizationModelResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_model_name
-          description: |-
-            The resource name of the model, which allows its access by parent organization
-            and ID.
-            - Format: `organizations/{organization.id}/models/{model.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/models/[^/]+
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/ModelPublicServiceUndeployOrganizationModelBody'
-      tags:
-        - ModelPublicService
   /v1alpha/{organization_model_card_name}:
     get:
       summary: Get a model card
@@ -1254,7 +1132,7 @@ paths:
           pattern: organizations/[^/]+/models/[^/]+/readme
       tags:
         - ModelPublicService
-  /v1alpha/{organization_model_name}/watch:
+  /v1alpha/{organization_model_name}/{version}/watch:
     get:
       summary: Watch the state of a model
       description: |-
@@ -1284,9 +1162,15 @@ paths:
           required: true
           type: string
           pattern: organizations/[^/]+/models/[^/]+
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+          pattern: '[^/]+'
       tags:
         - ModelPublicService
-  /v1alpha/{organization_model_name}/trigger:
+  /v1alpha/{organization_model_name}/{version}/trigger:
     post:
       summary: Trigger model inference
       description: |-
@@ -1315,6 +1199,12 @@ paths:
           required: true
           type: string
           pattern: organizations/[^/]+/models/[^/]+
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+          pattern: '[^/]+'
         - name: body
           in: body
           required: true
@@ -1365,25 +1255,6 @@ paths:
       tags:
         - ModelPublicService
 definitions:
-  HealthCheckResponseServingStatus:
-    type: string
-    enum:
-      - SERVING_STATUS_SERVING
-      - SERVING_STATUS_NOT_SERVING
-    description: |-
-      - SERVING_STATUS_SERVING: Serving status: SERVING
-       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
-    title: ServingStatus enumerates the status of a queried service
-  ModelPublicServiceDeployOrganizationModelBody:
-    type: object
-    description: |-
-      DeployOrganizationModelRequest represents a request to set a model to an ONLINE
-      state.
-  ModelPublicServiceDeployUserModelBody:
-    type: object
-    description: |-
-      DeployUserModelRequest represents a request to set a model to an ONLINE
-      state.
   ModelPublicServicePublishOrganizationModelBody:
     type: object
     description: PublisOrganizationhModelRequest represents a request to publish a model.
@@ -1436,16 +1307,6 @@ definitions:
     description: TriggerUserModelRequest represents a request to trigger a model inference.
     required:
       - task_inputs
-  ModelPublicServiceUndeployOrganizationModelBody:
-    type: object
-    description: |-
-      UndeployOrganizationModelRequest represents a request to set a model to an OFFLINE
-      state.
-  ModelPublicServiceUndeployUserModelBody:
-    type: object
-    description: |-
-      UndeployUserModelRequest represents a request to set a model to an OFFLINE
-      state.
   ModelPublicServiceUnpublishOrganizationModelBody:
     type: object
     description: UnpublishOrganizationModelRequest represents a request to unpublish a model.
@@ -1523,20 +1384,24 @@ definitions:
 
       You can find out more about this error model and how to work with it in the
       [API Design Guide](https://cloud.google.com/apis/design/errors).
-  modelcontrollerv1alphaLivenessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1betaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  modelcontrollerv1alphaReadinessResponse:
-    type: object
-    properties:
-      health_check_response:
-        $ref: '#/definitions/v1betaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
+  modelv1alphaState:
+    type: string
+    enum:
+      - STATE_OFFLINE
+      - STATE_SCALING
+      - STATE_ACTIVE
+      - STATE_IDLE
+      - STATE_ERROR
+    description: |-
+      State describes the state of a model. See [Deploy
+      Models](https://www.instill.tech/docs/latest/model/deploy) for more
+      information.
+
+       - STATE_OFFLINE: Offline is the state when the model instance number is 0.
+       - STATE_SCALING: Scaling is the transition state when a model instance is scaling up or down.
+       - STATE_ACTIVE: Active is the state when a model is processing requests.
+       - STATE_IDLE: Idle is the state when a model is alive but not processing requests.
+       - STATE_ERROR: Error is the state when the model is undeployable.
   modelv1alphaView:
     type: string
     enum:
@@ -1701,15 +1566,6 @@ definitions:
     description: |-
       BoundingBox represents a frame in an image that can be drawn when detecting
       patterns in objects.
-  v1alphaCheckModelAdminResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/v1alphaModelState'
-        title: Retrieved model state
-    title: |-
-      CheckModelAdminResponse represents a response to fetch a model's
-      current state and longrunning progress
   v1alphaClassificationInput:
     type: object
     properties:
@@ -1752,76 +1608,29 @@ definitions:
         description: Score.
         readOnly: true
     description: ClassificationOutput contains the result of an image classification task.
-  v1alphaCreateOrganizationModelBinaryFileUploadResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        description: Long-running operation information.
-        readOnly: true
-    description: |-
-      CreateOrganizationModelBinaryFileUploadResponse contains the information to access
-      the status of the model creation operation.
   v1alphaCreateOrganizationModelResponse:
     type: object
     properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        description: Long-running operation information.
-        readOnly: true
-    description: |-
-      CreateOrganizationModelResponse contains the information to access the status of the
-      model creation operation.
-  v1alphaCreateUserModelBinaryFileUploadResponse:
-    type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        description: Long-running operation information.
-        readOnly: true
-    description: |-
-      CreateUserModelBinaryFileUploadResponse contains the information to access
-      the status of the model creation operation.
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        description: The created model resource.
+    description: CreateOrganizationModelResponse contains the created model.
   v1alphaCreateUserModelResponse:
     type: object
     properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        description: Long-running operation information.
-        readOnly: true
-    description: |-
-      CreateUserModelResponse contains the information to access the status of the
-      model creation operation.
+      model:
+        $ref: '#/definitions/v1alphaModel'
+        description: The created model resource.
+    description: CreateUserModelResponse contains the created model.
   v1alphaDeleteOrganizationModelResponse:
     type: object
     description: DeleteOrganizationModelResponse is an empty response.
-  v1alphaDeleteResourceResponse:
-    type: object
-    title: DeleteResourceResponse represents an empty response
   v1alphaDeleteUserModelResponse:
     type: object
     description: DeleteUserModelResponse is an empty response.
   v1alphaDeployModelAdminResponse:
     type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: Deploy operation message
     title: DeployModelAdminResponse represents a response for a deployed model
-  v1alphaDeployOrganizationModelResponse:
-    type: object
-    properties:
-      model_id:
-        type: string
-        description: ID of the deployed model, e.g. `llava-7b`.
-    description: DeployOrganizationModelResponse contains the ID of the deployed model.
-  v1alphaDeployUserModelResponse:
-    type: object
-    properties:
-      model_id:
-        type: string
-        description: ID of the deployed model, e.g. `llava-7b`.
-    description: DeployUserModelResponse contains the ID of the deployed model.
   v1alphaDetectionInput:
     type: object
     properties:
@@ -1909,13 +1718,6 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         description: The model resource.
     description: GetOrganizationModelResponse contains the requested model.
-  v1alphaGetResourceResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v1alphaResource'
-        title: Retrieved resource state
-    title: GetResourceResponse represents a response to fetch a resource's state
   v1alphaGetUserModelCardResponse:
     type: object
     properties:
@@ -2303,14 +2105,9 @@ definitions:
         $ref: '#/definitions/v1alphaTask'
         description: Model task.
         readOnly: true
-      state:
-        $ref: '#/definitions/v1alphaModelState'
-        description: Model state.
-        readOnly: true
       visibility:
         $ref: '#/definitions/v1alphaModelVisibility'
         description: Model visibility.
-        readOnly: true
       create_time:
         type: string
         format: date-time
@@ -2334,9 +2131,31 @@ definitions:
         $ref: '#/definitions/v1betaOwner'
         description: Model owner.
         readOnly: true
+      region:
+        type: string
+        description: Region of choice for the particular provider to host the model.
+      hardware:
+        type: string
+        description: Hardware of choice to serve the model.
+      readme:
+        type: string
+        description: README holds the model documentation.
+      source_url:
+        type: string
+        description: A link to the source code of the model (e.g. to a GitHub repository).
+      documentation_url:
+        type: string
+        description: A link to any extra information.
+      license:
+        type: string
+        description: License under which the model is distributed.
     title: |-
       Model represents an AI model, i.e. a program that performs tasks as decision
       making or or pattern recognition based on its training data
+    required:
+      - visibility
+      - region
+      - hardware
   v1alphaModelCard:
     type: object
     properties:
@@ -2428,23 +2247,6 @@ definitions:
         description: Update time.
         readOnly: true
     description: ModelDefinition defines how to configure and import a model.
-  v1alphaModelState:
-    type: string
-    enum:
-      - STATE_OFFLINE
-      - STATE_ONLINE
-      - STATE_ERROR
-    description: |-
-      State describes the state of a model. See [Deploy
-      Models](https://www.instill.tech/docs/latest/model/deploy) for more
-      information.
-
-       - STATE_OFFLINE: Offline is the default state when a model is initially created. A model
-      can be switched from ONLINE to this state by using the `undeploy`
-      method.
-       - STATE_ONLINE: Online is the state of a model when it has been deployed (i.e. when the
-      `deploy` method has been used on an OFFLINE model).
-       - STATE_ERROR: Error is the state when the model is undeployable on Instill Model.
   v1alphaModelVisibility:
     type: string
     enum:
@@ -2566,30 +2368,6 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         description: The renamed model resource.
     description: RenameUserModelResponse contains a renamed model.
-  v1alphaResource:
-    type: object
-    properties:
-      resource_permalink:
-        type: string
-        title: |-
-          Permalink of a resource. For example:
-          "resources/{resource_uuid}/types/{type}"
-      model_state:
-        $ref: '#/definitions/v1alphaModelState'
-        title: Model state
-      backend_state:
-        $ref: '#/definitions/HealthCheckResponseServingStatus'
-        title: Backend service state
-      progress:
-        type: integer
-        format: int32
-        title: Resource longrunning progress
-      workflow_id:
-        type: string
-        title: Resource longrunning workflow id
-    title: Resource represents the current information of a resource
-    required:
-      - resource_permalink
   v1alphaSemanticSegmentationInput:
     type: object
     properties:
@@ -3003,10 +2781,14 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
+      version:
+        type: string
+        title: Model version tag
     description: TriggerUserModelBinaryFileUploadResponse contains the model inference results.
     required:
       - task
       - task_outputs
+      - version
   v1alphaTriggerUserModelResponse:
     type: object
     properties:
@@ -3022,25 +2804,7 @@ definitions:
     description: TriggerUserModelResponse contains the model inference results.
   v1alphaUndeployModelAdminResponse:
     type: object
-    properties:
-      operation:
-        $ref: '#/definitions/googlelongrunningOperation'
-        title: Undeploy operation message
     title: UndeployModelAdminResponse represents a response for a undeployed model
-  v1alphaUndeployOrganizationModelResponse:
-    type: object
-    properties:
-      model_id:
-        type: string
-        description: ID of the undeployed model, e.g. `llava-7b`.
-    description: UndeployOrganizationModelResponse contains the ID of the undeployed model.
-  v1alphaUndeployUserModelResponse:
-    type: object
-    properties:
-      model_id:
-        type: string
-        description: ID of the undeployed model, e.g. `llava-7b`.
-    description: UndeployUserModelResponse contains the ID of the undeployed model.
   v1alphaUnpublishOrganizationModelResponse:
     type: object
     properties:
@@ -3081,13 +2845,6 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         description: The updated model resource.
     description: UpdateOrganizationModelResponse contains the updated model.
-  v1alphaUpdateResourceResponse:
-    type: object
-    properties:
-      resource:
-        $ref: '#/definitions/v1alphaResource'
-        title: Updated resource state
-    title: UpdateResourceResponse represents a response to update a resource's state
   v1alphaUpdateUserModelResponse:
     type: object
     properties:
@@ -3156,42 +2913,16 @@ definitions:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaModelState'
+        $ref: '#/definitions/modelv1alphaState'
         description: State.
-      progress:
-        type: integer
-        format: int32
-        description: |-
-          Long-running operation progress. If there are no ongoing operations, the
-          value will be 0.
-    description: WatchOrganizationModelResponse contains the state and progress of a model.
+    description: WatchOrganizationModelResponse contains the state of a model.
   v1alphaWatchUserModelResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/v1alphaModelState'
+        $ref: '#/definitions/modelv1alphaState'
         description: State.
-      progress:
-        type: integer
-        format: int32
-        description: |-
-          Long-running operation progress. If there are no ongoing operations, the
-          value will be 0.
-    description: WatchUserModelResponse contains the state and progress of a model.
-  v1betaHealthCheckRequest:
-    type: object
-    properties:
-      service:
-        type: string
-        title: Service name to check for its readiness status
-    title: HealthCheckRequest represents a request to health check a service
-  v1betaHealthCheckResponse:
-    type: object
-    properties:
-      status:
-        $ref: '#/definitions/HealthCheckResponseServingStatus'
-        title: Status is the instance of the enum type ServingStatus
-    title: HealthCheckResponse represents a response for a service heath status
+    description: WatchUserModelResponse contains the state of a model.
   v1betaOrganization:
     type: object
     properties:
