@@ -9,49 +9,7 @@ consumes:
   - application/json
 produces:
   - application/json
-paths:
-  /v1alpha/{repository}/tags:
-    get:
-      summary: List the versions of an image.
-      description: |-
-        Returns a portion of the tags for the specified container image
-        repository.
-      operationId: ArtifactPublicService_ListRepositoryTags
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaListRepositoryTagsResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: repository
-          description: |-
-            The repository holding the different container image versions.
-            - Format: `repositories/{repository.id}`.
-            - Example: `repository/flaming-wombat/llava-34b`.
-          in: path
-          required: true
-          type: string
-          pattern: repositories/.+
-        - name: page_size
-          description: |-
-            The maximum number of tags to return. The default and cap values are 10
-            and 100, respectively.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: page
-          description: Page number.
-          in: query
-          required: false
-          type: integer
-          format: int32
-      tags:
-        - ArtifactPublicService
+paths: {}
 definitions:
   protobufAny:
     type: object
@@ -72,7 +30,36 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
-  v1alphaImageTag:
+  v1alphaCreateRepositoryTagResponse:
+    type: object
+    properties:
+      tag:
+        $ref: '#/definitions/v1alphaRepositoryTag'
+        description: The created tag.
+    description: CreateRepositoryTagResponse contains the created tag.
+  v1alphaListRepositoryTagsResponse:
+    type: object
+    properties:
+      tags:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaRepositoryTag'
+        description: A list of repository tags.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of tags.
+      page_size:
+        type: integer
+        format: int32
+        description: The requested page size.
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+    description: ListRepositoryTagsResponse contains a list of container image tags.
+  v1alphaRepositoryTag:
     type: object
     properties:
       name:
@@ -92,26 +79,6 @@ definitions:
         format: date-time
         description: Tag update time, i.e. timestamp of the last push.
         readOnly: true
-    description: ImageTag contains information about the version of a container image.
-  v1alphaListRepositoryTagsResponse:
-    type: object
-    properties:
-      image_tags:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaImageTag'
-        description: A list of container image tags.
-      total_size:
-        type: integer
-        format: int32
-        description: Total number of tags.
-      page_size:
-        type: integer
-        format: int32
-        description: The requested page size.
-      page:
-        type: integer
-        format: int32
-        description: The requested page offset.
-    description: ListRepositoryTagsResponse contains a list of container image tags.
+    description: |-
+      RepositoryTag contains information about the version of some content in a
+      repository.
