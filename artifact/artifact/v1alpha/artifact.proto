@@ -6,8 +6,6 @@ import "common/healthcheck/v1beta/healthcheck.proto";
 // Google API
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
-// OpenAPI definition
-import "protoc-gen-openapiv2/options/annotations.proto";
 // Protocol Buffers Well-Known Types
 import "google/protobuf/timestamp.proto";
 
@@ -35,8 +33,47 @@ message ReadinessResponse {
   common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
 }
 
-// ImageTag contains information about the version of a container image.
-message ImageTag {
+/*
+
+This API is under development and, therefore, some of its entitites and
+entpoints are not implemented yet. This section aims to give context about the
+current interface and how it fits in the Artifact vision.
+
+# Artifact
+
+The Artifact domain is responsible of storing data that will later be used for
+processing unstructured data. Artifact will support the following types of
+data:
+
+- Repositories
+- Objects
+- Vectors
+
+## Repositories
+
+An implementation of the [OCI Distribution Specification](https://github.com/opencontainers/distribution-spec?tab=readme-ov-file)
+is used to manage versioned content. The main use for repositories is storing
+container images that can be used to deploy AI models or VDP pipelines.
+
+The ID of a repository has 2 segments, the owner (an Instill user or
+organization) and the content ID (the AI model or pipeline ID), e.g.
+`curious-wombat/llava-34b`.
+
+## Objects
+
+Raw data is stored in binary blobs. Object storage allows users to upload data
+(e.g. images, audio) that can be used by pipelines or to store the results or a
+pipeline trigger.
+
+## Vectors
+
+Vector embeddings have their own storage, which allows fast retrieval and similarity search.
+
+*/
+
+// RepositoryTag contains information about the version of some content in a
+// repository.
+message RepositoryTag {
   // The name of the tag, defined by its parent repository and ID.
   // - Format: `repositories/{repository.id}/tags/{tag.id}`.
   string name = 1 [(google.api.field_behavior) = IMMUTABLE];
@@ -49,29 +86,26 @@ message ImageTag {
 }
 
 // ListRepositoryTagsRequest represents a request to list the tags of a
-// container image repository.
+// repository.
 message ListRepositoryTagsRequest {
   // The maximum number of tags to return. The default and cap values are 10
   // and 100, respectively.
   optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
   // Page number.
   optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
-  // The repository holding the different container image versions.
+  // The repository holding the different versions of a given content.
   // - Format: `repositories/{repository.id}`.
-  // - Example: `repository/flaming-wombat/llava-34b`.
+  // - Example: `repository/flaming-wombat/llama-2-7b`.
   string parent = 3 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Repository"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "repository"}
-    }
+    (google.api.resource_reference) = {type: "api.instill.tech/Repository"}
   ];
 }
 
 // ListRepositoryTagsResponse contains a list of container image tags.
 message ListRepositoryTagsResponse {
-  // A list of container image tags.
-  repeated ImageTag image_tags = 1;
+  // A list of repository tags.
+  repeated RepositoryTag tags = 1;
   // Total number of tags.
   int32 total_size = 2;
   // The requested page size.
