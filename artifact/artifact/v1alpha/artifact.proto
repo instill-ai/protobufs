@@ -5,6 +5,9 @@ package artifact.artifact.v1alpha;
 import "common/healthcheck/v1beta/healthcheck.proto";
 // Google API
 import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+// Protocol Buffers Well-Known Types
+import "google/protobuf/timestamp.proto";
 
 // LivenessRequest represents a request to check a service liveness status
 message LivenessRequest {
@@ -28,4 +31,105 @@ message ReadinessRequest {
 message ReadinessResponse {
   // HealthCheckResponse message
   common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
+}
+
+/*
+
+This API is under development and, therefore, some of its entitites and
+entpoints are not implemented yet. This section aims to give context about the
+current interface and how it fits in the Artifact vision.
+
+# Artifact
+
+The Artifact domain is responsible of storing data that will later be used for
+processing unstructured data. Artifact will support the following types of
+data:
+
+- Repositories
+- Objects
+- Vectors
+
+## Repositories
+
+An implementation of the [OCI Distribution Specification](https://github.com/opencontainers/distribution-spec?tab=readme-ov-file)
+is used to manage versioned content. The main use for repositories is storing
+container images that can be used to deploy AI models or VDP pipelines.
+
+The ID of a repository has 2 segments, the owner (an Instill user or
+organization) and the content ID (the AI model or pipeline ID), e.g.
+`curious-wombat/llava-34b`.
+
+## Objects
+
+Raw data is stored in binary blobs. Object storage allows users to upload data
+(e.g. images, audio) that can be used by pipelines or to store the results or a
+pipeline trigger.
+
+## Vectors
+
+Vector embeddings have their own storage, which allows fast retrieval and similarity search.
+
+*/
+
+// RepositoryTag contains information about the version of some content in a
+// repository.
+message RepositoryTag {
+  // The name of the tag, defined by its parent repository and ID.
+  // - Format: `repositories/{repository.id}/tags/{tag.id}`.
+  string name = 1 [(google.api.field_behavior) = IMMUTABLE];
+  // The tag identifier.
+  string id = 2 [(google.api.field_behavior) = IMMUTABLE];
+  // Unique identifier, computed from the manifest the tag refers to.
+  string digest = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Tag update time, i.e. timestamp of the last push.
+  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListRepositoryTagsRequest represents a request to list the tags of a
+// repository.
+message ListRepositoryTagsRequest {
+  // The maximum number of tags to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The repository holding the different versions of a given content.
+  // - Format: `repositories/{repository.id}`.
+  // - Example: `repository/flaming-wombat/llama-2-7b`.
+  string parent = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Repository"}
+  ];
+}
+
+// ListRepositoryTagsResponse contains a list of container image tags.
+message ListRepositoryTagsResponse {
+  // A list of repository tags.
+  repeated RepositoryTag tags = 1;
+  // Total number of tags.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // The requested page offset.
+  int32 page = 4;
+}
+
+// CreateRepositoryTagRequest represents a request to add a tag to a given
+// repository.
+message CreateRepositoryTagRequest {
+  // The tag information.
+  RepositoryTag tag = 1;
+  // The repository holding the different versions of a given content.
+  // - Format: `repositories/{repository.id}`.
+  // - Example: `repository/flaming-wombat/llama-2-7b`.
+  string parent = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Repository"}
+  ];
+}
+
+// CreateRepositoryTagResponse contains the created tag.
+message CreateRepositoryTagResponse {
+  // The created tag.
+  RepositoryTag tag = 1;
 }
