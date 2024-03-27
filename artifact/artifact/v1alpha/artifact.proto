@@ -79,10 +79,19 @@ message RepositoryTag {
   string name = 1 [(google.api.field_behavior) = IMMUTABLE];
   // The tag identifier.
   string id = 2 [(google.api.field_behavior) = IMMUTABLE];
+
+  // The Artifact backend will register the tag digest and timestamp when a
+  // new version is pushed. However, the registry remains the source of truth
+  // for tags, so if this information isn't found in the Artifact database,
+  // these fields will be empty.
+
   // Unique identifier, computed from the manifest the tag refers to.
-  string digest = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string digest = 3 [(google.api.field_behavior) = OPTIONAL];
   // Tag update time, i.e. timestamp of the last push.
-  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 4 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 }
 
 // ListRepositoryTagsRequest represents a request to list the tags of a
