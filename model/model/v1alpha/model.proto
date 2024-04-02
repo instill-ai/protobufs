@@ -565,6 +565,32 @@ message TriggerUserModelResponse {
   repeated TaskOutput task_outputs = 2;
 }
 
+// TriggerAsyncUserModelRequest represents a request to trigger a model inference
+// asynchronously.
+message TriggerAsyncUserModelRequest {
+  // The resource name of the model , which allows its access by parent user
+  // and ID.
+  // - Format: `users/{user.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "user_model_name"}
+    }
+  ];
+  // Inference input parameters.
+  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Model version tag
+  string version = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// TriggerAsyncUserModelResponse contains the information to access the
+// status of an asynchronous model inference.
+message TriggerAsyncUserModelResponse {
+  // Long-running operation information.
+  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // TriggerUserModelBinaryFileUploadRequest represents a request trigger a model
 // inference by uploading a binary file as the input.
 message TriggerUserModelBinaryFileUploadRequest {
@@ -847,6 +873,32 @@ message TriggerOrganizationModelResponse {
   common.task.v1alpha.Task task = 1;
   // Model inference outputs.
   repeated TaskOutput task_outputs = 2;
+}
+
+// TriggerAsyncOrganizationModelRequest represents a request to trigger a model inference
+// asynchronously
+message TriggerAsyncOrganizationModelRequest {
+  // The resource name of the model , which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+  // Inference input parameters.
+  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Model version tag
+  string version = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// TriggerAsyncOrganizationModelResponse contains the information to access the
+// status of an asynchronous model inference.
+message TriggerAsyncOrganizationModelResponse {
+  // Long-running operation information.
+  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // TriggerOrganizationModelBinaryFileUploadRequest represents a request trigger a model
