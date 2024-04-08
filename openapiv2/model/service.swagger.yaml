@@ -626,7 +626,7 @@ paths:
           pattern: users/[^/]+/models/[^/]+/readme
       tags:
         - ModelPublicService
-  /v1alpha/{user_model_name}/{version}/watch:
+  /v1alpha/{user_model_name}/versions/{version}/watch:
     get:
       summary: Watch the state of a model
       description: |-
@@ -664,7 +664,54 @@ paths:
           pattern: '[^/]+'
       tags:
         - ModelPublicService
-  /v1alpha/{user_model_name}/{version}/trigger:
+  /v1alpha/{user_model_name}/versions:
+    get:
+      summary: List user model versions
+      description: |-
+        Returns a paginated list of version of a model namespace that belong to the specified user.
+        Contains model version and digest.
+      operationId: ModelPublicService_ListUserModelVersions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListUserModelVersionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The parent resource, i.e., the user that created the models.
+            - Format: `users/{user.id}`.
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of tags to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - ModelPublicService
+  /v1alpha/{user_model_name}/versions/{version}/trigger:
     post:
       summary: Trigger model inference
       description: |-
@@ -706,7 +753,7 @@ paths:
             $ref: '#/definitions/ModelPublicServiceTriggerUserModelBody'
       tags:
         - ModelPublicService
-  /v1alpha/{user_model_name}/{version}/triggerAsync:
+  /v1alpha/{user_model_name}/versions/{version}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
       description: |-
@@ -1174,7 +1221,7 @@ paths:
           pattern: organizations/[^/]+/models/[^/]+/readme
       tags:
         - ModelPublicService
-  /v1alpha/{organization_model_name}/{version}/watch:
+  /v1alpha/{organization_model_name}/versions/{version}/watch:
     get:
       summary: Watch the state of a model
       description: |-
@@ -1212,7 +1259,54 @@ paths:
           pattern: '[^/]+'
       tags:
         - ModelPublicService
-  /v1alpha/{organization_model_name}/{version}/trigger:
+  /v1alpha/{user_model_name_1}/versions:
+    get:
+      summary: List organization model versions
+      description: |-
+        Returns a paginated list of version of a model namespace that belong to the specified organization.
+        Contains model version and digest.
+      operationId: ModelPublicService_ListOrganizationModelVersions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListOrganizationModelVersionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_model_name_1
+          description: |-
+            The parent resource, i.e., the user that created the models.
+            - Format: `organizations/{organization.id}`.
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of tags to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - ModelPublicService
+  /v1alpha/{organization_model_name}/versions/{version}/trigger:
     post:
       summary: Trigger model inference
       description: |-
@@ -1254,7 +1348,7 @@ paths:
             $ref: '#/definitions/ModelPublicServiceTriggerOrganizationModelBody'
       tags:
         - ModelPublicService
-  /v1alpha/{organization_model_name}/{version}/triggerAsync:
+  /v1alpha/{organization_model_name}/versions/{version}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
       description: |-
@@ -2101,6 +2195,28 @@ definitions:
         format: int32
         description: Total number of models.
     description: ListModelsResponse contains a list of models.
+  v1alphaListOrganizationModelVersionsResponse:
+    type: object
+    properties:
+      versions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelVersion'
+        description: A list of model resources.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of tags.
+      page_size:
+        type: integer
+        format: int32
+        description: The requested page size.
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+    description: ListOrganizationModelVersionsResponse contains a list of models.
   v1alphaListOrganizationModelsResponse:
     type: object
     properties:
@@ -2118,6 +2234,28 @@ definitions:
         format: int32
         description: Total number of models.
     description: ListOrganizationModelsResponse contains a list of models.
+  v1alphaListUserModelVersionsResponse:
+    type: object
+    properties:
+      versions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelVersion'
+        description: A list of model resources.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of tags.
+      page_size:
+        type: integer
+        format: int32
+        description: The requested page size.
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+    description: ListUserModelVersionsResponse contains a list of models.
   v1alphaListUserModelsResponse:
     type: object
     properties:
@@ -2359,6 +2497,35 @@ definitions:
         description: Update time.
         readOnly: true
     description: ModelDefinition defines how to configure and import a model.
+  v1alphaModelVersion:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The parent resource, i.e., the user that created the models.
+          - Format: `users/{user.id}`.
+          The resource name of the model, which allows its access by parent user
+          and ID.
+          - Format: `users/{user.id}/models/{model.id}`.
+          The name of the tag.
+          - Format: `users/{user.id}/models/{model.id}/versions/{version.id}`.
+      id:
+        type: string
+        description: The tag identifier.
+      digest:
+        type: string
+        description: Unique identifier, computed from the manifest the tag refers to.
+      state:
+        $ref: '#/definitions/modelv1alphaState'
+        description: Current state of this model version.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Tag update time, i.e. timestamp of the last push.
+        readOnly: true
+    description: ModelVersion contains information about the version of a model.
   v1alphaModelVisibility:
     type: string
     enum:
