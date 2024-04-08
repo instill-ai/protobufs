@@ -73,6 +73,29 @@ enum State {
   STATE_ERROR = 5;
 }
 
+// ModelVersion contains information about the version of a model.
+message ModelVersion {
+  // The parent resource, i.e., the user that created the models.
+  // - Format: `users/{user.id}`.
+  // The resource name of the model, which allows its access by parent user
+  // and ID.
+  // - Format: `users/{user.id}/models/{model.id}`.
+  // The name of the tag.
+  // - Format: `users/{user.id}/models/{model.id}/versions/{version.id}`.
+  string name = 1 [(google.api.field_behavior) = IMMUTABLE];
+  // The tag identifier.
+  string id = 2 [(google.api.field_behavior) = IMMUTABLE];
+  // Unique identifier, computed from the manifest the tag refers to.
+  string digest = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Current state of this model version.
+  State state = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Tag update time, i.e. timestamp of the last push.
+  google.protobuf.Timestamp update_time = 5 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
 // Model represents an AI model, i.e. a program that performs tasks as decision
 // making or or pattern recognition based on its training data
 message Model {
@@ -440,6 +463,40 @@ message WatchUserModelResponse {
   reserved 2;
   // Detail description of the state
   string message = 3;
+}
+
+// ListUserModelVersionsRequest represents a request to list all the versions
+// of a model namespace of a user.
+message ListUserModelVersionsRequest {
+  // The maximum number of tags to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The parent resource, i.e., the user that created the models.
+  // - Format: `users/{user.id}`.
+  // The resource name of the model, which allows its access by parent user
+  // and ID.
+  // - Format: `users/{user.id}/models/{model.id}`.
+  string name = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "user_model_name"}
+    }
+  ];
+}
+
+// ListUserModelVersionsResponse contains a list of models.
+message ListUserModelVersionsResponse {
+  // A list of model resources.
+  repeated ModelVersion versions = 1;
+  // Total number of tags.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // The requested page offset.
+  int32 page = 4;
 }
 
 ////////////////////////////////////
@@ -847,6 +904,40 @@ message WatchOrganizationModelResponse {
   reserved 2;
   // Detail description of the state
   string message = 3;
+}
+
+// ListOrganizationModelVersionsRequest represents a request to list all the versions
+// of a model namespace of an organization.
+message ListOrganizationModelVersionsRequest {
+  // The maximum number of tags to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The parent resource, i.e., the user that created the models.
+  // - Format: `organizations/{organization.id}`.
+  // The resource name of the model, which allows its access by parent user
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "user_model_name"}
+    }
+  ];
+}
+
+// ListOrganizationModelVersionsResponse contains a list of models.
+message ListOrganizationModelVersionsResponse {
+  // A list of model resources.
+  repeated ModelVersion versions = 1;
+  // Total number of tags.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // The requested page offset.
+  int32 page = 4;
 }
 
 // TriggerOrganizationModelRequest represents a request to trigger a model inference.
