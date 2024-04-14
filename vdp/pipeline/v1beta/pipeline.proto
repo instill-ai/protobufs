@@ -43,9 +43,9 @@ message ReadinessResponse {
   common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
 }
 
-// StartComponent
-// Configures the starting point for pipeline triggering.
-message StartComponent {
+// TriggerByRequest
+// Configures the payload format of request when triggered by a request.
+message TriggerByRequest {
   // Represents a field within the start component.
   message Field {
     // Title of the field.
@@ -65,9 +65,9 @@ message StartComponent {
   map<string, Field> fields = 1 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// EndComponent
-// Configures the ending point for pipeline triggering.
-message EndComponent {
+// ResponseComponent
+// Configures the payload format of response when triggered by a request.
+message ResponseComponent {
   // Represents a field within the end component.
   message Field {
     // Title of the field.
@@ -162,12 +162,12 @@ message Component {
   reserved 2 to 9;
   // Metadata of the component.
   google.protobuf.Struct metadata = 10 [(google.api.field_behavior) = OPTIONAL];
+  // Deleted fields
+  reserved 11;
   // The component configuration.
   oneof component {
-    // StartComponent
-    StartComponent start_component = 11;
-    // EndComponent
-    EndComponent end_component = 12;
+    // ResponseComponent
+    ResponseComponent response_component = 12;
     // ConnectorComponent
     ConnectorComponent connector_component = 13;
     // OperatorComponent
@@ -199,6 +199,11 @@ message Recipe {
   string version = 1;
   // List of pipeline components.
   repeated Component components = 2;
+  // The component trigger method.
+  oneof trigger {
+    // Triggered by reqeust.
+    TriggerByRequest trigger_by_request = 3;
+  }
 }
 
 // State describes the state of a pipeline.
