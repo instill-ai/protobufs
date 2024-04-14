@@ -970,37 +970,6 @@ paths:
           pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{user_pipeline_release_name}/watch:
-    get:
-      summary: Get the state of a release in a pipeline owned by a user
-      description: |-
-        Gets the state of a pipeline release, where the pipeline is identified by
-        its resource name, formed by the parent user and ID of the pipeline.
-      operationId: PipelinePublicService_WatchUserPipelineRelease
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaWatchUserPipelineReleaseResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: user_pipeline_release_name
-          description: |-
-            The resource name of the pipeline release, which allows its access by
-            parent pipeline and ID.
-            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
-      tags:
-        - PipelinePublicService
   /v1beta/{user_pipeline_release_name}/rename:
     post:
       summary: Rename a release in a pipeline owned by a user
@@ -1936,38 +1905,6 @@ paths:
           pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
         - PipelinePublicService
-  /v1beta/{organization_pipeline_release_name}/watch:
-    get:
-      summary: Get the state of a release in a pipeline owned by an organization
-      description: |-
-        Gets the state of a pipeline release, where the pipeline is identified by
-        its resource name, formed by the parent organization and ID of the pipeline.
-      operationId: PipelinePublicService_WatchOrganizationPipelineRelease
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaWatchOrganizationPipelineReleaseResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: organization_pipeline_release_name
-          description: |-
-            The resource name of the pipeline release, which allows its access by
-            parent pipeline and ID.
-            - Format:
-            `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
-      tags:
-        - PipelinePublicService
   /v1beta/{organization_pipeline_release_name}/rename:
     post:
       summary: Rename a release in a pipeline owned by an organization
@@ -2787,18 +2724,6 @@ definitions:
       contain any private information about the user.
     required:
       - id
-  pipelinev1betaState:
-    type: string
-    enum:
-      - STATE_INACTIVE
-      - STATE_ACTIVE
-      - STATE_ERROR
-    description: |-
-      State describes the state of a pipeline.
-
-       - STATE_INACTIVE: Inactive.
-       - STATE_ACTIVE: Active.
-       - STATE_ERROR: The pipeline has an error.
   protobufAny:
     type: object
     properties:
@@ -4342,24 +4267,6 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The validated pipeline resource.
     description: ValidateUserPipelineResponse contains a validated pipeline.
-  v1betaWatchOrganizationPipelineReleaseResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/pipelinev1betaState'
-        description: The pipeline release state.
-    description: |-
-      WatchOrganizationPipelineReleaseResponse contains the pipeline release
-      current state.
-  v1betaWatchUserPipelineReleaseResponse:
-    type: object
-    properties:
-      state:
-        $ref: '#/definitions/pipelinev1betaState'
-        description: The pipeline release state.
-    description: |-
-      WatchUserPipelineReleaseResponse contains the pipeline release current
-      state.
 securityDefinitions:
   Bearer:
     type: apiKey
