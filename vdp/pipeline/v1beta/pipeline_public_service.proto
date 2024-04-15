@@ -12,6 +12,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 import "vdp/pipeline/v1beta/common.proto";
 import "vdp/pipeline/v1beta/component_definition.proto";
 import "vdp/pipeline/v1beta/pipeline.proto";
+import "vdp/pipeline/v1beta/secret.proto";
 
 // VDP
 //
@@ -631,6 +632,109 @@ service PipelinePublicService {
       post: "/v1beta/check-name"
       body: "*"
     };
+    option (google.api.method_signature) = "name";
+  }
+
+  // Create a new user secret
+  //
+  // Creates a new secret under the parenthood of an user.
+  rpc CreateUserSecret(CreateUserSecretRequest) returns (CreateUserSecretResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/user/secrets"
+      body: "secret"
+    };
+    option (google.api.method_signature) = "secret";
+  }
+
+  // List user secrets
+  //
+  // Returns a paginated list of secrets that belong to the specified
+  // user.
+  rpc ListUserSecrets(ListUserSecretsRequest) returns (ListUserSecretsResponse) {
+    option (google.api.http) = {get: "/v1beta/user/secrets"};
+  }
+
+  // Get a secret owned by an user
+  //
+  // Returns the details of an user-owned secret by its resource name,
+  // which is defined by the parent user and the ID of the secret.
+  rpc GetUserSecret(GetUserSecretRequest) returns (GetUserSecretResponse) {
+    option (google.api.http) = {get: "/v1beta/{name=user/secrets/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Update a secret owned by an user
+  //
+  // Udpates a secret, accessing it by its resource name, which is defined by
+  //
+  // In REST requests, only the supplied secret fields will be taken into
+  // account when updating the resource.
+  rpc UpdateUserSecret(UpdateUserSecretRequest) returns (UpdateUserSecretResponse) {
+    option (google.api.http) = {
+      patch: "/v1beta/{secret.name=user/secrets/*}"
+      body: "secret"
+    };
+    option (google.api.method_signature) = "secret,update_mask";
+  }
+
+  // Delete a secret owned by an user
+  //
+  // Deletes a secret, accesing it by its resource name, which is defined by
+  // the parent user and the ID of the secret.
+  rpc DeleteUserSecret(DeleteUserSecretRequest) returns (DeleteUserSecretResponse) {
+    option (google.api.http) = {delete: "/v1beta/{name=user/secrets/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Create a new organization secret
+  //
+  // Creates a new secret under the parenthood of an organization.
+  rpc CreateOrganizationSecret(CreateOrganizationSecretRequest) returns (CreateOrganizationSecretResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/{parent=organizations/*}/secrets"
+      body: "secret"
+    };
+    option (google.api.method_signature) = "parent,secret";
+  }
+
+  // List organization secrets
+  //
+  // Returns a paginated list of secrets that belong to the specified
+  // organization.
+  rpc ListOrganizationSecrets(ListOrganizationSecretsRequest) returns (ListOrganizationSecretsResponse) {
+    option (google.api.http) = {get: "/v1beta/{parent=organizations/*}/secrets"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // Get a secret owned by an organization
+  //
+  // Returns the details of an organization-owned secret by its resource name,
+  // which is defined by the parent organization and the ID of the secret.
+  rpc GetOrganizationSecret(GetOrganizationSecretRequest) returns (GetOrganizationSecretResponse) {
+    option (google.api.http) = {get: "/v1beta/{name=organizations/*/secrets/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // Update a secret owned by an organization
+  //
+  // Udpates a secret, accessing it by its resource name, which is defined by
+  //
+  // In REST requests, only the supplied secret fields will be taken into
+  // account when updating the resource.
+  rpc UpdateOrganizationSecret(UpdateOrganizationSecretRequest) returns (UpdateOrganizationSecretResponse) {
+    option (google.api.http) = {
+      patch: "/v1beta/{secret.name=organizations/*/secrets/*}"
+      body: "secret"
+    };
+    option (google.api.method_signature) = "secret,update_mask";
+  }
+
+  // Delete a secret owned by an organization
+  //
+  // Deletes a secret, accesing it by its resource name, which is defined by
+  // the parent organization and the ID of the secret.
+  rpc DeleteOrganizationSecret(DeleteOrganizationSecretRequest) returns (DeleteOrganizationSecretResponse) {
+    option (google.api.http) = {delete: "/v1beta/{name=organizations/*/secrets/*}"};
     option (google.api.method_signature) = "name";
   }
 }

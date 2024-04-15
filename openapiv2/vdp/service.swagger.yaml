@@ -2344,6 +2344,396 @@ paths:
             $ref: '#/definitions/v1betaCheckNameRequest'
       tags:
         - PipelinePublicService
+  /v1beta/user/secrets:
+    get:
+      summary: List user secrets
+      description: |-
+        Returns a paginated list of secrets that belong to the specified
+        user.
+      operationId: PipelinePublicService_ListUserSecrets
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListUserSecretsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of secrets to return. If this parameter is unspecified,
+            at most 10 pipelines will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page secret.
+          in: query
+          required: false
+          type: string
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Create a new user secret
+      description: Creates a new secret under the parenthood of an user.
+      operationId: PipelinePublicService_CreateUserSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateUserSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: secret
+          description: The properties of the secret to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaSecret'
+      tags:
+        - PipelinePublicService
+  /v1beta/{user_secret_name}:
+    get:
+      summary: Get a secret owned by an user
+      description: |-
+        Returns the details of an user-owned secret by its resource name,
+        which is defined by the parent user and the ID of the secret.
+      operationId: PipelinePublicService_GetUserSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_secret_name
+          description: |-
+            The resource name of the secret, which allows its access by ID.
+            - Format: `user/secrets/{secret.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: user/secrets/[^/]+
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a secret owned by an user
+      description: |-
+        Deletes a secret, accesing it by its resource name, which is defined by
+        the parent user and the ID of the secret.
+      operationId: PipelinePublicService_DeleteUserSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteUserSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_secret_name
+          description: |-
+            The resource name of the secret, which allows its access by ID.
+            - Format: `user/secrets/{secret.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: user/secrets/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{secret.name}:
+    patch:
+      summary: Update a secret owned by an user
+      description: |-
+        Udpates a secret, accessing it by its resource name, which is defined by
+
+        In REST requests, only the supplied secret fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateUserSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateUserSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: secret.name
+          description: |-
+            The name of the secret, define by its ID.
+            - Format: `secrets/{secret.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: user/secrets/[^/]+
+        - name: secret
+          description: The secret fields to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Secret UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Secret resource ID (used in `name` as the last segment). This conforms
+                  to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+                  first character a letter, the last a letter or a number, and a 63
+                  character maximum.
+              create_time:
+                type: string
+                format: date-time
+                description: Creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Update time.
+                readOnly: true
+              value:
+                type: string
+                description: The value of the secret, which is input-only and will never be returned in API responses.
+              description:
+                type: string
+                title: Description
+            title: The secret fields to update.
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_name}/secrets:
+    get:
+      summary: List organization secrets
+      description: |-
+        Returns a paginated list of secrets that belong to the specified
+        organization.
+      operationId: PipelinePublicService_ListOrganizationSecrets
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListOrganizationSecretsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The parent resource, i.e., the organization that creates the secret.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: page_size
+          description: |-
+            The maximum number of secrets to return. If this parameter is unspecified,
+            at most 10 pipelines will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page secret.
+          in: query
+          required: false
+          type: string
+      tags:
+        - PipelinePublicService
+    post:
+      summary: Create a new organization secret
+      description: Creates a new secret under the parenthood of an organization.
+      operationId: PipelinePublicService_CreateOrganizationSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateOrganizationSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The parent resource, i.e., the organization that creates the secret.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: secret
+          description: The properties of the secret to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaSecret'
+      tags:
+        - PipelinePublicService
+  /v1beta/{organization_secret_name}:
+    get:
+      summary: Get a secret owned by an organization
+      description: |-
+        Returns the details of an organization-owned secret by its resource name,
+        which is defined by the parent organization and the ID of the secret.
+      operationId: PipelinePublicService_GetOrganizationSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_secret_name
+          description: |-
+            The resource name of the secret, which allows its access by ID.
+            - Format: `organizations/{organization.id}/secrets/{secret.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/secrets/[^/]+
+      tags:
+        - PipelinePublicService
+    delete:
+      summary: Delete a secret owned by an organization
+      description: |-
+        Deletes a secret, accesing it by its resource name, which is defined by
+        the parent organization and the ID of the secret.
+      operationId: PipelinePublicService_DeleteOrganizationSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteOrganizationSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_secret_name
+          description: |-
+            The resource name of the secret, which allows its access by ID.
+            - Format: `organizations/{organization.id}/secrets/{secret.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/secrets/[^/]+
+      tags:
+        - PipelinePublicService
+  /v1beta/{secret.name_1}:
+    patch:
+      summary: Update a secret owned by an organization
+      description: |-
+        Udpates a secret, accessing it by its resource name, which is defined by
+
+        In REST requests, only the supplied secret fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateOrganizationSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateOrganizationSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: secret.name_1
+          description: |-
+            The name of the secret, define by its ID.
+            - Format: `secrets/{secret.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/secrets/[^/]+
+        - name: secret
+          description: The secret fields to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Secret UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Secret resource ID (used in `name` as the last segment). This conforms
+                  to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+                  first character a letter, the last a letter or a number, and a 63
+                  character maximum.
+              create_time:
+                type: string
+                format: date-time
+                description: Creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Update time.
+                readOnly: true
+              value:
+                type: string
+                description: The value of the secret, which is input-only and will never be returned in API responses.
+              description:
+                type: string
+                title: Description
+            title: The secret fields to update.
+      tags:
+        - PipelinePublicService
 definitions:
   CheckNameResponseName:
     type: string
@@ -3157,6 +3547,13 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The created pipeline resource.
     description: CreateOrganizationPipelineResponse contains the created pipeline.
+  v1betaCreateOrganizationSecretResponse:
+    type: object
+    properties:
+      secret:
+        $ref: '#/definitions/v1betaSecret'
+        description: The created secret resource.
+    description: CreateOrganizationSecretResponse contains the created secret.
   v1betaCreateUserPipelineReleaseResponse:
     type: object
     properties:
@@ -3171,6 +3568,13 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The created pipeline resource.
     description: CreateUserPipelineResponse contains the created pipeline.
+  v1betaCreateUserSecretResponse:
+    type: object
+    properties:
+      secret:
+        $ref: '#/definitions/v1betaSecret'
+        description: The created secret resource.
+    description: CreateUserSecretResponse contains the created secret.
   v1betaDataSpecification:
     type: object
     properties:
@@ -3187,12 +3591,18 @@ definitions:
   v1betaDeleteOrganizationPipelineResponse:
     type: object
     description: DeleteOrganizationPipelineResponse is an empty response.
+  v1betaDeleteOrganizationSecretResponse:
+    type: object
+    description: DeleteOrganizationSecretResponse is an empty response.
   v1betaDeleteUserPipelineReleaseResponse:
     type: object
     description: DeleteUserPipelineReleaseResponse is an empty response.
   v1betaDeleteUserPipelineResponse:
     type: object
     description: DeleteUserPipelineResponse is an empty response.
+  v1betaDeleteUserSecretResponse:
+    type: object
+    description: DeleteUserSecretResponse is an empty response.
   v1betaGetConnectorDefinitionResponse:
     type: object
     properties:
@@ -3229,6 +3639,13 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The pipeline resource.
     description: GetOrganizationPipelineResponse contains the requested pipeline.
+  v1betaGetOrganizationSecretResponse:
+    type: object
+    properties:
+      secret:
+        $ref: '#/definitions/v1betaSecret'
+        description: The secret resource.
+    description: GetOrganizationSecretResponse contains the requested secret.
   v1betaGetUserPipelineReleaseResponse:
     type: object
     properties:
@@ -3243,6 +3660,13 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The pipeline resource.
     description: GetUserPipelineResponse contains the requested pipeline.
+  v1betaGetUserSecretResponse:
+    type: object
+    properties:
+      secret:
+        $ref: '#/definitions/v1betaSecret'
+        description: The secret resource.
+    description: GetUserSecretResponse contains the requested secret.
   v1betaIteratorComponent:
     type: object
     properties:
@@ -3375,6 +3799,23 @@ definitions:
         format: int32
         description: Total number of pipelines.
     description: ListOrganizationPipelinesResponse contains a list of pipelines.
+  v1betaListOrganizationSecretsResponse:
+    type: object
+    properties:
+      secrets:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaSecret'
+        description: A list of secret resources.
+      next_page_token:
+        type: string
+        description: Next page secret.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of secret resources.
+    description: ListOrganizationSecretsResponse contains a list of secrets.
   v1betaListPipelineReleasesAdminResponse:
     type: object
     properties:
@@ -3468,6 +3909,23 @@ definitions:
         format: int32
         description: Total number of pipelines.
     description: ListUserPipelinesResponse contains a list of pipelines.
+  v1betaListUserSecretsResponse:
+    type: object
+    properties:
+      secrets:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaSecret'
+        description: A list of secret resources.
+      next_page_token:
+        type: string
+        description: Next page secret.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of secret resources.
+    description: ListUserSecretsResponse contains a list of secrets.
   v1betaLookUpPipelineAdminResponse:
     type: object
     properties:
@@ -3896,9 +4354,14 @@ definitions:
           type: object
           $ref: '#/definitions/v1betaComponent'
         description: List of pipeline components.
-      trigger_by_request:
-        $ref: '#/definitions/v1betaTriggerByRequest'
-        description: Triggered by reqeust.
+      trigger:
+        $ref: '#/definitions/v1betaTrigger'
+        description: The component trigger method.
+      secrets:
+        type: object
+        additionalProperties:
+          type: string
+        title: Local secrets
     description: Recipe describes the components of a Pipeline and how they are connected.
   v1betaRenameOrganizationPipelineReleaseResponse:
     type: object
@@ -3985,6 +4448,43 @@ definitions:
 
        - ROLE_VIEWER: Viewers can see the resource properties.
        - ROLE_EXECUTOR: Executors can execute the resource (e.g. trigger a pipeline).
+  v1betaSecret:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the secret, define by its ID.
+          - Format: `secrets/{secret.id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: Secret UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Secret resource ID (used in `name` as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
+      create_time:
+        type: string
+        format: date-time
+        description: Creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Update time.
+        readOnly: true
+      value:
+        type: string
+        description: The value of the secret, which is input-only and will never be returned in API responses.
+      description:
+        type: string
+        title: Description
+    description: API secrets allow users to make requests to the Instill AI API.
   v1betaSharing:
     type: object
     properties:
@@ -4056,6 +4556,13 @@ definitions:
        - STATUS_COMPLETED: Successfully completed.
        - STATUS_SKIPPED: Skipped.
        - STATUS_ERROR: Aborted with error.
+  v1betaTrigger:
+    type: object
+    properties:
+      trigger_by_request:
+        $ref: '#/definitions/v1betaTriggerByRequest'
+        description: Triggered by reqeust.
+    title: Trigger
   v1betaTriggerAsyncOrganizationPipelineReleaseResponse:
     type: object
     properties:
@@ -4213,6 +4720,13 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The updated pipeline resource.
     description: UpdateOrganizationPipelineResponse contains the updated pipeline.
+  v1betaUpdateOrganizationSecretResponse:
+    type: object
+    properties:
+      secret:
+        $ref: '#/definitions/v1betaSecret'
+        description: The updated secret resource.
+    description: UpdateOrganizationSecretResponse contains the updated secret.
   v1betaUpdateUserPipelineReleaseResponse:
     type: object
     properties:
@@ -4227,6 +4741,13 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The updated pipeline resource.
     description: UpdateUserPipelineResponse contains the updated pipeline.
+  v1betaUpdateUserSecretResponse:
+    type: object
+    properties:
+      secret:
+        $ref: '#/definitions/v1betaSecret'
+        description: The updated secret resource.
+    description: UpdateUserSecretResponse contains the updated secret.
   v1betaUserProfile:
     type: object
     properties:
