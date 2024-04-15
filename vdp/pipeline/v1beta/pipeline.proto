@@ -46,8 +46,8 @@ message ReadinessResponse {
 // TriggerByRequest
 // Configures the payload format of request when triggered by a request.
 message TriggerByRequest {
-  // Represents a field within the start component.
-  message Field {
+  // Represents a field within the reqeuest.
+  message RequestField {
     // Title of the field.
     string title = 1 [(google.api.field_behavior) = OPTIONAL];
     // Description of the field.
@@ -59,17 +59,8 @@ message TriggerByRequest {
     // Instill UI Multiline.
     bool instill_ui_multiline = 5 [(google.api.field_behavior) = OPTIONAL];
   }
-  // Fields configuration.
-  // Key: Key of the input data.
-  // Field: Field settings of the value.
-  map<string, Field> fields = 1 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// ResponseComponent
-// Configures the payload format of response when triggered by a request.
-message ResponseComponent {
-  // Represents a field within the end component.
-  message Field {
+  // Represents a field within the response.
+  message ResponseField {
     // Title of the field.
     string title = 1 [(google.api.field_behavior) = OPTIONAL];
     // Description of the field.
@@ -79,10 +70,16 @@ message ResponseComponent {
     // Instill UI order.
     int32 instill_ui_order = 4 [(google.api.field_behavior) = OPTIONAL];
   }
-  // Fields configuration.
-  // Key: Key of the output data.
+
+  // Fields configuration of request.
+  // Key: Key of the input data.
   // Field: Field settings of the value.
-  map<string, Field> fields = 1 [(google.api.field_behavior) = OPTIONAL];
+  map<string, RequestField> request_fields = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Fields configuration of response.
+  // Key: Key of the input data.
+  // Field: Field settings of the value.
+  map<string, ResponseField> response_fields = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ConnectorComponent
@@ -165,11 +162,9 @@ message Component {
   // Metadata of the component.
   google.protobuf.Struct metadata = 10 [(google.api.field_behavior) = OPTIONAL];
   // Deleted fields
-  reserved 11;
+  reserved 11, 12;
   // The component configuration.
   oneof component {
-    // ResponseComponent
-    ResponseComponent response_component = 12;
     // ConnectorComponent
     ConnectorComponent connector_component = 13;
     // OperatorComponent
