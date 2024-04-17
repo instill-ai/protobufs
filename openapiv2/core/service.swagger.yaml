@@ -24,6 +24,46 @@ produces:
   - application/json
 paths:
   /v1beta/{organization_membership_name}:
+    get:
+      summary: Get a an organization membership
+      description: Returns the details of a user membership within an organization.
+      operationId: MgmtPublicService_GetOrganizationMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationMembershipResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_membership_name
+          description: |-
+            The resource name of the membership, which allows its access by
+            organization and user ID.
+            - Format: `organizations/{organization.id}/memberships/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/memberships/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - MgmtPublicService
     delete:
       summary: Delete an organization membership
       description: Deletes a user membership within an organization.
@@ -50,6 +90,98 @@ paths:
           required: true
           type: string
           pattern: organizations/[^/]+/memberships/[^/]+
+      tags:
+        - MgmtPublicService
+    put:
+      summary: Uppdate an organization membership
+      description: Updates a user membership within an organization.
+      operationId: MgmtPublicService_UpdateOrganizationMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateOrganizationMembershipResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_membership_name
+          description: |-
+            The resource name of the membership, which allows its access by
+            organization and user ID.
+            - Format: `organizations/{organization.id}/memberships/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/memberships/[^/]+
+        - name: membership
+          description: The membership fields to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              role:
+                type: string
+                description: Role of the user in the organization.
+              state:
+                $ref: '#/definitions/v1betaMembershipState'
+                description: State of the membership.
+                readOnly: true
+              user:
+                $ref: '#/definitions/v1betaUser'
+                description: User information.
+                readOnly: true
+              organization:
+                $ref: '#/definitions/v1betaOrganization'
+                description: Organization information.
+                readOnly: true
+            title: The membership fields to update.
+            required:
+              - role
+        - name: update_mask
+          description: |-
+            The update mask specifies the subset of fields that should be modified.
+
+            For more information about this field, see
+            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
+          in: query
+          required: true
+          type: string
+      tags:
+        - MgmtPublicService
+  /v1beta/check-namespace:
+    post:
+      summary: Check if a namespace is in use
+      description: |-
+        Returns the availability of a namespace or, alternatively, the type of
+        resource that is using it.
+      operationId: MgmtPublicService_CheckNamespace
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCheckNamespaceResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: body
+          description: |-
+            CheckNamespaceRequest represents a request to verify if a namespace is
+            available.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaCheckNamespaceRequest'
       tags:
         - MgmtPublicService
   /v1beta/user:
@@ -154,7 +286,117 @@ paths:
           type: string
       tags:
         - MgmtPublicService
+  /v1beta/{user_name}:
+    get:
+      summary: Get a user
+      description: Returns the details of a user by their ID.
+      operationId: MgmtPublicService_GetUser
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_name
+          description: |-
+            The resource name of the user, which allows its access by ID.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - MgmtPublicService
+  /v1beta/{user_name}/memberships:
+    get:
+      summary: List user memberships
+      description: Returns the memberships of a user.
+      operationId: MgmtPublicService_ListUserMemberships
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListUserMembershipsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_name
+          description: |-
+            The parent resource, i.e., the user to which the memberships belong.
+            Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
+      tags:
+        - MgmtPublicService
   /v1beta/{user_membership_name}:
+    get:
+      summary: Get a user membership
+      description: |-
+        Returns the details of the relationship between a user and an
+        organization. The authenticated must match the membership parent.
+      operationId: MgmtPublicService_GetUserMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetUserMembershipResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_membership_name
+          description: |-
+            The resource name of the membership, which allows its access by user and
+            organization ID.
+            - Format: `users/{user.id}/memberships/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/memberships/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - MgmtPublicService
     delete:
       summary: Delete a user membership
       description: Accesses and deletes a user membership by parent and membership IDs.
@@ -183,7 +425,642 @@ paths:
           pattern: users/[^/]+/memberships/[^/]+
       tags:
         - MgmtPublicService
+    put:
+      summary: Update a user membership
+      description: Accesses and updates a user membership by parent and membership IDs.
+      operationId: MgmtPublicService_UpdateUserMembership
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateUserMembershipResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_membership_name
+          description: |-
+            The resource name of the membership, which allows its access by user and
+            organization ID.
+            - Format: `users/{user.id}/memberships/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/memberships/[^/]+
+        - name: membership
+          description: The membership fields to update.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              role:
+                type: string
+                description: Role of the user in the organization.
+                readOnly: true
+              state:
+                $ref: '#/definitions/v1betaMembershipState'
+                description: State of the membership.
+              user:
+                $ref: '#/definitions/v1betaUser'
+                description: User information.
+                readOnly: true
+              organization:
+                $ref: '#/definitions/v1betaOrganization'
+                description: Organization information.
+                readOnly: true
+            title: The membership fields to update.
+            required:
+              - state
+        - name: update_mask
+          description: |-
+            The update mask specifies the subset of fields that should be modified.
+
+            For more information about this field, see
+            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
+          in: query
+          required: true
+          type: string
+      tags:
+        - MgmtPublicService
+  /v1beta/organizations:
+    get:
+      summary: List organizations
+      description: Returns a paginated list of organizations.
+      operationId: MgmtPublicService_ListOrganizations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListOrganizationsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of organizations to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
+    post:
+      summary: Create an organization
+      description: Creates an organization.
+      operationId: MgmtPublicService_CreateOrganization
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateOrganizationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization
+          description: The properties of the organization to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaOrganization'
+      tags:
+        - MgmtPublicService
+  /v1beta/{organization_name}:
+    get:
+      summary: Get an organization
+      description: Returns the organization details by its ID.
+      operationId: MgmtPublicService_GetOrganization
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The resource name of the organization, which allows its access by ID.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - MgmtPublicService
+    delete:
+      summary: Delete an organization
+      description: Accesses and deletes an organization by ID.
+      operationId: MgmtPublicService_DeleteOrganization
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteOrganizationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The resource name of the organization, which allows its access by ID.
+            - Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+      tags:
+        - MgmtPublicService
+    patch:
+      summary: Update an organization
+      description: |-
+        Accesses and updates an organization by ID.
+
+        In REST requests, only the supplied organization fields will be taken into
+        account when updating the resource.
+      operationId: MgmtPublicService_UpdateOrganization
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateOrganizationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The name of the organization, defined by its ID.
+            - Format: `organization/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+        - name: organization
+          description: The organization fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: Organization UUID.
+                readOnly: true
+              id:
+                type: string
+                description: |-
+                  Resource ID (used in `name` as the last segment). This conforms to
+                  RFC-1034, which restricts to letters, numbers, and hyphen, with the first
+                  character a letter, the last a letter or a number, and a 63 character
+                  maximum.
+
+                  Note that the ID can be updated.
+              create_time:
+                type: string
+                format: date-time
+                description: Creation time.
+                readOnly: true
+              update_time:
+                type: string
+                format: date-time
+                description: Update time.
+                readOnly: true
+              owner:
+                $ref: '#/definitions/v1betaUser'
+                description: The user that owns the organization.
+                readOnly: true
+              profile:
+                $ref: '#/definitions/v1betaOrganizationProfile'
+                description: Profile.
+            title: The organization fields that will replace the existing ones.
+            required:
+              - id
+      tags:
+        - MgmtPublicService
+  /v1beta/{organization_name}/memberships:
+    get:
+      summary: List organization memberships
+      description: Returns a paginated list of the user memberships in an organization.
+      operationId: MgmtPublicService_ListOrganizationMemberships
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListOrganizationMembershipsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The parent resource, i.e., the organization to which the memberships
+            belong.
+            Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+      tags:
+        - MgmtPublicService
+  /v1beta/user/subscription:
+    get:
+      summary: Get the subscription of the authenticated user
+      description: Returns the subscription details of the authenticated user.
+      operationId: MgmtPublicService_GetAuthenticatedUserSubscription
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetAuthenticatedUserSubscriptionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - MgmtPublicService
+  /v1beta/{organization_name}/subscription:
+    get:
+      summary: Get an organization subscription
+      description: Returns the subscription details of an organization.
+      operationId: MgmtPublicService_GetOrganizationSubscription
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOrganizationSubscriptionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_name
+          description: |-
+            The parent resource, i.e., the organization to which the subscription
+            refers.
+            Format: `organizations/{organization.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+
+      tags:
+        - MgmtPublicService
+  /v1beta/tokens:
+    get:
+      summary: List API tokens
+      description: Returns a paginated list of the API tokens of the authenticated user.
+      operationId: MgmtPublicService_ListTokens
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListTokensResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of tokens to return. If this parameter is unspecified,
+            at most 10 pipelines will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
+    post:
+      summary: Create an API token
+      description: Creates an API token for the authenticated user.
+      operationId: MgmtPublicService_CreateToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateTokenResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: token
+          description: The properties of the token to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaApiToken'
+      tags:
+        - MgmtPublicService
+  /v1beta/{token_name}:
+    get:
+      summary: Get an API token
+      description: Returns the details of an API token.
+      operationId: MgmtPublicService_GetToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetTokenResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: token_name
+          description: |-
+            The resource name of the token, which allows its access by ID.
+            - Format: `tokens/{token.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: tokens/[^/]+
+      tags:
+        - MgmtPublicService
+    delete:
+      summary: Delete an API token
+      description: Deletes an API token.
+      operationId: MgmtPublicService_DeleteToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteTokenResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: token_name
+          description: |-
+            The resource name of the token, which allows its access by ID.
+            - Format: `tokens/{token.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: tokens/[^/]+
+      tags:
+        - MgmtPublicService
+  /v1beta/validate_token:
+    post:
+      summary: Validate an API token.
+      description: Validates an API token.
+      operationId: MgmtPublicService_ValidateToken
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaValidateTokenResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      tags:
+        - MgmtPublicService
+  /v1beta/metrics/vdp/pipeline/triggers:
+    get:
+      summary: List pipeline triggers
+      description: Returns a paginated list of pipeline executions.
+      operationId: MgmtPublicService_ListPipelineTriggerRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineTriggerRecordsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of triggers to return. If this parameter is unspecified,
+            at most 100 pipelines will be returned. The cap value for this parameter is
+            1000 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
+  /v1beta/metrics/vdp/pipeline/tables:
+    get:
+      summary: List pipeline trigger metrics
+      description: Returns a paginated list of pipeline executions aggregated by pipeline ID.
+      operationId: MgmtPublicService_ListPipelineTriggerTableRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineTriggerTableRecordsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page_size
+          description: |-
+            The maximum number of results to return. If this parameter is unspecified,
+            at most 100 pipelines will be returned. The cap value for this parameter
+            is 1000 (i.e. any value above that will be coerced to 1000).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
+  /v1beta/metrics/vdp/pipeline/charts:
+    get:
+      summary: List pipeline trigger computation time charts
+      description: |-
+        Returns a paginated list with pipeline trigger execution times, aggregated
+        by pipeline and time frames.
+      operationId: MgmtPublicService_ListPipelineTriggerChartRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineTriggerChartRecordsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: aggregation_window
+          description: Aggregation window in nanoseconds.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - MgmtPublicService
 definitions:
+  ApiTokenState:
+    type: string
+    enum:
+      - STATE_INACTIVE
+      - STATE_ACTIVE
+      - STATE_EXPIRED
+    description: |-
+      State describes the state of an API token.
+
+       - STATE_INACTIVE: Inactive.
+       - STATE_ACTIVE: Active.
+       - STATE_EXPIRED: Expired.
+  CheckNamespaceResponseNamespace:
+    type: string
+    enum:
+      - NAMESPACE_AVAILABLE
+      - NAMESPACE_USER
+      - NAMESPACE_ORGANIZATION
+      - NAMESPACE_RESERVED
+    description: |-
+      Namespace contains information about the availability of a namespace.
+
+       - NAMESPACE_AVAILABLE: Available.
+       - NAMESPACE_USER: Namespace belongs to a user.
+       - NAMESPACE_ORGANIZATION: Namespace belongs to an organization.
+       - NAMESPACE_RESERVED: Reserved.
   HealthCheckResponseServingStatus:
     type: string
     enum:
@@ -401,6 +1278,63 @@ definitions:
        - TASK_IMAGE_TO_IMAGE: Image to Image - generate an image from another image.
        - TASK_TEXT_EMBEDDINGS: Text Embeddings - generate an embedding (a representation as coordinates) from a text input.
        - TASK_SPEECH_RECOGNITION: Speech Recognition - transcribe the words in an audio input.
+  v1betaApiToken:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The name of the token, define by its ID.
+          - Format: `tokens/{token.id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: API token UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          API token resource ID (used in `name` as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
+
+          This field can reflect the client(s) that will use the token.
+      create_time:
+        type: string
+        format: date-time
+        description: Creation time.
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        description: Update time.
+        readOnly: true
+      access_token:
+        type: string
+        description: |-
+          An opaque access token representing the API token string.
+
+          To validate the token, the recipient of the token needs to call the server
+          that issued the token.
+        readOnly: true
+      state:
+        $ref: '#/definitions/ApiTokenState'
+        description: State.
+        readOnly: true
+      token_type:
+        type: string
+        description: Token type. Value is fixed to "Bearer".
+        readOnly: true
+      ttl:
+        type: integer
+        format: int32
+        description: The time-to-live in seconds for this resource.
+      expire_time:
+        type: string
+        format: date-time
+        description: Expiration time.
+    description: API tokens allow users to make requests to the Instill AI API.
   v1betaArtifactUsageData:
     type: object
     properties:
@@ -497,6 +1431,26 @@ definitions:
       - id
       - email
       - newsletter_subscription
+  v1betaCheckNamespaceRequest:
+    type: object
+    properties:
+      id:
+        type: string
+        description: The namespace ID to be checked.
+    description: |-
+      CheckNamespaceRequest represents a request to verify if a namespace is
+      available.
+    required:
+      - id
+  v1betaCheckNamespaceResponse:
+    type: object
+    properties:
+      type:
+        $ref: '#/definitions/CheckNamespaceResponseNamespace'
+        description: Namespace type.
+    description: |-
+      CheckNamespaceResponse contains the availability of a namespace or the type
+      of resource that's using it.
   v1betaConnectorUsageData:
     type: object
     properties:
@@ -527,6 +1481,13 @@ definitions:
       - owner_uid
       - connector_execute_data
       - owner_type
+  v1betaCreateOrganizationResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1betaOrganization'
+        description: The organization resource.
+    description: CreateOrganizationResponse contains the created organization.
   v1betaCreateSessionResponse:
     type: object
     properties:
@@ -534,9 +1495,22 @@ definitions:
         $ref: '#/definitions/v1betaSession'
         title: A session resource
     title: CreateSessionResponse represents a response for a session response
+  v1betaCreateTokenResponse:
+    type: object
+    properties:
+      token:
+        $ref: '#/definitions/v1betaApiToken'
+        description: The created API token resource.
+    description: CreateTokenResponse contains the created token.
   v1betaDeleteOrganizationMembershipResponse:
     type: object
     description: DeleteOrganizationMembershipResponse is an empty response.
+  v1betaDeleteOrganizationResponse:
+    type: object
+    description: DeleteOrganizationResponse is an empty response.
+  v1betaDeleteTokenResponse:
+    type: object
+    description: DeleteTokenResponse is an empty response.
   v1betaDeleteUserMembershipResponse:
     type: object
     description: DeleteUserMembershipResponse is an empty response.
@@ -547,6 +1521,13 @@ definitions:
         $ref: '#/definitions/v1betaAuthenticatedUser'
         description: The authenticated user resource.
     description: GetAuthenticatedUserResponse contains the requested authenticated user.
+  v1betaGetAuthenticatedUserSubscriptionResponse:
+    type: object
+    properties:
+      subscription:
+        $ref: '#/definitions/v1betaUserSubscription'
+        description: The subscription resource.
+    description: GetAuthenticatedUserSubscriptionResponse contains the requested subscription.
   v1betaGetBulkCumulativeModelOnlineRecordsResponse:
     type: object
     properties:
@@ -837,6 +1818,20 @@ definitions:
         $ref: '#/definitions/v1betaOrganization'
         title: A organization resource
     title: GetOrganizationAdminResponse represents a response for a organization resource
+  v1betaGetOrganizationMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1betaOrganizationMembership'
+        description: The requested organization membership.
+    description: GetOrganizationMembershipResponse contains the organization membership.
+  v1betaGetOrganizationResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1betaOrganization'
+        description: The organization resource.
+    description: GetOrganizationResponse contains the requested organization.
   v1betaGetOrganizationSubscriptionAdminResponse:
     type: object
     properties:
@@ -844,6 +1839,13 @@ definitions:
         $ref: '#/definitions/v1betaOrganizationSubscription'
         title: Subscription
     title: GetOrganizationSubscriptionAdminResponse
+  v1betaGetOrganizationSubscriptionResponse:
+    type: object
+    properties:
+      subscription:
+        $ref: '#/definitions/v1betaOrganizationSubscription'
+        description: The subscription resource.
+    description: GetOrganizationSubscriptionResponse contains the requested subscription.
   v1betaGetPipelineTriggerPriceRequest:
     type: object
     properties:
@@ -952,6 +1954,13 @@ definitions:
     title: GetPipelinesResponse represents a respond to GetPipelineRequest
     required:
       - pipelines
+  v1betaGetTokenResponse:
+    type: object
+    properties:
+      token:
+        $ref: '#/definitions/v1betaApiToken'
+        description: The API token resource.
+    description: GetTokenResponse contains the requested token.
   v1betaGetUserAdminResponse:
     type: object
     properties:
@@ -959,6 +1968,20 @@ definitions:
         $ref: '#/definitions/v1betaUser'
         title: A user resource
     title: GetUserAdminResponse represents a response for a user resource
+  v1betaGetUserMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1betaUserMembership'
+        description: The requested user membership.
+    description: GetUserMembershipResponse contains the user membership.
+  v1betaGetUserResponse:
+    type: object
+    properties:
+      user:
+        $ref: '#/definitions/v1betaUser'
+        description: The user resource.
+    description: GetUserResponse contains the requested user.
   v1betaGetUserSubscriptionAdminResponse:
     type: object
     properties:
@@ -980,6 +2003,18 @@ definitions:
         $ref: '#/definitions/HealthCheckResponseServingStatus'
         title: Status is the instance of the enum type ServingStatus
     title: HealthCheckResponse represents a response for a service heath status
+  v1betaListOrganizationMembershipsResponse:
+    type: object
+    properties:
+      memberships:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaOrganizationMembership'
+        description: |-
+          The organization memberships, i.e., the users that belong to the
+          organization.
+    description: ListOrganizationMembershipsResponse contains a list of memberships.
   v1betaListOrganizationsAdminResponse:
     type: object
     properties:
@@ -997,6 +2032,96 @@ definitions:
         format: int32
         description: Total number of organizations.
     title: ListOrganizationsAdminResponse represents a response for a list of organizations
+  v1betaListOrganizationsResponse:
+    type: object
+    properties:
+      organizations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaOrganization'
+        title: A list of organizations
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of organizations.
+    title: ListOrganizationsResponse represents a response for a list of organizations
+  v1betaListPipelineTriggerChartRecordsResponse:
+    type: object
+    properties:
+      pipeline_trigger_chart_records:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineTriggerChartRecord'
+        description: A list of pipeline trigger records.
+    description: |-
+      ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
+      chart records.
+  v1betaListPipelineTriggerRecordsResponse:
+    type: object
+    properties:
+      pipeline_trigger_records:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineTriggerRecord'
+        description: A list of pipeline triggers.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of pipeline triggers.
+    description: ListPipelineTriggerRecordsResponse contains a list of pipeline triggers.
+  v1betaListPipelineTriggerTableRecordsResponse:
+    type: object
+    properties:
+      pipeline_trigger_table_records:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineTriggerTableRecord'
+        description: A list of pipeline trigger tables.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        title: Total number of pipeline trigger records
+    description: ListPipelineTriggerTableRecordsResponse contains the pipeline metrics.
+  v1betaListTokensResponse:
+    type: object
+    properties:
+      tokens:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaApiToken'
+        description: A list of API token resources.
+      next_page_token:
+        type: string
+        description: Next page token.
+      total_size:
+        type: integer
+        format: int32
+        description: Total number of API token resources.
+    description: ListTokensResponse contains a list of API tokens.
+  v1betaListUserMembershipsResponse:
+    type: object
+    properties:
+      memberships:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaUserMembership'
+        description: The user memberships, i.e., the organizations the user belongs to.
+    description: ListUserMembershipsResponse contains a list of memberships.
   v1betaListUsersAdminResponse:
     type: object
     properties:
@@ -1045,6 +2170,17 @@ definitions:
         $ref: '#/definitions/v1betaUser'
         title: A user resource
     title: LookUpUserAdminResponse represents a response for a user resource by admin
+  v1betaMembershipState:
+    type: string
+    enum:
+      - MEMBERSHIP_STATE_ACTIVE
+      - MEMBERSHIP_STATE_PENDING
+    description: |-
+      MembershipState describes the state of a user membership to an organization.
+
+       - MEMBERSHIP_STATE_ACTIVE: Active.
+       - MEMBERSHIP_STATE_PENDING: Pending, i.e., a request has been sent to the user to join an
+      organization.
   v1betaMgmtUsageData:
     type: object
     properties:
@@ -1203,6 +2339,36 @@ definitions:
       as pipelines or releases.
     required:
       - id
+  v1betaOrganizationMembership:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The resource name of the membership, which allows its access by
+          organization and user ID.
+          - Format: `organizations/{organization.id}/memberships/{user.id}`.
+        readOnly: true
+      role:
+        type: string
+        description: Role of the user in the organization.
+      state:
+        $ref: '#/definitions/v1betaMembershipState'
+        description: State of the membership.
+        readOnly: true
+      user:
+        $ref: '#/definitions/v1betaUser'
+        description: User information.
+        readOnly: true
+      organization:
+        $ref: '#/definitions/v1betaOrganization'
+        description: Organization information.
+        readOnly: true
+    description: |-
+      An organization membership defines the relationship between an organization
+      and a user that is attached to it.
+    required:
+      - role
   v1betaOrganizationProfile:
     type: object
     properties:
@@ -1291,6 +2457,121 @@ definitions:
       - uid
       - id
       - task
+  v1betaPipelineTriggerChartRecord:
+    type: object
+    properties:
+      pipeline_id:
+        type: string
+        description: Pipeline ID.
+      pipeline_uid:
+        type: string
+        description: Pipeline UUID.
+      trigger_mode:
+        $ref: '#/definitions/v1betaMode'
+        description: Trigger mode.
+      status:
+        $ref: '#/definitions/mgmtv1betaStatus'
+        description: Final status.
+        readOnly: true
+      time_buckets:
+        type: array
+        items:
+          type: string
+          format: date-time
+        description: Time buckets.
+        readOnly: true
+      trigger_counts:
+        type: array
+        items:
+          type: integer
+          format: int32
+        description: Aggregated trigger count in each time bucket.
+        readOnly: true
+      compute_time_duration:
+        type: array
+        items:
+          type: number
+          format: float
+        description: Total computation time duration in each time bucket.
+        readOnly: true
+      pipeline_release_id:
+        type: string
+        description: Version for the triggered pipeline if it is a release pipeline.
+        readOnly: true
+      pipeline_release_uid:
+        type: string
+        description: Release UUID for the triggered pipeline if it is a release pipeline.
+        readOnly: true
+    description: |-
+      PipelineTriggerChartRecord contains pipeline trigger metrics, aggregated by
+      pipeline ID and time frame.
+  v1betaPipelineTriggerRecord:
+    type: object
+    properties:
+      trigger_time:
+        type: string
+        format: date-time
+        description: The moment when the pipeline was triggered.
+      pipeline_trigger_id:
+        type: string
+        description: UUID of the trigger.
+      pipeline_id:
+        type: string
+        description: Pipeline ID.
+      pipeline_uid:
+        type: string
+        description: Pipeline UUID.
+      trigger_mode:
+        $ref: '#/definitions/v1betaMode'
+        description: Trigger mode.
+      compute_time_duration:
+        type: number
+        format: float
+        description: Total execution duration.
+        readOnly: true
+      status:
+        $ref: '#/definitions/mgmtv1betaStatus'
+        description: Final status.
+        readOnly: true
+      pipeline_release_id:
+        type: string
+        description: If a release of the pipeline was triggered, pipeline version.
+        readOnly: true
+      pipeline_release_uid:
+        type: string
+        description: If a release of the pipeline was triggered, release UUID.
+        readOnly: true
+    description: PipelineTriggerRecord represents a pipeline execution event.
+  v1betaPipelineTriggerTableRecord:
+    type: object
+    properties:
+      pipeline_id:
+        type: string
+        description: Pipeline ID.
+      pipeline_uid:
+        type: string
+        description: Pipeline UUID.
+      trigger_count_completed:
+        type: integer
+        format: int32
+        description: Number of triggers with `STATUS_COMPLETED`.
+        readOnly: true
+      trigger_count_errored:
+        type: integer
+        format: int32
+        description: Number of triggers with `STATUS_ERRORED`.
+        readOnly: true
+      pipeline_release_id:
+        type: string
+        description: Version for the triggered pipeline if it is a release pipeline.
+        readOnly: true
+      pipeline_release_uid:
+        type: string
+        description: Release UUID for the triggered pipeline if it is a release pipeline.
+        readOnly: true
+    description: |-
+      PipelineTriggerTableRecord contains pipeline trigger metrics, aggregated by
+      pipeline ID.
   v1betaPipelineUsageData:
     type: object
     properties:
@@ -1632,6 +2913,27 @@ definitions:
     required:
       - start_time
       - end_time
+  v1betaUpdateOrganizationMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1betaOrganizationMembership'
+        description: The updated membership resource.
+    description: UpdateOrganizationMembershipResponse contains the updated membership.
+  v1betaUpdateOrganizationResponse:
+    type: object
+    properties:
+      organization:
+        $ref: '#/definitions/v1betaOrganization'
+        description: The organization resource.
+    description: UpdateOrganizationResponse contains the updated organization.
+  v1betaUpdateUserMembershipResponse:
+    type: object
+    properties:
+      membership:
+        $ref: '#/definitions/v1betaUserMembership'
+        description: The updated membership resource.
+    description: UpdateUserMembershipResponse contains the updated membership.
   v1betaUsageSummary:
     type: object
     properties:
@@ -1700,6 +3002,36 @@ definitions:
     title: User records definition
     required:
       - uid
+  v1betaUserMembership:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          The resource name of the membership, which allows its access by user and
+          organization ID.
+          - Format: `users/{user.id}/memberships/{organization.id}`.
+        readOnly: true
+      role:
+        type: string
+        description: Role of the user in the organization.
+        readOnly: true
+      state:
+        $ref: '#/definitions/v1betaMembershipState'
+        description: State of the membership.
+      user:
+        $ref: '#/definitions/v1betaUser'
+        description: User information.
+        readOnly: true
+      organization:
+        $ref: '#/definitions/v1betaOrganization'
+        description: Organization information.
+        readOnly: true
+    description: |-
+      A user membership defines the relationship between a user and an
+      organization they belong to.
+    required:
+      - state
   v1betaUserProfile:
     type: object
     properties:
@@ -1746,6 +3078,14 @@ definitions:
 
        - PLAN_FREEMIUM: Freemium plan.
        - PLAN_PRO: Pro plan.
+  v1betaValidateTokenResponse:
+    type: object
+    properties:
+      user_uid:
+        type: string
+        description: If token is valid, UUID of the user that owns it.
+        readOnly: true
+    description: ValidateTokenResponse contains the validation of a token.
   v1betaView:
     type: string
     enum:
