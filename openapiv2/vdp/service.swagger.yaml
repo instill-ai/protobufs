@@ -2344,7 +2344,7 @@ paths:
             $ref: '#/definitions/v1betaCheckNameRequest'
       tags:
         - PipelinePublicService
-  /v1beta/user/secrets:
+  /v1beta/{user_name}/secrets:
     get:
       summary: List user secrets
       description: |-
@@ -2364,6 +2364,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
+        - name: user_name
+          description: |-
+            The parent resource, i.e., the user that creates the secret.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
         - name: page_size
           description: |-
             The maximum number of secrets to return. If this parameter is unspecified,
@@ -2397,6 +2405,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
+        - name: user_name
+          description: |-
+            The parent resource, i.e., the user that creates the secret.
+            - Format: `users/{user.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+
         - name: secret
           description: The properties of the secret to be created.
           in: body
@@ -2428,11 +2444,11 @@ paths:
         - name: user_secret_name
           description: |-
             The resource name of the secret, which allows its access by ID.
-            - Format: `user/secrets/{secret.id}`.
+            - Format: `users/{user.id}/secrets/{secret.id}`.
           in: path
           required: true
           type: string
-          pattern: user/secrets/[^/]+
+          pattern: users/[^/]+/secrets/[^/]+
       tags:
         - PipelinePublicService
     delete:
@@ -2457,11 +2473,11 @@ paths:
         - name: user_secret_name
           description: |-
             The resource name of the secret, which allows its access by ID.
-            - Format: `user/secrets/{secret.id}`.
+            - Format: `users/{user.id}/secrets/{secret.id}`.
           in: path
           required: true
           type: string
-          pattern: user/secrets/[^/]+
+          pattern: users/[^/]+/secrets/[^/]+
       tags:
         - PipelinePublicService
   /v1beta/{secret.name}:
@@ -2493,7 +2509,7 @@ paths:
           in: path
           required: true
           type: string
-          pattern: user/secrets/[^/]+
+          pattern: users/[^/]+/secrets/[^/]+
         - name: secret
           description: The secret fields to update.
           in: body
