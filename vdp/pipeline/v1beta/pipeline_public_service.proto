@@ -640,10 +640,10 @@ service PipelinePublicService {
   // Creates a new secret under the parenthood of an user.
   rpc CreateUserSecret(CreateUserSecretRequest) returns (CreateUserSecretResponse) {
     option (google.api.http) = {
-      post: "/v1beta/user/secrets"
+      post: "/v1beta/{parent=users/*}/secrets"
       body: "secret"
     };
-    option (google.api.method_signature) = "secret";
+    option (google.api.method_signature) = "parent,secret";
   }
 
   // List user secrets
@@ -651,7 +651,8 @@ service PipelinePublicService {
   // Returns a paginated list of secrets that belong to the specified
   // user.
   rpc ListUserSecrets(ListUserSecretsRequest) returns (ListUserSecretsResponse) {
-    option (google.api.http) = {get: "/v1beta/user/secrets"};
+    option (google.api.http) = {get: "/v1beta/{parent=users/*}/secrets"};
+    option (google.api.method_signature) = "parent";
   }
 
   // Get a secret owned by an user
@@ -659,7 +660,7 @@ service PipelinePublicService {
   // Returns the details of an user-owned secret by its resource name,
   // which is defined by the parent user and the ID of the secret.
   rpc GetUserSecret(GetUserSecretRequest) returns (GetUserSecretResponse) {
-    option (google.api.http) = {get: "/v1beta/{name=user/secrets/*}"};
+    option (google.api.http) = {get: "/v1beta/{name=users/*/secrets/*}"};
     option (google.api.method_signature) = "name";
   }
 
@@ -671,7 +672,7 @@ service PipelinePublicService {
   // account when updating the resource.
   rpc UpdateUserSecret(UpdateUserSecretRequest) returns (UpdateUserSecretResponse) {
     option (google.api.http) = {
-      patch: "/v1beta/{secret.name=user/secrets/*}"
+      patch: "/v1beta/{secret.name=users/*/secrets/*}"
       body: "secret"
     };
     option (google.api.method_signature) = "secret,update_mask";
@@ -682,7 +683,7 @@ service PipelinePublicService {
   // Deletes a secret, accesing it by its resource name, which is defined by
   // the parent user and the ID of the secret.
   rpc DeleteUserSecret(DeleteUserSecretRequest) returns (DeleteUserSecretResponse) {
-    option (google.api.http) = {delete: "/v1beta/{name=user/secrets/*}"};
+    option (google.api.http) = {delete: "/v1beta/{name=users/*/secrets/*}"};
     option (google.api.method_signature) = "name";
   }
 
