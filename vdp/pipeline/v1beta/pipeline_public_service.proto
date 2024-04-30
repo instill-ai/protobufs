@@ -180,6 +180,27 @@ service PipelinePublicService {
     option (google.api.method_signature) = "name,inputs";
   }
 
+ // Trigger a pipeline owned by a user
+//
+// Triggers the execution of a pipeline and streams the results back to the user.
+// This method is intended for real-time inference when low latency is of concern.
+//
+// The pipeline is identified by its resource name, formed by the parent user
+// and ID of the pipeline.
+//
+// The response is returned as a stream of data, allowing the client to receive
+// the results incrementally as they become available.
+//
+  // For more information, see [Trigger
+  // Pipeline](TODO: Add link).
+  rpc TriggerUserPipeline(TriggerUserPipelineRequest) returns (TriggerUserPipelineResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/{name=users/*/pipelines/*}/trigger:stream"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name,inputs";
+  }
+
   // Trigger a pipeline owned by a user asynchronously
   //
   // Triggers the execution of a pipeline asynchronously, i.e., the result
