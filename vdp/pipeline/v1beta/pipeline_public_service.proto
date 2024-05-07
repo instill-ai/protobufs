@@ -191,6 +191,25 @@ service PipelinePublicService {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Trigger"};
   }
 
+
+
+  // Trigger a pipeline owned by a user and stream back the response
+  //
+  // Triggers the execution of a pipeline asynchronously and streams back the response.
+  // This method is intended for real-time inference when low latency is of concern
+  // and the response needs to be processed incrementally.
+  //
+  // The pipeline is identified by its resource name, formed by the parent user
+  // and ID of the pipeline.
+  rpc TriggerUserPipelineStream(TriggerUserPipelineStreamRequest) returns ( stream TriggerUserPipelineStreamResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/{name=users/*/pipelines/*}/trigger:stream"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name,inputs";
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Trigger"};
+  }
+
   // Trigger a pipeline owned by a user asynchronously
   //
   // Triggers the execution of a pipeline asynchronously, i.e., the result
