@@ -309,6 +309,8 @@ message Pipeline {
   ];
   // Data specifications.
   DataSpecification data_specification = 24 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Tags.
+  repeated string tags = 25 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // TriggerMetadata contains the traces of the pipeline inference.
@@ -341,6 +343,17 @@ message Trace {
   google.protobuf.Struct error = 4;
   // Computation time in seconds.
   float compute_time_in_seconds = 5;
+}
+
+// GetHubStatsRequest represents a request to get hub stats.
+message GetHubStatsRequest {}
+
+// GetHubStatsResponse represents a response to get hub stats.
+message GetHubStatsResponse {
+  // Total number of public pipelines.
+  int32 number_of_public_pipelines = 1;
+  // Total number of featured pipelines.
+  int32 number_of_featured_pipelines = 2;
 }
 
 // Pipeline releases contain the version control information of a pipeline.
@@ -407,6 +420,9 @@ message ListPipelinesRequest {
   optional bool show_deleted = 5 [(google.api.field_behavior) = OPTIONAL];
   // Limit results to pipelines with the specified visibility.
   optional Pipeline.Visibility visibility = 6 [(google.api.field_behavior) = OPTIONAL];
+  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  optional string order_by = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListPipelinesResponse contains a list of pipelines.
@@ -486,6 +502,9 @@ message ListUserPipelinesRequest {
   optional bool show_deleted = 6 [(google.api.field_behavior) = OPTIONAL];
   // Limit results to pipelines with the specified visibility.
   optional Pipeline.Visibility visibility = 7 [(google.api.field_behavior) = OPTIONAL];
+  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  optional string order_by = 8 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListUserPipelinesResponse contains a list of pipelines.
@@ -982,6 +1001,9 @@ message ListOrganizationPipelinesRequest {
   optional bool show_deleted = 6 [(google.api.field_behavior) = OPTIONAL];
   // Limit results to pipelines with the specified visibility.
   optional Pipeline.Visibility visibility = 7 [(google.api.field_behavior) = OPTIONAL];
+  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  optional string order_by = 8 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListOrganizationPipelinesResponse contains a list of pipelines.

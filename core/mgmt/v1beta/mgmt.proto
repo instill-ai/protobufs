@@ -591,11 +591,26 @@ message GetRemainingCreditResponse {
   float amount = 1;
 }
 
-// SubtractCreditRequest represents a request to subtract Instill Credit from
-// an account.
-message SubtractCreditRequest {
+// GetRemainingCreditAdminRequest represents a request to get the remaining
+// credit of a user or organization without authentication.
+message GetRemainingCreditAdminRequest {
   // The user or organization to which the credit belongs.
-  // Format: `{[users|organizations]}/{id}`.
+  // Format: `{[users|organizations]}/{uid}`.
+  string owner = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetRemainingCreditAdminResponse contains the remaining credit of a user or
+// organization.
+message GetRemainingCreditAdminResponse {
+  // The requested credit.
+  float amount = 1;
+}
+
+// SubtractCreditAdminRequest represents a request to subtract Instill Credit from
+// an account.
+message SubtractCreditAdminRequest {
+  // The user or organization to which the credit belongs.
+  // Format: `{[users|organizations]}/{uid}`.
   string owner = 1 [(google.api.field_behavior) = REQUIRED];
   // The credit amount to subtract.
   float amount = 2;
@@ -605,7 +620,7 @@ message SubtractCreditRequest {
 
 // SubtractCreditResponse contains the remaining credit of an account after the
 // subtraction.
-message SubtractCreditResponse {
+message SubtractCreditAdminResponse {
   // The remaining credit.
   float amount = 1;
 }
@@ -1060,10 +1075,10 @@ message UserSubscription {
   enum Plan {
     // Unspecified plan.
     PLAN_UNSPECIFIED = 0;
-    // Freemium plan.
-    PLAN_FREEMIUM = 1;
-    // Pro plan.
-    PLAN_PRO = 2;
+    // Free plan.
+    PLAN_FREE = 1;
+    // Starter plan.
+    PLAN_STARTER = 2;
   }
 
   // Plan identifier.
@@ -1078,12 +1093,14 @@ message OrganizationSubscription {
   enum Plan {
     // Unspecified plan.
     PLAN_UNSPECIFIED = 0;
-    // Freemium plan.
-    PLAN_FREEMIUM = 1;
+    // Unpaid.
+    PLAN_UNPAID = 1;
     // Team plan.
     PLAN_TEAM = 2;
     // Enterprise plan.
     PLAN_ENTERPRISE = 3;
+    // Team pro plan.
+    PLAN_TEAM_PRO = 4;
   }
 
   // Plan identifier.

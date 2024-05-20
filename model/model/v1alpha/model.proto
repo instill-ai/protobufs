@@ -55,6 +55,15 @@ message ReadinessResponse {
   common.healthcheck.v1beta.HealthCheckResponse health_check_response = 1;
 }
 
+// Region describes the supported cloud provider and regions, with
+// their supported GPU respectively.
+message Region {
+  // Concate name of provider and region
+  string region_name = 1;
+  // Hardware describes the available hardware types in this region
+  repeated string hardware = 2;
+}
+
 // State describes the state of a model. See [Deploy
 // Models](https://www.instill.tech/docs/latest/model/deploy) for more
 // information.
@@ -173,21 +182,26 @@ message Model {
     (google.api.field_behavior) = OUTPUT_ONLY
   ];
   // Region of choice for the particular provider to host the model.
-  string region = 18 [(google.api.field_behavior) = REQUIRED];
+  string region = 18 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE
+  ];
   // Hardware of choice to serve the model.
   string hardware = 19 [(google.api.field_behavior) = REQUIRED];
   // README holds the model documentation.
-  string readme = 20 [(google.api.field_behavior) = OPTIONAL];
+  optional string readme = 20 [(google.api.field_behavior) = OPTIONAL];
   // A link to the source code of the model (e.g. to a GitHub repository).
-  string source_url = 21 [(google.api.field_behavior) = OPTIONAL];
+  optional string source_url = 21 [(google.api.field_behavior) = OPTIONAL];
   // A link to any extra information.
-  string documentation_url = 22 [(google.api.field_behavior) = OPTIONAL];
+  optional string documentation_url = 22 [(google.api.field_behavior) = OPTIONAL];
   // License under which the model is distributed.
-  string license = 23 [(google.api.field_behavior) = OPTIONAL];
+  optional string license = 23 [(google.api.field_behavior) = OPTIONAL];
   // Sample input for this model
   TaskInput sample_input = 24 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Sample output for this model
   TaskOutput sample_output = 25 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model profile image in base64 format.
+  optional string profile_image = 26 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ModelCard represents a README.md file that accompanies the model to describe
@@ -1069,6 +1083,17 @@ message GetModelOperationRequest {
 message GetModelOperationResponse {
   // The long-running operation.
   google.longrunning.Operation operation = 1;
+}
+
+// ListAvailableRegionsRequest represents a request to fetch a list
+// of available regions and hardware types a model can be deployed on.
+message ListAvailableRegionsRequest {}
+
+// ListAvailableRegionsResponse contains a list of available
+// regions and hardware types a model can be deployed on.
+message ListAvailableRegionsResponse {
+  // A list of available region
+  repeated Region regions = 1;
 }
 
 // ========== Private endpoints
