@@ -878,6 +878,78 @@ paths:
             $ref: '#/definitions/ModelPublicServiceTriggerAsyncUserModelBody'
       tags:
         - Model
+  /v1alpha/{user_model_name}/trigger:
+    post:
+      summary: Trigger model inference
+      description: |-
+        Triggers the latest deployed model version to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerUserLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerUserLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model , which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerUserLatestModelBody'
+      tags:
+        - Model
+  /v1alpha/{user_model_name}/triggerAsync:
+    post:
+      summary: Trigger model inference asynchronously
+      description: |-
+        Triggers the latest deployed model version to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerAsyncUserLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncUserLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model , which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerAsyncUserLatestModelBody'
+      tags:
+        - Model
   /v1alpha/{organization_name}/models:
     get:
       summary: List organization models
@@ -1519,6 +1591,78 @@ paths:
             $ref: '#/definitions/ModelPublicServiceTriggerAsyncOrganizationModelBody'
       tags:
         - Model
+  /v1alpha/{organization_model_name}/trigger:
+    post:
+      summary: Trigger model inference
+      description: |-
+        Triggers the latest deployed model version to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerOrganizationLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerOrganizationLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model , which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerOrganizationLatestModelBody'
+      tags:
+        - Model
+  /v1alpha/{organization_model_name}/triggerAsync:
+    post:
+      summary: Trigger model inference asynchronously
+      description: |-
+        Triggers the latest deployed model version to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerAsyncOrganizationLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncOrganizationLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model , which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerAsyncOrganizationLatestModelBody'
+      tags:
+        - Model
   /v1alpha/{name}:
     get:
       summary: Get the details of a long-running operation
@@ -1590,6 +1734,20 @@ definitions:
     title: RenameUserModelRequest represents a request to rename a model
     required:
       - new_model_id
+  ModelPublicServiceTriggerAsyncOrganizationLatestModelBody:
+    type: object
+    properties:
+      task_inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    title: |-
+      TriggerAsyncOrganizationLatestModelRequest represents a request to trigger a model inference
+      asynchronously
+    required:
+      - task_inputs
   ModelPublicServiceTriggerAsyncOrganizationModelBody:
     type: object
     properties:
@@ -1602,6 +1760,20 @@ definitions:
     title: |-
       TriggerAsyncOrganizationModelRequest represents a request to trigger a model inference
       asynchronously
+    required:
+      - task_inputs
+  ModelPublicServiceTriggerAsyncUserLatestModelBody:
+    type: object
+    properties:
+      task_inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: |-
+      TriggerAsyncUserLatestModelRequest represents a request to trigger a model inference
+      asynchronously with the latest uploaded version.
     required:
       - task_inputs
   ModelPublicServiceTriggerAsyncUserModelBody:
@@ -1618,6 +1790,18 @@ definitions:
       asynchronously.
     required:
       - task_inputs
+  ModelPublicServiceTriggerOrganizationLatestModelBody:
+    type: object
+    properties:
+      task_inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: TriggerOrganizationLatestModelRequest represents a request to trigger a model inference.
+    required:
+      - task_inputs
   ModelPublicServiceTriggerOrganizationModelBody:
     type: object
     properties:
@@ -1628,6 +1812,20 @@ definitions:
           $ref: '#/definitions/v1alphaTaskInput'
         description: Inference input parameters.
     description: TriggerOrganizationModelRequest represents a request to trigger a model inference.
+    required:
+      - task_inputs
+  ModelPublicServiceTriggerUserLatestModelBody:
+    type: object
+    properties:
+      task_inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: |-
+      TriggerUserLatestModelRequest represents a request to trigger a model inference
+      with the latest uploaded version.
     required:
       - task_inputs
   ModelPublicServiceTriggerUserModelBody:
@@ -3218,6 +3416,16 @@ definitions:
         description: A list of generated images, encoded in base64.
         readOnly: true
     description: TextToImageOutput contains the result of a text-to-image task.
+  v1alphaTriggerAsyncOrganizationLatestModelResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      TriggerAsyncOrganizationLatestModelResponse contains the information to access the
+      status of an asynchronous model inference.
   v1alphaTriggerAsyncOrganizationModelResponse:
     type: object
     properties:
@@ -3227,6 +3435,16 @@ definitions:
         readOnly: true
     description: |-
       TriggerAsyncOrganizationModelResponse contains the information to access the
+      status of an asynchronous model inference.
+  v1alphaTriggerAsyncUserLatestModelResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: Long-running operation information.
+        readOnly: true
+    description: |-
+      TriggerAsyncUserLatestModelResponse contains the information to access the
       status of an asynchronous model inference.
   v1alphaTriggerAsyncUserModelResponse:
     type: object
@@ -3238,6 +3456,19 @@ definitions:
     description: |-
       TriggerAsyncUserModelResponse contains the information to access the
       status of an asynchronous model inference.
+  v1alphaTriggerOrganizationLatestModelResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        description: Task type.
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        description: Model inference outputs.
+    description: TriggerOrganizationLatestModelResponse contains the model inference results.
   v1alphaTriggerOrganizationModelBinaryFileUploadResponse:
     type: object
     properties:
@@ -3267,6 +3498,19 @@ definitions:
           $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
     description: TriggerOrganizationModelResponse contains the model inference results.
+  v1alphaTriggerUserLatestModelResponse:
+    type: object
+    properties:
+      task:
+        $ref: '#/definitions/v1alphaTask'
+        description: Task type.
+      task_outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        description: Model inference outputs.
+    description: TriggerUserLatestModelResponse contains the model inference results.
   v1alphaTriggerUserModelBinaryFileUploadResponse:
     type: object
     properties:
