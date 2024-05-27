@@ -6,7 +6,85 @@ consumes:
   - application/json
 produces:
   - application/json
-paths: {}
+paths:
+  /v1alpha/artifact/kb:
+    get:
+      summary: Get all knowledge bases info
+      operationId: ArtifactPublicService_GetKnowledgeBases
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetKnowledgeBasesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      tags:
+        - KnowledgeBase
+    post:
+      summary: Create a knowledge base
+      operationId: ArtifactPublicService_CreateKnowledgeBase
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateKnowledgeBaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaCreateKnowledgeBaseRequest'
+      tags:
+        - KnowledgeBase
+    put:
+      summary: Update a knowledge base info
+      operationId: ArtifactPublicService_UpdateKnowledgeBase
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateKnowledgeBaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          description: UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaUpdateKnowledgeBaseRequest'
+      tags:
+        - KnowledgeBase
+  /v1alpha/artifact/kb/{id}:
+    delete:
+      summary: Delete a knowledge base
+      operationId: ArtifactPublicService_DeleteKnowledgeBase
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteKnowledgeBaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: id
+          description: The knowledge base identifier.
+          in: path
+          required: true
+          type: string
+      tags:
+        - KnowledgeBase
 definitions:
   protobufAny:
     type: object
@@ -27,6 +105,35 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
+  v1alphaCreateKnowledgeBaseRequest:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The knowledge base name.
+      description:
+        type: string
+        description: The knowledge base description.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The knowledge base tags.
+    description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+  v1alphaCreateKnowledgeBaseResponse:
+    type: object
+    properties:
+      body:
+        $ref: '#/definitions/v1alphaKnowledgeBase'
+        description: The created knowledge base.
+      error_msg:
+        type: string
+        description: The error message.
+      status_code:
+        type: integer
+        format: int32
+        description: The status code.
+    description: CreateKnowledgeBaseResponse represents a response for creating a knowledge base.
   v1alphaCreateRepositoryTagResponse:
     type: object
     properties:
@@ -34,6 +141,52 @@ definitions:
         $ref: '#/definitions/v1alphaRepositoryTag'
         description: The created tag.
     description: CreateRepositoryTagResponse contains the created tag.
+  v1alphaDeleteKnowledgeBaseResponse:
+    type: object
+    properties:
+      error_msg:
+        type: string
+        description: The error message.
+      status_code:
+        type: integer
+        format: int32
+        description: The status code.
+    description: DeleteKnowledgeBaseResponse represents a response for deleting a knowledge base.
+  v1alphaGetKnowledgeBasesResponse:
+    type: object
+    properties:
+      knowledgebases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKnowledgeBase'
+        description: The knowledge bases.
+      error_msg:
+        type: string
+        description: The error message.
+      status_code:
+        type: integer
+        format: int32
+        description: The status code.
+    description: GetKnowledgeBasesResponse represents a response for getting all knowledge bases.
+  v1alphaKnowledgeBase:
+    type: object
+    properties:
+      id:
+        type: string
+        description: The knowledge base identifier.
+      name:
+        type: string
+        description: The knowledge base name.
+      description:
+        type: string
+        description: The knowledge base description.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The knowledge base tags.
+    description: KnowledgeBase represents a knowledge base.
   v1alphaListRepositoryTagsResponse:
     type: object
     properties:
@@ -78,3 +231,35 @@ definitions:
     description: |-
       RepositoryTag contains information about the version of some content in a
       repository.
+  v1alphaUpdateKnowledgeBaseRequest:
+    type: object
+    properties:
+      id:
+        type: string
+        description: The knowledge base identifier.
+      name:
+        type: string
+        description: The knowledge base name.
+      description:
+        type: string
+        description: The knowledge base description.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The knowledge base tags.
+    description: UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
+  v1alphaUpdateKnowledgeBaseResponse:
+    type: object
+    properties:
+      body:
+        $ref: '#/definitions/v1alphaKnowledgeBase'
+        description: The updated knowledge base.
+      error_msg:
+        type: string
+        description: The error message.
+      status_code:
+        type: integer
+        format: int32
+        description: The status code.
+    description: UpdateKnowledgeBaseResponse represents a response for updating a knowledge base.
