@@ -195,6 +195,13 @@ paths:
           enum:
             - VISIBILITY_PRIVATE
             - VISIBILITY_PUBLIC
+        - name: order_by
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
       tags:
         - Model
   /v1alpha/{permalink}/lookUp:
@@ -317,6 +324,13 @@ paths:
           enum:
             - VISIBILITY_PRIVATE
             - VISIBILITY_PUBLIC
+        - name: order_by
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
       tags:
         - Model
     post:
@@ -711,7 +725,7 @@ paths:
         - Model
   /v1alpha/{user_model_name}/versions/{version}/watch:
     get:
-      summary: Watch the state of a model
+      summary: Watch the state of a model version
       description: |-
         Returns the state of a model. The deploy / undeploy actions take some
         time, during which a model will be in an UNSPECIFIED state. This endpoint
@@ -745,6 +759,38 @@ paths:
           required: true
           type: string
           pattern: '[^/]+'
+      tags:
+        - Model
+  /v1alpha/{user_model_name}/watch:
+    get:
+      summary: Watch the state of the latest model version
+      description: |-
+        Returns the state of the latest model version. The deploy / undeploy actions take some
+        time, during which a model will be in an UNSPECIFIED state. This endpoint
+        allows clients to track the state and progress of the model.
+      operationId: ModelPublicService_WatchUserLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchUserLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
       tags:
         - Model
   /v1alpha/{user_model_name}/versions:
@@ -1030,6 +1076,13 @@ paths:
           enum:
             - VISIBILITY_PRIVATE
             - VISIBILITY_PUBLIC
+        - name: order_by
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
       tags:
         - Model
     post:
@@ -1424,7 +1477,7 @@ paths:
         - Model
   /v1alpha/{organization_model_name}/versions/{version}/watch:
     get:
-      summary: Watch the state of a model
+      summary: Watch the state of a model version
       description: |-
         Returns the state of a model. The deploy / undeploy actions take some
         time, during which a model will be in an UNSPECIFIED state. This endpoint
@@ -1458,6 +1511,38 @@ paths:
           required: true
           type: string
           pattern: '[^/]+'
+      tags:
+        - Model
+  /v1alpha/{organization_model_name}/watch:
+    get:
+      summary: Watch the state of the latest model version
+      description: |-
+        Returns the state of the latest model version. The deploy / undeploy actions take some
+        time, during which a model will be in an UNSPECIFIED state. This endpoint
+        allows clients to track the state and progress of the model.
+      operationId: ModelPublicService_WatchOrganizationLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchOrganizationLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
       tags:
         - Model
   /v1alpha/{user_model_name_1}/versions:
@@ -3651,6 +3736,16 @@ definitions:
     description: |-
       VisualQuestionAnsweringOutput contains the result of a visual
       question-answering task.
+  v1alphaWatchOrganizationLatestModelResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/modelv1alphaState'
+        description: State.
+      message:
+        type: string
+        title: Detail description of the state
+    description: WatchOrganizationLatestModelResponse contains the state of the latest model version.
   v1alphaWatchOrganizationModelResponse:
     type: object
     properties:
@@ -3661,6 +3756,16 @@ definitions:
         type: string
         title: Detail description of the state
     description: WatchOrganizationModelResponse contains the state of a model.
+  v1alphaWatchUserLatestModelResponse:
+    type: object
+    properties:
+      state:
+        $ref: '#/definitions/modelv1alphaState'
+        description: State.
+      message:
+        type: string
+        title: Detail description of the state
+    description: WatchUserLatestModelResponse contains the state of the latest model version.
   v1alphaWatchUserModelResponse:
     type: object
     properties:
