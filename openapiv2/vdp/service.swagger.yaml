@@ -2361,7 +2361,7 @@ paths:
           description: |-
             Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
             expression.
-            - Example: `component_type="COMPONENT_TYPE_CONNECTOR_AI"`.
+            - Example: `component_type="COMPONENT_TYPE_AI"`.
             - Example: `tasks:"TASK_TEXT_GENERATION"`.
           in: query
           required: false
@@ -2903,6 +2903,23 @@ definitions:
       within semantic versioning.
       See the documentation of each value for potential constraints between
       `version` and `release_stage` fields.`
+  ComponentDefinitionSpec:
+    type: object
+    properties:
+      component_specification:
+        type: object
+        description: Component specification.
+      data_specifications:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/v1betaDataSpecification'
+        description: |-
+          Data specifications.
+          The key represents the task, and the value is the corresponding data_specification.
+    description: Spec represents a specification data model.
+    required:
+      - component_specification
+      - data_specifications
   PipelinePublicServiceCloneOrganizationPipelineBody:
     type: object
     properties:
@@ -3457,17 +3474,98 @@ definitions:
   v1betaComponentDefinition:
     type: object
     properties:
+      name:
+        type: string
+        title: |-
+          The name of the component definition, defined by its ID.
+          - Format: `component-definitions/{id}
+        readOnly: true
+      uid:
+        type: string
+        description: Component definition UUID.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Component definition resource ID (used in `name` as the last segment). This
+          conforms to RFC-1034, which restricts to letters, numbers, and hyphen,
+          with the first character a letter, the last a letter or a number, and a 63
+          character maximum.
+      title:
+        type: string
+        description: Component definition title.
+        readOnly: true
+      documentation_url:
+        type: string
+        description: Component definition documentation URL.
+        readOnly: true
+      icon:
+        type: string
+        description: |-
+          ConnecComponenttor definition icon. This is a path that's relative to the root of
+          the connector implementation (see `source_url`) and that allows clients
+          frontend applications to pull and locate the icons.
+        readOnly: true
+      spec:
+        $ref: '#/definitions/ComponentDefinitionSpec'
+        description: Component definition specification.
+        readOnly: true
       type:
         $ref: '#/definitions/v1betaComponentType'
-        description: Defines the type of task the component will perform.
+        description: Component definition type.
         readOnly: true
-      operator_definition:
-        $ref: '#/definitions/v1betaOperatorDefinition'
-        title: operator definition detail
+      tombstone:
+        type: boolean
+        description: |-
+          Component definition tombstone. If true, this configuration is permanently
+          off. Otherwise, the configuration is active.
         readOnly: true
-      connector_definition:
-        $ref: '#/definitions/v1betaConnectorDefinition'
-        title: connector definition detail
+      public:
+        type: boolean
+        description: |-
+          The public flag determines whether this connector definition is available
+          to all workspaces.
+        readOnly: true
+      custom:
+        type: boolean
+        description: |-
+          Connector definition custom flag, i.e., whether this is a custom
+          connector definition.
+        readOnly: true
+      vendor:
+        type: string
+        description: Connector definition vendor name.
+        readOnly: true
+      vendor_attributes:
+        type: object
+        description: Vendor-specific attributes.
+        readOnly: true
+      source_url:
+        type: string
+        description: |-
+          Source code URL. This points to the source code where the connector is
+          implemented.
+        readOnly: true
+      version:
+        type: string
+        description: |-
+          Connector definition version. This is a string that fulfills the SemVer
+          specification (e.g. `1.0.0-beta`).
+        readOnly: true
+      tasks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaComponentTask'
+        description: List of tasks that can be executed by the connector.
+        readOnly: true
+      description:
+        type: string
+        description: Short description of the connector.
+        readOnly: true
+      release_stage:
+        $ref: '#/definitions/ComponentDefinitionReleaseStage'
+        description: Release stage.
         readOnly: true
     description: ComponentDefinition describes a certain type of Component.
   v1betaComponentDefinitionView:
@@ -3502,17 +3600,17 @@ definitions:
   v1betaComponentType:
     type: string
     enum:
-      - COMPONENT_TYPE_CONNECTOR_AI
-      - COMPONENT_TYPE_CONNECTOR_DATA
+      - COMPONENT_TYPE_AI
+      - COMPONENT_TYPE_DATA
       - COMPONENT_TYPE_OPERATOR
-      - COMPONENT_TYPE_CONNECTOR_APPLICATION
+      - COMPONENT_TYPE_APPLICATION
     description: |-
       ComponentType defines the component type based on its task features.
 
-       - COMPONENT_TYPE_CONNECTOR_AI: Connect with an AI model.
-       - COMPONENT_TYPE_CONNECTOR_DATA: Connect with a remote data source.
+       - COMPONENT_TYPE_AI: Connect with an AI model.
+       - COMPONENT_TYPE_DATA: Connect with a remote data source.
        - COMPONENT_TYPE_OPERATOR: Manipulate data.
-       - COMPONENT_TYPE_CONNECTOR_APPLICATION: Connect with an external application.
+       - COMPONENT_TYPE_APPLICATION: Connect with an external application.
   v1betaConnectorDefinition:
     type: object
     properties:
@@ -3807,7 +3905,7 @@ definitions:
       total_size:
         type: integer
         format: int32
-        description: Total number of connector definitions.
+        description: Total number of component definitions.
       page_size:
         type: integer
         format: int32
