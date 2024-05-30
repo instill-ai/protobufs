@@ -431,7 +431,7 @@ paths:
                 type: string
                 description: Pipeline description.
               recipe:
-                $ref: '#/definitions/v1betaRecipe'
+                type: object
                 description: Recipe describes the components of a Pipeline and how they are connected.
               create_time:
                 type: string
@@ -983,7 +983,7 @@ paths:
                 type: string
                 description: Release description.
               recipe:
-                $ref: '#/definitions/v1betaRecipe'
+                type: object
                 description: Recipe of the versioned pipeline.
                 readOnly: true
               create_time:
@@ -1436,7 +1436,7 @@ paths:
                 type: string
                 description: Pipeline description.
               recipe:
-                $ref: '#/definitions/v1betaRecipe'
+                type: object
                 description: Recipe describes the components of a Pipeline and how they are connected.
               create_time:
                 type: string
@@ -1933,7 +1933,7 @@ paths:
                 type: string
                 description: Release description.
               recipe:
-                $ref: '#/definitions/v1betaRecipe'
+                type: object
                 description: Recipe of the versioned pipeline.
                 readOnly: true
               create_time:
@@ -2988,6 +2988,11 @@ definitions:
   PipelinePublicServiceTriggerAsyncOrganizationPipelineBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3000,6 +3005,11 @@ definitions:
   PipelinePublicServiceTriggerAsyncOrganizationPipelineReleaseBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3012,6 +3022,11 @@ definitions:
   PipelinePublicServiceTriggerAsyncUserPipelineBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3024,6 +3039,11 @@ definitions:
   PipelinePublicServiceTriggerAsyncUserPipelineReleaseBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3036,6 +3056,11 @@ definitions:
   PipelinePublicServiceTriggerOrganizationPipelineBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3048,6 +3073,11 @@ definitions:
   PipelinePublicServiceTriggerOrganizationPipelineReleaseBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3060,6 +3090,11 @@ definitions:
   PipelinePublicServiceTriggerUserPipelineBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3072,6 +3107,11 @@ definitions:
   PipelinePublicServiceTriggerUserPipelineReleaseBody:
     type: object
     properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
       data:
         type: array
         items:
@@ -3414,27 +3454,6 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The cloned pipeline resource.
     description: CloneUserPipelineResponse contains a cloned pipeline.
-  v1betaComponent:
-    type: object
-    properties:
-      metadata:
-        type: object
-        description: Metadata of the component.
-      connector_component:
-        $ref: '#/definitions/v1betaConnectorComponent'
-        title: ConnectorComponent
-      operator_component:
-        $ref: '#/definitions/v1betaOperatorComponent'
-        title: OperatorComponent
-      iterator_component:
-        $ref: '#/definitions/v1betaIteratorComponent'
-        title: IteratorComponent
-    description: |-
-      Component
-      Fundamental building block in pipelines.
-
-      For more information, see [Pipeline
-      Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
   v1betaComponentDefinition:
     type: object
     properties:
@@ -3494,31 +3513,6 @@ definitions:
        - COMPONENT_TYPE_CONNECTOR_DATA: Connect with a remote data source.
        - COMPONENT_TYPE_OPERATOR: Manipulate data.
        - COMPONENT_TYPE_CONNECTOR_APPLICATION: Connect with an external application.
-  v1betaConnectorComponent:
-    type: object
-    properties:
-      definition_name:
-        type: string
-        description: Definition name.
-      definition:
-        $ref: '#/definitions/v1betaConnectorDefinition'
-        description: Connector definition.
-        readOnly: true
-      task:
-        type: string
-        description: Task.
-      input:
-        type: object
-        description: Input configuration of the component. JSON schema described in the connector definition.
-      condition:
-        type: string
-        description: Condition statement determining whether the component is executed or not.
-      connection:
-        type: object
-        description: Connection configuration of the component. JSON schema described in the connector definition.
-    description: |-
-      ConnectorComponent
-      Configures a connector component. Requires the creation of a connector resource first.
   v1betaConnectorDefinition:
     type: object
     properties:
@@ -3801,47 +3795,6 @@ definitions:
         $ref: '#/definitions/v1betaSecret'
         description: The secret resource.
     description: GetUserSecretResponse contains the requested secret.
-  v1betaIteratorComponent:
-    type: object
-    properties:
-      input:
-        type: string
-        description: 'Input: The iterator will iterate over the elements of the input (must be an array).'
-      output_elements:
-        type: object
-        additionalProperties:
-          type: string
-        title: |-
-          Output elements: Configure the output arrays of the iterator.
-          The key is the output element variable name, and the value is the data reference of the template.
-          Example:
-          output_elements: {
-            "key1": "${element.output.a}",
-            "key2": "${element.output.b}",
-          }
-          This will create the results:
-          output: {
-            "key1": [ ${element1.output.a},  ${element2.output.a} ... ],
-            "key2": [ ${element1.output.b},  ${element2.output.b} ... ],
-          }
-      component:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/v1betaNestedComponent'
-        description: 'Component: These components will be executed for each input element.'
-      condition:
-        type: string
-        description: Condition statement determining whether the component is executed or not.
-      data_specification:
-        $ref: '#/definitions/v1betaDataSpecification'
-        description: DataSpecification returns the JSON schema for the iterator input and output.
-        readOnly: true
-    description: |-
-      IteratorComponent
-      Configures an iterator component. An iterator takes an array and executes an
-      operation (defined by a set of nested components) on each of its elements.
-      It can be regarded as triggering a sub-pipeline using the elements of an
-      array as input.
   v1betaListComponentDefinitionsResponse:
     type: object
     properties:
@@ -4073,46 +4026,6 @@ definitions:
         $ref: '#/definitions/v1betaPipeline'
         description: The requested pipeline.
     description: LookUpPipelineResponse contains the requested pipeline.
-  v1betaNestedComponent:
-    type: object
-    properties:
-      metadata:
-        type: object
-        description: Metadata of the component.
-      connector_component:
-        $ref: '#/definitions/v1betaConnectorComponent'
-        title: ConnectorConfiguration
-      operator_component:
-        $ref: '#/definitions/v1betaOperatorComponent'
-        title: OperatorConfiguration
-    description: |-
-      NestedComponent
-      Fundamental building block in iterator component.
-  v1betaOn:
-    type: object
-    title: "On"
-  v1betaOperatorComponent:
-    type: object
-    properties:
-      definition_name:
-        type: string
-        description: Definition name.
-      definition:
-        $ref: '#/definitions/v1betaOperatorDefinition'
-        description: Operator definition.
-        readOnly: true
-      task:
-        type: string
-        description: Task.
-      input:
-        type: object
-        description: Input configuration of the component. JSON schema described in the operator definition.
-      condition:
-        type: string
-        description: Condition statement determining whether the component is executed or not.
-    description: |-
-      OperatorComponent
-      Configures an operator component.
   v1betaOperatorDefinition:
     type: object
     properties:
@@ -4290,31 +4203,6 @@ definitions:
           Social profile links list the links to the organization's social profiles.
           The key represents the provider, and the value is the corresponding URL.
     description: OrganizationProfile describes the public data of an organization.
-  v1betaOutput:
-    type: object
-    properties:
-      title:
-        type: string
-        description: Title.
-      description:
-        type: string
-        description: Description.
-      value:
-        type: string
-        description: Value.
-      instill_short_description:
-        type: string
-        description: Short description.
-      instill_ui_order:
-        type: integer
-        format: int32
-        description: UI order.
-      instill_ui_multiline:
-        type: boolean
-        description: UI Multiline.
-    description: Output describe the output schema of a pipeline.
-    required:
-      - value
   v1betaOwner:
     type: object
     properties:
@@ -4351,7 +4239,7 @@ definitions:
         type: string
         description: Pipeline description.
       recipe:
-        $ref: '#/definitions/v1betaRecipe'
+        type: object
         description: Recipe describes the components of a Pipeline and how they are connected.
       create_time:
         type: string
@@ -4439,7 +4327,7 @@ definitions:
         type: string
         description: Release description.
       recipe:
-        $ref: '#/definitions/v1betaRecipe'
+        type: object
         description: Recipe of the versioned pipeline.
         readOnly: true
       create_time:
@@ -4476,6 +4364,16 @@ definitions:
     description: |-
       Pipeline releases contain the version control information of a pipeline.
       This allows users to track changes in the pipeline over time.
+  v1betaPipelineValidationError:
+    type: object
+    properties:
+      location:
+        type: string
+        title: Location
+      error:
+        type: string
+        title: error
+    title: PipelineValidation
   v1betaPipelineView:
     type: string
     enum:
@@ -4498,36 +4396,6 @@ definitions:
 
        - VISIBILITY_PRIVATE: Only the user can see the pipeline.
        - VISIBILITY_PUBLIC: Other users can see the pipeline.
-  v1betaRecipe:
-    type: object
-    properties:
-      version:
-        type: string
-        description: Recipe schema version.
-      "on":
-        $ref: '#/definitions/v1betaOn'
-        description: The component trigger method.
-      secret:
-        type: object
-        additionalProperties:
-          type: string
-        description: Secret.
-      variable:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/v1betaVariable'
-        description: Variable.
-      output:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/v1betaOutput'
-        description: Output.
-      component:
-        type: object
-        additionalProperties:
-          $ref: '#/definitions/v1betaComponent'
-        description: Component.
-    description: Recipe describes the components of a Pipeline and how they are connected.
   v1betaRenameOrganizationPipelineReleaseResponse:
     type: object
     properties:
@@ -4896,48 +4764,29 @@ definitions:
   v1betaValidateOrganizationPipelineResponse:
     type: object
     properties:
-      pipeline:
-        $ref: '#/definitions/v1betaPipeline'
+      success:
+        type: boolean
+        title: Success
+      errors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineValidationError'
         description: The validated pipeline resource.
     description: ValidateOrganizationPipelineResponse contains a validated pipeline.
   v1betaValidateUserPipelineResponse:
     type: object
     properties:
-      pipeline:
-        $ref: '#/definitions/v1betaPipeline'
+      success:
+        type: boolean
+        title: Success
+      errors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineValidationError'
         description: The validated pipeline resource.
     description: ValidateUserPipelineResponse contains a validated pipeline.
-  v1betaVariable:
-    type: object
-    properties:
-      type:
-        type: string
-        description: Type.
-      title:
-        type: string
-        description: Title.
-      description:
-        type: string
-        description: Description.
-      default:
-        type: string
-        description: Default value.
-      instill_format:
-        type: string
-        description: Instill format.
-      instill_ui_order:
-        type: integer
-        format: int32
-        description: UI order.
-      instill_ui_multiline:
-        type: boolean
-        description: UI Multiline.
-    description: |-
-      Variable describes the variable schema of a pipeline.
-      It is based on the standard JSON schema format, with additional xAttribute attributes.
-    required:
-      - type
-      - instill_format
   vdppipelinev1betaPermission:
     type: object
     properties:
