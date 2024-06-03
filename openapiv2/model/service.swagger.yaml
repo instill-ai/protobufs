@@ -1790,6 +1790,92 @@ paths:
             - VIEW_FULL
       tags:
         - Model
+  /v1alpha/{user_model_name}/operation:
+    get:
+      summary: Get the details of the latest long-running operation from a user model
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations in a model, such as deployment.
+      operationId: ModelPublicService_GetUserLatestModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetUserLatestModelOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired operation result in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Model
+  /v1alpha/{organization_model_name}/operation:
+    get:
+      summary: Get the details of the latest long-running operation from a organization model
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations in a model, such as deployment.
+      operationId: ModelPublicService_GetOrganizationLatestModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetOrganizationLatestModelOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent organization
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired operation result in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Model
 definitions:
   ModelPublicServicePublishOrganizationModelBody:
     type: object
@@ -2339,6 +2425,15 @@ definitions:
     description: |-
       GetModelOperationRequest represents a request to query a long-running
       operation.
+  v1alphaGetOrganizationLatestModelOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: The long-running operation.
+    description: |-
+      GetOrganizationLatestModelOperationRequest represents a request to query a long-running
+      operation.
   v1alphaGetOrganizationModelCardResponse:
     type: object
     properties:
@@ -2353,6 +2448,15 @@ definitions:
         $ref: '#/definitions/v1alphaModel'
         description: The model resource.
     description: GetOrganizationModelResponse contains the requested model.
+  v1alphaGetUserLatestModelOperationResponse:
+    type: object
+    properties:
+      operation:
+        $ref: '#/definitions/googlelongrunningOperation'
+        description: The long-running operation.
+    description: |-
+      GetUserLatestModelOperationRequest represents a request to query a long-running
+      operation.
   v1alphaGetUserModelCardResponse:
     type: object
     properties:
