@@ -1229,7 +1229,7 @@ message TriggerOrganizationModelBinaryFileUploadResponse {
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// GerModelOperationRequest represents a request to fetch a long-running
+// GetModelOperationRequest represents a request to fetch a long-running
 // operation performed on a model.
 message GetModelOperationRequest {
   // The resource name of the model, which allows its access ID.
@@ -1245,6 +1245,62 @@ message GetModelOperationRequest {
 // GetModelOperationRequest represents a request to query a long-running
 // operation.
 message GetModelOperationResponse {
+  // The long-running operation.
+  google.longrunning.Operation operation = 1;
+}
+
+// LatestOperation represents an internal message for GetLatestModelOperation Response
+message LatestOperation {
+  // Input request
+  TriggerUserModelRequest request = 1;
+  // Output response
+  TriggerUserModelResponse response = 2;
+}
+
+// GetUserLatestModelOperationRequest represents a request to fetch the latest long-running
+// operation performed on a model for a user.
+message GetUserLatestModelOperationRequest {
+  // The resource name of the model, which allows its access by parent user
+  // and ID.
+  // - Format: `users/{user.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "user_model_name"}
+    }
+  ];
+  // View allows clients to specify the desired operation result in the response.
+  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// GetUserLatestModelOperationRequest represents a request to query a long-running
+// operation.
+message GetUserLatestModelOperationResponse {
+  // The long-running operation.
+  google.longrunning.Operation operation = 1;
+}
+
+// GetOrganizationLatestModelOperationRequest represents a request to fetch the latest long-running
+// operation performed on a model for a user.
+message GetOrganizationLatestModelOperationRequest {
+  // The resource name of the model, which allows its access by parent organization
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "organization_model_name"}
+    }
+  ];
+  // View allows clients to specify the desired operation result in the response.
+  optional View view = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// GetOrganizationLatestModelOperationRequest represents a request to query a long-running
+// operation.
+message GetOrganizationLatestModelOperationResponse {
   // The long-running operation.
   google.longrunning.Operation operation = 1;
 }
