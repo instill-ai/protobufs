@@ -26,3 +26,6 @@ openapi:
 openapi-lint:
 	@# Lint each file under openapiv2.
 	find openapiv2 -type f | xargs -I '{}' swagger-cli validate {}
+local-copy-gen:
+	buf generate
+	cp -r gen/go/* ../protogen-go/
