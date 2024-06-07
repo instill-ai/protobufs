@@ -3,9 +3,11 @@ syntax = "proto3";
 package artifact.artifact.v1alpha;
 
 import "common/healthcheck/v1beta/healthcheck.proto";
+
 // Google API
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
+
 // Protocol Buffers Well-Known Types
 import "google/protobuf/timestamp.proto";
 
@@ -232,4 +234,141 @@ message DeleteKnowledgeBaseResponse {
   string error_msg = 1;
   // The status code.
   int32 status_code = 2;
+}
+
+// file embedding process status
+enum FileProcessStatus {
+  // NOTSTARTED
+  NOTSTARTED = 0;
+  // waiting
+  WAITING = 1;
+  // embedding process is running
+  CONVERTING = 2;
+  // embedding process is done
+  CHUNKING = 3;
+  // embedding process is failed
+  EMBEDDING = 4;
+  // COMPLETED
+  COMPLETED = 5;
+}
+
+// file type 
+enum FileType {
+  // text
+  TEXT = 0;
+  // PDF
+  PDF = 1;
+  //MARKDOWN
+  MARKDOWN = 2;
+  // PNG
+  PNG = 3;
+  // JPEG
+  JPEG = 4;
+  // JPG
+  JPG = 5;
+}
+
+// file mata data
+message File {
+  // file uid
+  string file_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // file name
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  // file type
+  FileType type = 3 [(google.api.field_behavior) = REQUIRED];
+  // file process status
+  FileProcessStatus process_status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // file process message
+  string process_outcome = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // retrievable(this is reserved for future use)
+  bool retrievable = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // contect(this is reserved for future use)
+  string content = 7 [(google.api.field_behavior) = OPTIONAL];
+  // owner uid
+  string owner_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // cretor uid from authn token
+  string creator_uid = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // knowledge base uid
+  string kb_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // create time
+  google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // update time
+  google.protobuf.Timestamp update_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // delete time
+  google.protobuf.Timestamp delete_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// upload file request
+message UploadKnowledgeBaseFileRequest {
+  // owenr uid
+  string owner_uid = 1 [(google.api.field_behavior) = REQUIRED];
+  // knowledge base uid
+  string kb_uid = 2 [(google.api.field_behavior) = REQUIRED];
+  // file
+  File file = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// upload file response
+message UploadKnowledgeBaseFileResponse {
+  // file
+  File file = 1;
+}
+
+// delete file request
+message DeleteKnowledgeBaseFilesRequest {
+  // The file uid.
+  repeated string file_uids = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// delete file response
+message DeleteKnowledgeBaseFileResponse {
+  // The file uid.
+  string file_uid = 1 ;
+}
+
+// Process KnowledgeBase File Request
+message ProcessKnowledgeBaseFilesRequest {
+  // The file uid.
+  repeated string file_uids = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Process KnowledgeBase File Response
+message ProcessKnowledgeBaseFilesResponse {
+  // The file uid.
+  repeated File files = 1;
+}
+
+// list file filter
+// todo: support more parameters
+message ListKnowledgeBaseFilesFilter {
+  // The file uids.
+  repeated string file_uids = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// list files request
+message ListKnowledgeBaseFilesRequest {
+  // The owner uid.
+  string owner_uid = 1;
+  // The knowledge base uid.
+  string kb_uid = 2;
+  // The page size (default:10; max 100).
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+  // The next page token(default from first file's token).
+  string page_token = 4 [(google.api.field_behavior) = OPTIONAL];
+  // The filter.
+  ListKnowledgeBaseFilesFilter filter = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// list files response
+message ListKnowledgeBaseFilesResponse {
+  // The list of files.
+  repeated File files = 1;
+  // The total number of files.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // next page token
+  string next_page_token = 4;
+  // The filter.
+  ListKnowledgeBaseFilesFilter filter = 5;
 }
