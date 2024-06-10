@@ -96,6 +96,124 @@ paths:
             $ref: '#/definitions/ArtifactPublicServiceUpdateKnowledgeBaseBody'
       tags:
         - KnowledgeBase
+  /v1alpha/owners/{owner_uid}/knowledge-bases/{kb_uid}/files:
+    get:
+      summary: list files
+      operationId: ArtifactPublicService_ListKnowledgeBaseFiles
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListKnowledgeBaseFilesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: owner_uid
+          description: The owner uid.
+          in: path
+          required: true
+          type: string
+        - name: kb_uid
+          description: The knowledge base uid.
+          in: path
+          required: true
+          type: string
+        - name: page_size
+          description: The page size (default:10; max 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page_token
+          description: The next page token(default from first file's token).
+          in: query
+          required: false
+          type: string
+        - name: filter.file_uids
+          description: The file uids.
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      tags:
+        - KnowledgeBase
+    post:
+      summary: Create a file
+      operationId: ArtifactPublicService_UploadKnowledgeBaseFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUploadKnowledgeBaseFileResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: owner_uid
+          description: owenr uid
+          in: path
+          required: true
+          type: string
+        - name: kb_uid
+          description: knowledge base uid
+          in: path
+          required: true
+          type: string
+        - name: file
+          description: file
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaFile'
+      tags:
+        - KnowledgeBase
+  /v1alpha/knowledge-bases/files:
+    delete:
+      summary: Delete a file
+      operationId: ArtifactPublicService_DeleteKnowledgeBaseFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteKnowledgeBaseFileResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: file_uid
+          description: The file uid.
+          in: query
+          required: true
+          type: string
+      tags:
+        - KnowledgeBase
+  /v1alpha/knowledge-bases/files/processAsync:
+    post:
+      summary: process file
+      operationId: ArtifactPublicService_ProcessKnowledgeBaseFiles
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaProcessKnowledgeBaseFilesResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaProcessKnowledgeBaseFilesRequest'
+      tags:
+        - KnowledgeBase
 definitions:
   ArtifactPublicServiceUpdateKnowledgeBaseBody:
     type: object
@@ -170,6 +288,13 @@ definitions:
         $ref: '#/definitions/v1alphaRepositoryTag'
         description: The created tag.
     description: CreateRepositoryTagResponse contains the created tag.
+  v1alphaDeleteKnowledgeBaseFileResponse:
+    type: object
+    properties:
+      file_uid:
+        type: string
+        description: The file uid.
+    title: delete file response
   v1alphaDeleteKnowledgeBaseResponse:
     type: object
     properties:
@@ -181,6 +306,99 @@ definitions:
         format: int32
         description: The status code.
     description: DeleteKnowledgeBaseResponse represents a response for deleting a knowledge base.
+  v1alphaFile:
+    type: object
+    properties:
+      file_uid:
+        type: string
+        title: file uid
+        readOnly: true
+      name:
+        type: string
+        title: file name
+      type:
+        $ref: '#/definitions/v1alphaFileType'
+        title: file type
+      process_status:
+        $ref: '#/definitions/v1alphaFileProcessStatus'
+        title: file process status
+        readOnly: true
+      process_outcome:
+        type: string
+        title: file process message
+        readOnly: true
+      retrievable:
+        type: boolean
+        title: retrievable(this is reserved for future use)
+        readOnly: true
+      content:
+        type: string
+        title: contect(this is reserved for future use)
+      owner_uid:
+        type: string
+        title: owner uid
+        readOnly: true
+      creator_uid:
+        type: string
+        title: cretor uid from authn token
+        readOnly: true
+      kb_uid:
+        type: string
+        title: knowledge base uid
+        readOnly: true
+      create_time:
+        type: string
+        format: date-time
+        title: create time
+        readOnly: true
+      update_time:
+        type: string
+        format: date-time
+        title: update time
+        readOnly: true
+      delete_time:
+        type: string
+        format: date-time
+        title: delete time
+        readOnly: true
+    title: file mata data
+    required:
+      - name
+      - type
+  v1alphaFileProcessStatus:
+    type: string
+    enum:
+      - FILE_PROCESS_STATUS_NOTSTARTED
+      - FILE_PROCESS_STATUS_WAITING
+      - FILE_PROCESS_STATUS_CONVERTING
+      - FILE_PROCESS_STATUS_CHUNKING
+      - FILE_PROCESS_STATUS_EMBEDDING
+      - FILE_PROCESS_STATUS_COMPLETED
+    description: |-
+      - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
+       - FILE_PROCESS_STATUS_WAITING: waiting
+       - FILE_PROCESS_STATUS_CONVERTING: embedding process is running
+       - FILE_PROCESS_STATUS_CHUNKING: embedding process is done
+       - FILE_PROCESS_STATUS_EMBEDDING: embedding process is failed
+       - FILE_PROCESS_STATUS_COMPLETED: COMPLETED
+    title: file embedding process status
+  v1alphaFileType:
+    type: string
+    enum:
+      - FILE_TYPE_TEXT
+      - FILE_TYPE_PDF
+      - FILE_TYPE_MARKDOWN
+      - FILE_TYPE_PNG
+      - FILE_TYPE_JPEG
+      - FILE_TYPE_JPG
+    description: |-
+      - FILE_TYPE_TEXT: text
+       - FILE_TYPE_PDF: PDF
+       - FILE_TYPE_MARKDOWN: MARKDOWN
+       - FILE_TYPE_PNG: PNG
+       - FILE_TYPE_JPEG: JPEG
+       - FILE_TYPE_JPG: JPG
+    title: file type
   v1alphaKnowledgeBase:
     type: object
     properties:
@@ -218,6 +436,41 @@ definitions:
           $ref: '#/definitions/v1alphaKnowledgeBase'
         description: The list of knowledge bases.
     description: KnowledgeBasesList represents a list of knowledge bases.
+  v1alphaListKnowledgeBaseFilesFilter:
+    type: object
+    properties:
+      file_uids:
+        type: array
+        items:
+          type: string
+        description: The file uids.
+    title: |-
+      list file filter
+      todo: support more parameters
+  v1alphaListKnowledgeBaseFilesResponse:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaFile'
+        description: The list of files.
+      total_size:
+        type: integer
+        format: int32
+        description: The total number of files.
+      page_size:
+        type: integer
+        format: int32
+        description: The requested page size.
+      next_page_token:
+        type: string
+        title: next page token
+      filter:
+        $ref: '#/definitions/v1alphaListKnowledgeBaseFilesFilter'
+        description: The filter.
+    title: list files response
   v1alphaListKnowledgeBasesResponse:
     type: object
     properties:
@@ -254,6 +507,27 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListRepositoryTagsResponse contains a list of container image tags.
+  v1alphaProcessKnowledgeBaseFilesRequest:
+    type: object
+    properties:
+      file_uids:
+        type: array
+        items:
+          type: string
+        description: The file uid.
+    title: Process KnowledgeBase File Request
+    required:
+      - file_uids
+  v1alphaProcessKnowledgeBaseFilesResponse:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaFile'
+        description: The file uid.
+    title: Process KnowledgeBase File Response
   v1alphaRepositoryTag:
     type: object
     properties:
@@ -290,3 +564,10 @@ definitions:
         format: int32
         description: The status code.
     description: UpdateKnowledgeBaseResponse represents a response for updating a knowledge base.
+  v1alphaUploadKnowledgeBaseFileResponse:
+    type: object
+    properties:
+      file:
+        $ref: '#/definitions/v1alphaFile'
+        title: file
+    title: upload file response

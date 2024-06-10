@@ -7,6 +7,7 @@ import "artifact/artifact/v1alpha/artifact.proto";
 // Google API
 import "google/api/annotations.proto";
 import "google/api/visibility.proto";
+import "google/api/client.proto";
 // OpenAPI definition
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -68,4 +69,40 @@ service ArtifactPublicService {
     option (google.api.http) = {delete: "/v1alpha/knowledge-base/{id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "KnowledgeBase"};
   }
+
+  // Create a file
+  rpc UploadKnowledgeBaseFile(UploadKnowledgeBaseFileRequest) returns (UploadKnowledgeBaseFileResponse) {
+    option (google.api.http) = {
+    post: "/v1alpha/owners/{owner_uid}/knowledge-bases/{kb_uid}/files"
+    body: "file"
+    };
+    option (google.api.method_signature) = "owner_uid,kb_uid,file";
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags:"KnowledgeBase"};
+  }
+
+  // Delete a file
+  rpc DeleteKnowledgeBaseFile(DeleteKnowledgeBaseFileRequest) returns (DeleteKnowledgeBaseFileResponse) {
+    option (google.api.http) = {delete: "/v1alpha/knowledge-bases/files"};
+    option (google.api.method_signature) = "file_uid";
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "KnowledgeBase"};
+  }
+
+  // process file
+  rpc ProcessKnowledgeBaseFiles(ProcessKnowledgeBaseFilesRequest) returns (ProcessKnowledgeBaseFilesResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/knowledge-bases/files/processAsync"
+      body: "*"
+    };
+    option (google.api.method_signature) = "file_uids";
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "KnowledgeBase"};
+  }
+
+  // list files
+  rpc ListKnowledgeBaseFiles(ListKnowledgeBaseFilesRequest) returns (ListKnowledgeBaseFilesResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha/owners/{owner_uid}/knowledge-bases/{kb_uid}/files"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "KnowledgeBase"};
+  }
 }
+
