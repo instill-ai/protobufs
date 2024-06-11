@@ -608,6 +608,60 @@ message GetRemainingCreditAdminResponse {
   float amount = 1;
 }
 
+// CreditPurchase contains the information about an Instil Credit purchase by
+// an owner. Credit can be purchased to extend the monthly credits in a
+// subscription.
+message CreditPurchase {
+  // The credit owner ID, e.g. `users/evian-wombat`.
+  string owner = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Invoice number for the purchase.
+  string invoice_number = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Purchase timestamp.
+  google.protobuf.Timestamp purchase_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Amount of purchased credit.
+  float credit_amount = 4;
+  // Three-letter ISO currency code.
+  string currency = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // A positive integer representing how much it was charged in the smallest
+  // currency unit (e.g. 100 for $1.00).
+  int32 amount = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Card brand, e.g. "Visa".
+  string card_brand = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Last 4 digits of the card.
+  string card_last4 = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+}
+
+// ListCreditPurchasesRequest queries the Instill Credit purchases of an owner.
+message ListCreditPurchasesRequest {
+  // The user or organization to which the credit belongs.
+  // Format: `{[users|organizations]}/{id}`.
+  string owner = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "owner_name"}
+    }
+  ];
+  // The maximum number of purchase entries to return. If this parameter is
+  // unspecified, at most 10 definitions will be returned. The cap value for
+  // this parameter is 100 (i.e. any value above that will be coerced to 100).
+  optional int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListCreditPurchasesResponse contains a list of credit purchases.
+message ListCreditPurchasesResponse {
+  // A list of credit purchase resources.
+  repeated CreditPurchase credit_purchases = 1;
+  // Total number of purchases.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // The requested page offset.
+  int32 page = 4;
+}
+
 // SubtractCreditAdminRequest represents a request to subtract Instill Credit from
 // an account.
 message SubtractCreditAdminRequest {
