@@ -158,3 +158,36 @@ message ListPipelineTriggerChartRecordsResponse {
   // A list of pipeline trigger records.
   repeated PipelineTriggerChartRecord pipeline_trigger_chart_records = 1;
 }
+
+// CreditConsumptionChartRecord contains credit consumption metrics, aggregated
+// by owner and time frame.
+message CreditConsumptionChartRecord {
+  // Credit owner UUID.
+  string credit_owner_uid = 1;
+  // Time buckets.
+  repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Total credit consumed in each time bucket.
+  repeated float amount = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListCreditConsumptionChartRecordsRequest represents a request to list pipeline
+// trigger metrics, aggregated by pipeline ID and time frame.
+message ListCreditConsumptionChartRecordsRequest {
+  // Aggregation window. The value is a positive duration string, i.e. a
+  // sequence of decimal numbers, each with optional fraction and a unit
+  // suffix, such as "300ms", "-1.5h" or "2h45m".
+  string aggregation_window = 1;
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression to determine the credit owner and time range for the charts.
+  // - Example: `owner_name='users/jay-wombat' AND start='2024-06-04T10:000:00Z' AND stop='2024-06-11T10:00:00Z`
+  optional string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListCreditConsumptionChartRecordsResponse contains a list of pipeline trigger
+// chart records.
+message ListCreditConsumptionChartRecordsResponse {
+  // A list of pipeline trigger records.
+  repeated CreditConsumptionChartRecord pipeline_trigger_chart_records = 1;
+  // Sum of the total credit consumed within the time range.
+  float total_amount = 2;
+}
