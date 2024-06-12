@@ -1099,19 +1099,26 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
+        - name: owner
+          description: |-
+            The user or organization to which the credit belongs.
+            Format: `{[users|organizations]}/{id}`.
+          in: query
+          required: true
+          type: string
         - name: aggregation_window
           description: |-
             Aggregation window. The value is a positive duration string, i.e. a
             sequence of decimal numbers, each with optional fraction and a unit
-            suffix, such as "300ms", "-1.5h" or "2h45m".
+            suffix, such as "300ms", "1.5h" or "2h45m".
           in: query
-          required: false
+          required: true
           type: string
         - name: filter
           description: |-
             Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression to determine the credit owner and time range for the charts.
-            - Example: `owner_name='users/jay-wombat' AND start='2024-06-04T10:000:00Z' AND stop='2024-06-11T10:00:00Z`
+            expression to determine the time range for the charts.
+            - Example: `start='2024-06-04T10:000:00Z' AND stop='2024-06-11T10:00:00Z`
           in: query
           required: false
           type: string
@@ -1595,9 +1602,9 @@ definitions:
   v1betaCreditConsumptionChartRecord:
     type: object
     properties:
-      credit_owner_uid:
+      credit_owner:
         type: string
-        description: Credit owner UUID.
+        description: Credit owner ID, e.g. `users/chef-wombat`.
       time_buckets:
         type: array
         items:
