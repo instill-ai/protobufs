@@ -6,6 +6,7 @@ package core.mgmt.v1beta;
 import "google/api/field_behavior.proto";
 // Protobuf standard
 import "google/protobuf/timestamp.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 // Mode describes the execution mode of the pipeline (sync or async).
 enum Mode {
@@ -162,8 +163,8 @@ message ListPipelineTriggerChartRecordsResponse {
 // CreditConsumptionChartRecord contains credit consumption metrics, aggregated
 // by owner and time frame.
 message CreditConsumptionChartRecord {
-  // Credit owner UUID.
-  string credit_owner_uid = 1;
+  // Credit owner ID, e.g. `users/chef-wombat`.
+  string credit_owner= 1;
   // Time buckets.
   repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Total credit consumed in each time bucket.
@@ -173,14 +174,17 @@ message CreditConsumptionChartRecord {
 // ListCreditConsumptionChartRecordsRequest represents a request to list pipeline
 // trigger metrics, aggregated by pipeline ID and time frame.
 message ListCreditConsumptionChartRecordsRequest {
+  // The user or organization to which the credit belongs.
+  // Format: `{[users|organizations]}/{id}`.
+  string owner = 1 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
-  // suffix, such as "300ms", "-1.5h" or "2h45m".
-  string aggregation_window = 1;
+  // suffix, such as "300ms", "1.5h" or "2h45m".
+  string aggregation_window = 2 [(google.api.field_behavior) = REQUIRED];
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-  // expression to determine the credit owner and time range for the charts.
-  // - Example: `owner_name='users/jay-wombat' AND start='2024-06-04T10:000:00Z' AND stop='2024-06-11T10:00:00Z`
-  optional string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+  // expression to determine the time range for the charts.
+  // - Example: `start='2024-06-04T10:000:00Z' AND stop='2024-06-11T10:00:00Z`
+  optional string filter = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListCreditConsumptionChartRecordsResponse contains a list of pipeline trigger
