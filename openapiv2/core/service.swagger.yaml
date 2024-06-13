@@ -1078,6 +1078,57 @@ paths:
           type: string
       tags:
         - Metric
+  /v1beta/metrics/credit/charts:
+    get:
+      summary: List Instill Credit consumption time charts
+      description: |-
+        Returns a timeline of Instill Credit consumption for a given owner. The
+        timeline consists of a list of time frames that contain the aggregated
+        credit consumption.
+      operationId: MgmtPublicService_ListCreditConsumptionChartRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListCreditConsumptionChartRecordsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: owner
+          description: |-
+            The user or organization to which the credit belongs.
+            Format: `{[users|organizations]}/{id}`.
+          in: query
+          required: true
+          type: string
+        - name: aggregation_window
+          description: |-
+            Aggregation window. The value is a positive duration string, i.e. a
+            sequence of decimal numbers, each with optional fraction and a unit
+            suffix, such as "300ms", "1.5h" or "2h45m".
+            The minimum (and default) window is 1h.
+          in: query
+          required: false
+          type: string
+        - name: start
+          description: Beginning of the time range from which the records will be fetched.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: End of the time range from which the records will be fetched.
+          in: query
+          required: false
+          type: string
+          format: date-time
+      tags:
+        - Metric
 definitions:
   ApiTokenState:
     type: string
@@ -1553,6 +1604,29 @@ definitions:
         $ref: '#/definitions/v1betaApiToken'
         description: The created API token resource.
     description: CreateTokenResponse contains the created token.
+  v1betaCreditConsumptionChartRecord:
+    type: object
+    properties:
+      credit_owner:
+        type: string
+        description: Credit owner ID, e.g. `users/chef-wombat`.
+      time_buckets:
+        type: array
+        items:
+          type: string
+          format: date-time
+        description: Time buckets.
+        readOnly: true
+      amount:
+        type: array
+        items:
+          type: number
+          format: float
+        description: Total credit consumed in each time bucket.
+        readOnly: true
+    description: |-
+      CreditConsumptionChartRecord contains credit consumption metrics, aggregated
+      by owner and time frame.
   v1betaDeleteOrganizationMembershipResponse:
     type: object
     description: DeleteOrganizationMembershipResponse is an empty response.
@@ -2074,6 +2148,22 @@ definitions:
         $ref: '#/definitions/HealthCheckResponseServingStatus'
         title: Status is the instance of the enum type ServingStatus
     title: HealthCheckResponse represents a response for a service heath status
+  v1betaListCreditConsumptionChartRecordsResponse:
+    type: object
+    properties:
+      credit_consumption_chart_records:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaCreditConsumptionChartRecord'
+        description: A list of pipeline trigger records.
+      total_amount:
+        type: number
+        format: float
+        description: Sum of the total credit consumed within the time range.
+    description: |-
+      ListCreditConsumptionChartRecordsResponse contains a list of pipeline trigger
+      chart records.
   v1betaListOrganizationMembershipsResponse:
     type: object
     properties:
