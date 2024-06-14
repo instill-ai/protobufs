@@ -1373,8 +1373,8 @@ message LookUpModelAdminResponse {
   Model model = 1;
 }
 
-// DeployModelAdminRequest represents a request to deploy a model to online state
-message DeployModelAdminRequest {
+// DeployUserModelAdminRequest represents a request to deploy a model to online state
+message DeployUserModelAdminRequest {
   reserved 1;
   // The resource name of the model, which allows its access by parent user
   // and ID.
@@ -1392,15 +1392,37 @@ message DeployModelAdminRequest {
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// DeployModelAdminResponse represents a response for a deployed model
-message DeployModelAdminResponse {
+// DeployUserModelAdminResponse represents a response for a deployed model
+message DeployUserModelAdminResponse {
   // Deprecated operation
   reserved 1;
 }
 
-// UndeployModelAdminRequest represents a request to undeploy a model to offline
+// DeployOrganizationModelAdminRequest represents a request to deploy a model to online state
+message DeployOrganizationModelAdminRequest {
+  reserved 1;
+  // The resource name of the model, which allows its access by parent user
+  // and ID.
+  // - Format: `organizations/{user.id}/models/{model.id}`.
+  string name = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "user_model_name"}
+    }
+  ];
+  // Model version tag
+  string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model image digest
+  string digest = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// DeployOrganizationModelAdminResponse represents a response for a deployed model
+message DeployOrganizationModelAdminResponse {}
+
+// UndeployUserModelAdminRequest represents a request to undeploy a model to offline
 // state
-message UndeployModelAdminRequest {
+message UndeployUserModelAdminRequest {
   reserved 1;
   // The resource name of the model, which allows its access by parent user
   // and ID.
@@ -1418,8 +1440,31 @@ message UndeployModelAdminRequest {
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// UndeployModelAdminResponse represents a response for a undeployed model
-message UndeployModelAdminResponse {
+// UndeployUserModelAdminResponse represents a response for a undeployed model
+message UndeployUserModelAdminResponse {
   // Deprecated operation
   reserved 1;
 }
+
+// UndeployOrganizationModelAdminRequest represents a request to undeploy a model to offline
+// state
+message UndeployOrganizationModelAdminRequest {
+  reserved 1;
+  // The resource name of the model, which allows its access by parent user
+  // and ID.
+  // - Format: `organizations/{organization.id}/models/{model.id}`.
+  string name = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference).type = "api.instill.tech/Model",
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      field_configuration: {path_param_name: "user_model_name"}
+    }
+  ];
+  // Model version tag
+  string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model image digest
+  string digest = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// UndeployOrganizationModelAdminResponse represents a response for a undeployed model
+message UndeployOrganizationModelAdminResponse {}
