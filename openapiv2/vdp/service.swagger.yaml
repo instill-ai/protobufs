@@ -656,7 +656,7 @@ paths:
             $ref: '#/definitions/PipelinePublicServiceTriggerUserPipelineBody'
       tags:
         - Trigger
-  /v1beta/{user_pipeline_name}/trigger:stream:
+  /v1beta/{user_pipeline_name}/triggerStream:
     post:
       summary: Trigger a pipeline owned by a user and stream back the response
       description: |-
@@ -1619,6 +1619,55 @@ paths:
             $ref: '#/definitions/PipelinePublicServiceCloneOrganizationPipelineBody'
       tags:
         - Pipeline
+  /v1beta/{organization_pipeline_name}/triggerStream:
+    post:
+      summary: Trigger a pipeline owned by an organization
+      description: |-
+        Triggers the execution of a pipeline synchronously, i.e., the result is sent
+        back to the organization right after the data is processed. This method is
+        intended for real-time inference when low latency is of concern.
+
+        The pipeline is identified by its resource name, formed by the parent
+        organization and ID of the pipeline.
+
+        For more information, see [Trigger
+        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+      operationId: PipelinePublicService_TriggerOrganizationPipelineStream
+      responses:
+        "200":
+          description: A successful response.(streaming responses)
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/v1betaTriggerOrganizationPipelineStreamResponse'
+              error:
+                $ref: '#/definitions/googlerpcStatus'
+            title: Stream result of v1betaTriggerOrganizationPipelineStreamResponse
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_pipeline_name
+          description: |-
+            The resource name of the pipeline, which allows its access by parent
+            organization and ID.
+            - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceTriggerOrganizationPipelineStreamBody'
+      tags:
+        - Trigger
   /v1beta/{organization_pipeline_name}/trigger:
     post:
       summary: Trigger a pipeline owned by an organization
@@ -3110,6 +3159,23 @@ definitions:
     description: |-
       TriggerOrganizationPipelineReleaseRequest represents a request to trigger a
       pinned release of an organization-owned pipeline.
+  PipelinePublicServiceTriggerOrganizationPipelineStreamBody:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
+      data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaTriggerData'
+        title: Data
+    description: |-
+      TriggerOrganizationPipelineRequest represents a request to trigger an
+      organization-owned pipeline synchronously.
   PipelinePublicServiceTriggerUserPipelineBody:
     type: object
     properties:
@@ -4754,6 +4820,20 @@ definitions:
       TriggerOrganizationPipelineReleaseResponse contains the pipeline execution
       results, i.e., the multiple model inference outputs.
   v1betaTriggerOrganizationPipelineResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+      metadata:
+        $ref: '#/definitions/v1betaTriggerMetadata'
+        description: Traces of the pipeline inference.
+    description: |-
+      TriggerOrganizationPipelineResponse contains the pipeline execution results,
+      i.e., the multiple model inference outputs.
+  v1betaTriggerOrganizationPipelineStreamResponse:
     type: object
     properties:
       outputs:
