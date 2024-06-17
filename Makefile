@@ -24,3 +24,8 @@ openapi-lint:
 	@# The spectral ruleset adds extra validation rules that allow us to
 	@# keep the documents consistent.
 	@spectral lint openapi/v2/service.swagger.yaml
+
+gen-python-client:
+	cd tools/gen-python-client && go build -o gen-python-client ./main.go
+	rm log.txt && ./tools/gen-python-client/gen-python-client > log.txt
+	echo "build and gen completed"
