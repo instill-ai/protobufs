@@ -26,3 +26,8 @@ openapi:
 openapi-lint:
 	@# Lint each file under openapiv2.
 	find openapiv2 -type f | xargs -I '{}' swagger-cli validate {}
+
+gen-python-client:
+	cd tools/gen-python-client && go build -o gen-python-client ./main.go
+	rm log.txt && ./tools/gen-python-client/gen-python-client > log.txt
+	echo "build and gen completed"
