@@ -928,6 +928,54 @@ paths:
           pattern: '[^/]+/[^/]+'
       tags:
         - Credit
+  /v1beta/{owner_name}/credit/purchases:
+    get:
+      summary: List Instill Credit purchases.
+      description: |-
+        [Instill Credit](https://www.instill.tech/docs/vdp/credit) can be
+        purchased in order to extend the coverage of a given subscription tier.
+        This endpoint returns a paginated list of credit purchases.
+
+        On Instill Core, this endpoint will return a 404 Not Found status.
+      operationId: MgmtPublicService_ListCreditPurchases
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListCreditPurchasesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: owner_name
+          description: |-
+            The user or organization to which the credit belongs.
+            Format: `{[users|organizations]}/{id}`.
+          in: path
+          required: true
+          type: string
+          pattern: '[^/]+/[^/]+'
+        - name: pageSize
+          description: |-
+            The maximum number of purchase entries to return. If this parameter is
+            unspecified, at most 10 definitions will be returned. The cap value for
+            this parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Credit
   /v1beta/check-namespace:
     post:
       summary: Check if a namespace is in use
@@ -1627,6 +1675,49 @@ definitions:
     description: |-
       CreditConsumptionChartRecord contains credit consumption metrics, aggregated
       by owner and time frame.
+  v1betaCreditPurchase:
+    type: object
+    properties:
+      owner:
+        type: string
+        description: The credit owner ID, e.g. `users/evian-wombat`.
+        readOnly: true
+      invoiceNumber:
+        type: string
+        description: Invoice number for the purchase.
+        readOnly: true
+      purchaseTime:
+        type: string
+        format: date-time
+        description: Purchase timestamp.
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: Amount of purchased credit.
+      currency:
+        type: string
+        description: Three-letter ISO currency code.
+        readOnly: true
+      amount:
+        type: integer
+        format: int32
+        description: |-
+          A positive integer representing how much it was charged in the smallest
+          currency unit (e.g. 100 for $1.00).
+        readOnly: true
+      cardBrand:
+        type: string
+        description: Card brand, e.g. "Visa".
+        readOnly: true
+      cardLast4:
+        type: string
+        description: Last 4 digits of the card.
+        readOnly: true
+    description: |-
+      CreditPurchase contains the information about an Instil Credit purchase by
+      an owner. Credit can be purchased to extend the monthly credits in a
+      subscription.
   v1betaDeleteOrganizationMembershipResponse:
     type: object
     description: DeleteOrganizationMembershipResponse is an empty response.
@@ -2164,6 +2255,28 @@ definitions:
     description: |-
       ListCreditConsumptionChartRecordsResponse contains a list of pipeline trigger
       chart records.
+  v1betaListCreditPurchasesResponse:
+    type: object
+    properties:
+      creditPurchases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaCreditPurchase'
+        description: A list of credit purchase resources.
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of purchases.
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+    description: ListCreditPurchasesResponse contains a list of credit purchases.
   v1betaListOrganizationMembershipsResponse:
     type: object
     properties:
