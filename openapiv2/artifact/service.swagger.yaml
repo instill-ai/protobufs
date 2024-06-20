@@ -7,29 +7,7 @@ consumes:
 produces:
   - application/json
 paths:
-  /v1alpha/knowledge-base:
-    post:
-      summary: Create a knowledge base
-      operationId: ArtifactPublicService_CreateKnowledgeBase
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaCreateKnowledgeBaseResponse'
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpcStatus'
-      parameters:
-        - name: body
-          description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/v1alphaCreateKnowledgeBaseRequest'
-      tags:
-        - KnowledgeBase
-  /v1alpha/users/{uid}/knowledge-base:
+  /v1alpha/owners/{ownerId}/knowledge-bases:
     get:
       summary: Get all knowledge bases info
       operationId: ArtifactPublicService_ListKnowledgeBases
@@ -43,14 +21,39 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: uid
+        - name: ownerId
           description: User ID for which to list the knowledge bases
           in: path
           required: true
           type: string
       tags:
         - KnowledgeBase
-  /v1alpha/knowledge-base/{id}:
+    post:
+      summary: Create a knowledge base
+      operationId: ArtifactPublicService_CreateKnowledgeBase
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateKnowledgeBaseResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: ownerId
+          description: The knowledge base owner(nammespace).
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ArtifactPublicServiceCreateKnowledgeBaseBody'
+      tags:
+        - KnowledgeBase
+  /v1alpha/owners/{ownerId}/knowledge-bases/{kbId}:
     delete:
       summary: Delete a knowledge base
       operationId: ArtifactPublicService_DeleteKnowledgeBase
@@ -64,7 +67,12 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: id
+        - name: ownerId
+          description: The owner's id. i.e. namespace.
+          in: path
+          required: true
+          type: string
+        - name: kbId
           description: The knowledge base identifier.
           in: path
           required: true
@@ -84,8 +92,13 @@ paths:
           schema:
             $ref: '#/definitions/rpcStatus'
       parameters:
-        - name: id
-          description: The knowledge base identifier.
+        - name: ownerId
+          description: The knowledge base owner(namespace).
+          in: path
+          required: true
+          type: string
+        - name: kbId
+          description: The knowledge base id.
           in: path
           required: true
           type: string
@@ -215,7 +228,7 @@ paths:
       tags:
         - KnowledgeBase
 definitions:
-  ArtifactPublicServiceUpdateKnowledgeBaseBody:
+  ArtifactPublicServiceCreateKnowledgeBaseBody:
     type: object
     properties:
       name:
@@ -229,9 +242,18 @@ definitions:
         items:
           type: string
         description: The knowledge base tags.
-      ownerName:
+    description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+  ArtifactPublicServiceUpdateKnowledgeBaseBody:
+    type: object
+    properties:
+      description:
         type: string
-        description: The knowledge base owner.
+        description: The knowledge base description.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The knowledge base tags.
     description: UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
   protobufAny:
     type: object
@@ -252,34 +274,12 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
-  v1alphaCreateKnowledgeBaseRequest:
-    type: object
-    properties:
-      name:
-        type: string
-        description: The knowledge base name.
-      description:
-        type: string
-        description: The knowledge base description.
-      tags:
-        type: array
-        items:
-          type: string
-        description: The knowledge base tags.
-    description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
   v1alphaCreateKnowledgeBaseResponse:
     type: object
     properties:
-      body:
+      knowledgeBase:
         $ref: '#/definitions/v1alphaKnowledgeBase'
         description: The created knowledge base.
-      errorMsg:
-        type: string
-        description: The error message.
-      statusCode:
-        type: integer
-        format: int32
-        description: The status code.
     description: CreateKnowledgeBaseResponse represents a response for creating a knowledge base.
   v1alphaCreateRepositoryTagResponse:
     type: object
@@ -298,13 +298,9 @@ definitions:
   v1alphaDeleteKnowledgeBaseResponse:
     type: object
     properties:
-      errorMsg:
-        type: string
-        description: The error message.
-      statusCode:
-        type: integer
-        format: int32
-        description: The status code.
+      knowledgeBase:
+        $ref: '#/definitions/v1alphaKnowledgeBase'
+        description: The knowledge base identifier.
     description: DeleteKnowledgeBaseResponse represents a response for deleting a knowledge base.
   v1alphaFile:
     type: object
@@ -402,7 +398,7 @@ definitions:
   v1alphaKnowledgeBase:
     type: object
     properties:
-      id:
+      kbId:
         type: string
         description: The knowledge base identifier.
       name:
@@ -425,17 +421,27 @@ definitions:
         items:
           type: string
         description: The knowledge base tags.
-    description: KnowledgeBase represents a knowledge base.
-  v1alphaKnowledgeBasesList:
-    type: object
-    properties:
-      knowledgeBases:
+      convertingPipelines:
         type: array
         items:
-          type: object
-          $ref: '#/definitions/v1alphaKnowledgeBase'
-        description: The list of knowledge bases.
-    description: KnowledgeBasesList represents a list of knowledge bases.
+          type: string
+        description: The knowledge base converting pipelines.
+      splittingPipelines:
+        type: array
+        items:
+          type: string
+        description: The knowledge base splitting pipelines.
+      embeddingPipelines:
+        type: array
+        items:
+          type: string
+        description: The knowledge base embedding pipelines.
+      downstreamApps:
+        type: array
+        items:
+          type: string
+        title: The downstream apps
+    description: KnowledgeBase represents a knowledge base.
   v1alphaListKnowledgeBaseFilesFilter:
     type: object
     properties:
@@ -474,16 +480,12 @@ definitions:
   v1alphaListKnowledgeBasesResponse:
     type: object
     properties:
-      body:
-        $ref: '#/definitions/v1alphaKnowledgeBasesList'
+      knowledgeBases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKnowledgeBase'
         description: The knowledge bases container.
-      errorMsg:
-        type: string
-        description: The error message.
-      statusCode:
-        type: integer
-        format: int32
-        description: The status code.
     description: GetKnowledgeBasesResponse represents a response for getting all knowledge bases from users.
   v1alphaListRepositoryTagsResponse:
     type: object
@@ -553,16 +555,9 @@ definitions:
   v1alphaUpdateKnowledgeBaseResponse:
     type: object
     properties:
-      body:
+      knowledgeBase:
         $ref: '#/definitions/v1alphaKnowledgeBase'
         description: The updated knowledge base.
-      errorMsg:
-        type: string
-        description: The error message.
-      statusCode:
-        type: integer
-        format: int32
-        description: The status code.
     description: UpdateKnowledgeBaseResponse represents a response for updating a knowledge base.
   v1alphaUploadKnowledgeBaseFileResponse:
     type: object
