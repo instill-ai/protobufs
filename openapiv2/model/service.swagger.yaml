@@ -846,6 +846,43 @@ paths:
           format: int32
       tags:
         - Model
+  /v1alpha/{user_model_name}/versions/{version}:
+    delete:
+      summary: Delete a model version
+      description: |-
+        Deletes a model version, accesing it by its resource name, which is defined by the
+        parent user and the ID of the model, and version.
+      operationId: ModelPublicService_DeleteUserModelVersion
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteUserModelVersionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_model_name
+          description: |-
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `users/{user.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/models/[^/]+
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+          pattern: '[^/]+'
+      tags:
+        - Model
   /v1alpha/{user_model_name}/versions/{version}/trigger:
     post:
       summary: Trigger model inference
@@ -1557,7 +1594,7 @@ paths:
           pattern: organizations/[^/]+/models/[^/]+
       tags:
         - Model
-  /v1alpha/{user_model_name_1}/versions:
+  /v1alpha/{organization_model_name}/versions:
     get:
       summary: List organization model versions
       description: |-
@@ -1577,7 +1614,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_model_name_1
+        - name: organization_model_name
           description: |-
             The parent resource, i.e., the user that created the models.
             - Format: `organizations/{organization.id}`.
@@ -1602,6 +1639,45 @@ paths:
           required: false
           type: integer
           format: int32
+      tags:
+        - Model
+  /v1alpha/{organization_model_name}/versions/{version}:
+    delete:
+      summary: Delete a model version
+      description: |-
+        Deletes a model version, accesing it by its resource name, which is defined by the
+        parent organization and the ID of the model, and version.
+      operationId: ModelPublicService_DeleteOrganizationModelVersion
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteOrganizationModelVersionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: organization_model_name
+          description: |-
+            The parent resource, i.e., the user that created the models.
+            - Format: `organizations/{organization.id}`.
+            The resource name of the model, which allows its access by parent user
+            and ID.
+            - Format: `organizations/{organization.id}/models/{model.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/models/[^/]+
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+          pattern: '[^/]+'
       tags:
         - Model
   /v1alpha/{organization_model_name}/versions/{version}/trigger:
@@ -2361,9 +2437,15 @@ definitions:
   v1alphaDeleteOrganizationModelResponse:
     type: object
     description: DeleteOrganizationModelResponse is an empty response.
+  v1alphaDeleteOrganizationModelVersionResponse:
+    type: object
+    description: DeleteOrganizationModelVersionResponse is an empty response.
   v1alphaDeleteUserModelResponse:
     type: object
     description: DeleteUserModelResponse is an empty response.
+  v1alphaDeleteUserModelVersionResponse:
+    type: object
+    description: DeleteUserModelVersionResponse is an empty response.
   v1alphaDeployOrganizationModelAdminResponse:
     type: object
     title: DeployOrganizationModelAdminResponse represents a response for a deployed model
