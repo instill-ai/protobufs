@@ -96,6 +96,8 @@ message Pipeline {
     int32 number_of_runs = 1;
     // Last run time.
     google.protobuf.Timestamp last_run_time = 2;
+    // Number of times this pipeline has been cloned.
+    int32 number_of_clones = 3;
   }
 
   // The name of the pipeline, defined by its parent and ID.
@@ -127,9 +129,9 @@ message Pipeline {
   // Pipeline delete time.
   google.protobuf.Timestamp delete_time = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Pipeline sharing information.
-  Sharing sharing = 15;
+  Sharing sharing = 15 [(google.api.field_behavior) = OPTIONAL];
   // Metadata holds console-related data such as the pipeline builder layout.
-  google.protobuf.Struct metadata = 16;
+  google.protobuf.Struct metadata = 16 [(google.api.field_behavior) = OPTIONAL];
   // Owner Name.
   string owner_name = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Deleted Fields.
@@ -152,7 +154,7 @@ message Pipeline {
   // Tags.
   repeated string tags = 25 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Statistic data.
-  Stats stats = 26;
+  Stats stats = 26 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Recipe in YAML format describes the components of a pipeline and how they
   // are connected.
   string raw_recipe = 27 [(google.api.field_behavior) = OPTIONAL];
@@ -492,11 +494,15 @@ message CloneUserPipelineRequest {
       field_configuration: {path_param_name: "user_pipeline_name"}
     }
   ];
-  // The target pipeline name. It can be under a user or an organization
+  // The target pipeline. It can be under a user or an organization
   // namespace, so the following formats are accepted:
-  // - `users/{user.id}/pipelines/{pipeline.id}`
-  // - `organizations/{organization.id}/pipelines/{pipeline.id}`
+  // - `{user.id}/{pipeline.id}`
+  // - `{organization.id}/{pipeline.id}`
   string target = 2 [(google.api.field_behavior) = REQUIRED];
+  // Pipeline description.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Pipeline sharing information.
+  Sharing sharing = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // CloneUserPipelineResponse contains a cloned pipeline.
@@ -1002,11 +1008,15 @@ message CloneOrganizationPipelineRequest {
       field_configuration: {path_param_name: "user_pipeline_name"}
     }
   ];
-  // The target pipeline name. It can be under a user or an organization
+  // The target pipeline. It can be under a user or an organization
   // namespace, so the following formats are accepted:
-  // - `users/{user.id}/pipelines/{pipeline.id}`
-  // - `organizations/{organization.id}/pipelines/{pipeline.id}`
+  // - `{user.id}/{pipeline.id}`
+  // - `{organization.id}/{pipeline.id}`
   string target = 2 [(google.api.field_behavior) = REQUIRED];
+  // Pipeline description.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Pipeline sharing information.
+  Sharing sharing = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // CloneOrganizationPipelineResponse contains a cloned pipeline.
