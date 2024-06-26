@@ -619,6 +619,41 @@ paths:
             $ref: '#/definitions/PipelinePublicServiceCloneUserPipelineBody'
       tags:
         - Pipeline
+  /v1beta/{user_pipeline_release_name}/clone:
+    post:
+      summary: Clone a pipeline release owned by a user
+      description: |-
+        Clones a pipeline release owned by a user. The new pipeline may have a different
+        parent, and this can be either a user or an organization.
+      operationId: PipelinePublicService_CloneUserPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCloneUserPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: user_pipeline_release_name
+          description: |-
+            The resource name of the pipeline release.
+            - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{version}`.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceCloneUserPipelineReleaseBody'
+      tags:
+        - Pipeline
   /v1beta/{user_pipeline_name}/trigger:
     post:
       summary: Trigger a pipeline owned by a user
@@ -1600,7 +1635,7 @@ paths:
             $ref: '#/definitions/PipelinePublicServiceRenameOrganizationPipelineBody'
       tags:
         - Pipeline
-  /v1beta/{user_pipeline_name_1}/clone:
+  /v1beta/{org_pipeline_name}/clone:
     post:
       summary: Clone a pipeline owned by an organization
       description: |-
@@ -1620,7 +1655,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_pipeline_name_1
+        - name: org_pipeline_name
           description: |-
             The resource name of the pipeline, which allows its access by parent
             organization and ID.
@@ -1634,6 +1669,41 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/PipelinePublicServiceCloneOrganizationPipelineBody'
+      tags:
+        - Pipeline
+  /v1beta/{org_pipeline_release_name}/clone:
+    post:
+      summary: Clone a pipeline release owned by an organization
+      description: |-
+        Clones a pipeline release owned by an organization. The new pipeline may
+        have a different parent, and this can be either a user or an organization.
+      operationId: PipelinePublicService_CloneOrganizationPipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCloneOrganizationPipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: org_pipeline_release_name
+          description: |-
+            The resource name of the pipeline release
+            - Format: `organizations/{org.id}/pipelines/{pipeline.id}/releases/{version}`.
+          in: path
+          required: true
+          type: string
+          pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceCloneOrganizationPipelineReleaseBody'
       tags:
         - Pipeline
   /v1beta/{organization_pipeline_name}/trigger-stream:
@@ -3018,6 +3088,27 @@ definitions:
       owned by an organization.
     required:
       - target
+  PipelinePublicServiceCloneOrganizationPipelineReleaseBody:
+    type: object
+    properties:
+      target:
+        type: string
+        title: |-
+          The target pipeline. It can be under a user or an organization
+          namespace, so the following formats are accepted:
+          - `{user.id}/{pipeline.id}`
+          - `{organization.id}/{pipeline.id}`
+      description:
+        type: string
+        description: Pipeline description.
+      sharing:
+        $ref: '#/definitions/v1betaSharing'
+        description: Pipeline sharing information.
+    description: |-
+      CloneOrganizationPipelineReleaseRequest represents a request to clone a pipeline
+      release owned by an organization.
+    required:
+      - target
   PipelinePublicServiceCloneUserPipelineBody:
     type: object
     properties:
@@ -3037,6 +3128,27 @@ definitions:
     description: |-
       CloneUserPipelineRequest represents a request to clone a pipeline owned by a
       user.
+    required:
+      - target
+  PipelinePublicServiceCloneUserPipelineReleaseBody:
+    type: object
+    properties:
+      target:
+        type: string
+        title: |-
+          The target pipeline. It can be under a user or an organization
+          namespace, so the following formats are accepted:
+          - `{user.id}/{pipeline.id}`
+          - `{organization.id}/{pipeline.id}`
+      description:
+        type: string
+        description: Pipeline description.
+      sharing:
+        $ref: '#/definitions/v1betaSharing'
+        description: Pipeline sharing information.
+    description: |-
+      CloneUserPipelineReleaseRequest represents a request to clone a pipeline
+      release owned by a user.
     required:
       - target
   PipelinePublicServiceRenameOrganizationPipelineBody:
@@ -3578,19 +3690,17 @@ definitions:
         $ref: '#/definitions/CheckNameResponseName'
         description: The availability of the requested name.
     description: CheckNameResponse contains the availability of a resource name.
+  v1betaCloneOrganizationPipelineReleaseResponse:
+    type: object
+    description: CloneOrganizationPipelineReleaseResponse contains a cloned pipeline.
   v1betaCloneOrganizationPipelineResponse:
     type: object
-    properties:
-      pipeline:
-        $ref: '#/definitions/v1betaPipeline'
-        description: The cloned pipeline resource.
     description: CloneOrganizationPipelineResponse contains a cloned pipeline.
+  v1betaCloneUserPipelineReleaseResponse:
+    type: object
+    description: CloneUserPipelineReleaseResponse contains a cloned pipeline.
   v1betaCloneUserPipelineResponse:
     type: object
-    properties:
-      pipeline:
-        $ref: '#/definitions/v1betaPipeline'
-        description: The cloned pipeline resource.
     description: CloneUserPipelineResponse contains a cloned pipeline.
   v1betaComponentDefinition:
     type: object
