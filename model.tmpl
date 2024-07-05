@@ -20,50 +20,25 @@ class ModelClient(Client):
 
 {{ range . }}
     @grpc_handler
-    def {{ .Method | toSnakeCase }}(
+    def {{ .Method | toSnakeCase | convertMethod }}(
         self,
-        {{ range .InputTypes }}{{ .Name | customizeFieldName }}: {{ .Type | typeConvert }},
+        {{ range .InputTypes }}{{ .Name | customizeFieldName }}: {{ typeConvert .Name .Type .IsRepeated }},
         {{ end }}async_enabled: bool = False,
     ) -> model_interface.{{ .OutputTypeName }}:
         if async_enabled:
             return RequestFactory(
                 method=self.hosts[self.instance].async_client.{{ .Method }},
-                request=model_interface.{{ .InputTypeName }}(
-                    name=f"{self.namespace}/models/{model_name}"
+                request=model_interface.{{ .InputTypeName }}({{ range .InputTypes }}
+                    {{ .Name }}={{ .Name | customizeParam | safeHTML }},{{ end }}
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
 
         return RequestFactory(
             method=self.hosts[self.instance].client.{{ .Method }},
-            request=model_interface.{{ .InputTypeName }}(
-                name=f"{self.namespace}/models/{model_name}"
+            request=model_interface.{{ .InputTypeName }}({{ range .InputTypes }}
+                {{ .Name }}={{ .Name | customizeParam | safeHTML }},{{ end }}
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
 {{ end }}
-
-'''
-    @grpc_handler
-    def watch_model(
-        self,
-        model_name: str,
-        async_enabled: bool = False,
-    ) -> model_interface.WatchUserModelResponse:
-        if async_enabled:
-            return RequestFactory(
-                method=self.hosts[self.instance].async_client.WatchUserModel,
-                request=model_interface.WatchUserModelRequest(
-                    name=f"{self.namespace}/models/{model_name}"
-                ),
-                metadata=self.hosts[self.instance].metadata,
-            ).send_async()
-
-        return RequestFactory(
-            method=self.hosts[self.instance].client.WatchUserModel,
-            request=model_interface.WatchUserModelRequest(
-                name=f"{self.namespace}/models/{model_name}"
-            ),
-            metadata=self.hosts[self.instance].metadata,
-        ).send_sync()
-'''
