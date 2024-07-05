@@ -1,18 +1,15 @@
-# pylint: disable=no-member,wrong-import-position,too-many-lines,no-name-in-module
-from typing import Dict, Union
-
-from google.protobuf import field_mask_pb2
-from google.protobuf.struct_pb2 import Struct
+# pylint: disable=no-member,wrong-import-position
+from typing import Dict
 
 # common
+from google.protobuf import field_mask_pb2, timestamp_pb2
+
 import instill.protogen.common.healthcheck.v1beta.healthcheck_pb2 as healthcheck
 
-# pipeline
-import instill.protogen.vdp.pipeline.v1beta.pipeline_pb2 as pipeline_interface
-import instill.protogen.vdp.pipeline.v1beta.pipeline_public_service_pb2_grpc as pipeline_service
-import instill.protogen.vdp.pipeline.v1beta.component_definition_pb2 as component_definition
-import instill.protogen.vdp.pipeline.v1beta.secret_pb2 as secret_interface
-import instill.protogen.vdp.pipeline.v1beta.common_pb2 as common_pb2
+# mgmt
+import instill.protogen.core.mgmt.v1beta.metric_pb2 as metric_interface
+import instill.protogen.core.mgmt.v1beta.mgmt_pb2 as mgmt_interface
+import instill.protogen.core.mgmt.v1beta.mgmt_public_service_pb2_grpc as mgmt_service
 from instill.clients.base import Client, RequestFactory
 from instill.clients.constant import DEFAULT_INSTANCE
 from instill.clients.instance import InstillInstance
@@ -22,15 +19,9 @@ from instill.utils.error_handler import grpc_handler
 # from instill.utils.logger import Logger
 
 
-class PipelineClient(Client):
-    def __init__(
-        self, namespace: str, async_enabled: bool, target_namespace: str = ""
-    ) -> None:
+class MgmtClient(Client):
+    def __init__(self, async_enabled: bool) -> None:
         self.hosts: Dict[str, InstillInstance] = {}
-        self.namespace: str = namespace
-        self.target_namespace: str = (
-            namespace if target_namespace == "" else target_namespace
-        )
         if DEFAULT_INSTANCE in global_config.hosts:
             self.instance = DEFAULT_INSTANCE
         elif len(global_config.hosts) == 0:
@@ -41,42 +32,18 @@ class PipelineClient(Client):
         if global_config.hosts is not None:
             for instance, config in global_config.hosts.items():
                 self.hosts[instance] = InstillInstance(
-                    pipeline_service.PipelinePublicServiceStub,
+                    mgmt_service.MgmtPublicServiceStub,
                     url=config.url,
                     token=config.token,
                     secure=config.secure,
                     async_enabled=async_enabled,
                 )
 
-    @property
-    def hosts(self):
-        return self._hosts
-
-    @hosts.setter
-    def hosts(self, hosts: Dict[str, InstillInstance]):
-        self._hosts = hosts
-
-    @property
-    def instance(self):
-        return self._instance
-
-    @instance.setter
-    def instance(self, instance: str):
-        self._instance = instance
-
-    @property
-    def metadata(self):
-        return self._metadata
-
-    @metadata.setter
-    def metadata(self, metadata: str):
-        self._metadata = metadata
-
 {{ range . }}
     @grpc_handler
     def {{ .Method | toSnakeCase | convertMethod }}(
         self,
-        {{ range .InputTypes }}{{ .Name | customizeFieldName }}: {{ typeConvert .Name .Type .IsRepeated }}{{ .Name | addDefaultValue | safeHTML }},
+        {{ range .InputTypes }}{{ if not (isEnumOrMsgType .Type) }}{{ .Name | customizeFieldName }}: {{ typeConvert .Name .Type .IsRepeated }}{{ .Name | addDefaultValue | safeHTML }},{{ end }}
         {{ end }}async_enabled: bool = False,
     ) -> {{ .Method | getInterfaceName}}.{{ .OutputTypeName }}:
         if async_enabled:
