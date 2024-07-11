@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package artifact.artifact.v1alpha;
+
+import "common/healthcheck/v1beta/healthcheck.proto";
+import "artifact/artifact/v1alpha/artifact.proto";
+// Google API
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+// Protocol Buffers Well-Known Types
+import "google/protobuf/timestamp.proto";
+
+// The Chunk message represents a chunk of data in the artifact system.
+message Chunk {
+    // unique identifier of the chunk
+    string chunk_uid = 1;
+    // whether the chunk is retrievable
+    bool retrievable = 2;
+    // start position of the chunk in the source file
+    uint32 start_pos = 4;
+    // end position of the chunk in the source file
+    uint32 end_pos = 5;
+    // tokens of the chunk
+    uint32 tokens = 6;
+    // creation time of the chunk
+    google.protobuf.Timestamp create_time = 7;
+    // original file unique identifier
+    string original_file_uid = 8;
+}
+
+// The ListChunksRequest message represents a request to list chunks in the artifact system.
+message ListChunksRequest {
+    // owner id (not uid)
+    string owner_id = 1;
+    // knowledge base name (not uid)
+    string kb_id = 2;
+    // unique identifier of the file
+    string file_uid = 3; 
+}
+
+// The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
+message ListChunksResponse {
+    // repeated chunks
+    repeated Chunk chunks = 1;
+}
+
+
+// The SourceFile message represents a source file in the artifact system.
+message SourceFile {
+    // original file unique identifier
+    string original_file_uid = 1;
+    // content
+    string content = 3;
+    // creation time of the source file
+    google.protobuf.Timestamp create_time = 5;
+    // update time of the source file
+    google.protobuf.Timestamp update_time = 6;
+}
+
+// get source file request
+message GetSourceFileRequest {
+    // owner id
+    string owner_id = 1;
+    // knowledge base name
+    string kb_id = 2;
+    // unique identifier of the file
+    string original_file_uid = 3;
+  }
+
+// get source file response
+message GetSourceFileResponse {
+    // source file(either orignal file or converted file)
+    SourceFile source_file = 1;
+  }
+
+// Create chunk response
+message UpdateChunkRequest {
+    // chunk uid
+    string chunk_uid = 1;
+    // whether the chunk is retrievable
+    bool retrievable = 2;
+  }
+
+// Updae chunk response
+message UpdateChunkResponse {
+    // chunk
+    Chunk chunk = 1;
+  }
