@@ -227,6 +227,94 @@ paths:
             $ref: '#/definitions/v1alphaProcessKnowledgeBaseFilesRequest'
       tags:
         - KnowledgeBase
+  /v1alpha/owners/{ownerId}/knowledge-bases/{kbId}/chunks:
+    get:
+      summary: List chunks
+      operationId: ArtifactPublicService_ListChunks
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListChunksResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: ownerId
+          description: owner id (not uid)
+          in: path
+          required: true
+          type: string
+        - name: kbId
+          description: knowledge base name (not uid)
+          in: path
+          required: true
+          type: string
+        - name: fileUid
+          description: unique identifier of the file
+          in: query
+          required: false
+          type: string
+      tags:
+        - KnowledgeBase
+  /v1alpha/owners/{ownerId}/knowledge-bases/{kbId}/files/{fileUid}/source:
+    get:
+      summary: Get source file
+      operationId: ArtifactPublicService_GetSourceFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetSourceFileResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: ownerId
+          description: owner id
+          in: path
+          required: true
+          type: string
+        - name: kbId
+          description: knowledge base name
+          in: path
+          required: true
+          type: string
+        - name: fileUid
+          description: unique identifier of the original uploaded file
+          in: path
+          required: true
+          type: string
+      tags:
+        - KnowledgeBase
+  /v1alpha/chunks/{chunkUid}:
+    post:
+      summary: Update chunk
+      operationId: ArtifactPublicService_UpdateChunk
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateChunkResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: chunkUid
+          description: chunk uid
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ArtifactPublicServiceUpdateChunkBody'
+      tags:
+        - KnowledgeBase
 definitions:
   ArtifactPublicServiceCreateKnowledgeBaseBody:
     type: object
@@ -243,6 +331,13 @@ definitions:
           type: string
         description: The knowledge base tags.
     description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+  ArtifactPublicServiceUpdateChunkBody:
+    type: object
+    properties:
+      retrievable:
+        type: boolean
+        title: whether the chunk is retrievable
+    title: Create chunk response
   ArtifactPublicServiceUpdateKnowledgeBaseBody:
     type: object
     properties:
@@ -274,6 +369,35 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
+  v1alphaChunk:
+    type: object
+    properties:
+      chunkUid:
+        type: string
+        title: unique identifier of the chunk
+      retrievable:
+        type: boolean
+        title: whether the chunk is retrievable
+      startPos:
+        type: integer
+        format: int64
+        title: start position of the chunk in the source file
+      endPos:
+        type: integer
+        format: int64
+        title: end position of the chunk in the source file
+      tokens:
+        type: integer
+        format: int64
+        title: tokens of the chunk
+      createTime:
+        type: string
+        format: date-time
+        title: creation time of the chunk
+      originalFileUid:
+        type: string
+        title: original file unique identifier
+    description: The Chunk message represents a chunk of data in the artifact system.
   v1alphaCreateKnowledgeBaseResponse:
     type: object
     properties:
@@ -360,6 +484,11 @@ definitions:
         format: date-time
         title: delete time
         readOnly: true
+      size:
+        type: string
+        format: int64
+        title: file size in bytes
+        readOnly: true
     title: file mata data
     required:
       - name
@@ -373,6 +502,7 @@ definitions:
       - FILE_PROCESS_STATUS_CHUNKING
       - FILE_PROCESS_STATUS_EMBEDDING
       - FILE_PROCESS_STATUS_COMPLETED
+      - FILE_PROCESS_STATUS_FAILED
     description: |-
       - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
        - FILE_PROCESS_STATUS_WAITING: waiting
@@ -380,6 +510,7 @@ definitions:
        - FILE_PROCESS_STATUS_CHUNKING: embedding process is done
        - FILE_PROCESS_STATUS_EMBEDDING: embedding process is failed
        - FILE_PROCESS_STATUS_COMPLETED: COMPLETED
+       - FILE_PROCESS_STATUS_FAILED: Failed
     title: file embedding process status
   v1alphaFileType:
     type: string
@@ -405,6 +536,13 @@ definitions:
         $ref: '#/definitions/v1alphaRepositoryTag'
         description: The created tag.
     description: GetRepositoryTagResponse contains the created tag.
+  v1alphaGetSourceFileResponse:
+    type: object
+    properties:
+      sourceFile:
+        $ref: '#/definitions/v1alphaSourceFile'
+        title: source file(either orignal file or converted file)
+    title: get source file response
   v1alphaKnowledgeBase:
     type: object
     properties:
@@ -451,7 +589,29 @@ definitions:
         items:
           type: string
         title: The downstream apps
+      totalFiles:
+        type: integer
+        format: int64
+        description: The total files in knowledge base.
+      totalTokens:
+        type: integer
+        format: int64
+        description: The total tokens in knowledge base.
+      usedStorage:
+        type: string
+        format: uint64
+        description: The current used storage in knowledge base.
     description: KnowledgeBase represents a knowledge base.
+  v1alphaListChunksResponse:
+    type: object
+    properties:
+      chunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaChunk'
+        title: repeated chunks
+    description: The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
   v1alphaListKnowledgeBaseFilesFilter:
     type: object
     properties:
@@ -562,6 +722,31 @@ definitions:
     description: |-
       RepositoryTag contains information about the version of some content in a
       repository.
+  v1alphaSourceFile:
+    type: object
+    properties:
+      originalFileUid:
+        type: string
+        title: original file unique identifier
+      content:
+        type: string
+        title: content
+      createTime:
+        type: string
+        format: date-time
+        title: creation time of the source file
+      updateTime:
+        type: string
+        format: date-time
+        title: update time of the source file
+    description: The SourceFile message represents a source file in the artifact system.
+  v1alphaUpdateChunkResponse:
+    type: object
+    properties:
+      chunk:
+        $ref: '#/definitions/v1alphaChunk'
+        title: chunk
+    title: Updae chunk response
   v1alphaUpdateKnowledgeBaseResponse:
     type: object
     properties:
