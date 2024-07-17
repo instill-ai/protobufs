@@ -315,6 +315,37 @@ paths:
             $ref: '#/definitions/ArtifactPublicServiceUpdateChunkBody'
       tags:
         - KnowledgeBase
+  /v1alpha/owners/{ownerId}/knowledge-bases/{kbId}/chunks/similarity:
+    post:
+      summary: Similarity chunks search
+      operationId: ArtifactPublicService_SimilarityChunksSearch
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaSimilarityChunksSearchResponse'
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: ownerId
+          description: owner id
+          in: path
+          required: true
+          type: string
+        - name: kbId
+          description: knowledge base name
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ArtifactPublicServiceSimilarityChunksSearchBody'
+      tags:
+        - KnowledgeBase
 definitions:
   ArtifactPublicServiceCreateKnowledgeBaseBody:
     type: object
@@ -331,6 +362,17 @@ definitions:
           type: string
         description: The knowledge base tags.
     description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+  ArtifactPublicServiceSimilarityChunksSearchBody:
+    type: object
+    properties:
+      textPrompt:
+        type: string
+        title: text prompt
+      topk:
+        type: integer
+        format: int64
+        title: topk
+    title: Similar chunnk search request
   ArtifactPublicServiceUpdateChunkBody:
     type: object
     properties:
@@ -732,6 +774,33 @@ definitions:
     description: |-
       RepositoryTag contains information about the version of some content in a
       repository.
+  v1alphaSimilarityChunk:
+    type: object
+    properties:
+      chunkUid:
+        type: string
+        title: chunk uid
+      similarityScore:
+        type: number
+        format: float
+        title: similarity score
+      textContent:
+        type: string
+        title: chunk
+      sourceFile:
+        type: string
+        title: source file
+    title: similarity chunks
+  v1alphaSimilarityChunksSearchResponse:
+    type: object
+    properties:
+      similarChunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaSimilarityChunk'
+        title: chunks
+    title: Similar chunnk search response
   v1alphaSourceFile:
     type: object
     properties:
