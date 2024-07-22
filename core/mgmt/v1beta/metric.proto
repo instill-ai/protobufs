@@ -29,6 +29,15 @@ enum Status {
 
 // ========== Pipeline endpoints
 
+// PipelineTriggerCount represents a pipeline execution count with some
+// aggregation params (e.g. trigger status).
+message PipelineTriggerCount {
+  // Number og triggers
+  int32 trigger_count = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // This field will be present when results are grouped by trigger status;
+  optional Status status = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // PipelineTriggerTableRecord contains pipeline trigger metrics, aggregated by
 // pipeline ID.
 message PipelineTriggerTableRecord {
@@ -77,54 +86,30 @@ message PipelineTriggerChartRecord {
   string requester = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListPipelineTriggerRecordsRequest represents a request to list the triggers
-// of a pipeline.
-message ListPipelineTriggerRecordsRequest {
-  // The maximum number of triggers to return. If this parameter is unspecified,
-  // at most 100 pipelines will be returned. The cap value for this parameter is
-  // 1000 (i.e. any value above that will be coerced to 100).
-  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-  // Page token.
-  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
-  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-  // expression.
-  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-  optional string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+// GetPipelineTriggerCountRequest represents a request to fetch the trigger
+// count of a requester over a time period.
+message GetPipelineTriggerCountRequest {
+  // The ID of the pipeline trigger requester.
+  // Format: `{[users|organizations]}/{id}`.
+  string requester = 1 [(google.api.field_behavior) = REQUIRED];
+  // Aggregation window. The value is a positive duration string, i.e. a
+  // sequence of decimal numbers, each with optional fraction and a unit
+  // suffix, such as "300ms", "1.5h" or "2h45m".
+  // The minimum (and default) window is 1h.
+  optional string aggregation_window = 2;
+  // Beginning of the time range from which the records will be fetched.
+  // The default value is the beginning of the current day, in UTC.
+  optional google.protobuf.Timestamp start = 3;
+  // End of the time range from which the records will be fetched.
+  // The default value is the current timestamp.
+  optional google.protobuf.Timestamp stop = 4;
 }
 
-// ListPipelineTriggerRecordsResponse contains a list of pipeline triggers.
-message ListPipelineTriggerRecordsResponse {
-  // A list of pipeline triggers.
-  repeated PipelineTriggerRecord pipeline_trigger_records = 1;
-  // Next page token.
-  string next_page_token = 2;
-  // Total number of pipeline triggers.
-  int32 total_size = 3;
-}
-
-// ListPipelineTriggerTableRecordsRequest represents a request to list the
-// pipeline triggers metrics, aggregated by pipeline ID.
-message ListPipelineTriggerTableRecordsRequest {
-  // The maximum number of results to return. If this parameter is unspecified,
-  // at most 100 pipelines will be returned. The cap value for this parameter
-  // is 1000 (i.e. any value above that will be coerced to 1000).
-  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
-  // Page token.
-  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
-  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-  // expression.
-  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-  optional string filter = 3 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// ListPipelineTriggerTableRecordsResponse contains the pipeline metrics.
-message ListPipelineTriggerTableRecordsResponse {
-  // A list of pipeline trigger tables.
-  repeated PipelineTriggerTableRecord pipeline_trigger_table_records = 1;
-  // Next page token.
-  string next_page_token = 2;
-  // Total number of pipeline trigger records
-  int32 total_size = 3;
+// GetPipelineTriggerCountResponse contains the trigger count, grouped by
+// trigger status.
+message GetPipelineTriggerCountResponse {
+  // The trigger counts, grouped by status.
+  repeated PipelineTriggerCount pipeline_trigger_counts = 1;
 }
 
 // ListPipelineTriggerChartRecordsRequest represents a request to list pipeline
