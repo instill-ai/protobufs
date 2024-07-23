@@ -1081,8 +1081,9 @@ paths:
       summary: List Instill Credit consumption time charts
       description: |-
         Returns a timeline of Instill Credit consumption for a given owner. The
-        timeline consists of a list of time frames that contain the aggregated
-        credit consumption.
+        response will contain one set of records (datapoints) per consumption
+        source (e.g. "pipeline", "model"). Each datapoint represents the amount
+        consumed in a time bucket.
       operationId: MgmtPublicService_ListCreditConsumptionChartRecords
       responses:
         "200":
@@ -1114,13 +1115,17 @@ paths:
           required: false
           type: string
         - name: start
-          description: Beginning of the time range from which the records will be fetched.
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
           in: query
           required: false
           type: string
           format: date-time
         - name: stop
-          description: End of the time range from which the records will be fetched.
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
           in: query
           required: false
           type: string
@@ -1634,6 +1639,7 @@ definitions:
       creditOwner:
         type: string
         description: Credit owner ID, e.g. `users/chef-wombat`.
+        readOnly: true
       timeBuckets:
         type: array
         items:
@@ -1648,9 +1654,14 @@ definitions:
           format: float
         description: Total credit consumed in each time bucket.
         readOnly: true
+      source:
+        type: string
+        description: Credit consumption source (e.g. "pipeline", "model").
+        readOnly: true
     description: |-
-      CreditConsumptionChartRecord contains credit consumption metrics, aggregated
-      by owner and time frame.
+      CreditConsumptionChartRecord represents a timeline of Instill Credit
+      consumption. It contains a collection of (timestamp, amount) pairs that
+      represent the total credit consumption in a given time bucket.
   v1betaDeleteOrganizationMembershipResponse:
     type: object
     description: DeleteOrganizationMembershipResponse is an empty response.
@@ -2190,13 +2201,9 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1betaCreditConsumptionChartRecord'
-        description: A list of pipeline trigger records.
-      totalAmount:
-        type: number
-        format: float
-        description: Sum of the total credit consumed within the time range.
+        description: Credit consumption timelines, aggregated by source.
     description: |-
-      ListCreditConsumptionChartRecordsResponse contains a list of pipeline trigger
+      ListCreditConsumptionChartRecordsResponse contains a list of credit consumption
       chart records.
   v1betaListOrganizationMembershipsResponse:
     type: object
