@@ -82,8 +82,8 @@ message PipelineTriggerChartRecord {
   // 9 is reserved for the pipeline release UUID. The server wasn't grouping
   // results by this field.
   reserved 9;
-  // Trigger requester ID, e.g. `specialist-wombat`.
-  string requester_id = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The ID of the namespace that requested the pipeline triggers.
+  string namespace_id = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // GetPipelineTriggerCountRequest represents a request to fetch the trigger
@@ -152,8 +152,8 @@ message ListPipelineTriggerChartRecordsResponse {
 // consumption. It contains a collection of (timestamp, amount) pairs that
 // represent the total credit consumption in a given time bucket.
 message CreditConsumptionChartRecord {
-  // Credit owner ID, e.g. `users/chef-wombat`.
-  string owner_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The ID of the namespace that owns the credit.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Time buckets.
   repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Total credit consumed in each time bucket.
@@ -166,8 +166,8 @@ message CreditConsumptionChartRecord {
 // consumption chart records for a given owner, grouped by time buckets and
 // consumption sources.
 message ListCreditConsumptionChartRecordsRequest {
-  // The ID of the namespace to which the credit belongs.
-  string owner_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the namespace that owns the credit.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
