@@ -15,6 +15,7 @@ import "google/longrunning/operations.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 // Model definitions
 import "model/model/v1alpha/common.proto";
 import "model/model/v1alpha/model_definition.proto";
@@ -1737,3 +1738,117 @@ message UndeployOrganizationModelAdminRequest {
 
 // UndeployOrganizationModelAdminResponse represents a response for a undeployed model
 message UndeployOrganizationModelAdminResponse {}
+
+// ModelTrigger contains information about trigger of models.
+message ModelTrigger {
+  // TriggerStatus defines the status of a model trigger
+  enum TriggerStatus {
+    // Unspecified
+    TRIGGER_STATUS_UNSPECIFIED = 0;
+    // model trigger in progress
+    TRIGGER_STATUS_PROCESSING = 1;
+    // model trigger succeeded
+    TRIGGER_STATUS_COMPLETED = 2;
+    // model trigger failed
+    TRIGGER_STATUS_FAILED = 3;
+    // model trigger is waiting to be executed
+    TRIGGER_STATUS_QUEUED = 4;
+  }
+
+  // TriggerSource defines the source of a model trigger
+  enum TriggerSource {
+    // Unspecified
+    TRIGGER_SOURCE_UNSPECIFIED = 0;
+    // model trigger from frontend UI
+    TRIGGER_SOURCE_CONSOLE = 1;
+    // model trigger from API or SDK
+    TRIGGER_SOURCE_API = 2;
+  }
+
+  // Model Trigger UUID.
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model UUID.
+  string model_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline Trigger UUID.
+  string trigger_uid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model trigger status
+  TriggerStatus status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model visibility.
+  Model.Visibility visibility = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Trigger source
+  TriggerSource source = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Trigger start time
+  google.protobuf.Timestamp start_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Trigger total duration in milliseconds
+  optional google.protobuf.Duration total_duration = 8 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Trigger end time
+  optional google.protobuf.Timestamp end_time = 9 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Trigger requester UID.
+  string requester_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The amount of Instill Credit consumed by the trigger. This field will only be present on Instill Cloud.
+  optional float credit_amount = 11 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Error message occurred during model trigger
+  optional string error = 12 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Model trigger creation time.
+  google.protobuf.Timestamp create_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model trigger update time.
+  google.protobuf.Timestamp update_time = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The model version identifier, which is equal to image tag.
+  string version = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Tags.
+  repeated string tags = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Task type.
+  common.task.v1alpha.Task task = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Inference input parameters.
+  optional google.protobuf.Struct task_inputs = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model inference outputs.
+  repeated TaskOutput task_outputs = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListModelTriggersRequest represents a request to list of model triggers
+message ListModelTriggersRequest {
+  // The maximum number of triggers to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // View allows clients to specify the desired trigger view in the response.
+  // The basic view excludes input / output data.
+  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Sort the results by the given expression.  
+  // Format: `field [ASC | DESC], where `field` can be:
+  // - `create_time`
+  // - `update_time`
+  // By default, results are sorted by descending creation time.
+  optional string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Model ID
+  optional string model_uid = 5 [(google.api.field_behavior) = OPTIONAL];
+  // filter by start time range from
+  optional google.protobuf.Timestamp start_time_from = 6 [(google.api.field_behavior) = OPTIONAL];
+  // filter by start time range to
+  optional google.protobuf.Timestamp start_time_to = 7 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListModelTriggersResponse contains a list of model triggers.
+message ListModelTriggersResponse {
+  // A list of triggers resources.
+  repeated ModelTrigger triggers = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Total number of triggers.
+  int32 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested page size.
+  int32 page_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested page offset.
+  int32 page = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
