@@ -888,8 +888,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: requesterId
-          description: The ID of the pipeline trigger requester, e.g. `funky-wombat`.
+        - name: namespaceId
+          description: The ID of the namespace that requested the pipeline triggers.
           in: query
           required: true
           type: string
@@ -941,8 +941,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: requesterId
-          description: The ID of the pipeline trigger requester, e.g. `rasta-wombat`.
+        - name: namespaceId
+          description: The ID of the namespace that requested the pipeline triggers.
           in: query
           required: true
           type: string
@@ -995,8 +995,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: ownerId
-          description: The ID of the namespace to which the credit belongs.
+        - name: namespaceId
+          description: The ID of the namespace that owns the credit.
           in: query
           required: true
           type: string
@@ -1293,10 +1293,9 @@ definitions:
   v1betaCreditConsumptionChartRecord:
     type: object
     properties:
-      ownerId:
+      namespaceId:
         type: string
-        description: Credit owner ID, e.g. `users/chef-wombat`.
-        readOnly: true
+        description: The ID of the namespace that owns the credit.
       timeBuckets:
         type: array
         items:
@@ -1319,6 +1318,8 @@ definitions:
       CreditConsumptionChartRecord represents a timeline of Instill Credit
       consumption. It contains a collection of (timestamp, amount) pairs that
       represent the total credit consumption in a given time bucket.
+    required:
+      - namespaceId
   v1betaDeleteOrganizationMembershipResponse:
     type: object
     description: DeleteOrganizationMembershipResponse is an empty response.
@@ -1846,9 +1847,9 @@ definitions:
           format: int32
         description: Aggregated trigger count in each time bucket.
         readOnly: true
-      requesterId:
+      namespaceId:
         type: string
-        description: Trigger requester ID, e.g. `specialist-wombat`.
+        description: The ID of the namespace that requested the pipeline triggers.
         readOnly: true
     description: |-
       PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
