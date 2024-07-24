@@ -11,11 +11,16 @@ info:
     name: Elastic License 2.0 (ELv2)
     url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
 tags:
-  - name: Model
   - name: Model Definition
+    description: Model definition endpoints
+  - name: Model
+    description: Model endpoints
   - name: Version
+    description: Model version endpoints
   - name: Trigger
+    description: Model trigger endpoints
   - name: Region
+    description: Model region endpoints
 host: api.instill.tech
 schemes:
   - https
@@ -90,7 +95,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - Region
-  /v1alpha/{model_definition_name}:
+  /v1alpha/model-definitions/{modelDefinitionId}:
     get:
       summary: Get a model definition
       description: Returns the details of a model definition.
@@ -108,14 +113,13 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: model_definition_name
+        - name: modelDefinitionId
           description: |-
             The resource name of the model definition, which allows its access by ID.
             - Format: `model-definitions/{id}`.
           in: path
           required: true
           type: string
-          pattern: model-definitions/[^/]+
         - name: view
           description: |-
             View allows clients to specify the desired resource view in the response.
@@ -130,7 +134,7 @@ paths:
             - VIEW_FULL
       tags:
         - Model Definition
-  /v1alpha/models:
+  /v1beta/models:
     get:
       summary: List models
       description: Returns a paginated list of models.
@@ -208,16 +212,16 @@ paths:
           type: string
       tags:
         - Model
-  /v1alpha/{permalink}/lookUp:
+  /v1beta/namespaces/{namespaceId}/models:
     get:
-      summary: Get a model by UID
-      description: Returns the details of a model by a permalink defined by the resource UID.
-      operationId: ModelPublicService_LookUpModel
+      summary: List namespace models
+      description: Returns a paginated list of models.
+      operationId: ModelPublicService_ListNamespaceModels
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaLookUpModelResponse'
+            $ref: '#/definitions/v1alphaListNamespaceModelsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -226,14 +230,769 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink
-          description: |-
-            The permalink of the model, which allows its access by UID.
-            - Format: `models/{model.uid}`.
+        - name: namespaceId
+          description: Namespace ID
           in: path
           required: true
           type: string
-          pattern: models/[^/]+
+        - name: pageSize
+          description: |-
+            The maximum number of models to return. If this parameter is unspecified,
+            at most 10 models will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: showDeleted
+          description: Include soft-deleted models in the result.
+          in: query
+          required: false
+          type: boolean
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: visibility
+          description: |-
+            Limit results to pipelines with the specified visibility.
+
+             - VISIBILITY_PRIVATE: Only the owner can see the model.
+             - VISIBILITY_PUBLIC: Other users can see the model.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VISIBILITY_PRIVATE
+            - VISIBILITY_PUBLIC
+        - name: orderBy
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models:
+    post:
+      summary: Create a new model
+      description: |-
+        Creates a new model under the parenthood of a namespace. This is an
+        asynchronous endpoint, i.e., the server will not wait for the model to be
+        created in order to respond. Instead, it will return a response with the
+        necessary information to access the result and status of the creation
+        operation.
+      operationId: ModelPublicService_CreateNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: model
+          description: The properties of the model to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaModel'
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}:
+    get:
+      summary: Get a model
+      description: Returns the detail of a model, accessing it by the model ID and its parent namespace.
+      operationId: ModelPublicService_GetNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired model view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Model
+    delete:
+      summary: Delete a model
+      description: |-
+        Deletes a model, accesing it by its resource name, which is defined by the
+        parent namespace and the ID of the model.
+      operationId: ModelPublicService_DeleteNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Model
+    patch:
+      summary: Update a model
+      description: |-
+        Updates a model, accessing it by its resource name, which is defined by
+        the parent namespace and the ID of the model.
+
+        In REST requests, only the supplied model fields will be taken into
+        account when updating the resource.
+      operationId: ModelPublicService_UpdateNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: model
+          description: The model to update
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1alphaModel'
+            required:
+              - model
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/rename:
+    post:
+      summary: Rename a model
+      description: |-
+        Renames a model, accesing it by its resource name, which is defined by the
+        parent namespace and the ID of the model.
+      operationId: ModelPublicService_RenameNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaRenameNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceRenameNamespaceModelBody'
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/publish:
+    post:
+      summary: Publish a model
+      description: |-
+        Updates the visibility in a model to PUBLIC. The model is accessed by its
+        resource name, defined by the model ID and its parent namespace.
+      operationId: ModelPublicService_PublishNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaPublishNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServicePublishNamespaceModelBody'
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/unpublish:
+    post:
+      summary: Unpublish a model
+      description: |-
+        Updates the visibility in a model to PRIVATE. The model is accessed by its
+        resource name, defined by the model ID and its parent namespace.
+      operationId: ModelPublicService_UnpublishNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUnpublishNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceUnpublishNamespaceModelBody'
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/readme:
+    get:
+      summary: Get a model card
+      description: |-
+        Returns the README file that accompanies a model, describing it and
+        enhancing it with metadata. The model is accessed by its resource name.
+      operationId: ModelPublicService_GetNamespaceModelCard
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetNamespaceModelCardResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/watch:
+    get:
+      summary: Watch the state of a model version
+      description: |-
+        Returns the state of a model. The model resource allocation and scaling actions take some
+        time, during which a model will be in various state. This endpoint
+        allows clients to track the state.
+      operationId: ModelPublicService_WatchNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+      tags:
+        - Version
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/watch:
+    get:
+      summary: Watch the state of the latest model version
+      description: |-
+        Returns the state of the latest model version. The model resource allocation and scaling actions
+        take some time, during which a model will be in various state. This endpoint
+        allows clients to track the state.
+      operationId: ModelPublicService_WatchNamespaceLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaWatchNamespaceLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Model
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions:
+    get:
+      summary: List namespace model versions
+      description: |-
+        Returns a paginated list of version of a model namespace that belong to the specified namespace.
+        Contains model version and digest.
+      operationId: ModelPublicService_ListNamespaceModelVersions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListNamespaceModelVersionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of tags to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Version
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}:
+    delete:
+      summary: Delete a model version
+      description: |-
+        Deletes a model version, accesing it by its resource name, which is defined by the
+        parent namespace and the ID of the model, and version.
+      operationId: ModelPublicService_DeleteNamespaceModelVersion
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteNamespaceModelVersionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+      tags:
+        - Version
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/trigger:
+    post:
+      summary: Trigger model inference
+      description: |-
+        Triggers a deployed model to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerNamespaceModelBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/trigger-async:
+    post:
+      summary: Trigger model inference asynchronously
+      description: |-
+        Triggers a deployed model to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerAsyncNamespaceModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncNamespaceModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: version
+          description: Model version tag
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerAsyncNamespaceModelBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/trigger:
+    post:
+      summary: Trigger model inference
+      description: |-
+        Triggers the latest deployed model version to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerNamespaceLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerNamespaceLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerNamespaceLatestModelBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/trigger-async:
+    post:
+      summary: Trigger model inference asynchronously
+      description: |-
+        Triggers the latest deployed model version to infer the result of a set of task or
+        questions.
+      operationId: ModelPublicService_TriggerAsyncNamespaceLatestModel
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaTriggerAsyncNamespaceLatestModelResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ModelPublicServiceTriggerAsyncNamespaceLatestModelBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/operation:
+    get:
+      summary: Get the details of the latest long-running operation from a namespace model
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations in a model, such as deployment.
+      operationId: ModelPublicService_GetNamespaceLatestModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetNamespaceLatestModelOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired operation result in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Model
+  /v1alpha/{name}:
+    get:
+      summary: Get the details of a long-running operation
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations in a model, such as deployment.
+      operationId: ModelPublicService_GetModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The resource name of the model, which allows its access ID.
+            - Format: `operations/{operation.id}`.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
         - name: view
           description: |-
             View allows clients to specify the desired model view in the response.
@@ -336,7 +1095,7 @@ paths:
           required: false
           type: string
       tags:
-        - Model
+        - Model (Deprecated)
     post:
       summary: Create a new model
       description: |-
@@ -374,7 +1133,7 @@ paths:
           schema:
             $ref: '#/definitions/v1alphaModel'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{user_model_name}:
     get:
       summary: Get a model
@@ -415,7 +1174,7 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Model
+        - Model (Deprecated)
     delete:
       summary: Delete a model
       description: |-
@@ -445,7 +1204,7 @@ paths:
           type: string
           pattern: users/[^/]+/models/[^/]+
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{model_name}:
     patch:
       summary: Update a model
@@ -508,11 +1267,13 @@ paths:
                   specification in the model definition (i.e. the `model_spec` field in the
                   model definition).
               task:
-                $ref: '#/definitions/v1alphaTask'
                 description: Model task.
+                allOf:
+                  - $ref: '#/definitions/v1alphaTask'
               visibility:
-                $ref: '#/definitions/v1alphaModelVisibility'
                 description: Model visibility.
+                allOf:
+                  - $ref: '#/definitions/v1alphaModelVisibility'
               createTime:
                 type: string
                 format: date-time
@@ -533,9 +1294,10 @@ paths:
                 description: Resource name of the owner.
                 readOnly: true
               owner:
-                $ref: '#/definitions/v1betaOwner'
                 description: Model owner.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaOwner'
               region:
                 type: string
                 description: Region of choice for the particular provider to host the model.
@@ -555,20 +1317,23 @@ paths:
                 type: string
                 description: License under which the model is distributed.
               sampleInput:
-                $ref: '#/definitions/v1alphaTaskInput'
                 title: Sample input for this model
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskInput'
               sampleOutput:
-                $ref: '#/definitions/v1alphaTaskOutput'
                 title: Sample output for this model
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskOutput'
               profileImage:
                 type: string
                 description: Model profile image in base64 format.
               permission:
-                $ref: '#/definitions/modelv1alphaPermission'
                 description: Permission defines how a pipeline can be used.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/modelv1alphaPermission'
               inputSchema:
                 type: object
                 title: Input schema for the model
@@ -593,7 +1358,7 @@ paths:
               - region
               - hardware
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{user_model_name}/rename:
     post:
       summary: Rename a model
@@ -629,7 +1394,7 @@ paths:
           schema:
             $ref: '#/definitions/ModelPublicServiceRenameUserModelBody'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{user_model_name}/publish:
     post:
       summary: Publish a model
@@ -665,7 +1430,7 @@ paths:
           schema:
             $ref: '#/definitions/ModelPublicServicePublishUserModelBody'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{user_model_name}/unpublish:
     post:
       summary: Unpublish a model
@@ -701,7 +1466,7 @@ paths:
           schema:
             $ref: '#/definitions/ModelPublicServiceUnpublishUserModelBody'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{user_model_card_name}:
     get:
       summary: Get a model card
@@ -732,7 +1497,7 @@ paths:
           type: string
           pattern: users/[^/]+/models/[^/]+/readme
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{user_model_name}/versions/{version}/watch:
     get:
       summary: Watch the state of a model version
@@ -770,7 +1535,7 @@ paths:
           type: string
           pattern: '[^/]+'
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{user_model_name}/watch:
     get:
       summary: Watch the state of the latest model version
@@ -802,7 +1567,7 @@ paths:
           type: string
           pattern: users/[^/]+/models/[^/]+
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{user_model_name}/versions:
     get:
       summary: List user model versions
@@ -849,7 +1614,7 @@ paths:
           type: integer
           format: int32
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{user_model_name}/versions/{version}:
     delete:
       summary: Delete a model version
@@ -886,7 +1651,7 @@ paths:
           type: string
           pattern: '[^/]+'
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{user_model_name}/versions/{version}/trigger:
     post:
       summary: Trigger model inference
@@ -933,7 +1698,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{user_model_name}/versions/{version}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
@@ -980,7 +1745,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{user_model_name}/trigger:
     post:
       summary: Trigger model inference
@@ -1021,7 +1786,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{user_model_name}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
@@ -1062,7 +1827,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{organization_name}/models:
     get:
       summary: List organization models
@@ -1151,7 +1916,7 @@ paths:
           required: false
           type: string
       tags:
-        - Model
+        - Model (Deprecated)
     post:
       summary: Create a new model
       description: |-
@@ -1189,7 +1954,7 @@ paths:
           schema:
             $ref: '#/definitions/v1alphaModel'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{organization_model_name}:
     get:
       summary: Get a model
@@ -1230,7 +1995,7 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Model
+        - Model (Deprecated)
     delete:
       summary: Delete a model
       description: |-
@@ -1260,7 +2025,7 @@ paths:
           type: string
           pattern: organizations/[^/]+/models/[^/]+
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{model_name_1}:
     patch:
       summary: Update a model
@@ -1323,11 +2088,13 @@ paths:
                   specification in the model definition (i.e. the `model_spec` field in the
                   model definition).
               task:
-                $ref: '#/definitions/v1alphaTask'
                 description: Model task.
+                allOf:
+                  - $ref: '#/definitions/v1alphaTask'
               visibility:
-                $ref: '#/definitions/v1alphaModelVisibility'
                 description: Model visibility.
+                allOf:
+                  - $ref: '#/definitions/v1alphaModelVisibility'
               createTime:
                 type: string
                 format: date-time
@@ -1348,9 +2115,10 @@ paths:
                 description: Resource name of the owner.
                 readOnly: true
               owner:
-                $ref: '#/definitions/v1betaOwner'
                 description: Model owner.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaOwner'
               region:
                 type: string
                 description: Region of choice for the particular provider to host the model.
@@ -1370,20 +2138,23 @@ paths:
                 type: string
                 description: License under which the model is distributed.
               sampleInput:
-                $ref: '#/definitions/v1alphaTaskInput'
                 title: Sample input for this model
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskInput'
               sampleOutput:
-                $ref: '#/definitions/v1alphaTaskOutput'
                 title: Sample output for this model
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskOutput'
               profileImage:
                 type: string
                 description: Model profile image in base64 format.
               permission:
-                $ref: '#/definitions/modelv1alphaPermission'
                 description: Permission defines how a pipeline can be used.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/modelv1alphaPermission'
               inputSchema:
                 type: object
                 title: Input schema for the model
@@ -1408,7 +2179,7 @@ paths:
               - region
               - hardware
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{organization_model_name}/rename:
     post:
       summary: Rename a model
@@ -1444,7 +2215,7 @@ paths:
           schema:
             $ref: '#/definitions/ModelPublicServiceRenameOrganizationModelBody'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{organization_model_name}/publish:
     post:
       summary: Publish a model
@@ -1480,7 +2251,7 @@ paths:
           schema:
             $ref: '#/definitions/ModelPublicServicePublishOrganizationModelBody'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{organization_model_name}/unpublish:
     post:
       summary: Unpublish a model
@@ -1516,7 +2287,7 @@ paths:
           schema:
             $ref: '#/definitions/ModelPublicServiceUnpublishOrganizationModelBody'
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{organization_model_card_name}:
     get:
       summary: Get a model card
@@ -1547,7 +2318,7 @@ paths:
           type: string
           pattern: organizations/[^/]+/models/[^/]+/readme
       tags:
-        - Model
+        - Model (Deprecated)
   /v1alpha/{organization_model_name}/versions/{version}/watch:
     get:
       summary: Watch the state of a model version
@@ -1585,7 +2356,7 @@ paths:
           type: string
           pattern: '[^/]+'
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{organization_model_name}/watch:
     get:
       summary: Watch the state of the latest model version
@@ -1617,7 +2388,7 @@ paths:
           type: string
           pattern: organizations/[^/]+/models/[^/]+
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{organization_model_name}/versions:
     get:
       summary: List organization model versions
@@ -1664,7 +2435,7 @@ paths:
           type: integer
           format: int32
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{organization_model_name}/versions/{version}:
     delete:
       summary: Delete a model version
@@ -1703,7 +2474,7 @@ paths:
           type: string
           pattern: '[^/]+'
       tags:
-        - Version
+        - Version (Deprecated)
   /v1alpha/{organization_model_name}/versions/{version}/trigger:
     post:
       summary: Trigger model inference
@@ -1750,7 +2521,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{organization_model_name}/versions/{version}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
@@ -1797,7 +2568,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{organization_model_name}/trigger:
     post:
       summary: Trigger model inference
@@ -1838,7 +2609,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{organization_model_name}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
@@ -1879,49 +2650,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
-  /v1alpha/{name}:
-    get:
-      summary: Get the details of a long-running operation
-      description: |-
-        This method allows requesters to request the status and outcome of
-        long-running operations in a model, such as deployment.
-      operationId: ModelPublicService_GetModelOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1alphaGetModelOperationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The resource name of the model, which allows its access ID.
-            - Format: `operations/{operation.id}`.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: view
-          description: |-
-            View allows clients to specify the desired model view in the response.
-
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{user_model_name}/operation:
     get:
       summary: Get the details of the latest long-running operation from a user model
@@ -1964,7 +2693,7 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1alpha/{organization_model_name}/operation:
     get:
       summary: Get the details of the latest long-running operation from a organization model
@@ -2007,14 +2736,28 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Trigger
+        - Trigger (Deprecated)
 definitions:
+  ModelPublicServicePublishNamespaceModelBody:
+    type: object
+    description: PublishNamespacehModelRequest represents a request to publish a model.
   ModelPublicServicePublishOrganizationModelBody:
     type: object
     description: PublisOrganizationhModelRequest represents a request to publish a model.
   ModelPublicServicePublishUserModelBody:
     type: object
     description: PublisUserhModelRequest represents a request to publish a model.
+  ModelPublicServiceRenameNamespaceModelBody:
+    type: object
+    properties:
+      newModelId:
+        type: string
+        description: |-
+          The new resource ID. This will transform the resource name into
+          `namespaces/{namespace.id}/models/{new_model_id}`.
+    title: RenameNamespaceModelRequest represents a request to rename a model
+    required:
+      - newModelId
   ModelPublicServiceRenameOrganizationModelBody:
     type: object
     properties:
@@ -2037,6 +2780,34 @@ definitions:
     title: RenameUserModelRequest represents a request to rename a model
     required:
       - newModelId
+  ModelPublicServiceTriggerAsyncNamespaceLatestModelBody:
+    type: object
+    properties:
+      taskInputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: |-
+      TriggerAsyncNamespaceLatestModelRequest represents a request to trigger a model inference
+      asynchronously with the latest uploaded version.
+    required:
+      - taskInputs
+  ModelPublicServiceTriggerAsyncNamespaceModelBody:
+    type: object
+    properties:
+      taskInputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: |-
+      TriggerAsyncNamespaceModelRequest represents a request to trigger a model inference
+      asynchronously.
+    required:
+      - taskInputs
   ModelPublicServiceTriggerAsyncOrganizationLatestModelBody:
     type: object
     properties:
@@ -2093,6 +2864,32 @@ definitions:
       asynchronously.
     required:
       - taskInputs
+  ModelPublicServiceTriggerNamespaceLatestModelBody:
+    type: object
+    properties:
+      taskInputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: |-
+      TriggerNamespaceLatestModelRequest represents a request to trigger a model inference
+      with the latest uploaded version.
+    required:
+      - taskInputs
+  ModelPublicServiceTriggerNamespaceModelBody:
+    type: object
+    properties:
+      taskInputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
+    description: TriggerNamespaceModelRequest represents a request to trigger a model inference.
+    required:
+      - taskInputs
   ModelPublicServiceTriggerOrganizationLatestModelBody:
     type: object
     properties:
@@ -2143,6 +2940,9 @@ definitions:
     description: TriggerUserModelRequest represents a request to trigger a model inference.
     required:
       - taskInputs
+  ModelPublicServiceUnpublishNamespaceModelBody:
+    type: object
+    description: UnpublishNamespaceModelRequest represents a request to unpublish a model.
   ModelPublicServiceUnpublishOrganizationModelBody:
     type: object
     description: UnpublishOrganizationModelRequest represents a request to unpublish a model.
@@ -2159,12 +2959,13 @@ definitions:
           originally returns it. If you use the default HTTP mapping, the
           `name` should be a resource name ending with `operations/{unique_id}`.
       metadata:
-        $ref: '#/definitions/protobufAny'
         description: |-
           Service-specific metadata associated with the operation.  It typically
           contains progress information and common metadata such as create time.
           Some services might not provide such metadata.  Any method that returns a
           long-running operation should document the metadata type, if any.
+        allOf:
+          - $ref: '#/definitions/protobufAny'
       done:
         type: boolean
         description: |-
@@ -2172,10 +2973,10 @@ definitions:
           If `true`, the operation is completed, and either `error` or `response` is
           available.
       error:
-        $ref: '#/definitions/googlerpcStatus'
         description: The error result of the operation in case of failure or cancellation.
+        allOf:
+          - $ref: '#/definitions/googlerpcStatus'
       response:
-        $ref: '#/definitions/protobufAny'
         description: |-
           The normal response of the operation in case of success.  If the original
           method returns no data on success, such as `Delete`, the response is
@@ -2185,6 +2986,8 @@ definitions:
           is the original method name.  For example, if the original method name
           is `TakeSnapshot()`, the inferred response type is
           `TakeSnapshotResponse`.
+        allOf:
+          - $ref: '#/definitions/protobufAny'
     description: |-
       This resource represents a long-running operation that is the result of a
       network API call.
@@ -2226,6 +3029,7 @@ definitions:
       canEdit:
         type: boolean
         description: Defines whether the resource can be modified.
+        readOnly: true
     description: Permission defines how a resource can be used.
   modelv1alphaPermission:
     type: object
@@ -2464,20 +3268,36 @@ definitions:
         description: Score.
         readOnly: true
     description: ClassificationOutput contains the result of an image classification task.
+  v1alphaCreateNamespaceModelResponse:
+    type: object
+    properties:
+      model:
+        description: The created model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
+    description: CreateNamespaceModelResponse contains the created model.
   v1alphaCreateOrganizationModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The created model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: CreateOrganizationModelResponse contains the created model.
   v1alphaCreateUserModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The created model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: CreateUserModelResponse contains the created model.
+  v1alphaDeleteNamespaceModelResponse:
+    type: object
+    description: DeleteNamespaceModelResponse is an empty response.
+  v1alphaDeleteNamespaceModelVersionResponse:
+    type: object
+    description: DeleteNamespaceModelVersionResponse is an empty response.
   v1alphaDeleteOrganizationModelResponse:
     type: object
     description: DeleteOrganizationModelResponse is an empty response.
@@ -2490,6 +3310,9 @@ definitions:
   v1alphaDeleteUserModelVersionResponse:
     type: object
     description: DeleteUserModelVersionResponse is an empty response.
+  v1alphaDeployNamespaceModelAdminResponse:
+    type: object
+    title: DeployNamespaceModelAdminResponse represents a response for a deployed model
   v1alphaDeployOrganizationModelAdminResponse:
     type: object
     title: DeployOrganizationModelAdminResponse represents a response for a deployed model
@@ -2538,9 +3361,10 @@ definitions:
         description: Score.
         readOnly: true
       boundingBox:
-        $ref: '#/definitions/v1alphaBoundingBox'
         description: Bounding box.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
     description: DetectionObject represents an identified object in an image.
   v1alphaDetectionOutput:
     type: object
@@ -2557,24 +3381,54 @@ definitions:
     type: object
     properties:
       modelDefinition:
-        $ref: '#/definitions/v1alphaModelDefinition'
         description: The model definition resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaModelDefinition'
     description: GetModelDefinitionResponse contains the requested model definition.
   v1alphaGetModelOperationResponse:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: The long-running operation.
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       GetModelOperationRequest represents a request to query a long-running
       operation.
+  v1alphaGetNamespaceLatestModelOperationResponse:
+    type: object
+    properties:
+      operation:
+        description: The long-running operation.
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
+    description: |-
+      GetNamespaceLatestModelOperationRequest represents a request to query a long-running
+      operation.
+  v1alphaGetNamespaceModelCardResponse:
+    type: object
+    properties:
+      readme:
+        description: A model card resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModelCard'
+    description: GetNamespaceModelCardResponse contains the model's README card.
+  v1alphaGetNamespaceModelResponse:
+    type: object
+    properties:
+      model:
+        description: The model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
+    description: GetNamespaceModelResponse contains the requested model.
   v1alphaGetOrganizationLatestModelOperationResponse:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: The long-running operation.
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       GetOrganizationLatestModelOperationRequest represents a request to query a long-running
       operation.
@@ -2582,22 +3436,25 @@ definitions:
     type: object
     properties:
       readme:
-        $ref: '#/definitions/v1alphaModelCard'
         description: A model card resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModelCard'
     description: GetOrganizationModelCardResponse contains the model's README card.
   v1alphaGetOrganizationModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: GetOrganizationModelResponse contains the requested model.
   v1alphaGetUserLatestModelOperationResponse:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: The long-running operation.
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       GetUserLatestModelOperationRequest represents a request to query a long-running
       operation.
@@ -2605,26 +3462,29 @@ definitions:
     type: object
     properties:
       readme:
-        $ref: '#/definitions/v1alphaModelCard'
         description: A model card resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModelCard'
     description: GetUserModelCardResponse contains the model's README card.
   v1alphaGetUserModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: GetUserModelResponse contains the requested model.
   v1alphaImageContent:
     type: object
     properties:
       imageUrl:
-        $ref: '#/definitions/v1alphaPromptImage'
         description: |-
           Image as URL or base64 code.
 
           NOTE: the `image_url` name comes from a convention from OpenAI, it doesn't
           determine the format of the image.
+        allOf:
+          - $ref: '#/definitions/v1alphaPromptImage'
       detail:
         type: string
         description: Additional information.
@@ -2721,9 +3581,10 @@ definitions:
         description: Score.
         readOnly: true
       boundingBox:
-        $ref: '#/definitions/v1alphaBoundingBox'
         description: Bounding box.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
     description: |-
       InstanceSegmentationObject is an object in an image, localized and
       delineated.
@@ -2804,9 +3665,10 @@ definitions:
         description: Score.
         readOnly: true
       boundingBox:
-        $ref: '#/definitions/v1alphaBoundingBox'
         description: Bounding box.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
     description: |-
       KeypointObject is a detected object with its keypoints, e.g. a detected
       human shape with its legs, arms, core, etc.
@@ -2884,6 +3746,49 @@ definitions:
         format: int32
         description: Total number of models.
     description: ListModelsResponse contains a list of models.
+  v1alphaListNamespaceModelVersionsResponse:
+    type: object
+    properties:
+      versions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelVersion'
+        description: A list of model resources.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of tags.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+        readOnly: true
+    description: ListNamespaceModelVersionsResponse contains a list of models.
+  v1alphaListNamespaceModelsResponse:
+    type: object
+    properties:
+      models:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModel'
+        description: A list of model resources.
+      nextPageToken:
+        type: string
+        description: Next page token.
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of models.
+    description: ListNamespaceModelsResponse contains a list of models.
   v1alphaListOrganizationModelVersionsResponse:
     type: object
     properties:
@@ -2966,16 +3871,10 @@ definitions:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         title: A model resource
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     title: LookUpModelResponse represents a response for a model
-  v1alphaLookUpModelResponse:
-    type: object
-    properties:
-      model:
-        $ref: '#/definitions/v1alphaModel'
-        description: The requested model.
-    description: LookUpModelResponse contains the requested model.
   v1alphaMessage:
     type: object
     properties:
@@ -2996,12 +3895,13 @@ definitions:
         type: string
         description: Content type.
       imageUrl:
-        $ref: '#/definitions/v1alphaImageContent'
         description: |-
           Image content.
 
           NOTE: the `image_url` name comes from a convention from OpenAI, it doesn't
           determine the format of the image.
+        allOf:
+          - $ref: '#/definitions/v1alphaImageContent'
       text:
         type: string
         description: Text content.
@@ -3041,11 +3941,13 @@ definitions:
           specification in the model definition (i.e. the `model_spec` field in the
           model definition).
       task:
-        $ref: '#/definitions/v1alphaTask'
         description: Model task.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
       visibility:
-        $ref: '#/definitions/v1alphaModelVisibility'
         description: Model visibility.
+        allOf:
+          - $ref: '#/definitions/v1alphaModelVisibility'
       createTime:
         type: string
         format: date-time
@@ -3066,9 +3968,10 @@ definitions:
         description: Resource name of the owner.
         readOnly: true
       owner:
-        $ref: '#/definitions/v1betaOwner'
         description: Model owner.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOwner'
       region:
         type: string
         description: Region of choice for the particular provider to host the model.
@@ -3088,20 +3991,23 @@ definitions:
         type: string
         description: License under which the model is distributed.
       sampleInput:
-        $ref: '#/definitions/v1alphaTaskInput'
         title: Sample input for this model
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTaskInput'
       sampleOutput:
-        $ref: '#/definitions/v1alphaTaskOutput'
         title: Sample output for this model
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTaskOutput'
       profileImage:
         type: string
         description: Model profile image in base64 format.
       permission:
-        $ref: '#/definitions/modelv1alphaPermission'
         description: Permission defines how a pipeline can be used.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/modelv1alphaPermission'
       inputSchema:
         type: object
         title: Input schema for the model
@@ -3196,9 +4102,10 @@ definitions:
         description: Display icon.
         readOnly: true
       releaseStage:
-        $ref: '#/definitions/v1alphaReleaseStage'
         description: Release stage.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaReleaseStage'
       modelSpec:
         type: object
         description: |-
@@ -3239,9 +4146,10 @@ definitions:
         type: string
         description: Unique identifier, computed from the manifest the tag refers to.
       state:
-        $ref: '#/definitions/modelv1alphaState'
         description: Current state of this model version.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/modelv1alphaState'
       updateTime:
         type: string
         format: date-time
@@ -3300,9 +4208,10 @@ definitions:
         description: Score.
         readOnly: true
       boundingBox:
-        $ref: '#/definitions/v1alphaBoundingBox'
         description: Bounding box.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
     description: |-
       OcrObject is a text object within an image. OCR stands for Optical Character
       Recognition.
@@ -3327,19 +4236,29 @@ definitions:
         type: string
         description: Base64-encoded image.
     description: PromptImage is an image input for model inference.
+  v1alphaPublishNamespaceModelResponse:
+    type: object
+    properties:
+      model:
+        description: The published model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
+    description: PublishNamespaceModelResponse contains a published model.
   v1alphaPublishOrganizationModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The published model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: PublishOrganizationModelResponse contains a published model.
   v1alphaPublishUserModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The published model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: PublishUserModelResponse contains a published model.
   v1alphaRegion:
     type: object
@@ -3369,19 +4288,29 @@ definitions:
        - RELEASE_STAGE_BETA: Beta.
        - RELEASE_STAGE_GENERALLY_AVAILABLE: Generally available.
        - RELEASE_STAGE_CUSTOM: Custom.
+  v1alphaRenameNamespaceModelResponse:
+    type: object
+    properties:
+      model:
+        description: The renamed model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
+    description: RenameNamespaceModelResponse contains a renamed model.
   v1alphaRenameOrganizationModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The renamed model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: RenameOrganizationModelResponse contains a renamed model.
   v1alphaRenameUserModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The renamed model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: RenameUserModelResponse contains a renamed model.
   v1alphaSemanticSegmentationInput:
     type: object
@@ -3477,133 +4406,169 @@ definitions:
     type: object
     properties:
       classification:
-        $ref: '#/definitions/v1alphaClassificationInput'
         description: Image classification input.
+        allOf:
+          - $ref: '#/definitions/v1alphaClassificationInput'
       detection:
-        $ref: '#/definitions/v1alphaDetectionInput'
         description: Object detection input.
+        allOf:
+          - $ref: '#/definitions/v1alphaDetectionInput'
       keypoint:
-        $ref: '#/definitions/v1alphaKeypointInput'
         description: Keypoint detection input.
+        allOf:
+          - $ref: '#/definitions/v1alphaKeypointInput'
       ocr:
-        $ref: '#/definitions/v1alphaOcrInput'
         description: Optical Character Recognition input.
+        allOf:
+          - $ref: '#/definitions/v1alphaOcrInput'
       instanceSegmentation:
-        $ref: '#/definitions/v1alphaInstanceSegmentationInput'
         description: Instance segmentation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaInstanceSegmentationInput'
       semanticSegmentation:
-        $ref: '#/definitions/v1alphaSemanticSegmentationInput'
         description: Semantic segmentation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaSemanticSegmentationInput'
       textToImage:
-        $ref: '#/definitions/v1alphaTextToImageInput'
         description: Text to image input.
+        allOf:
+          - $ref: '#/definitions/v1alphaTextToImageInput'
       imageToImage:
-        $ref: '#/definitions/v1alphaImageToImageInput'
         description: Image to image input.
+        allOf:
+          - $ref: '#/definitions/v1alphaImageToImageInput'
       textGeneration:
-        $ref: '#/definitions/v1alphaTextGenerationInput'
         description: Text generation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationInput'
       textGenerationChat:
-        $ref: '#/definitions/v1alphaTextGenerationChatInput'
         description: Conversational text generation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationChatInput'
       visualQuestionAnswering:
-        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
         description: Visual question answering input.
+        allOf:
+          - $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
       unspecified:
-        $ref: '#/definitions/v1alphaUnspecifiedInput'
         description: Unspecified task input.
+        allOf:
+          - $ref: '#/definitions/v1alphaUnspecifiedInput'
     description: TaskInput represents a question or task for an AI model.
   v1alphaTaskInputStream:
     type: object
     properties:
       classification:
-        $ref: '#/definitions/v1alphaClassificationInputStream'
         title: The classification input
+        allOf:
+          - $ref: '#/definitions/v1alphaClassificationInputStream'
       detection:
-        $ref: '#/definitions/v1alphaDetectionInputStream'
         title: The detection input
+        allOf:
+          - $ref: '#/definitions/v1alphaDetectionInputStream'
       keypoint:
-        $ref: '#/definitions/v1alphaKeypointInputStream'
         title: The keypoint input
+        allOf:
+          - $ref: '#/definitions/v1alphaKeypointInputStream'
       ocr:
-        $ref: '#/definitions/v1alphaOcrInputStream'
         title: The ocr input
+        allOf:
+          - $ref: '#/definitions/v1alphaOcrInputStream'
       instanceSegmentation:
-        $ref: '#/definitions/v1alphaInstanceSegmentationInputStream'
         title: The instance segmentation input
+        allOf:
+          - $ref: '#/definitions/v1alphaInstanceSegmentationInputStream'
       semanticSegmentation:
-        $ref: '#/definitions/v1alphaSemanticSegmentationInputStream'
         title: The semantic segmentation input
+        allOf:
+          - $ref: '#/definitions/v1alphaSemanticSegmentationInputStream'
       textToImage:
-        $ref: '#/definitions/v1alphaTextToImageInput'
         title: The text to image input
+        allOf:
+          - $ref: '#/definitions/v1alphaTextToImageInput'
       imageToImage:
-        $ref: '#/definitions/v1alphaImageToImageInput'
         title: The image to image input
+        allOf:
+          - $ref: '#/definitions/v1alphaImageToImageInput'
       textGeneration:
-        $ref: '#/definitions/v1alphaTextGenerationInput'
         title: The text generation input
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationInput'
       textGenerationChat:
-        $ref: '#/definitions/v1alphaTextGenerationChatInput'
         title: The text generation chat input
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationChatInput'
       visualQuestionAnswering:
-        $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
         title: The visual question answering input
+        allOf:
+          - $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
       unspecified:
-        $ref: '#/definitions/v1alphaUnspecifiedInput'
         title: The unspecified task input
+        allOf:
+          - $ref: '#/definitions/v1alphaUnspecifiedInput'
     title: TaskInputStream represents the input to trigger a model with stream method
   v1alphaTaskOutput:
     type: object
     properties:
       classification:
-        $ref: '#/definitions/v1alphaClassificationOutput'
         description: Image classification output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaClassificationOutput'
       detection:
-        $ref: '#/definitions/v1alphaDetectionOutput'
         description: Object detection output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaDetectionOutput'
       keypoint:
-        $ref: '#/definitions/v1alphaKeypointOutput'
         description: Keypoint detection output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaKeypointOutput'
       ocr:
-        $ref: '#/definitions/v1alphaOcrOutput'
         description: Optical Character Recognition output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaOcrOutput'
       instanceSegmentation:
-        $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
         description: Instance segmentation output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
       semanticSegmentation:
-        $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
         description: Semantic segmentation output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
       textToImage:
-        $ref: '#/definitions/v1alphaTextToImageOutput'
         description: Text to image output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTextToImageOutput'
       imageToImage:
-        $ref: '#/definitions/v1alphaImageToImageOutput'
         description: Image to image output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaImageToImageOutput'
       textGeneration:
-        $ref: '#/definitions/v1alphaTextGenerationOutput'
         description: Text generation output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationOutput'
       textGenerationChat:
-        $ref: '#/definitions/v1alphaTextGenerationChatOutput'
         description: Conversational text generation output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationChatOutput'
       visualQuestionAnswering:
-        $ref: '#/definitions/v1alphaVisualQuestionAnsweringOutput'
         description: Visual question answering output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaVisualQuestionAnsweringOutput'
       unspecified:
-        $ref: '#/definitions/v1alphaUnspecifiedOutput'
         description: Unspecified task output.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaUnspecifiedOutput'
     description: TaskOutput represents the result of an AI task performed by a model.
   v1alphaTextGenerationChatInput:
     type: object
@@ -3755,13 +4720,36 @@ definitions:
         description: A list of generated images, encoded in base64.
         readOnly: true
     description: TextToImageOutput contains the result of a text-to-image task.
+  v1alphaTriggerAsyncNamespaceLatestModelResponse:
+    type: object
+    properties:
+      operation:
+        description: Long-running operation information.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
+    description: |-
+      TriggerAsyncNamespaceLatestModelResponse contains the information to access the
+      status of an asynchronous model inference.
+  v1alphaTriggerAsyncNamespaceModelResponse:
+    type: object
+    properties:
+      operation:
+        description: Long-running operation information.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
+    description: |-
+      TriggerAsyncNamespaceModelResponse contains the information to access the
+      status of an asynchronous model inference.
   v1alphaTriggerAsyncOrganizationLatestModelResponse:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncOrganizationLatestModelResponse contains the information to access the
       status of an asynchronous model inference.
@@ -3769,9 +4757,10 @@ definitions:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncOrganizationModelResponse contains the information to access the
       status of an asynchronous model inference.
@@ -3779,9 +4768,10 @@ definitions:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncUserLatestModelResponse contains the information to access the
       status of an asynchronous model inference.
@@ -3789,18 +4779,48 @@ definitions:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncUserModelResponse contains the information to access the
       status of an asynchronous model inference.
+  v1alphaTriggerNamespaceLatestModelResponse:
+    type: object
+    properties:
+      task:
+        description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
+      taskOutputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        description: Model inference outputs.
+    description: TriggerNamespaceLatestModelResponse contains the model inference results.
+  v1alphaTriggerNamespaceModelResponse:
+    type: object
+    properties:
+      task:
+        description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
+      taskOutputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        description: Model inference outputs.
+    description: TriggerNamespaceModelResponse contains the model inference results.
   v1alphaTriggerOrganizationLatestModelResponse:
     type: object
     properties:
       task:
-        $ref: '#/definitions/v1alphaTask'
         description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
@@ -3812,8 +4832,9 @@ definitions:
     type: object
     properties:
       task:
-        $ref: '#/definitions/v1alphaTask'
         description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
@@ -3828,8 +4849,9 @@ definitions:
     type: object
     properties:
       task:
-        $ref: '#/definitions/v1alphaTask'
         description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
@@ -3841,8 +4863,9 @@ definitions:
     type: object
     properties:
       task:
-        $ref: '#/definitions/v1alphaTask'
         description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
@@ -3854,8 +4877,9 @@ definitions:
     type: object
     properties:
       task:
-        $ref: '#/definitions/v1alphaTask'
         description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
@@ -3874,8 +4898,9 @@ definitions:
     type: object
     properties:
       task:
-        $ref: '#/definitions/v1alphaTask'
         description: Task type.
+        allOf:
+          - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
@@ -3883,25 +4908,38 @@ definitions:
           $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
     description: TriggerUserModelResponse contains the model inference results.
+  v1alphaUndeployNamespaceModelAdminResponse:
+    type: object
+    title: UndeployNamespaceModelAdminResponse represents a response for a undeployed model
   v1alphaUndeployOrganizationModelAdminResponse:
     type: object
     title: UndeployOrganizationModelAdminResponse represents a response for a undeployed model
   v1alphaUndeployUserModelAdminResponse:
     type: object
     title: UndeployUserModelAdminResponse represents a response for a undeployed model
+  v1alphaUnpublishNamespaceModelResponse:
+    type: object
+    properties:
+      model:
+        description: The unpublished model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
+    description: UnpublishNamespaceModelResponse contains an unpublished model.
   v1alphaUnpublishOrganizationModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The unpublished model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: UnpublishOrganizationModelResponse contains an unpublished model.
   v1alphaUnpublishUserModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The unpublished model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: UnpublishUserModelResponse contains an unpublished model.
   v1alphaUnspecifiedInput:
     type: object
@@ -3922,19 +4960,29 @@ definitions:
         description: The task outputs.
         readOnly: true
     description: UnspecifiedOutput contains the result of an unspecified task.
+  v1alphaUpdateNamespaceModelResponse:
+    type: object
+    properties:
+      model:
+        description: The updated model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
+    description: UpdateNamespaceModelResponse contains the updated model.
   v1alphaUpdateOrganizationModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The updated model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: UpdateOrganizationModelResponse contains the updated model.
   v1alphaUpdateUserModelResponse:
     type: object
     properties:
       model:
-        $ref: '#/definitions/v1alphaModel'
         description: The updated model resource.
+        allOf:
+          - $ref: '#/definitions/v1alphaModel'
     description: UpdateUserModelResponse contains the updated model.
   v1alphaVisualQuestionAnsweringInput:
     type: object
@@ -3993,12 +5041,35 @@ definitions:
     description: |-
       VisualQuestionAnsweringOutput contains the result of a visual
       question-answering task.
+  v1alphaWatchNamespaceLatestModelResponse:
+    type: object
+    properties:
+      state:
+        description: State.
+        allOf:
+          - $ref: '#/definitions/modelv1alphaState'
+      message:
+        type: string
+        title: Detail description of the state
+    description: WatchNamespaceLatestModelResponse contains the state of the latest model version.
+  v1alphaWatchNamespaceModelResponse:
+    type: object
+    properties:
+      state:
+        description: State.
+        allOf:
+          - $ref: '#/definitions/modelv1alphaState'
+      message:
+        type: string
+        title: Detail description of the state
+    description: WatchNamespaceModelResponse contains the state of a model.
   v1alphaWatchOrganizationLatestModelResponse:
     type: object
     properties:
       state:
-        $ref: '#/definitions/modelv1alphaState'
         description: State.
+        allOf:
+          - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
@@ -4007,8 +5078,9 @@ definitions:
     type: object
     properties:
       state:
-        $ref: '#/definitions/modelv1alphaState'
         description: State.
+        allOf:
+          - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
@@ -4017,8 +5089,9 @@ definitions:
     type: object
     properties:
       state:
-        $ref: '#/definitions/modelv1alphaState'
         description: State.
+        allOf:
+          - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
@@ -4027,8 +5100,9 @@ definitions:
     type: object
     properties:
       state:
-        $ref: '#/definitions/modelv1alphaState'
         description: State.
+        allOf:
+          - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
@@ -4066,21 +5140,24 @@ definitions:
         description: Update time.
         readOnly: true
       owner:
-        $ref: '#/definitions/v1betaUser'
         description: The user that owns the organization.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
       profile:
-        $ref: '#/definitions/v1betaOrganizationProfile'
         description: Profile.
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationProfile'
       permission:
-        $ref: '#/definitions/mgmtv1betaPermission'
         title: Permission
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmtv1betaPermission'
     description: |-
       Organizations group several users. As entities, they can own resources such
       as pipelines or releases.
     required:
-      - id
+      - profile
   v1betaOrganizationProfile:
     type: object
     properties:
@@ -4108,13 +5185,15 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1betaUser'
         description: User.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         description: Organization.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     description: Owner is a wrapper for User and Organization, used to embed owner information in other resources.
   v1betaUser:
     type: object
@@ -4130,6 +5209,7 @@ definitions:
         description: |-
           User UUID. This field is optionally set by users on creation (it will be
           server-generated if unspecified).
+        readOnly: true
       id:
         type: string
         description: |-
@@ -4150,13 +5230,12 @@ definitions:
         description: Update time.
         readOnly: true
       profile:
-        $ref: '#/definitions/v1betaUserProfile'
         description: Profile.
+        allOf:
+          - $ref: '#/definitions/v1betaUserProfile'
     description: |-
       User describes an individual that interacts with Instill AI. It doesn't
       contain any private information about the user.
-    required:
-      - id
   v1betaUserProfile:
     type: object
     properties:

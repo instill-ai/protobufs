@@ -5,8 +5,11 @@
 # that matches the one in our CI.
 OS_NAME := $(shell uname -s | tr A-Z a-z)
 SED_IN_PLACE := sed -i
+
+# On macOS, you can install the `gsed` command via `brew install gsed` to
+# achieve the same behavior as the `sed` command on Linux.
 ifeq (${OS_NAME}, darwin)
-	SED_IN_PLACE += ''
+	SED_IN_PLACE = gsed -i
 endif
 openapi:
 	@# Inject common API configuration into each OpenAPI proto template.
@@ -25,4 +28,4 @@ openapi:
 	find openapiv2 -type f | xargs -I '{}' ${SED_IN_PLACE} '/^[[:space:]]*enum: \[\]/,+0d' {}
 openapi-lint:
 	@# Lint each file under openapiv2.
-	find openapiv2 -type f | xargs -I '{}' swagger-cli validate {}
+	find openapiv2 -type f | xargs -I '{}' rdme openapi:validate {}
