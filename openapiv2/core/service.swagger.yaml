@@ -956,16 +956,18 @@ paths:
             $ref: '#/definitions/v1betaCheckNamespaceRequest'
       tags:
         - Utils
-  /v1beta/metrics/vdp/pipeline/triggers:
+  /v1beta/metrics/vdp/pipeline/trigger-count:
     get:
-      summary: List pipeline triggers
-      description: Returns a paginated list of pipeline executions.
-      operationId: MgmtPublicService_ListPipelineTriggerRecords
+      summary: Get pipeline trigger count
+      description: |-
+        Returns the pipeline trigger count of a given requester within a timespan.
+        Results are grouped by trigger status.
+      operationId: MgmtPublicService_GetPipelineTriggerCount
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaListPipelineTriggerRecordsResponse'
+            $ref: '#/definitions/v1betaGetPipelineTriggerCountResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -974,78 +976,47 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: pageSize
+        - name: requester
           description: |-
-            The maximum number of triggers to return. If this parameter is unspecified,
-            at most 100 pipelines will be returned. The cap value for this parameter is
-            1000 (i.e. any value above that will be coerced to 100).
+            The ID of the pipeline trigger requester.
+            Format: `{[users|organizations]}/{id}`.
           in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token.
+          required: true
+          type: string
+        - name: aggregationWindow
+          description: |-
+            Aggregation window. The value is a positive duration string, i.e. a
+            sequence of decimal numbers, each with optional fraction and a unit
+            suffix, such as "300ms", "1.5h" or "2h45m".
+            The minimum (and default) window is 1h.
           in: query
           required: false
           type: string
-        - name: filter
+        - name: start
           description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
           in: query
           required: false
           type: string
-      tags:
-        - Metric
-  /v1beta/metrics/vdp/pipeline/tables:
-    get:
-      summary: List pipeline trigger metrics
-      description: Returns a paginated list of pipeline executions aggregated by pipeline ID.
-      operationId: MgmtPublicService_ListPipelineTriggerTableRecords
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaListPipelineTriggerTableRecordsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: pageSize
+          format: date-time
+        - name: stop
           description: |-
-            The maximum number of results to return. If this parameter is unspecified,
-            at most 100 pipelines will be returned. The cap value for this parameter
-            is 1000 (i.e. any value above that will be coerced to 1000).
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token.
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
           in: query
           required: false
           type: string
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-          in: query
-          required: false
-          type: string
+          format: date-time
       tags:
         - Metric
   /v1beta/metrics/vdp/pipeline/charts:
     get:
-      summary: List pipeline trigger computation time charts
+      summary: List pipeline trigger time charts
       description: |-
-        Returns a paginated list with pipeline trigger execution times, aggregated
-        by pipeline and time frames.
+        Returns a timeline of pipline trigger counts for a given requester. The
+        response will contain one set of records (datapoints), representing the
+        amount of triggers in a time bucket.
       operationId: MgmtPublicService_ListPipelineTriggerChartRecords
       responses:
         "200":
@@ -1060,20 +1031,38 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: aggregationWindow
-          description: Aggregation window in nanoseconds.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: filter
+        - name: requester
           description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            The ID of the pipeline trigger requester.
+            Format: `{[users|organizations]}/{id}`.
+          in: query
+          required: true
+          type: string
+        - name: aggregationWindow
+          description: |-
+            Aggregation window. The value is a positive duration string, i.e. a
+            sequence of decimal numbers, each with optional fraction and a unit
+            suffix, such as "300ms", "1.5h" or "2h45m".
+            The minimum (and default) window is 1h.
           in: query
           required: false
           type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
       tags:
         - Metric
   /v1beta/metrics/credit/charts:
@@ -2006,6 +1995,18 @@ definitions:
         $ref: '#/definitions/v1betaOrganizationSubscription'
         description: The subscription resource.
     description: GetOrganizationSubscriptionResponse contains the requested subscription.
+  v1betaGetPipelineTriggerCountResponse:
+    type: object
+    properties:
+      pipelineTriggerCounts:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineTriggerCount'
+        description: The trigger counts, grouped by status.
+    description: |-
+      GetPipelineTriggerCountResponse contains the trigger count, grouped by
+      trigger status.
   v1betaGetPipelineTriggerPriceRequest:
     type: object
     properties:
@@ -2259,44 +2260,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1betaPipelineTriggerChartRecord'
-        description: A list of pipeline trigger records.
+        description: |-
+          Pipeline trigger counts. Until we allow filtering or grouping by fields
+          like pipeline ID, this list will contain only one element with the
+          timeline of trigger counts for a given requester, regardless the pipeline
+          ID, trigger mode, final status or other fields.
     description: |-
       ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
       chart records.
-  v1betaListPipelineTriggerRecordsResponse:
-    type: object
-    properties:
-      pipelineTriggerRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPipelineTriggerRecord'
-        description: A list of pipeline triggers.
-      nextPageToken:
-        type: string
-        description: Next page token.
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of pipeline triggers.
-    description: ListPipelineTriggerRecordsResponse contains a list of pipeline triggers.
-  v1betaListPipelineTriggerTableRecordsResponse:
-    type: object
-    properties:
-      pipelineTriggerTableRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPipelineTriggerTableRecord'
-        description: A list of pipeline trigger tables.
-      nextPageToken:
-        type: string
-        description: Next page token.
-      totalSize:
-        type: integer
-        format: int32
-        title: Total number of pipeline trigger records
-    description: ListPipelineTriggerTableRecordsResponse contains the pipeline metrics.
   v1betaListTokensResponse:
     type: object
     properties:
@@ -2677,16 +2648,7 @@ definitions:
     properties:
       pipelineId:
         type: string
-        description: Pipeline ID.
-      pipelineUid:
-        type: string
-        description: Pipeline UUID.
-      triggerMode:
-        $ref: '#/definitions/v1betaMode'
-        description: Trigger mode.
-      status:
-        $ref: '#/definitions/mgmtv1betaStatus'
-        description: Final status.
+        description: This field will be present present when the information is grouped by pipeline.
         readOnly: true
       timeBuckets:
         type: array
@@ -2702,91 +2664,30 @@ definitions:
           format: int32
         description: Aggregated trigger count in each time bucket.
         readOnly: true
-      computeTimeDuration:
-        type: array
-        items:
-          type: number
-          format: float
-        description: Total computation time duration in each time bucket.
-        readOnly: true
-      pipelineReleaseId:
+      requester:
         type: string
-        description: Version for the triggered pipeline if it is a release pipeline.
-        readOnly: true
-      pipelineReleaseUid:
-        type: string
-        description: Release UUID for the triggered pipeline if it is a release pipeline.
+        description: Trigger requester ID, e.g. `users/specialist-wombat`.
         readOnly: true
     description: |-
-      PipelineTriggerChartRecord contains pipeline trigger metrics, aggregated by
+      PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
+      contains a collection of (timestamp, count) pairs that represent the total
+      pipeline triggers in a given time bucket.
       pipeline ID and time frame.
-  v1betaPipelineTriggerRecord:
+  v1betaPipelineTriggerCount:
     type: object
     properties:
-      triggerTime:
-        type: string
-        format: date-time
-        description: The moment when the pipeline was triggered.
-      pipelineTriggerId:
-        type: string
-        description: UUID of the trigger.
-      pipelineId:
-        type: string
-        description: Pipeline ID.
-      pipelineUid:
-        type: string
-        description: Pipeline UUID.
-      triggerMode:
-        $ref: '#/definitions/v1betaMode'
-        description: Trigger mode.
-      computeTimeDuration:
-        type: number
-        format: float
-        description: Total execution duration.
+      triggerCount:
+        type: integer
+        format: int32
+        title: Number og triggers
         readOnly: true
       status:
         $ref: '#/definitions/mgmtv1betaStatus'
-        description: Final status.
-        readOnly: true
-      pipelineReleaseId:
-        type: string
-        description: If a release of the pipeline was triggered, pipeline version.
-        readOnly: true
-      pipelineReleaseUid:
-        type: string
-        description: If a release of the pipeline was triggered, release UUID.
-        readOnly: true
-    description: PipelineTriggerRecord represents a pipeline execution event.
-  v1betaPipelineTriggerTableRecord:
-    type: object
-    properties:
-      pipelineId:
-        type: string
-        description: Pipeline ID.
-      pipelineUid:
-        type: string
-        description: Pipeline UUID.
-      triggerCountCompleted:
-        type: integer
-        format: int32
-        description: Number of triggers with `STATUS_COMPLETED`.
-        readOnly: true
-      triggerCountErrored:
-        type: integer
-        format: int32
-        description: Number of triggers with `STATUS_ERRORED`.
-        readOnly: true
-      pipelineReleaseId:
-        type: string
-        description: Version for the triggered pipeline if it is a release pipeline.
-        readOnly: true
-      pipelineReleaseUid:
-        type: string
-        description: Release UUID for the triggered pipeline if it is a release pipeline.
+        title: This field will be present when results are grouped by trigger status;
         readOnly: true
     description: |-
-      PipelineTriggerTableRecord contains pipeline trigger metrics, aggregated by
-      pipeline ID.
+      PipelineTriggerCount represents a pipeline execution count with some
+      aggregation params (e.g. trigger status).
   v1betaPipelineUsageData:
     type: object
     properties:
