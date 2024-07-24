@@ -32,9 +32,9 @@ enum Status {
 // PipelineTriggerCount represents a pipeline execution count with some
 // aggregation params (e.g. trigger status).
 message PipelineTriggerCount {
-  // Number og triggers
+  // Number of triggers.
   int32 trigger_count = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // This field will be present when results are grouped by trigger status;
+  // This field will be present when results are grouped by trigger status.
   optional Status status = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
@@ -82,16 +82,15 @@ message PipelineTriggerChartRecord {
   // 9 is reserved for the pipeline release UUID. The server wasn't grouping
   // results by this field.
   reserved 9;
-  // Trigger requester ID, e.g. `users/specialist-wombat`.
-  string requester = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Trigger requester ID, e.g. `specialist-wombat`.
+  string requester_id = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // GetPipelineTriggerCountRequest represents a request to fetch the trigger
 // count of a requester over a time period.
 message GetPipelineTriggerCountRequest {
-  // The ID of the pipeline trigger requester.
-  // Format: `{[users|organizations]}/{id}`.
-  string requester = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the pipeline trigger requester, e.g. `funky-wombat`.
+  string requester_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
@@ -124,9 +123,8 @@ message ListPipelineTriggerChartRecordsRequest {
   // only certain pipelines and to group by the pipeline ID.
   reserved 2;
 
-  // The ID of the pipeline trigger requester.
-  // Format: `{[users|organizations]}/{id}`.
-  string requester = 3 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the pipeline trigger requester, e.g. `rasta-wombat`.
+  string requester_id = 3 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
@@ -155,7 +153,7 @@ message ListPipelineTriggerChartRecordsResponse {
 // represent the total credit consumption in a given time bucket.
 message CreditConsumptionChartRecord {
   // Credit owner ID, e.g. `users/chef-wombat`.
-  string credit_owner = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string owner_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Time buckets.
   repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Total credit consumed in each time bucket.
@@ -168,9 +166,8 @@ message CreditConsumptionChartRecord {
 // consumption chart records for a given owner, grouped by time buckets and
 // consumption sources.
 message ListCreditConsumptionChartRecordsRequest {
-  // The user or organization to which the credit belongs.
-  // Format: `{[users|organizations]}/{id}`.
-  string owner = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the namespace to which the credit belongs.
+  string owner_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
