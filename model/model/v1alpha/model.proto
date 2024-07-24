@@ -11,11 +11,11 @@ import "core/mgmt/v1beta/mgmt.proto";
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 import "google/longrunning/operations.proto";
-import "google/protobuf/duration.proto";
 // Protobuf standard
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 // Model definitions
 import "model/model/v1alpha/common.proto";
 import "model/model/v1alpha/model_definition.proto";
@@ -1783,8 +1783,11 @@ message ModelRun {
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
-  // Run requester ID.
-  string requester_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Run requester ID. If current viewing requester is not the owner, it will return null.
+  optional string requester_id = 7 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
   // The amount of Instill Credit consumed by the run. This field will only be present on Instill Cloud.
   optional float credit_amount = 8 [
     (google.api.field_behavior) = OUTPUT_ONLY,
@@ -1802,9 +1805,9 @@ message ModelRun {
   // The model version identifier, which is same as image tag.
   string version = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model inference input.
-  repeated google.protobuf.Struct task_inputs = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated TaskInput task_inputs = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model inference outputs.
-  repeated google.protobuf.Struct task_outputs = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated TaskOutput task_outputs = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListModelRunsRequest represents a request to list of model runs.
