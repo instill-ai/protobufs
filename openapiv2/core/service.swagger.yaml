@@ -888,10 +888,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: requester
-          description: |-
-            The ID of the pipeline trigger requester.
-            Format: `{[users|organizations]}/{id}`.
+        - name: namespaceId
+          description: The ID of the namespace that requested the pipeline triggers.
           in: query
           required: true
           type: string
@@ -943,10 +941,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: requester
-          description: |-
-            The ID of the pipeline trigger requester.
-            Format: `{[users|organizations]}/{id}`.
+        - name: namespaceId
+          description: The ID of the namespace that requested the pipeline triggers.
           in: query
           required: true
           type: string
@@ -999,10 +995,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: owner
-          description: |-
-            The user or organization to which the credit belongs.
-            Format: `{[users|organizations]}/{id}`.
+        - name: namespaceId
+          description: The ID of the namespace that owns the credit.
           in: query
           required: true
           type: string
@@ -1299,10 +1293,9 @@ definitions:
   v1betaCreditConsumptionChartRecord:
     type: object
     properties:
-      creditOwner:
+      namespaceId:
         type: string
-        description: Credit owner ID, e.g. `users/chef-wombat`.
-        readOnly: true
+        description: The ID of the namespace that owns the credit.
       timeBuckets:
         type: array
         items:
@@ -1325,6 +1318,8 @@ definitions:
       CreditConsumptionChartRecord represents a timeline of Instill Credit
       consumption. It contains a collection of (timestamp, amount) pairs that
       represent the total credit consumption in a given time bucket.
+    required:
+      - namespaceId
   v1betaDeleteOrganizationMembershipResponse:
     type: object
     description: DeleteOrganizationMembershipResponse is an empty response.
@@ -1852,9 +1847,9 @@ definitions:
           format: int32
         description: Aggregated trigger count in each time bucket.
         readOnly: true
-      requester:
+      namespaceId:
         type: string
-        description: Trigger requester ID, e.g. `users/specialist-wombat`.
+        description: The ID of the namespace that requested the pipeline triggers.
         readOnly: true
     description: |-
       PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
@@ -1867,10 +1862,10 @@ definitions:
       triggerCount:
         type: integer
         format: int32
-        title: Number og triggers
+        description: Number of triggers.
         readOnly: true
       status:
-        title: This field will be present when results are grouped by trigger status;
+        description: This field will be present when results are grouped by trigger status.
         readOnly: true
         allOf:
           - $ref: '#/definitions/mgmtv1betaStatus'

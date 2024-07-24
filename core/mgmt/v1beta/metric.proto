@@ -32,27 +32,10 @@ enum Status {
 // PipelineTriggerCount represents a pipeline execution count with some
 // aggregation params (e.g. trigger status).
 message PipelineTriggerCount {
-  // Number og triggers
+  // Number of triggers.
   int32 trigger_count = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // This field will be present when results are grouped by trigger status;
+  // This field will be present when results are grouped by trigger status.
   optional Status status = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-// PipelineTriggerTableRecord contains pipeline trigger metrics, aggregated by
-// pipeline ID.
-message PipelineTriggerTableRecord {
-  // Pipeline ID.
-  string pipeline_id = 1;
-  // Pipeline UUID.
-  string pipeline_uid = 2;
-  // Number of triggers with `STATUS_COMPLETED`.
-  int32 trigger_count_completed = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Number of triggers with `STATUS_ERRORED`.
-  int32 trigger_count_errored = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Version for the triggered pipeline if it is a release pipeline.
-  string pipeline_release_id = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Release UUID for the triggered pipeline if it is a release pipeline.
-  string pipeline_release_uid = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
@@ -82,16 +65,15 @@ message PipelineTriggerChartRecord {
   // 9 is reserved for the pipeline release UUID. The server wasn't grouping
   // results by this field.
   reserved 9;
-  // Trigger requester ID, e.g. `users/specialist-wombat`.
-  string requester = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The ID of the namespace that requested the pipeline triggers.
+  string namespace_id = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // GetPipelineTriggerCountRequest represents a request to fetch the trigger
 // count of a requester over a time period.
 message GetPipelineTriggerCountRequest {
-  // The ID of the pipeline trigger requester.
-  // Format: `{[users|organizations]}/{id}`.
-  string requester = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the namespace that requested the pipeline triggers.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
@@ -124,9 +106,8 @@ message ListPipelineTriggerChartRecordsRequest {
   // only certain pipelines and to group by the pipeline ID.
   reserved 2;
 
-  // The ID of the pipeline trigger requester.
-  // Format: `{[users|organizations]}/{id}`.
-  string requester = 3 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the namespace that requested the pipeline triggers.
+  string namespace_id = 3 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
@@ -154,8 +135,8 @@ message ListPipelineTriggerChartRecordsResponse {
 // consumption. It contains a collection of (timestamp, amount) pairs that
 // represent the total credit consumption in a given time bucket.
 message CreditConsumptionChartRecord {
-  // Credit owner ID, e.g. `users/chef-wombat`.
-  string credit_owner = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The ID of the namespace that owns the credit.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Time buckets.
   repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Total credit consumed in each time bucket.
@@ -168,9 +149,8 @@ message CreditConsumptionChartRecord {
 // consumption chart records for a given owner, grouped by time buckets and
 // consumption sources.
 message ListCreditConsumptionChartRecordsRequest {
-  // The user or organization to which the credit belongs.
-  // Format: `{[users|organizations]}/{id}`.
-  string owner = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the namespace that owns the credit.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
