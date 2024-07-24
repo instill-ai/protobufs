@@ -12,11 +12,17 @@ info:
     url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
 tags:
   - name: Component
+    description: Component endpoints
   - name: Pipeline
+    description: Pipeline endpoints
   - name: Release
+    description: Pipeline Release endpoints
   - name: Trigger
+    description: Pipeline Trigger endpoints
   - name: Secret
+    description: Namespace Secret endpoints
   - name: Utils
+    description: Utils endpoints
 host: api.instill.tech
 schemes:
   - https
@@ -26,25 +32,6 @@ consumes:
 produces:
   - application/json
 paths:
-  /v1beta/hub-stats:
-    get:
-      summary: Get hub status
-      description: Return the stats of the hub
-      operationId: PipelinePublicService_GetHubStats
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetHubStatsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      tags:
-        - Pipeline
   /v1beta/pipelines:
     get:
       summary: List accessible pipelines
@@ -127,18 +114,16 @@ paths:
           type: string
       tags:
         - Pipeline
-  /v1beta/{permalink}/lookUp:
+  /v1beta/namespaces/{namespaceId}/pipelines:
     get:
-      summary: Get a pipeline by UID
-      description: |-
-        Returns the details of a pipeline by a permalink defined by the resource
-        UID.
-      operationId: PipelinePublicService_LookUpPipeline
+      summary: List namespace pipelines
+      description: Returns a paginated list of pipelines of a namespace
+      operationId: PipelinePublicService_ListNamespacePipelines
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaLookUpPipelineResponse'
+            $ref: '#/definitions/v1betaListNamespacePipelinesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -147,14 +132,133 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: permalink
-          description: |-
-            The permalink of the pipeline, which allows its access by UID.
-            - Format: `pipelines/{pipeline.uid}`.
+        - name: namespaceId
+          description: Namespace ID
           in: path
           required: true
           type: string
-          pattern: pipelines/[^/]+
+        - name: pageSize
+          description: |-
+            The maximum number of pipelines to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            - Example:
+            `recipe.components.definition_name:"operator-definitions/2ac8be70-0f7a-4b61-a33d-098b8acfa6f3"`.
+          in: query
+          required: false
+          type: string
+        - name: showDeleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+        - name: visibility
+          description: |-
+            Limit results to pipelines with the specified visibility.
+
+             - VISIBILITY_PRIVATE: Only the user can see the pipeline.
+             - VISIBILITY_PUBLIC: Other users can see the pipeline.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VISIBILITY_PRIVATE
+            - VISIBILITY_PUBLIC
+        - name: orderBy
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Pipeline
+    post:
+      summary: Create a new pipeline
+      description: Creates a new pipeline under a namespace.
+      operationId: PipelinePublicService_CreateNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: The namespace that creates the pipeline.
+          in: path
+          required: true
+          type: string
+        - name: pipeline
+          description: The properties of the pipeline to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipeline'
+      tags:
+        - Pipeline
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}:
+    get:
+      summary: Get a pipeline
+      description: Returns the details of a pipeline.
+      operationId: PipelinePublicService_GetNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
         - name: view
           description: |-
             View allows clients to specify the desired pipeline view in the response.
@@ -171,6 +275,1017 @@ paths:
             - VIEW_RECIPE
       tags:
         - Pipeline
+    delete:
+      summary: Delete a pipeline
+      description: |-
+        Deletes a pipeline, accesing it by its resource name, which is defined by
+        the parent namespace and the ID of the pipeline. The authenticated namespace must be
+        the parent of the pipeline in order to delete it.
+      operationId: PipelinePublicService_DeleteNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Pipeline
+    patch:
+      summary: Update a pipeline
+      description: |-
+        Udpates a pipeline, accessing it by its resource name, which is defined by
+        the parent namespace and the ID of the pipeline. The authenticated namespace must be
+        the parent of the pipeline in order to modify it.
+
+        In REST requests, only the supplied pipeline fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: pipeline
+          description: The pipeline fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipeline'
+      tags:
+        - Pipeline
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/validate:
+    post:
+      summary: Validate a pipeline
+      description: |-
+        Validates a pipeline by its resource name, which is defined by the parent
+        namespace and the ID of the pipeline.
+
+        Validation checks the recipe of the pipeline and the status of its components.
+      operationId: PipelinePublicService_ValidateNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaValidateNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceValidateNamespacePipelineBody'
+      tags:
+        - Pipeline
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/rename:
+    post:
+      summary: Rename a pipeline
+      description: |-
+        Updates the ID of a pipeline. Since this is an output-only field, a custom
+        method is required to modify it.
+
+        The pipeline name will be updated accordingly, as it is  composed by the
+        parent namespace and ID of the pipeline (e.g.
+        `namespaces/luigi/pipelines/pizza-recipe-generator`).
+
+        The authenticated namespace must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_RenameNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaRenameNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceRenameNamespacePipelineBody'
+      tags:
+        - Pipeline
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/clone:
+    post:
+      summary: Clone a pipeline
+      description: |-
+        Clones a pipeline owned by a namespace. The new pipeline may have a different
+        parent, and this can be either a namespace or an organization.
+      operationId: PipelinePublicService_CloneNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCloneNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceCloneNamespacePipelineBody'
+      tags:
+        - Pipeline
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger:
+    post:
+      summary: Trigger a pipeline
+      description: |-
+        Triggers the execution of a pipeline synchronously, i.e., the result is
+        sent back to the namespace right after the data is processed. This method is
+        intended for real-time inference when low latency is of concern.
+
+        The pipeline is identified by its resource name, formed by the parent namespace
+        and ID of the pipeline.
+
+        For more information, see [Run NamespacePipeline](https://www.instill.tech/docs/vdp/run).
+      operationId: PipelinePublicService_TriggerNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceTriggerNamespacePipelineBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-stream:
+    post:
+      summary: Trigger a pipeline via streaming
+      description: |-
+        Triggers the execution of a pipeline asynchronously and streams back the response.
+        This method is intended for real-time inference when low latency is of concern
+        and the response needs to be processed incrementally.
+
+        The pipeline is identified by its resource name, formed by the parent namespace
+        and ID of the pipeline.
+      operationId: PipelinePublicService_TriggerNamespacePipelineWithStream
+      responses:
+        "200":
+          description: A successful response.(streaming responses)
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/v1betaTriggerNamespacePipelineWithStreamResponse'
+              error:
+                $ref: '#/definitions/googlerpcStatus'
+            title: Stream result of v1betaTriggerNamespacePipelineWithStreamResponse
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceTriggerNamespacePipelineWithStreamBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-async:
+    post:
+      summary: Trigger a pipeline asynchronously
+      description: |-
+        Triggers the execution of a pipeline asynchronously, i.e., the result
+        contains the necessary information to access the result and status of the
+        operation. This method is intended for cases that require long-running
+        workloads.
+
+        The pipeline is identified by its resource name, formed by the parent namespace
+        and ID of the pipeline.
+
+        For more information, see [Run NamespacePipeline](https://www.instill.tech/docs/vdp/run).
+      operationId: PipelinePublicService_TriggerAsyncNamespacePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerAsyncNamespacePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceTriggerAsyncNamespacePipelineBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases:
+    get:
+      summary: List the releases in a pipeline
+      description: |-
+        Lists the commited versions of a pipeline, identified by its resource
+        name, which is formed by the parent namespace and ID of the pipeline.
+      operationId: PipelinePublicService_ListNamespacePipelineReleases
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListNamespacePipelineReleasesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of releases to return. If this parameter is
+            unspecified, at most 10 pipelines will be returned. The cap value for this
+            parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: showDeleted
+          description: Include soft-deleted pipelines in the result.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Release
+    post:
+      summary: Create a pipeline release
+      description: |-
+        Commits the version of a pipeline, identified by its resource name, which
+        is formed by the parent namespace and ID of the pipeline.
+
+        The authenticated namespace must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_CreateNamespacePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateNamespacePipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: release
+          description: The release information.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipelineRelease'
+      tags:
+        - Release
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}:
+    get:
+      summary: Get a pipeline release
+      description: |-
+        Gets the details of a pipeline release, where the pipeline is identified
+        by its resource name, formed by its parent namespace and ID.
+      operationId: PipelinePublicService_GetNamespacePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetNamespacePipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: releaseId
+          description: Release ID
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired pipeline view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - Release
+    delete:
+      summary: Delete a pipeline release
+      description: |-
+        Deletes a pipeline release, where the pipeline is identified by its
+        resource name, formed by its parent namespace and ID.
+
+        The authenticated namespace must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_DeleteNamespacePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteNamespacePipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: releaseId
+          description: Release ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Release
+    patch:
+      summary: Update a pipeline release
+      description: |-
+        Updates the details of a pipeline release, where the pipeline is
+        identified by its resource name, formed by its parent namespace and ID.
+
+        The authenticated namespace must be the parent of the pipeline in order to
+        perform this action.
+      operationId: PipelinePublicService_UpdateNamespacePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateNamespacePipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: releaseId
+          description: Release ID
+          in: path
+          required: true
+          type: string
+        - name: release
+          description: |-
+            The pipeline release fields that will replace the existing ones.
+            A pipeline release resource to update
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaPipelineRelease'
+      tags:
+        - Release
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/clone:
+    post:
+      summary: Clone a pipeline release
+      description: |-
+        Clones a pipeline release owned by a namespace. The new pipeline may have a different
+        parent, and this can be either a namespace or an organization.
+      operationId: PipelinePublicService_CloneNamespacePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCloneNamespacePipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: releaseId
+          description: Release ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceCloneNamespacePipelineReleaseBody'
+      tags:
+        - Release
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger:
+    post:
+      summary: Trigger a pipeline release
+      description: |-
+        Triggers the synchronous execution of of a pipeline. While the trigger
+        endpoint (where the release version isn't specified) triggers the pipeline
+        at its latest release, this method allows the client to specified any
+        committed release.
+
+        The pipeline is identified by its resource name, formed by its parent namespace
+        and ID.
+      operationId: PipelinePublicService_TriggerNamespacePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerNamespacePipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: releaseId
+          description: Release ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceTriggerNamespacePipelineReleaseBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger-async:
+    post:
+      summary: Trigger a pipeline release asynchronously
+      description: |-
+        Triggers the asynchronous execution of of a pipeline. While the trigger
+        endpoint (where the release version isn't specified) triggers the pipeline
+        at its latest release, this method allows the client to specified any
+        committed release.
+
+        The pipeline is identified by its resource name, formed by its parent namespace
+        and ID.
+      operationId: PipelinePublicService_TriggerAsyncNamespacePipelineRelease
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTriggerAsyncNamespacePipelineReleaseResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: releaseId
+          description: Release ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PipelinePublicServiceTriggerAsyncNamespacePipelineReleaseBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/namespaces/{namespaceId}/secrets:
+    get:
+      summary: List secrets
+      description: |-
+        Returns a paginated list of secrets that belong to the specified
+        namespace.
+      operationId: PipelinePublicService_ListSecrets
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListSecretsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of secrets to return. If this parameter is unspecified,
+            at most 10 pipelines will be returned. The cap value for this parameter is
+            100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page secret.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Secret
+    post:
+      summary: Create a secret
+      description: Creates a new secret under the parenthood of an namespace.
+      operationId: PipelinePublicService_CreateSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: secret
+          description: The properties of the secret to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaSecret'
+        - name: secretId
+          description: Secret ID
+          in: query
+          required: true
+          type: string
+      tags:
+        - Secret
+  /v1beta/namespaces/{namespaceId}/secrets/{secretId}:
+    get:
+      summary: Get a secret
+      description: |-
+        Returns the details of an namespace-owned secret by its resource name,
+        which is defined by the parent namespace and the ID of the secret.
+      operationId: PipelinePublicService_GetSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: secretId
+          description: Secret ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Secret
+    delete:
+      summary: Delete a secret
+      description: |-
+        Deletes a secret, accesing it by its resource name, which is defined by
+        the parent namespace and the ID of the secret.
+      operationId: PipelinePublicService_DeleteSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: secretId
+          description: Secret ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Secret
+    patch:
+      summary: Update a secret
+      description: |-
+        Udpates a secret, accessing it by its resource name, which is defined by
+
+        In REST requests, only the supplied secret fields will be taken into
+        account when updating the resource.
+      operationId: PipelinePublicService_UpdateSecret
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateSecretResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: secretId
+          description: Secret ID
+          in: path
+          required: true
+          type: string
+        - name: secret
+          description: The secret fields to update.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaSecret'
+      tags:
+        - Secret
+  /v1beta/component-definitions:
+    get:
+      summary: List component definitions
+      description: |-
+        Returns a paginated list of component definitions, regardless their type.
+        This offers a single source of truth, with pagination and filter
+        capabilities, for the components that might be used in a VDP pipeline.
+      operationId: PipelinePublicService_ListComponentDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListComponentDefinitionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            The maximum number of component definitions to return. If this parameter
+            is unspecified, at most 10 definitions will be returned. The cap value for
+            this parameter is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: view
+          description: |-
+            View allows clients to specify the desired resource view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
+            field).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `component_type="COMPONENT_TYPE_AI"`.
+            - Example: `tasks:"TASK_TEXT_GENERATION"`.
+          in: query
+          required: false
+          type: string
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Component
+  /v1beta/{name}:
+    get:
+      summary: Get the details of a long-running operation
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations such as asynchronous pipeline triggers.
+      operationId: PipelinePublicService_GetOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: name
+          description: |-
+            The name of the operation resource. Asynchronous methods will contain this
+            information in their response.
+          in: path
+          required: true
+          type: string
+          pattern: operations/[^/]+
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated user is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
   /v1beta/{user_name}/pipelines:
     get:
       summary: List user pipelines
@@ -264,7 +1379,7 @@ paths:
           required: false
           type: string
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
     post:
       summary: Create a new user pipeline
       description: |-
@@ -300,7 +1415,7 @@ paths:
           schema:
             $ref: '#/definitions/v1betaPipeline'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{user_pipeline_name}:
     get:
       summary: Get a pipeline owned by a user
@@ -345,7 +1460,7 @@ paths:
             - VIEW_FULL
             - VIEW_RECIPE
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
     delete:
       summary: Delete a pipeline owned by a user
       description: |-
@@ -376,8 +1491,8 @@ paths:
           type: string
           pattern: users/[^/]+/pipelines/[^/]+
       tags:
-        - Pipeline
-  /v1beta/{pipeline_name}:
+        - Pipeline (Deprecated)
+  /v1beta/{pipeline.name}:
     patch:
       summary: Update a pipeline owned by a user
       description: |-
@@ -401,7 +1516,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: pipeline_name
+        - name: pipeline.name
           description: |-
             The name of the pipeline, defined by its parent and ID.
             - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}`.
@@ -449,8 +1564,9 @@ paths:
                 description: Pipeline delete time.
                 readOnly: true
               sharing:
-                $ref: '#/definitions/v1betaSharing'
                 description: Pipeline sharing information.
+                allOf:
+                  - $ref: '#/definitions/v1betaSharing'
               metadata:
                 type: object
                 description: Metadata holds console-related data such as the pipeline builder layout.
@@ -469,30 +1585,35 @@ paths:
                 type: string
                 description: README holds the pipeline documentation.
               permission:
-                $ref: '#/definitions/vdppipelinev1betaPermission'
                 description: Permission defines how a pipeline can be used.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/vdppipelinev1betaPermission'
               visibility:
-                $ref: '#/definitions/v1betaPipelineVisibility'
                 description: Pipeline visibility.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaPipelineVisibility'
               owner:
-                $ref: '#/definitions/v1betaOwner'
                 description: Pipeline owner.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaOwner'
               dataSpecification:
-                $ref: '#/definitions/v1betaDataSpecification'
                 description: Data specifications.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaDataSpecification'
               tags:
                 type: array
                 items:
                   type: string
                 description: Tags.
               stats:
-                $ref: '#/definitions/PipelineStats'
                 description: Statistic data.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/PipelineStats'
               rawRecipe:
                 type: string
                 description: |-
@@ -511,8 +1632,10 @@ paths:
                 type: string
                 description: Pipeline profile image in base64 format.
             title: The pipeline fields that will replace the existing ones.
+            required:
+              - recipe
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{user_pipeline_name}/validate:
     post:
       summary: Validate a pipeline a pipeline owned by a user
@@ -550,7 +1673,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceValidateUserPipelineBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{user_pipeline_name}/rename:
     post:
       summary: Rename a pipeline owned by a user
@@ -593,7 +1716,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceRenameUserPipelineBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{user_pipeline_name}/clone:
     post:
       summary: Clone a pipeline owned by a user
@@ -629,7 +1752,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceCloneUserPipelineBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{user_pipeline_release_name}/clone:
     post:
       summary: Clone a pipeline release owned by a user
@@ -664,7 +1787,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceCloneUserPipelineReleaseBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{user_pipeline_name}/trigger:
     post:
       summary: Trigger a pipeline owned by a user
@@ -676,8 +1799,7 @@ paths:
         The pipeline is identified by its resource name, formed by the parent user
         and ID of the pipeline.
 
-        For more information, see [Trigger
-        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+        For more information, see [Run Pipeline](https://www.instill.tech/docs/vdp/run).
       operationId: PipelinePublicService_TriggerUserPipeline
       responses:
         "200":
@@ -712,7 +1834,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{user_pipeline_name}/trigger-stream:
     post:
       summary: Trigger a pipeline owned by a user and stream back the response
@@ -763,7 +1885,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{user_pipeline_name}/triggerAsync:
     post:
       summary: Trigger a pipeline owned by a user asynchronously
@@ -776,8 +1898,7 @@ paths:
         The pipeline is identified by its resource name, formed by the parent user
         and ID of the pipeline.
 
-        For more information, see [Trigger
-        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+        For more information, see [Run Pipeline](https://www.instill.tech/docs/vdp/run).
       operationId: PipelinePublicService_TriggerAsyncUserPipeline
       responses:
         "200":
@@ -812,7 +1933,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{user_name}/releases:
     get:
       summary: List the releases in a pipeline owned by a user
@@ -883,7 +2004,7 @@ paths:
           required: false
           type: boolean
       tags:
-        - Release
+        - Release (Deprecated)
     post:
       summary: Release a version of a pipeline owned by a user
       description: |-
@@ -921,7 +2042,7 @@ paths:
           schema:
             $ref: '#/definitions/v1betaPipelineRelease'
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{user_pipeline_release_name}:
     get:
       summary: Get a release in a pipeline owned by a user
@@ -966,7 +2087,7 @@ paths:
             - VIEW_FULL
             - VIEW_RECIPE
       tags:
-        - Release
+        - Release (Deprecated)
     delete:
       summary: Delete a release in a pipeline owned by a user
       description: |-
@@ -999,8 +2120,8 @@ paths:
           type: string
           pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
-        - Release
-  /v1beta/{pipeline_release_name}:
+        - Release (Deprecated)
+  /v1beta/{release.name}:
     patch:
       summary: Update a release in a pipeline owned by a user
       description: |-
@@ -1023,7 +2144,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: pipeline_release_name
+        - name: release.name
           description: |-
             The name of the release, defined by its parent and ID.
             - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}/releases/{release.id}`.
@@ -1084,9 +2205,10 @@ paths:
                 type: string
                 description: README.
               dataSpecification:
-                $ref: '#/definitions/v1betaDataSpecification'
                 description: Data specifications.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaDataSpecification'
               rawRecipe:
                 type: string
                 description: |-
@@ -1096,7 +2218,7 @@ paths:
               The pipeline release fields that will replace the existing ones.
               A pipeline release resource to update
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{user_pipeline_release_name}/restore:
     post:
       summary: Set the version of a pipeline owned by a user to a pinned release
@@ -1132,7 +2254,7 @@ paths:
           type: string
           pattern: users/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{user_pipeline_release_name}/rename:
     post:
       summary: Rename a release in a pipeline owned by a user
@@ -1176,7 +2298,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceRenameUserPipelineReleaseBody'
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{user_pipeline_release_name}/trigger:
     post:
       summary: Trigger a version of a pipeline owned by a user
@@ -1222,7 +2344,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{user_pipeline_release_name}/triggerAsync:
     post:
       summary: Trigger a version of a pipeline owned by a user asynchronously
@@ -1268,7 +2390,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{organization_name}/pipelines:
     get:
       summary: List organization pipelines
@@ -1360,7 +2482,7 @@ paths:
           required: false
           type: string
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
     post:
       summary: Create a new organization pipeline
       description: Creates a new pipeline under the parenthood of an organization.
@@ -1393,7 +2515,7 @@ paths:
           schema:
             $ref: '#/definitions/v1betaPipeline'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{organization_pipeline_name}:
     get:
       summary: Get a pipeline owned by an organization
@@ -1438,7 +2560,7 @@ paths:
             - VIEW_FULL
             - VIEW_RECIPE
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
     delete:
       summary: Delete a pipeline owned by an organization
       description: |-
@@ -1468,8 +2590,8 @@ paths:
           type: string
           pattern: organizations/[^/]+/pipelines/[^/]+
       tags:
-        - Pipeline
-  /v1beta/{pipeline_name_1}:
+        - Pipeline (Deprecated)
+  /v1beta/{pipeline.name_1}:
     patch:
       summary: Update a pipeline owned by an organization
       description: |-
@@ -1491,7 +2613,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: pipeline_name_1
+        - name: pipeline.name_1
           description: |-
             The name of the pipeline, defined by its parent and ID.
             - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}`.
@@ -1539,8 +2661,9 @@ paths:
                 description: Pipeline delete time.
                 readOnly: true
               sharing:
-                $ref: '#/definitions/v1betaSharing'
                 description: Pipeline sharing information.
+                allOf:
+                  - $ref: '#/definitions/v1betaSharing'
               metadata:
                 type: object
                 description: Metadata holds console-related data such as the pipeline builder layout.
@@ -1559,30 +2682,35 @@ paths:
                 type: string
                 description: README holds the pipeline documentation.
               permission:
-                $ref: '#/definitions/vdppipelinev1betaPermission'
                 description: Permission defines how a pipeline can be used.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/vdppipelinev1betaPermission'
               visibility:
-                $ref: '#/definitions/v1betaPipelineVisibility'
                 description: Pipeline visibility.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaPipelineVisibility'
               owner:
-                $ref: '#/definitions/v1betaOwner'
                 description: Pipeline owner.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaOwner'
               dataSpecification:
-                $ref: '#/definitions/v1betaDataSpecification'
                 description: Data specifications.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaDataSpecification'
               tags:
                 type: array
                 items:
                   type: string
                 description: Tags.
               stats:
-                $ref: '#/definitions/PipelineStats'
                 description: Statistic data.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/PipelineStats'
               rawRecipe:
                 type: string
                 description: |-
@@ -1601,8 +2729,10 @@ paths:
                 type: string
                 description: Pipeline profile image in base64 format.
             title: The pipeline fields that will replace the existing ones.
+            required:
+              - recipe
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{organization_pipeline_name}/validate:
     post:
       summary: Validate a pipeline a pipeline owned by an organization
@@ -1641,7 +2771,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceValidateOrganizationPipelineBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{organization_pipeline_name}/rename:
     post:
       summary: Rename a pipeline owned by an organization
@@ -1681,7 +2811,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceRenameOrganizationPipelineBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{org_pipeline_name}/clone:
     post:
       summary: Clone a pipeline owned by an organization
@@ -1717,7 +2847,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceCloneOrganizationPipelineBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{org_pipeline_release_name}/clone:
     post:
       summary: Clone a pipeline release owned by an organization
@@ -1752,7 +2882,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceCloneOrganizationPipelineReleaseBody'
       tags:
-        - Pipeline
+        - Pipeline (Deprecated)
   /v1beta/{organization_pipeline_name}/trigger-stream:
     post:
       summary: Trigger a pipeline owned by an organization
@@ -1764,8 +2894,7 @@ paths:
         The pipeline is identified by its resource name, formed by the parent
         organization and ID of the pipeline.
 
-        For more information, see [Trigger
-        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+        For more information, see [Run Pipeline](https://www.instill.tech/docs/vdp/run).
       operationId: PipelinePublicService_TriggerOrganizationPipelineStream
       responses:
         "200":
@@ -1806,7 +2935,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{organization_pipeline_name}/trigger:
     post:
       summary: Trigger a pipeline owned by an organization
@@ -1818,8 +2947,7 @@ paths:
         The pipeline is identified by its resource name, formed by the parent
         organization and ID of the pipeline.
 
-        For more information, see [Trigger
-        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+        For more information, see [Run Pipeline](https://www.instill.tech/docs/vdp/run).
       operationId: PipelinePublicService_TriggerOrganizationPipeline
       responses:
         "200":
@@ -1854,7 +2982,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{organization_pipeline_name}/triggerAsync:
     post:
       summary: Trigger a pipeline owned by an organization asynchronously
@@ -1867,8 +2995,7 @@ paths:
         The pipeline is identified by its resource name, formed by the parent
         organization and ID of the pipeline.
 
-        For more information, see [Trigger
-        Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline#trigger-pipeline).
+        For more information, see [Run Pipeline](https://www.instill.tech/docs/vdp/run).
       operationId: PipelinePublicService_TriggerAsyncOrganizationPipeline
       responses:
         "200":
@@ -1903,7 +3030,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{organization_name}/releases:
     get:
       summary: List the releases in a pipeline owned by an organization
@@ -1974,7 +3101,7 @@ paths:
           required: false
           type: boolean
       tags:
-        - Release
+        - Release (Deprecated)
     post:
       summary: Release a version of a pipeline owned by an organization
       description: |-
@@ -2009,7 +3136,7 @@ paths:
           schema:
             $ref: '#/definitions/v1betaPipelineRelease'
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{organization_pipeline_release_name}:
     get:
       summary: Get a release in a pipeline owned by an organization
@@ -2055,7 +3182,7 @@ paths:
             - VIEW_FULL
             - VIEW_RECIPE
       tags:
-        - Release
+        - Release (Deprecated)
     delete:
       summary: Delete a release in a pipeline owned by an organization
       description: |-
@@ -2086,8 +3213,8 @@ paths:
           type: string
           pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
-        - Release
-  /v1beta/{pipeline_release_name_1}:
+        - Release (Deprecated)
+  /v1beta/{release.name_1}:
     patch:
       summary: Update a release in a pipeline owned by an organization
       description: |-
@@ -2107,7 +3234,7 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: pipeline_release_name_1
+        - name: release.name_1
           description: |-
             The name of the release, defined by its parent and ID.
             - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}/releases/{release.id}`.
@@ -2168,9 +3295,10 @@ paths:
                 type: string
                 description: README.
               dataSpecification:
-                $ref: '#/definitions/v1betaDataSpecification'
                 description: Data specifications.
                 readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1betaDataSpecification'
               rawRecipe:
                 type: string
                 description: |-
@@ -2180,7 +3308,7 @@ paths:
               The pipeline release fields that will replace the existing ones.
               A pipeline release resource to update
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{organization_pipeline_release_name}/restore:
     post:
       summary: Set the version of a pipeline owned by an organization to a pinned release
@@ -2214,7 +3342,7 @@ paths:
           type: string
           pattern: organizations/[^/]+/pipelines/[^/]+/releases/[^/]+
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{organization_pipeline_release_name}/rename:
     post:
       summary: Rename a release in a pipeline owned by an organization
@@ -2256,7 +3384,7 @@ paths:
           schema:
             $ref: '#/definitions/PipelinePublicServiceRenameOrganizationPipelineReleaseBody'
       tags:
-        - Release
+        - Release (Deprecated)
   /v1beta/{organization_pipeline_release_name}/trigger:
     post:
       summary: Trigger a version of a pipeline owned by an organization
@@ -2303,7 +3431,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/{organization_pipeline_release_name}/triggerAsync:
     post:
       summary: Trigger a version of a pipeline owned by an organization asynchronously
@@ -2350,42 +3478,7 @@ paths:
           required: false
           type: string
       tags:
-        - Trigger
-  /v1beta/{name}:
-    get:
-      summary: Get the details of a long-running operation
-      description: |-
-        This method allows requesters to request the status and outcome of
-        long-running operations such as asynchronous pipeline triggers.
-      operationId: PipelinePublicService_GetOperation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaGetOperationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: name
-          description: |-
-            The name of the operation resource. Asynchronous methods will contain this
-            information in their response.
-          in: path
-          required: true
-          type: string
-          pattern: operations/[^/]+
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated user is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
-      tags:
-        - Trigger
+        - Trigger (Deprecated)
   /v1beta/connector-definitions:
     get:
       summary: List connector definitions
@@ -2440,7 +3533,7 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Component
+        - Component (Deprecated)
   /v1beta/{connector_definition_name}:
     get:
       summary: Get connector definition
@@ -2481,7 +3574,7 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Component
+        - Component (Deprecated)
   /v1beta/operator-definitions:
     get:
       summary: List operator definitions
@@ -2537,67 +3630,7 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Component
-  /v1beta/component-definitions:
-    get:
-      summary: List component definitions
-      description: |-
-        Returns a paginated list of component definitions, regardless their type.
-        This offers a single source of truth, with pagination and filter
-        capabilities, for the components that might be used in a VDP pipeline.
-      operationId: PipelinePublicService_ListComponentDefinitions
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaListComponentDefinitionsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: pageSize
-          description: |-
-            The maximum number of component definitions to return. If this parameter
-            is unspecified, at most 10 definitions will be returned. The cap value for
-            this parameter is 100 (i.e. any value above that will be coerced to 100).
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
-            field).
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `component_type="COMPONENT_TYPE_AI"`.
-            - Example: `tasks:"TASK_TEXT_GENERATION"`.
-          in: query
-          required: false
-          type: string
-        - name: page
-          description: Page number.
-          in: query
-          required: false
-          type: integer
-          format: int32
-      tags:
-        - Component
+        - Component (Deprecated)
   /v1beta/{operator_definition_name}:
     get:
       summary: Get operator definition
@@ -2638,7 +3671,7 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
       tags:
-        - Component
+        - Component (Deprecated)
   /v1beta/check-name:
     post:
       summary: Check the availibity of a resource name
@@ -2668,7 +3701,7 @@ paths:
           schema:
             $ref: '#/definitions/v1betaCheckNameRequest'
       tags:
-        - Utils
+        - Utils (Deprecated)
   /v1beta/{user_name}/secrets:
     get:
       summary: List user secrets
@@ -2712,7 +3745,7 @@ paths:
           required: false
           type: string
       tags:
-        - Secret
+        - Secret (Deprecated)
     post:
       summary: Create a new user secret
       description: Creates a new secret under the parenthood of an user.
@@ -2745,7 +3778,7 @@ paths:
           schema:
             $ref: '#/definitions/v1betaSecret'
       tags:
-        - Secret
+        - Secret (Deprecated)
   /v1beta/{user_secret_name}:
     get:
       summary: Get a secret owned by an user
@@ -2775,7 +3808,7 @@ paths:
           type: string
           pattern: users/[^/]+/secrets/[^/]+
       tags:
-        - Secret
+        - Secret (Deprecated)
     delete:
       summary: Delete a secret owned by an user
       description: |-
@@ -2804,7 +3837,7 @@ paths:
           type: string
           pattern: users/[^/]+/secrets/[^/]+
       tags:
-        - Secret
+        - Secret (Deprecated)
   /v1beta/{secret.name}:
     patch:
       summary: Update a secret owned by an user
@@ -2871,7 +3904,7 @@ paths:
                 title: Description
             title: The secret fields to update.
       tags:
-        - Secret
+        - Secret (Deprecated)
   /v1beta/{organization_name}/secrets:
     get:
       summary: List organization secrets
@@ -2915,7 +3948,7 @@ paths:
           required: false
           type: string
       tags:
-        - Secret
+        - Secret (Deprecated)
     post:
       summary: Create a new organization secret
       description: Creates a new secret under the parenthood of an organization.
@@ -2948,7 +3981,7 @@ paths:
           schema:
             $ref: '#/definitions/v1betaSecret'
       tags:
-        - Secret
+        - Secret (Deprecated)
   /v1beta/{organization_secret_name}:
     get:
       summary: Get a secret owned by an organization
@@ -2978,7 +4011,7 @@ paths:
           type: string
           pattern: organizations/[^/]+/secrets/[^/]+
       tags:
-        - Secret
+        - Secret (Deprecated)
     delete:
       summary: Delete a secret owned by an organization
       description: |-
@@ -3007,7 +4040,7 @@ paths:
           type: string
           pattern: organizations/[^/]+/secrets/[^/]+
       tags:
-        - Secret
+        - Secret (Deprecated)
   /v1beta/{secret.name_1}:
     patch:
       summary: Update a secret owned by an organization
@@ -3074,7 +4107,7 @@ paths:
                 title: Description
             title: The secret fields to update.
       tags:
-        - Secret
+        - Secret (Deprecated)
 definitions:
   CheckNameResponseName:
     type: string
@@ -3144,6 +4177,50 @@ definitions:
     required:
       - componentSpecification
       - dataSpecifications
+  PipelinePublicServiceCloneNamespacePipelineBody:
+    type: object
+    properties:
+      target:
+        type: string
+        title: |-
+          The target pipeline. It can be under a user or an organization
+          namespace, so the following formats are accepted:
+          - `{user.id}/{pipeline.id}`
+          - `{organization.id}/{pipeline.id}`
+      description:
+        type: string
+        description: Pipeline description.
+      sharing:
+        description: Pipeline sharing information.
+        allOf:
+          - $ref: '#/definitions/v1betaSharing'
+    description: |-
+      CloneNamespacePipelineRequest represents a request to clone a pipeline owned by a
+      user.
+    required:
+      - target
+  PipelinePublicServiceCloneNamespacePipelineReleaseBody:
+    type: object
+    properties:
+      target:
+        type: string
+        title: |-
+          The target pipeline. It can be under a user or an organization
+          namespace, so the following formats are accepted:
+          - `{user.id}/{pipeline.id}`
+          - `{organization.id}/{pipeline.id}`
+      description:
+        type: string
+        description: Pipeline description.
+      sharing:
+        description: Pipeline sharing information.
+        allOf:
+          - $ref: '#/definitions/v1betaSharing'
+    description: |-
+      CloneNamespacePipelineReleaseRequest represents a request to clone a pipeline
+      release owned by a user.
+    required:
+      - target
   PipelinePublicServiceCloneOrganizationPipelineBody:
     type: object
     properties:
@@ -3158,8 +4235,9 @@ definitions:
         type: string
         description: Pipeline description.
       sharing:
-        $ref: '#/definitions/v1betaSharing'
         description: Pipeline sharing information.
+        allOf:
+          - $ref: '#/definitions/v1betaSharing'
     description: |-
       CloneOrganizationPipelineRequest represents a request to clone a pipeline
       owned by an organization.
@@ -3179,8 +4257,9 @@ definitions:
         type: string
         description: Pipeline description.
       sharing:
-        $ref: '#/definitions/v1betaSharing'
         description: Pipeline sharing information.
+        allOf:
+          - $ref: '#/definitions/v1betaSharing'
     description: |-
       CloneOrganizationPipelineReleaseRequest represents a request to clone a pipeline
       release owned by an organization.
@@ -3200,8 +4279,9 @@ definitions:
         type: string
         description: Pipeline description.
       sharing:
-        $ref: '#/definitions/v1betaSharing'
         description: Pipeline sharing information.
+        allOf:
+          - $ref: '#/definitions/v1betaSharing'
     description: |-
       CloneUserPipelineRequest represents a request to clone a pipeline owned by a
       user.
@@ -3221,13 +4301,27 @@ definitions:
         type: string
         description: Pipeline description.
       sharing:
-        $ref: '#/definitions/v1betaSharing'
         description: Pipeline sharing information.
+        allOf:
+          - $ref: '#/definitions/v1betaSharing'
     description: |-
       CloneUserPipelineReleaseRequest represents a request to clone a pipeline
       release owned by a user.
     required:
       - target
+  PipelinePublicServiceRenameNamespacePipelineBody:
+    type: object
+    properties:
+      newPipelineId:
+        type: string
+        description: |-
+          The new resource ID. This will transform the resource name into
+          `namespaces/{namespace.id}/pipelines/{new_pipeline_id}`.
+    description: |-
+      RenameNamespacePipelineRequest represents a request to rename the name of a
+      pipeline owned by a namespace.
+    required:
+      - newPipelineId
   PipelinePublicServiceRenameOrganizationPipelineBody:
     type: object
     properties:
@@ -3280,6 +4374,40 @@ definitions:
       a user-owned pipeline.
     required:
       - newPipelineReleaseId
+  PipelinePublicServiceTriggerAsyncNamespacePipelineBody:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
+      data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaTriggerData'
+        title: Data
+    description: |-
+      TriggerNamespacePipelineRequest represents a request to trigger a user-owned
+      pipeline synchronously.
+  PipelinePublicServiceTriggerAsyncNamespacePipelineReleaseBody:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
+      data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaTriggerData'
+        title: Data
+    description: |-
+      TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
+      release of a user-owned pipeline asynchronously.
   PipelinePublicServiceTriggerAsyncOrganizationPipelineBody:
     type: object
     properties:
@@ -3348,6 +4476,60 @@ definitions:
     description: |-
       TriggerUserPipelineReleaseRequest represents a request to trigger a pinned
       release of a user-owned pipeline asynchronously.
+  PipelinePublicServiceTriggerNamespacePipelineBody:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
+      data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaTriggerData'
+        title: Data
+    description: |-
+      TriggerNamespacePipelineRequest represents a request to trigger a user-owned
+      pipeline synchronously.
+    required:
+      - inputs
+      - data
+  PipelinePublicServiceTriggerNamespacePipelineReleaseBody:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
+      data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaTriggerData'
+        title: Data
+    description: |-
+      TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
+      release of a user-owned pipeline.
+  PipelinePublicServiceTriggerNamespacePipelineWithStreamBody:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
+      data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaTriggerData'
+        title: Data
+    description: |-
+      TriggerNamespacePipelineWithStreamRequest represents a request to trigger a user-owned
+      pipeline synchronously and streams back the results.
   PipelinePublicServiceTriggerOrganizationPipelineBody:
     type: object
     properties:
@@ -3450,6 +4632,11 @@ definitions:
     description: |-
       TriggerUserPipelineWithStreamRequest represents a request to trigger a user-owned
       pipeline synchronously and streams back the results.
+  PipelinePublicServiceValidateNamespacePipelineBody:
+    type: object
+    description: |-
+      ValidateNamespacePipelineRequest represents a request to validate a pipeline
+      owned by a user.
   PipelinePublicServiceValidateOrganizationPipelineBody:
     type: object
     description: |-
@@ -3467,14 +4654,17 @@ definitions:
         type: integer
         format: int32
         description: Number of pipeline runs.
+        readOnly: true
       lastRunTime:
         type: string
         format: date-time
         description: Last run time.
+        readOnly: true
       numberOfClones:
         type: integer
         format: int32
         description: Number of times this pipeline has been cloned.
+        readOnly: true
     title: Statistic data
   SharingShareCode:
     type: object
@@ -3493,8 +4683,9 @@ definitions:
         type: boolean
         description: Defines whether the sharing option via link is enabled.
       role:
-        $ref: '#/definitions/v1betaRole'
         description: Defines the role users will have over the resource.
+        allOf:
+          - $ref: '#/definitions/v1betaRole'
     description: ShareCode describes a sharing configuration through a link.
   coremgmtv1betaPermission:
     type: object
@@ -3502,6 +4693,7 @@ definitions:
       canEdit:
         type: boolean
         description: Defines whether the resource can be modified.
+        readOnly: true
     description: Permission defines how a resource can be used.
   googlelongrunningOperation:
     type: object
@@ -3513,12 +4705,13 @@ definitions:
           originally returns it. If you use the default HTTP mapping, the
           `name` should be a resource name ending with `operations/{unique_id}`.
       metadata:
-        $ref: '#/definitions/protobufAny'
         description: |-
           Service-specific metadata associated with the operation.  It typically
           contains progress information and common metadata such as create time.
           Some services might not provide such metadata.  Any method that returns a
           long-running operation should document the metadata type, if any.
+        allOf:
+          - $ref: '#/definitions/protobufAny'
       done:
         type: boolean
         description: |-
@@ -3526,10 +4719,10 @@ definitions:
           If `true`, the operation is completed, and either `error` or `response` is
           available.
       error:
-        $ref: '#/definitions/googlerpcStatus'
         description: The error result of the operation in case of failure or cancellation.
+        allOf:
+          - $ref: '#/definitions/googlerpcStatus'
       response:
-        $ref: '#/definitions/protobufAny'
         description: |-
           The normal response of the operation in case of success.  If the original
           method returns no data on success, such as `Delete`, the response is
@@ -3539,6 +4732,8 @@ definitions:
           is the original method name.  For example, if the original method name
           is `TakeSnapshot()`, the inferred response type is
           `TakeSnapshotResponse`.
+        allOf:
+          - $ref: '#/definitions/protobufAny'
     description: |-
       This resource represents a long-running operation that is the result of a
       network API call.
@@ -3588,6 +4783,7 @@ definitions:
         description: |-
           User UUID. This field is optionally set by users on creation (it will be
           server-generated if unspecified).
+        readOnly: true
       id:
         type: string
         description: |-
@@ -3608,13 +4804,12 @@ definitions:
         description: Update time.
         readOnly: true
       profile:
-        $ref: '#/definitions/v1betaUserProfile'
         description: Profile.
+        allOf:
+          - $ref: '#/definitions/v1betaUserProfile'
     description: |-
       User describes an individual that interacts with Instill AI. It doesn't
       contain any private information about the user.
-    required:
-      - id
   protobufAny:
     type: object
     properties:
@@ -3764,9 +4959,16 @@ definitions:
     type: object
     properties:
       availability:
-        $ref: '#/definitions/CheckNameResponseName'
         description: The availability of the requested name.
+        allOf:
+          - $ref: '#/definitions/CheckNameResponseName'
     description: CheckNameResponse contains the availability of a resource name.
+  v1betaCloneNamespacePipelineReleaseResponse:
+    type: object
+    description: CloneNamespacePipelineReleaseResponse contains a cloned pipeline.
+  v1betaCloneNamespacePipelineResponse:
+    type: object
+    description: CloneNamespacePipelineResponse contains a cloned pipeline.
   v1betaCloneOrganizationPipelineReleaseResponse:
     type: object
     description: CloneOrganizationPipelineReleaseResponse contains a cloned pipeline.
@@ -3815,13 +5017,15 @@ definitions:
           frontend applications to pull and locate the icons.
         readOnly: true
       spec:
-        $ref: '#/definitions/ComponentDefinitionSpec'
         description: Component definition specification.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/ComponentDefinitionSpec'
       type:
-        $ref: '#/definitions/v1betaComponentType'
         description: Component definition type.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaComponentType'
       tombstone:
         type: boolean
         description: |-
@@ -3872,9 +5076,10 @@ definitions:
         description: Short description of the component.
         readOnly: true
       releaseStage:
-        $ref: '#/definitions/ComponentDefinitionReleaseStage'
         description: Release stage.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/ComponentDefinitionReleaseStage'
     description: ComponentDefinition describes a certain type of Component.
   v1betaComponentDefinitionView:
     type: string
@@ -3955,13 +5160,15 @@ definitions:
           frontend applications to pull and locate the icons.
         readOnly: true
       spec:
-        $ref: '#/definitions/v1betaConnectorSpec'
         description: Connector definition specification.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaConnectorSpec'
       type:
-        $ref: '#/definitions/v1betaConnectorType'
         description: Connector definition type.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaConnectorType'
       tombstone:
         type: boolean
         description: |-
@@ -4012,9 +5219,10 @@ definitions:
         description: Short description of the connector.
         readOnly: true
       releaseStage:
-        $ref: '#/definitions/ComponentDefinitionReleaseStage'
         description: Release stage.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/ComponentDefinitionReleaseStage'
     description: |-
       A Connector is a type of pipeline component that queries, processes or sends
       the ingested unstructured data to a service or app. Users need to configure
@@ -4022,7 +5230,7 @@ definitions:
       ConnectorDefinition describes a certain type of Connector.
 
       For more information, see
-      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      [Component](https://www.instill.tech/docs/component/introduction)
       in the official documentation.
   v1betaConnectorSpec:
     type: object
@@ -4055,47 +5263,80 @@ definitions:
        - CONNECTOR_TYPE_DATA: Data connector.
        - CONNECTOR_TYPE_OPERATOR: Operator connector.
        - CONNECTOR_TYPE_APPLICATION: Application connector.
+  v1betaCreateNamespacePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        description: The created pipeline release object.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
+    description: CreateNamespacePipelineReleaseResponse contains the created release.
+  v1betaCreateNamespacePipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        description: The created pipeline resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
+    description: CreateNamespacePipelineResponse contains the created pipeline.
   v1betaCreateOrganizationPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The created pipeline release object.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: CreateOrganizationPipelineReleaseResponse contains the created release.
   v1betaCreateOrganizationPipelineResponse:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The created pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: CreateOrganizationPipelineResponse contains the created pipeline.
   v1betaCreateOrganizationSecretResponse:
     type: object
     properties:
       secret:
-        $ref: '#/definitions/v1betaSecret'
         description: The created secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
     description: CreateOrganizationSecretResponse contains the created secret.
+  v1betaCreateSecretResponse:
+    type: object
+    properties:
+      secret:
+        description: The created secret resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
+    description: CreateSecretResponse contains the created secret.
   v1betaCreateUserPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The created pipeline release object.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: CreateUserPipelineReleaseResponse contains the created release.
   v1betaCreateUserPipelineResponse:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The created pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: CreateUserPipelineResponse contains the created pipeline.
   v1betaCreateUserSecretResponse:
     type: object
     properties:
       secret:
-        $ref: '#/definitions/v1betaSecret'
         description: The created secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
     description: CreateUserSecretResponse contains the created secret.
   v1betaDataSpecification:
     type: object
@@ -4103,10 +5344,18 @@ definitions:
       input:
         type: object
         description: JSON schema describing the component input data.
+        readOnly: true
       output:
         type: object
         description: JSON schema describing the component output data.
+        readOnly: true
     description: DataSpecification describes the JSON schema of component input and output.
+  v1betaDeleteNamespacePipelineReleaseResponse:
+    type: object
+    description: DeleteNamespacePipelineReleaseResponse is an empty response.
+  v1betaDeleteNamespacePipelineResponse:
+    type: object
+    description: DeleteNamespacePipelineResponse is an empty response.
   v1betaDeleteOrganizationPipelineReleaseResponse:
     type: object
     description: DeleteOrganizationPipelineReleaseResponse is an empty response.
@@ -4116,6 +5365,9 @@ definitions:
   v1betaDeleteOrganizationSecretResponse:
     type: object
     description: DeleteOrganizationSecretResponse is an empty response.
+  v1betaDeleteSecretResponse:
+    type: object
+    description: DeleteSecretResponse is an empty response.
   v1betaDeleteUserPipelineReleaseResponse:
     type: object
     description: DeleteUserPipelineReleaseResponse is an empty response.
@@ -4129,77 +5381,100 @@ definitions:
     type: object
     properties:
       connectorDefinition:
-        $ref: '#/definitions/v1betaConnectorDefinition'
         description: The connector definition resource.
+        allOf:
+          - $ref: '#/definitions/v1betaConnectorDefinition'
     description: GetConnectorDefinitionResponse contains the requested connector definition.
-  v1betaGetHubStatsResponse:
+  v1betaGetNamespacePipelineReleaseResponse:
     type: object
     properties:
-      numberOfPublicPipelines:
-        type: integer
-        format: int32
-        description: Total number of public pipelines.
-      numberOfFeaturedPipelines:
-        type: integer
-        format: int32
-        description: Total number of featured pipelines.
-    description: GetHubStatsResponse represents a response to get hub stats.
+      release:
+        description: The pipeline release resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
+    description: GetNamespacePipelineReleaseResponse contains the requested pipeline release.
+  v1betaGetNamespacePipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        description: The pipeline resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
+    description: GetNamespacePipelineResponse contains the requested pipeline.
   v1betaGetOperationResponse:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: The long-running operation.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: GetOperationResponse contains the long-running operation details.
   v1betaGetOperatorDefinitionResponse:
     type: object
     properties:
       operatorDefinition:
-        $ref: '#/definitions/v1betaOperatorDefinition'
         description: The operator definition resource.
+        allOf:
+          - $ref: '#/definitions/v1betaOperatorDefinition'
     description: GetOperatorDefinitionResponse contains the requested operator definition.
   v1betaGetOrganizationPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The pipeline release resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: GetOrganizationPipelineReleaseResponse contains the requested pipeline release.
   v1betaGetOrganizationPipelineResponse:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: GetOrganizationPipelineResponse contains the requested pipeline.
   v1betaGetOrganizationSecretResponse:
     type: object
     properties:
       secret:
-        $ref: '#/definitions/v1betaSecret'
         description: The secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
     description: GetOrganizationSecretResponse contains the requested secret.
+  v1betaGetSecretResponse:
+    type: object
+    properties:
+      secret:
+        description: The secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
+    description: GetSecretResponse contains the requested secret.
   v1betaGetUserPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The pipeline release resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: GetUserPipelineReleaseResponse contains the requested pipeline release.
   v1betaGetUserPipelineResponse:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: GetUserPipelineResponse contains the requested pipeline.
   v1betaGetUserSecretResponse:
     type: object
     properties:
       secret:
-        $ref: '#/definitions/v1betaSecret'
         description: The secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
     description: GetUserSecretResponse contains the requested secret.
   v1betaListComponentDefinitionsResponse:
     type: object
@@ -4240,6 +5515,46 @@ definitions:
         format: int32
         description: Total number of connector definitions.
     description: ListConnectorDefinitionsResponse contains a list of connector definitions.
+  v1betaListNamespacePipelineReleasesResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRelease'
+        description: A list of pipeline release resources.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of pipeline releases.
+        readOnly: true
+    description: ListNamespacePipelineReleasesResponse contains a list of pipeline releases.
+  v1betaListNamespacePipelinesResponse:
+    type: object
+    properties:
+      pipelines:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipeline'
+        description: A list of pipeline resources.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of pipelines.
+        readOnly: true
+    description: ListNamespacePipelinesResponse contains a list of pipelines.
   v1betaListOperatorDefinitionsResponse:
     type: object
     properties:
@@ -4359,14 +5674,37 @@ definitions:
           type: object
           $ref: '#/definitions/v1betaPipeline'
         description: A list of pipeline resources.
+        readOnly: true
       nextPageToken:
         type: string
         description: Next page token.
+        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of pipelines.
+        readOnly: true
     description: ListPipelinesResponse contains a list of pipelines.
+  v1betaListSecretsResponse:
+    type: object
+    properties:
+      secrets:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaSecret'
+        description: A list of secret resources.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page secret.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of secret resources.
+        readOnly: true
+    description: ListSecretsResponse contains a list of secrets.
   v1betaListUserPipelineReleasesResponse:
     type: object
     properties:
@@ -4422,16 +5760,10 @@ definitions:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The requested pipeline.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: LookUpPipelineAdminResponse contains the requested pipeline.
-  v1betaLookUpPipelineResponse:
-    type: object
-    properties:
-      pipeline:
-        $ref: '#/definitions/v1betaPipeline'
-        description: The requested pipeline.
-    description: LookUpPipelineResponse contains the requested pipeline.
   v1betaOperatorDefinition:
     type: object
     properties:
@@ -4468,9 +5800,10 @@ definitions:
           frontend applications to pull and locate the icons.
         readOnly: true
       spec:
-        $ref: '#/definitions/v1betaOperatorSpec'
         description: Operator definition specification.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOperatorSpec'
       tombstone:
         type: boolean
         description: |-
@@ -4511,15 +5844,16 @@ definitions:
         description: Short description of the operator.
         readOnly: true
       releaseStage:
-        $ref: '#/definitions/ComponentDefinitionReleaseStage'
         description: Release stage.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/ComponentDefinitionReleaseStage'
     description: |-
       An Operator is a type of pipeline component that performs data injection and
       manipulation. OperatorDefinition describes a certain type of operator.
 
       For more information, see
-      [Component](https://www.instill.tech/docs/latest/core/concepts/pipeline#pipeline-component)
+      [Component](https://www.instill.tech/docs/component/introduction)
       in the official documentation.
   v1betaOperatorSpec:
     type: object
@@ -4571,21 +5905,24 @@ definitions:
         description: Update time.
         readOnly: true
       owner:
-        $ref: '#/definitions/mgmtv1betaUser'
         description: The user that owns the organization.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmtv1betaUser'
       profile:
-        $ref: '#/definitions/v1betaOrganizationProfile'
         description: Profile.
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationProfile'
       permission:
-        $ref: '#/definitions/coremgmtv1betaPermission'
         title: Permission
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/coremgmtv1betaPermission'
     description: |-
       Organizations group several users. As entities, they can own resources such
       as pipelines or releases.
     required:
-      - id
+      - profile
   v1betaOrganizationProfile:
     type: object
     properties:
@@ -4613,13 +5950,15 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/mgmtv1betaUser'
         description: User.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmtv1betaUser'
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         description: Organization.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     description: Owner is a wrapper for User and Organization, used to embed owner information in other resources.
   v1betaPipeline:
     type: object
@@ -4663,8 +6002,9 @@ definitions:
         description: Pipeline delete time.
         readOnly: true
       sharing:
-        $ref: '#/definitions/v1betaSharing'
         description: Pipeline sharing information.
+        allOf:
+          - $ref: '#/definitions/v1betaSharing'
       metadata:
         type: object
         description: Metadata holds console-related data such as the pipeline builder layout.
@@ -4683,30 +6023,35 @@ definitions:
         type: string
         description: README holds the pipeline documentation.
       permission:
-        $ref: '#/definitions/vdppipelinev1betaPermission'
         description: Permission defines how a pipeline can be used.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/vdppipelinev1betaPermission'
       visibility:
-        $ref: '#/definitions/v1betaPipelineVisibility'
         description: Pipeline visibility.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineVisibility'
       owner:
-        $ref: '#/definitions/v1betaOwner'
         description: Pipeline owner.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOwner'
       dataSpecification:
-        $ref: '#/definitions/v1betaDataSpecification'
         description: Data specifications.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaDataSpecification'
       tags:
         type: array
         items:
           type: string
         description: Tags.
       stats:
-        $ref: '#/definitions/PipelineStats'
         description: Statistic data.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/PipelineStats'
       rawRecipe:
         type: string
         description: |-
@@ -4728,9 +6073,10 @@ definitions:
       A Pipeline is an end-to-end workflow that automates a sequence of components
       to process data.
 
-      For more information, see
-      [Pipeline](https://www.instill.tech/docs/latest/core/concepts/pipeline) in
+      For more information, see [Pipeline](https://www.instill.tech/docs/vdp/introduction) in
       the official documentation.
+    required:
+      - recipe
   v1betaPipelineRelease:
     type: object
     properties:
@@ -4784,9 +6130,10 @@ definitions:
         type: string
         description: README.
       dataSpecification:
-        $ref: '#/definitions/v1betaDataSpecification'
         description: Data specifications.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaDataSpecification'
       rawRecipe:
         type: string
         description: |-
@@ -4827,40 +6174,54 @@ definitions:
 
        - VISIBILITY_PRIVATE: Only the user can see the pipeline.
        - VISIBILITY_PUBLIC: Other users can see the pipeline.
+  v1betaRenameNamespacePipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        description: The renamed pipeline resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
+    description: RenameNamespacePipelineResponse contains a renamed pipeline.
   v1betaRenameOrganizationPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The renamed pipeline release.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: RenameOrganizationPipelineReleaseResponse contains a renamed pipeline release.
   v1betaRenameOrganizationPipelineResponse:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The renamed pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: RenameOrganizationPipelineResponse contains a renamed pipeline.
   v1betaRenameUserPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The renamed pipeline release.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: RenameUserPipelineReleaseResponse contains a renamed pipeline release.
   v1betaRenameUserPipelineResponse:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The renamed pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: RenameUserPipelineResponse contains a renamed pipeline.
   v1betaRestoreOrganizationPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The pipeline release resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: |-
       RestoreOrganizationPipelineReleaseResponse contains the requested pipeline
       release.
@@ -4868,8 +6229,9 @@ definitions:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The pipeline release resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: RestoreUserPipelineReleaseResponse contains the requested pipeline release.
   v1betaRole:
     type: string
@@ -4935,12 +6297,13 @@ definitions:
 
           **NOTE**: For now, the only accepted key is `*/*`.
       shareCode:
-        $ref: '#/definitions/SharingShareCode'
         description: Defines the configuration to share a resource via link.
+        allOf:
+          - $ref: '#/definitions/SharingShareCode'
     description: |-
       Sharing contains the information to share a resource with other users.
 
-      For more information, see [Share Pipelines](https://www.instill.tech/docs/latest/vdp/share).
+      For more information, see [Share Pipelines](https://www.instill.tech/docs/vdp/share).
   v1betaSharingUser:
     type: object
     properties:
@@ -4948,8 +6311,9 @@ definitions:
         type: boolean
         description: Defines whether the sharing option with this user is enabled.
       role:
-        $ref: '#/definitions/v1betaRole'
         description: Defines the role the user will have over the resource.
+        allOf:
+          - $ref: '#/definitions/v1betaRole'
     description: Describes the sharing configuration with a given user.
   v1betaTrace:
     type: object
@@ -4959,23 +6323,28 @@ definitions:
         items:
           $ref: '#/definitions/v1betaTraceStatus'
         description: Statuses contains an execution status per input.
+        readOnly: true
       inputs:
         type: array
         items:
           type: object
         description: Component inputs.
+        readOnly: true
       outputs:
         type: array
         items:
           type: object
         description: Component outputs.
+        readOnly: true
       error:
         type: object
         description: Error details.
+        readOnly: true
       computeTimeInSeconds:
         type: number
         format: float
         description: Computation time in seconds.
+        readOnly: true
     description: Trace contains the execution details of a component.
   v1betaTraceStatus:
     type: string
@@ -4989,13 +6358,36 @@ definitions:
        - STATUS_COMPLETED: Successfully completed.
        - STATUS_SKIPPED: Skipped.
        - STATUS_ERROR: Aborted with error.
+  v1betaTriggerAsyncNamespacePipelineReleaseResponse:
+    type: object
+    properties:
+      operation:
+        description: Long-running operation information.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
+    description: |-
+      TriggerAsyncNamespacePipelineReleaseResponse contains the information to access
+      the status of an asynchronous pipeline execution.
+  v1betaTriggerAsyncNamespacePipelineResponse:
+    type: object
+    properties:
+      operation:
+        description: Long-running operation information.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
+    description: |-
+      TriggerAsyncNamespacePipelineResponse contains the information to access the
+      status of an asynchronous pipeline execution.
   v1betaTriggerAsyncOrganizationPipelineReleaseResponse:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncOrganizationPipelineReleaseResponse contains the information to
       access the status of an asynchronous pipeline execution.
@@ -5003,9 +6395,10 @@ definitions:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncOrganizationPipelineResponse contains the information to access
       the status of an asynchronous pipeline execution.
@@ -5013,9 +6406,10 @@ definitions:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncUserPipelineReleaseResponse contains the information to access
       the status of an asynchronous pipeline execution.
@@ -5023,9 +6417,10 @@ definitions:
     type: object
     properties:
       operation:
-        $ref: '#/definitions/googlelongrunningOperation'
         description: Long-running operation information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
       TriggerAsyncUserPipelineResponse contains the information to access the
       status of an asynchronous pipeline execution.
@@ -5051,7 +6446,59 @@ definitions:
         description: |-
           Each key in the `traces` object is a component ID. The value is a Trace
           object containing the execution details.
+        readOnly: true
     description: TriggerMetadata contains the traces of the pipeline inference.
+  v1betaTriggerNamespacePipelineReleaseResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+        readOnly: true
+      metadata:
+        description: Traces of the pipeline inference.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
+    description: |-
+      TriggerNamespacePipelineReleaseResponse contains the pipeline execution results,
+      i.e., the multiple model inference outputs.
+  v1betaTriggerNamespacePipelineResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+        readOnly: true
+      metadata:
+        description: Traces of the pipeline inference.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
+    description: |-
+      TriggerNamespacePipelineResponse contains the pipeline execution results, i.e.,
+      the multiple model inference outputs.
+  v1betaTriggerNamespacePipelineWithStreamResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+        readOnly: true
+      metadata:
+        description: Traces of the pipeline inference.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
+    description: |-
+      TriggerNamespacePipelineWithStreamResponse contains the pipeline execution results, i.e.,
+      the multiple model inference outputs.
   v1betaTriggerOrganizationPipelineReleaseResponse:
     type: object
     properties:
@@ -5061,8 +6508,9 @@ definitions:
           type: object
         description: Model inference outputs.
       metadata:
-        $ref: '#/definitions/v1betaTriggerMetadata'
         description: Traces of the pipeline inference.
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
     description: |-
       TriggerOrganizationPipelineReleaseResponse contains the pipeline execution
       results, i.e., the multiple model inference outputs.
@@ -5075,8 +6523,9 @@ definitions:
           type: object
         description: Model inference outputs.
       metadata:
-        $ref: '#/definitions/v1betaTriggerMetadata'
         description: Traces of the pipeline inference.
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
     description: |-
       TriggerOrganizationPipelineResponse contains the pipeline execution results,
       i.e., the multiple model inference outputs.
@@ -5089,8 +6538,9 @@ definitions:
           type: object
         description: Model inference outputs.
       metadata:
-        $ref: '#/definitions/v1betaTriggerMetadata'
         description: Traces of the pipeline inference.
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
     description: |-
       TriggerOrganizationPipelineResponse contains the pipeline execution results,
       i.e., the multiple model inference outputs.
@@ -5103,8 +6553,9 @@ definitions:
           type: object
         description: Model inference outputs.
       metadata:
-        $ref: '#/definitions/v1betaTriggerMetadata'
         description: Traces of the pipeline inference.
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
     description: |-
       TriggerUserPipelineReleaseResponse contains the pipeline execution results,
       i.e., the multiple model inference outputs.
@@ -5117,8 +6568,9 @@ definitions:
           type: object
         description: Model inference outputs.
       metadata:
-        $ref: '#/definitions/v1betaTriggerMetadata'
         description: Traces of the pipeline inference.
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
     description: |-
       TriggerUserPipelineResponse contains the pipeline execution results, i.e.,
       the multiple model inference outputs.
@@ -5131,17 +6583,37 @@ definitions:
           type: object
         description: Model inference outputs.
       metadata:
-        $ref: '#/definitions/v1betaTriggerMetadata'
         description: Traces of the pipeline inference.
+        allOf:
+          - $ref: '#/definitions/v1betaTriggerMetadata'
     description: |-
       TriggerUserPipelineWithStreamResponse contains the pipeline execution results, i.e.,
       the multiple model inference outputs.
+  v1betaUpdateNamespacePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        description: The updated pipeline release resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
+    description: UpdateNamespacePipelineReleaseResponse contains the updated pipeline release.
+  v1betaUpdateNamespacePipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        description: The updated pipeline resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
+    description: UpdateNamespacePipelineResponse contains the updated pipeline.
   v1betaUpdateOrganizationPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The updated pipeline release resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: |-
       UpdateOrganizationPipelineReleaseResponse contains the updated pipeline
       release.
@@ -5149,36 +6621,49 @@ definitions:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The updated pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: UpdateOrganizationPipelineResponse contains the updated pipeline.
   v1betaUpdateOrganizationSecretResponse:
     type: object
     properties:
       secret:
-        $ref: '#/definitions/v1betaSecret'
         description: The updated secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
     description: UpdateOrganizationSecretResponse contains the updated secret.
+  v1betaUpdateSecretResponse:
+    type: object
+    properties:
+      secret:
+        description: The updated secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
+    description: UpdateSecretResponse contains the updated secret.
   v1betaUpdateUserPipelineReleaseResponse:
     type: object
     properties:
       release:
-        $ref: '#/definitions/v1betaPipelineRelease'
         description: The updated pipeline release resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRelease'
     description: UpdateUserPipelineReleaseResponse contains the updated pipeline release.
   v1betaUpdateUserPipelineResponse:
     type: object
     properties:
       pipeline:
-        $ref: '#/definitions/v1betaPipeline'
         description: The updated pipeline resource.
+        allOf:
+          - $ref: '#/definitions/v1betaPipeline'
     description: UpdateUserPipelineResponse contains the updated pipeline.
   v1betaUpdateUserSecretResponse:
     type: object
     properties:
       secret:
-        $ref: '#/definitions/v1betaSecret'
         description: The updated secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
     description: UpdateUserSecretResponse contains the updated secret.
   v1betaUserProfile:
     type: object
@@ -5206,6 +6691,21 @@ definitions:
           Social profile links list the links to the user's social profiles.
           The key represents the provider, and the value is the corresponding URL.
     description: UserProfile describes the public data of a user.
+  v1betaValidateNamespacePipelineResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        title: Success
+        readOnly: true
+      errors:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineValidationError'
+        description: The validated pipeline resource.
+        readOnly: true
+    description: ValidateNamespacePipelineResponse contains a validated pipeline.
   v1betaValidateOrganizationPipelineResponse:
     type: object
     properties:

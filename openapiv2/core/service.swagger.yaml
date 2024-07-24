@@ -12,13 +12,21 @@ info:
     url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
 tags:
   - name: User
+    description: User endpoints
   - name: Organization
+    description: Organization endpoints
   - name: Membership
+    description: Membership endpoints
   - name: Token
+    description: Token endpoints
   - name: Subscription
+    description: Subscription endpoints
   - name: Credit
+    description: Credit endpoints
   - name: Metric
+    description: Metric endpoints
   - name: Utils
+    description: Util endpoints
 host: api.instill.tech
 schemes:
   - https
@@ -74,6 +82,8 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/v1betaAuthenticatedUser'
+            required:
+              - user
       tags:
         - User
   /v1beta/users:
@@ -130,7 +140,7 @@ paths:
           type: string
       tags:
         - User
-  /v1beta/{user_name}:
+  /v1beta/users/{userId}:
     get:
       summary: Get a user
       description: Returns the details of a user by their ID.
@@ -148,14 +158,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_name
-          description: |-
-            The resource name of the user, which allows its access by ID.
-            - Format: `users/{user.id}`.
+        - name: userId
+          description: User ID
           in: path
           required: true
           type: string
-          pattern: users/[^/]+
         - name: view
           description: |-
             View allows clients to specify the desired resource view in the response.
@@ -249,7 +256,7 @@ paths:
             $ref: '#/definitions/v1betaOrganization'
       tags:
         - Organization
-  /v1beta/{organization_name}:
+  /v1beta/organizations/{organizationId}:
     get:
       summary: Get an organization
       description: Returns the organization details by its ID.
@@ -267,14 +274,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_name
-          description: |-
-            The resource name of the organization, which allows its access by ID.
-            - Format: `organizations/{organization.id}`.
+        - name: organizationId
+          description: Organization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+
         - name: view
           description: |-
             View allows clients to specify the desired resource view in the response.
@@ -306,14 +310,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_name
-          description: |-
-            The resource name of the organization, which allows its access by ID.
-            - Format: `organizations/{organization.id}`.
+        - name: organizationId
+          description: Organization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+
       tags:
         - Organization
     patch:
@@ -337,61 +338,20 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_name
-          description: |-
-            The name of the organization, defined by its ID.
-            - Format: `organization/{organization.id}`.
+        - name: organizationId
+          description: Organization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+
         - name: organization
           description: The organization fields that will replace the existing ones.
           in: body
           required: true
           schema:
-            type: object
-            properties:
-              uid:
-                type: string
-                description: Organization UUID.
-                readOnly: true
-              id:
-                type: string
-                description: |-
-                  Resource ID (used in `name` as the last segment). This conforms to
-                  RFC-1034, which restricts to letters, numbers, and hyphen, with the first
-                  character a letter, the last a letter or a number, and a 63 character
-                  maximum.
-
-                  Note that the ID can be updated.
-              createTime:
-                type: string
-                format: date-time
-                description: Creation time.
-                readOnly: true
-              updateTime:
-                type: string
-                format: date-time
-                description: Update time.
-                readOnly: true
-              owner:
-                $ref: '#/definitions/v1betaUser'
-                description: The user that owns the organization.
-                readOnly: true
-              profile:
-                $ref: '#/definitions/v1betaOrganizationProfile'
-                description: Profile.
-              permission:
-                $ref: '#/definitions/v1betaPermission'
-                title: Permission
-                readOnly: true
-            title: The organization fields that will replace the existing ones.
-            required:
-              - id
+            $ref: '#/definitions/v1betaOrganization'
       tags:
         - Organization
-  /v1beta/{user_name}/memberships:
+  /v1beta/users/{userId}/memberships:
     get:
       summary: List user memberships
       description: Returns the memberships of a user.
@@ -409,17 +369,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_name
-          description: |-
-            The parent resource, i.e., the user to which the memberships belong.
-            Format: `users/{user.id}`.
+        - name: userId
+          description: User ID
           in: path
           required: true
           type: string
-          pattern: users/[^/]+
       tags:
         - Membership
-  /v1beta/{user_membership_name}:
+  /v1beta/users/{userId}/memberships/{organizationId}:
     get:
       summary: Get a user membership
       description: |-
@@ -439,15 +396,16 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_membership_name
-          description: |-
-            The resource name of the membership, which allows its access by user and
-            organization ID.
-            - Format: `users/{user.id}/memberships/{organization.id}`.
+        - name: userId
+          description: User ID
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/memberships/[^/]+
+        - name: organizationId
+          description: Organization ID
+          in: path
+          required: true
+          type: string
         - name: view
           description: |-
             View allows clients to specify the desired resource view in the response.
@@ -479,15 +437,16 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_membership_name
-          description: |-
-            The resource name of the membership, which allows its access by user and
-            organization ID.
-            - Format: `users/{user.id}/memberships/{organization.id}`.
+        - name: userId
+          description: User ID
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/memberships/[^/]+
+        - name: organizationId
+          description: Organization ID
+          in: path
+          required: true
+          type: string
       tags:
         - Membership
     put:
@@ -507,40 +466,24 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: user_membership_name
-          description: |-
-            The resource name of the membership, which allows its access by user and
-            organization ID.
-            - Format: `users/{user.id}/memberships/{organization.id}`.
+        - name: userId
+          description: User ID
           in: path
           required: true
           type: string
-          pattern: users/[^/]+/memberships/[^/]+
+        - name: organizationId
+          description: Organization ID
+          in: path
+          required: true
+          type: string
         - name: membership
           description: The membership fields to update.
           in: body
           required: true
           schema:
-            type: object
-            properties:
-              role:
-                type: string
-                description: Role of the user in the organization.
-                readOnly: true
-              state:
-                $ref: '#/definitions/v1betaMembershipState'
-                description: State of the membership.
-              user:
-                $ref: '#/definitions/v1betaUser'
-                description: User information.
-                readOnly: true
-              organization:
-                $ref: '#/definitions/v1betaOrganization'
-                description: Organization information.
-                readOnly: true
-            title: The membership fields to update.
+            $ref: '#/definitions/v1betaUserMembership'
             required:
-              - state
+              - membership
         - name: updateMask
           description: |-
             The update mask specifies the subset of fields that should be modified.
@@ -552,7 +495,7 @@ paths:
           type: string
       tags:
         - Membership
-  /v1beta/{organization_name}/memberships:
+  /v1beta/organizations/{organizationId}/memberships:
     get:
       summary: List organization memberships
       description: Returns a paginated list of the user memberships in an organization.
@@ -570,18 +513,14 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_name
-          description: |-
-            The parent resource, i.e., the organization to which the memberships
-            belong.
-            Format: `organizations/{organization.id}`.
+        - name: organizationId
+          description: Organization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+
       tags:
         - Membership
-  /v1beta/{organization_membership_name}:
+  /v1beta/organizations/{organizationId}/memberships/{userId}:
     get:
       summary: Get a an organization membership
       description: Returns the details of a user membership within an organization.
@@ -599,15 +538,16 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_membership_name
-          description: |-
-            The resource name of the membership, which allows its access by
-            organization and user ID.
-            - Format: `organizations/{organization.id}/memberships/{user.id}`.
+        - name: organizationId
+          description: Organization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+/memberships/[^/]+
+        - name: userId
+          description: User ID
+          in: path
+          required: true
+          type: string
         - name: view
           description: |-
             View allows clients to specify the desired resource view in the response.
@@ -639,15 +579,16 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_membership_name
-          description: |-
-            The resource name of the membership, which allows its access by
-            organization and user ID.
-            - Format: `organizations/{organization.id}/memberships/{user.id}`.
+        - name: organizationId
+          description: Organization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+/memberships/[^/]+
+        - name: userId
+          description: User ID
+          in: path
+          required: true
+          type: string
       tags:
         - Membership
     put:
@@ -667,40 +608,24 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_membership_name
-          description: |-
-            The resource name of the membership, which allows its access by
-            organization and user ID.
-            - Format: `organizations/{organization.id}/memberships/{user.id}`.
+        - name: organizationId
+          description: Organization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+/memberships/[^/]+
+        - name: userId
+          description: User ID
+          in: path
+          required: true
+          type: string
         - name: membership
           description: The membership fields to update.
           in: body
           required: true
           schema:
-            type: object
-            properties:
-              role:
-                type: string
-                description: Role of the user in the organization.
-              state:
-                $ref: '#/definitions/v1betaMembershipState'
-                description: State of the membership.
-                readOnly: true
-              user:
-                $ref: '#/definitions/v1betaUser'
-                description: User information.
-                readOnly: true
-              organization:
-                $ref: '#/definitions/v1betaOrganization'
-                description: Organization information.
-                readOnly: true
-            title: The membership fields to update.
+            $ref: '#/definitions/v1betaOrganizationMembership'
             required:
-              - role
+              - membership
         - name: updateMask
           description: |-
             The update mask specifies the subset of fields that should be modified.
@@ -731,9 +656,9 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - Subscription
-  /v1beta/{organization_name}/subscription:
+  /v1beta/organizations/{organizationId}/subscription:
     get:
-      summary: Get an organization subscription
+      summary: Get the subscription of an organization
       description: Returns the subscription details of an organization.
       operationId: MgmtPublicService_GetOrganizationSubscription
       responses:
@@ -749,15 +674,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: organization_name
-          description: |-
-            The parent resource, i.e., the organization to which the subscription
-            refers.
-            Format: `organizations/{organization.id}`.
+        - name: organizationId
+          description: Oragnization ID
           in: path
           required: true
           type: string
-          pattern: organizations/[^/]+
       tags:
         - Subscription
   /v1beta/tokens:
@@ -819,7 +740,7 @@ paths:
             $ref: '#/definitions/v1betaApiToken'
       tags:
         - Token
-  /v1beta/{token_name}:
+  /v1beta/tokens/{tokenId}:
     get:
       summary: Get an API token
       description: Returns the details of an API token.
@@ -837,14 +758,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: token_name
-          description: |-
-            The resource name of the token, which allows its access by ID.
-            - Format: `tokens/{token.id}`.
+        - name: tokenId
+          description: Token ID
           in: path
           required: true
           type: string
-          pattern: tokens/[^/]+
       tags:
         - Token
     delete:
@@ -864,19 +782,16 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: token_name
-          description: |-
-            The resource name of the token, which allows its access by ID.
-            - Format: `tokens/{token.id}`.
+        - name: tokenId
+          description: Token ID
           in: path
           required: true
           type: string
-          pattern: tokens/[^/]+
       tags:
         - Token
   /v1beta/validate_token:
     post:
-      summary: Validate an API token.
+      summary: Validate an API token
       description: Validates an API token.
       operationId: MgmtPublicService_ValidateToken
       responses:
@@ -893,7 +808,7 @@ paths:
             $ref: '#/definitions/googlerpcStatus'
       tags:
         - Token
-  /v1beta/{owner_name}/credit:
+  /v1beta/namespaces/{namespaceId}/credit:
     get:
       summary: Get the remaining Instill Credit
       description: |-
@@ -916,14 +831,11 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: owner_name
-          description: |-
-            The user or organization to which the credit belongs.
-            Format: `{[users|organizations]}/{id}`.
+        - name: namespaceId
+          description: Namespace ID
           in: path
           required: true
           type: string
-          pattern: '[^/]+/[^/]+'
       tags:
         - Credit
   /v1beta/check-namespace:
@@ -1134,162 +1046,6 @@ definitions:
        - STATE_INACTIVE: Inactive.
        - STATE_ACTIVE: Active.
        - STATE_EXPIRED: Expired.
-  HealthCheckResponseServingStatus:
-    type: string
-    enum:
-      - SERVING_STATUS_SERVING
-      - SERVING_STATUS_NOT_SERVING
-    description: |-
-      - SERVING_STATUS_SERVING: Serving status: SERVING
-       - SERVING_STATUS_NOT_SERVING: Serving status: NOT SERVING
-    title: ServingStatus enumerates the status of a queried service
-  SessionService:
-    type: string
-    enum:
-      - SERVICE_MGMT
-      - SERVICE_CONNECTOR
-      - SERVICE_MODEL
-      - SERVICE_PIPELINE
-      - SERVICE_ARTIFACT
-    description: |-
-      - SERVICE_MGMT: Service: MGMT
-       - SERVICE_CONNECTOR: Service: CONNECTOR
-       - SERVICE_MODEL: Service: MODEL
-       - SERVICE_PIPELINE: Service: PIPELINE
-       - SERVICE_ARTIFACT: Service: ARTIFACT
-    title: Service enumerates the services to collect data from
-  UserUsageDataConnectorExecuteData:
-    type: object
-    properties:
-      connectorUid:
-        type: string
-        title: UID for the executed connector
-      executeUid:
-        type: string
-        title: UID for the execute log
-      executeTime:
-        type: string
-        format: date-time
-        title: Timestamp for the execution
-      connectorDefinitionUid:
-        type: string
-        title: Definition UID of the connector
-      status:
-        $ref: '#/definitions/mgmtv1betaStatus'
-        title: Final status of the execution
-      userUid:
-        type: string
-        title: UUID of the user who execute the connector
-      userType:
-        $ref: '#/definitions/v1betaOwnerType'
-        title: Type of the user who execute the connector
-    title: Per execute usage metadata
-    required:
-      - connectorUid
-      - executeUid
-      - executeTime
-      - connectorDefinitionUid
-      - status
-      - userUid
-      - userType
-  UserUsageDataModelTriggerData:
-    type: object
-    properties:
-      modelUid:
-        type: string
-        title: UID for the trigged model
-      triggerUid:
-        type: string
-        title: UID for the trigger log
-      triggerTime:
-        type: string
-        format: date-time
-        title: Timestamp for the trigger
-      modelDefinitionUid:
-        type: string
-        title: Definition UID of the model
-      modelTask:
-        $ref: '#/definitions/v1alphaTask'
-        title: Task of the model
-      status:
-        $ref: '#/definitions/mgmtv1betaStatus'
-        title: Final status of the execution
-      userUid:
-        type: string
-        title: UUID of the user who trigger the model
-      userType:
-        $ref: '#/definitions/v1betaOwnerType'
-        title: Type of the user who trigger the model
-    title: Per trigger usage metadata
-    required:
-      - modelUid
-      - triggerUid
-      - triggerTime
-      - modelDefinitionUid
-      - modelTask
-      - status
-      - userUid
-      - userType
-  UserUsageDataPipelineTriggerData:
-    type: object
-    properties:
-      pipelineUid:
-        type: string
-        title: UID for the triggered pipeline
-      triggerUid:
-        type: string
-        title: UID for the trigger log
-      triggerTime:
-        type: string
-        format: date-time
-        title: Timestamp for the trigger
-      triggerMode:
-        $ref: '#/definitions/v1betaMode'
-        title: Trigger mode
-      status:
-        $ref: '#/definitions/mgmtv1betaStatus'
-        title: Final status of the execution
-      pipelineReleaseId:
-        type: string
-        title: Version for the triggered release pipeline, empty string if not release
-      pipelineReleaseUid:
-        type: string
-        title: UID for the triggered release pipeline, empty string if not release
-      userUid:
-        type: string
-        title: UUID of the user who trigger the pipeline
-      userType:
-        $ref: '#/definitions/v1betaOwnerType'
-        title: Type of the user who trigger the pipeline
-      pipelineId:
-        type: string
-        title: ID for the triggered pipeline
-    title: Per trigger usage metadata
-    required:
-      - pipelineUid
-      - triggerUid
-      - triggerTime
-      - triggerMode
-      - status
-      - pipelineReleaseId
-      - pipelineReleaseUid
-      - userUid
-      - userType
-      - pipelineId
-  coreusagev1betaLivenessResponse:
-    type: object
-    properties:
-      healthCheckResponse:
-        $ref: '#/definitions/v1betaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: LivenessResponse represents a response for a service liveness status
-  coreusagev1betaReadinessResponse:
-    type: object
-    properties:
-      healthCheckResponse:
-        $ref: '#/definitions/v1betaHealthCheckResponse'
-        title: HealthCheckResponse message
-    title: ReadinessResponse represents a response for a service readiness status
   googlerpcStatus:
     type: object
     properties:
@@ -1319,38 +1075,6 @@ definitions:
       '@type':
         type: string
     additionalProperties: {}
-  v1alphaTask:
-    type: string
-    enum:
-      - TASK_CLASSIFICATION
-      - TASK_DETECTION
-      - TASK_KEYPOINT
-      - TASK_OCR
-      - TASK_INSTANCE_SEGMENTATION
-      - TASK_SEMANTIC_SEGMENTATION
-      - TASK_TEXT_TO_IMAGE
-      - TASK_TEXT_GENERATION
-      - TASK_TEXT_GENERATION_CHAT
-      - TASK_VISUAL_QUESTION_ANSWERING
-      - TASK_IMAGE_TO_IMAGE
-      - TASK_TEXT_EMBEDDINGS
-      - TASK_SPEECH_RECOGNITION
-    description: |-
-      Task enumerates the AI task that a model is designed to solve.
-
-       - TASK_CLASSIFICATION: Image Classification - classify images into predefined categories.
-       - TASK_DETECTION: Object Detection - detect and localize multiple objects in images.
-       - TASK_KEYPOINT: Keypoint Detection - detect and localize multiple keypoints of objects in images.
-       - TASK_OCR: OCR (Optical Character Recognition) - detect and recognize text in images.
-       - TASK_INSTANCE_SEGMENTATION: Instance Segmentation - detect, localize and delineate multiple objects in images.
-       - TASK_SEMANTIC_SEGMENTATION: Semantic Segmentation - classify image pixels into predefined categories.
-       - TASK_TEXT_TO_IMAGE: Text to Image - generate images from input text prompts.
-       - TASK_TEXT_GENERATION: Text Generation - generate texts from input text prompts.
-       - TASK_TEXT_GENERATION_CHAT: Conversational Text Generation - generate text as responses to a dialog input.
-       - TASK_VISUAL_QUESTION_ANSWERING: Visual Question Answering - generate text as a response to a visual prompt.
-       - TASK_IMAGE_TO_IMAGE: Image to Image - generate an image from another image.
-       - TASK_TEXT_EMBEDDINGS: Text Embeddings - generate an embedding (a representation as coordinates) from a text input.
-       - TASK_SPEECH_RECOGNITION: Speech Recognition - transcribe the words in an audio input.
   v1betaApiToken:
     type: object
     properties:
@@ -1399,9 +1123,10 @@ definitions:
           that issued the token.
         readOnly: true
       state:
-        $ref: '#/definitions/ApiTokenState'
         description: State.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/ApiTokenState'
       tokenType:
         type: string
         description: Token type. Value is fixed to "Bearer".
@@ -1415,29 +1140,6 @@ definitions:
         format: date-time
         description: Expiration time.
     description: API tokens allow users to make requests to the Instill AI API.
-  v1betaArtifactUsageData:
-    type: object
-    properties:
-      usages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaArtifactUsageDataUserUsageData'
-        title: Usage data of all users in the artifact service
-    title: Artifact service usage data
-  v1betaArtifactUsageDataUserUsageData:
-    type: object
-    properties:
-      ownerUid:
-        type: string
-        title: Owner UUID
-      ownerType:
-        $ref: '#/definitions/v1betaOwnerType'
-        title: Owner type
-    title: Per user usage data in the artifact service
-    required:
-      - ownerUid
-      - ownerType
   v1betaAuthenticatedUser:
     type: object
     properties:
@@ -1498,11 +1200,14 @@ definitions:
         type: string
         description: Console cookie token.
       onboardingStatus:
-        $ref: '#/definitions/v1betaOnboardingStatus'
         description: Onboarding Status.
+        allOf:
+          - $ref: '#/definitions/v1betaOnboardingStatus'
       profile:
-        $ref: '#/definitions/v1betaUserProfile'
         description: Profile.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUserProfile'
     description: |-
       AuthenticatedUser contains the information of an authenticated user, i.e.,
       the public user information plus some fields that should only be accessed by
@@ -1515,8 +1220,9 @@ definitions:
     type: object
     properties:
       type:
-        $ref: '#/definitions/v1betaCheckNamespaceAdminResponseNamespace'
         description: Namespace type.
+        allOf:
+          - $ref: '#/definitions/v1betaCheckNamespaceAdminResponseNamespace'
       uid:
         type: string
         description: Namespace UID.
@@ -1552,8 +1258,9 @@ definitions:
     type: object
     properties:
       type:
-        $ref: '#/definitions/v1betaCheckNamespaceResponseNamespace'
         description: Namespace type.
+        allOf:
+          - $ref: '#/definitions/v1betaCheckNamespaceResponseNamespace'
     description: |-
       CheckNamespaceResponse contains the availability of a namespace or the type
       of resource that's using it.
@@ -1571,56 +1278,23 @@ definitions:
        - NAMESPACE_USER: Namespace belongs to a user.
        - NAMESPACE_ORGANIZATION: Namespace belongs to an organization.
        - NAMESPACE_RESERVED: Reserved.
-  v1betaConnectorUsageData:
-    type: object
-    properties:
-      usages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaConnectorUsageDataUserUsageData'
-        title: Usage data of all users in the connector service
-    title: Connector service usage data
-  v1betaConnectorUsageDataUserUsageData:
-    type: object
-    properties:
-      ownerUid:
-        type: string
-        title: Owner UUID
-      connectorExecuteData:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/UserUsageDataConnectorExecuteData'
-        title: Execution data for each user
-      ownerType:
-        $ref: '#/definitions/v1betaOwnerType'
-        title: Owner type
-    title: Per user usage data in the connector service
-    required:
-      - ownerUid
-      - connectorExecuteData
-      - ownerType
   v1betaCreateOrganizationResponse:
     type: object
     properties:
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         description: The organization resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     description: CreateOrganizationResponse contains the created organization.
-  v1betaCreateSessionResponse:
-    type: object
-    properties:
-      session:
-        $ref: '#/definitions/v1betaSession'
-        title: A session resource
-    title: CreateSessionResponse represents a response for a session response
   v1betaCreateTokenResponse:
     type: object
     properties:
       token:
-        $ref: '#/definitions/v1betaApiToken'
         description: The created API token resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaApiToken'
     description: CreateTokenResponse contains the created token.
   v1betaCreditConsumptionChartRecord:
     type: object
@@ -1667,333 +1341,62 @@ definitions:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1betaAuthenticatedUser'
         description: The authenticated user resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaAuthenticatedUser'
     description: GetAuthenticatedUserResponse contains the requested authenticated user.
   v1betaGetAuthenticatedUserSubscriptionResponse:
     type: object
     properties:
       subscription:
-        $ref: '#/definitions/v1betaUserSubscription'
         description: The subscription resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUserSubscription'
     description: GetAuthenticatedUserSubscriptionResponse contains the requested subscription.
-  v1betaGetBulkCumulativeModelOnlineRecordsResponse:
-    type: object
-    properties:
-      bulkCumulativeRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetCumulativeModelOnlineRecordsResponse'
-        title: A list of cumulative model online record lists
-    title: |-
-      GetBulkCumulativeModelOnlineRecordsResponse represents a response to
-      GetBulkCumulativeModelOnlineRecordsRequest
-    required:
-      - bulkCumulativeRecords
-  v1betaGetBulkCumulativePipelineTriggerRecordsResponse:
-    type: object
-    properties:
-      bulkCumulativeRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetCumulativePipelineTriggerRecordsResponse'
-        title: A list of cumulative pipeline trigger record lists
-    title: |-
-      GetBulkCumulativePipelineTriggerRecordsResponse represents a response to
-      GetBulkCumulativePipelineTriggerRecordsRequest
-    required:
-      - bulkCumulativeRecords
-  v1betaGetBulkModelOnlinePriceResponse:
-    type: object
-    properties:
-      bulkPrices:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetModelOnlinePriceResponse'
-        title: A list of model online price lists
-    title: |-
-      GetBulkModelOnlinePriceResponse represents a response to
-      GetBulkModelOnlinePriceRequest
-    required:
-      - bulkPrices
-  v1betaGetBulkModelOnlineRecordsResponse:
-    type: object
-    properties:
-      bulkRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetModelOnlineRecordsResponse'
-        title: A list of model online record lists
-    title: |-
-      GetBulkModelOnlineRecordsResponse represents a response to
-      GetBulkModelOnlineRecordsRequest
-    required:
-      - bulkRecords
-  v1betaGetBulkModelOnlineSummaryResponse:
-    type: object
-    properties:
-      bulkSummaries:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetModelOnlineSummaryResponse'
-        title: A list of model online usage summaries
-    title: |-
-      GetBulkModelOnlineSummaryResponse represents a response to
-      GetBulkModelOnlineSummaryRequest
-    required:
-      - bulkSummaries
-  v1betaGetBulkPipelineTriggerPriceResponse:
-    type: object
-    properties:
-      bulkPrices:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetPipelineTriggerPriceResponse'
-        title: A list of pipeline trigger price lists
-    title: |-
-      GetBulkPipelineTriggerPriceResponse represents a response to
-      GetBulkPipelineTriggerPriceRequest
-    required:
-      - bulkPrices
-  v1betaGetBulkPipelineTriggerRecordsResponse:
-    type: object
-    properties:
-      bulkRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetPipelineTriggerRecordsResponse'
-        title: A list of pipeline trigger record lists
-    title: |-
-      GetBulkPipelineTriggerRecordsResponse represents a response to
-      GetBulkPipelineTriggerRecordsRequest
-    required:
-      - bulkRecords
-  v1betaGetBulkPipelineTriggerSummariesResponse:
-    type: object
-    properties:
-      bulkSummaries:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaGetPipelineTriggerSummaryResponse'
-        title: A list of pipeline trigger usage summaries
-    title: |-
-      GetBulkPipelineTriggerSummariesResponse represents a response to
-      GetBulkPipelineTriggerSummariesRequest
-    required:
-      - bulkSummaries
-  v1betaGetCumulativeModelOnlineRecordsRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      model:
-        $ref: '#/definitions/v1betaModelData'
-        title: Model information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: |-
-      GetCumulativeModelOnlineRecordsRequest represents a query for cumulative
-      model online records
-    required:
-      - user
-      - model
-      - timeInterval
-  v1betaGetCumulativeModelOnlineRecordsResponse:
-    type: object
-    properties:
-      cumulativeRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaModelUsageRecord'
-        title: A list of model online records in cumulative format
-    title: |-
-      GetCumulativeModelOnlineRecordsResponse represents a response to
-      GetCumulativeModelOnlineRecordsRequest
-    required:
-      - cumulativeRecords
-  v1betaGetCumulativePipelineTriggerRecordsRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      pipeline:
-        $ref: '#/definitions/v1betaPipelineData'
-        title: Pipeline information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: |-
-      GetCumulativePipelineTriggerRecordsRequest represents a query for cumulative
-      pipeline trigger records
-    required:
-      - user
-      - pipeline
-  v1betaGetCumulativePipelineTriggerRecordsResponse:
-    type: object
-    properties:
-      cumulativeRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPipelineUsageRecord'
-        title: Pipeline trigger records where values are in cumulative formats
-    title: |-
-      GetCumulativePipelineTriggerRecordsResponse represents a response to
-      GetCumulativePipelineTriggerRecordsRequest
-    required:
-      - cumulativeRecords
-  v1betaGetModelOnlinePriceRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      model:
-        $ref: '#/definitions/v1betaModelData'
-        title: Pipeline information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: |-
-      GetPipelineTriggerPriceRequest represents a query for price data of the
-      billing periods covered by the time interval
-    required:
-      - user
-      - model
-      - timeInterval
-  v1betaGetModelOnlinePriceResponse:
-    type: object
-    properties:
-      price:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPriceData'
-        title: |-
-          A list of model online prices given the billing periods covered by the time
-          interval
-    title: |-
-      GetModelOnlinePriceResponse represents a response to
-      GetModelOnlinePriceRequest
-    required:
-      - price
-  v1betaGetModelOnlineRecordsRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      model:
-        $ref: '#/definitions/v1betaModelData'
-        title: Model information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: GetModelOnlineRecordsRequest represent a query for model online records
-    required:
-      - user
-      - model
-      - timeInterval
-  v1betaGetModelOnlineRecordsResponse:
-    type: object
-    properties:
-      records:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaModelUsageRecord'
-        title: A list of model trigger records
-    title: |-
-      GetModelOnlineRecordsResponse represents a response to
-      GetModelOnlineRecordsRequest
-    required:
-      - records
-  v1betaGetModelOnlineSummaryRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      model:
-        $ref: '#/definitions/v1betaModelData'
-        title: Pipeline information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: GetModelOnlineSummaryRequest represents a query for model online summary
-    required:
-      - user
-      - model
-      - timeInterval
-  v1betaGetModelOnlineSummaryResponse:
-    type: object
-    properties:
-      summary:
-        $ref: '#/definitions/v1betaUsageSummary'
-        title: The total model online usage in the time interval
-    title: |-
-      GetModelOnlineSummaryResponse represents a response to
-      GetModelOnlineSummaryRequest
-    required:
-      - summary
-  v1betaGetModelsResponse:
-    type: object
-    properties:
-      models:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaModelData'
-        title: A list of model informations
-    title: GetPipelinesResponse represents a respond to GetModelsRequest
-    required:
-      - models
   v1betaGetOrganizationAdminResponse:
     type: object
     properties:
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         title: A organization resource
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     title: GetOrganizationAdminResponse represents a response for a organization resource
   v1betaGetOrganizationMembershipResponse:
     type: object
     properties:
       membership:
-        $ref: '#/definitions/v1betaOrganizationMembership'
         description: The requested organization membership.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationMembership'
     description: GetOrganizationMembershipResponse contains the organization membership.
   v1betaGetOrganizationResponse:
     type: object
     properties:
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         description: The organization resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     description: GetOrganizationResponse contains the requested organization.
   v1betaGetOrganizationSubscriptionAdminResponse:
     type: object
     properties:
       subscription:
-        $ref: '#/definitions/v1betaOrganizationSubscription'
         title: Subscription
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationSubscription'
     title: GetOrganizationSubscriptionAdminResponse
   v1betaGetOrganizationSubscriptionResponse:
     type: object
     properties:
       subscription:
-        $ref: '#/definitions/v1betaOrganizationSubscription'
         description: The subscription resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationSubscription'
     description: GetOrganizationSubscriptionResponse contains the requested subscription.
   v1betaGetPipelineTriggerCountResponse:
     type: object
@@ -2007,114 +1410,6 @@ definitions:
     description: |-
       GetPipelineTriggerCountResponse contains the trigger count, grouped by
       trigger status.
-  v1betaGetPipelineTriggerPriceRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      pipeline:
-        $ref: '#/definitions/v1betaPipelineData'
-        title: Pipeline information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: |-
-      GetPipelineTriggerPriceRequest represents a query for pipeline trigger prices
-      given the billing periods covered by the time interval
-    required:
-      - user
-      - pipeline
-      - timeInterval
-  v1betaGetPipelineTriggerPriceResponse:
-    type: object
-    properties:
-      price:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPriceData'
-        title: |-
-          A list of pipeline trigger prices given the billing periods covered by the
-          time interval
-    title: |-
-      GetPipelineTriggerPriceResponse represents a response to
-      GetPipelineTriggerPriceRequest
-    required:
-      - price
-  v1betaGetPipelineTriggerRecordsRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      pipeline:
-        $ref: '#/definitions/v1betaPipelineData'
-        title: Pipeline information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: |-
-      GetPipelineTriggerRecordsRequest represents a query for pipeline trigger
-      records
-    required:
-      - user
-      - pipeline
-  v1betaGetPipelineTriggerRecordsResponse:
-    type: object
-    properties:
-      records:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPipelineUsageRecord'
-        title: A list of pipeline trigger records
-    title: |-
-      GetPipelineTriggerRecordsResponse represents a response to
-      GetPipelineTriggerRecordsRequest
-    required:
-      - records
-  v1betaGetPipelineTriggerSummaryRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      pipeline:
-        $ref: '#/definitions/v1betaPipelineData'
-        title: Pipeline information
-      timeInterval:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time interval
-    title: |-
-      GetPipelineTriggerSummaryRequest represents a query for pipeline trigger
-      summary
-    required:
-      - user
-      - pipeline
-  v1betaGetPipelineTriggerSummaryResponse:
-    type: object
-    properties:
-      summaries:
-        $ref: '#/definitions/v1betaUsageSummary'
-        title: The total pipeline trigger usage in the time interval
-    title: |-
-      GetPipelineTriggerSummaryResponse represents a response to
-      GetPipelineTriggerSummaryRequest
-    required:
-      - summaries
-  v1betaGetPipelinesResponse:
-    type: object
-    properties:
-      pipelines:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPipelineData'
-        title: A list of pipeline informations
-    title: GetPipelinesResponse represents a respond to GetPipelineRequest
-    required:
-      - pipelines
   v1betaGetRemainingCreditAdminResponse:
     type: object
     properties:
@@ -2132,16 +1427,19 @@ definitions:
         type: number
         format: float
         description: Amount of perishable credit, i.e. credit with an expiration date.
+        readOnly: true
       imperishable:
         type: number
         format: float
         description: |-
           Amount of imperishable credit, e.g. purchased credit, which doesn't
           expire.
+        readOnly: true
       total:
         type: number
         format: float
         description: Total remaining credit.
+        readOnly: true
     description: |-
       GetRemainingCreditResponse contains the remaining credit of a user or
       organization.
@@ -2149,51 +1447,45 @@ definitions:
     type: object
     properties:
       token:
-        $ref: '#/definitions/v1betaApiToken'
         description: The API token resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaApiToken'
     description: GetTokenResponse contains the requested token.
   v1betaGetUserAdminResponse:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1betaUser'
         title: A user resource
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
     title: GetUserAdminResponse represents a response for a user resource
   v1betaGetUserMembershipResponse:
     type: object
     properties:
       membership:
-        $ref: '#/definitions/v1betaUserMembership'
         description: The requested user membership.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUserMembership'
     description: GetUserMembershipResponse contains the user membership.
   v1betaGetUserResponse:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1betaUser'
         description: The user resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
     description: GetUserResponse contains the requested user.
   v1betaGetUserSubscriptionAdminResponse:
     type: object
     properties:
       subscription:
-        $ref: '#/definitions/v1betaUserSubscription'
         title: Subscription
+        allOf:
+          - $ref: '#/definitions/v1betaUserSubscription'
     title: GetUserSubscriptionAdminResponse
-  v1betaHealthCheckRequest:
-    type: object
-    properties:
-      service:
-        type: string
-        title: Service name to check for its readiness status
-    title: HealthCheckRequest represents a request to health check a service
-  v1betaHealthCheckResponse:
-    type: object
-    properties:
-      status:
-        $ref: '#/definitions/HealthCheckResponseServingStatus'
-        title: Status is the instance of the enum type ServingStatus
-    title: HealthCheckResponse represents a response for a service heath status
   v1betaListCreditConsumptionChartRecordsResponse:
     type: object
     properties:
@@ -2217,6 +1509,7 @@ definitions:
         description: |-
           The organization memberships, i.e., the users that belong to the
           organization.
+        readOnly: true
     description: ListOrganizationMembershipsResponse contains a list of memberships.
   v1betaListOrganizationsAdminResponse:
     type: object
@@ -2244,13 +1537,16 @@ definitions:
           type: object
           $ref: '#/definitions/v1betaOrganization'
         title: A list of organizations
+        readOnly: true
       nextPageToken:
         type: string
         description: Next page token.
+        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of organizations.
+        readOnly: true
     title: ListOrganizationsResponse represents a response for a list of organizations
   v1betaListPipelineTriggerChartRecordsResponse:
     type: object
@@ -2294,6 +1590,7 @@ definitions:
           type: object
           $ref: '#/definitions/v1betaUserMembership'
         description: The user memberships, i.e., the organizations the user belongs to.
+        readOnly: true
     description: ListUserMembershipsResponse contains a list of memberships.
   v1betaListUsersAdminResponse:
     type: object
@@ -2321,27 +1618,32 @@ definitions:
           type: object
           $ref: '#/definitions/v1betaUser'
         description: A list of user resources.
+        readOnly: true
       nextPageToken:
         type: string
         description: Next page token.
+        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of users.
+        readOnly: true
     description: ListUsersResponse contains a list of users.
   v1betaLookUpOrganizationAdminResponse:
     type: object
     properties:
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         title: A organization resource
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     title: LookUpOrganizationAdminResponse represents a response for a organization resource by admin
   v1betaLookUpUserAdminResponse:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1betaUser'
         title: A user resource
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
     title: LookUpUserAdminResponse represents a response for a user resource by admin
   v1betaMembershipState:
     type: string
@@ -2354,109 +1656,6 @@ definitions:
        - MEMBERSHIP_STATE_ACTIVE: Active.
        - MEMBERSHIP_STATE_PENDING: Pending, i.e., a request has been sent to the user to join an
       organization.
-  v1betaMgmtUsageData:
-    type: object
-    properties:
-      userUsages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaAuthenticatedUser'
-        title: Repeated user usage data
-      orgUsages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaOrganization'
-        title: Repeated org usage data
-    title: Management service usage data
-  v1betaMode:
-    type: string
-    enum:
-      - MODE_SYNC
-      - MODE_ASYNC
-    description: |-
-      Mode describes the execution mode of the pipeline (sync or async).
-
-       - MODE_SYNC: Synchronous (result is returned in the response).
-       - MODE_ASYNC: Asynchronous (response only contains acknowledgement).
-  v1betaModelData:
-    type: object
-    properties:
-      uid:
-        type: string
-        title: Model unique id that is auto generated
-      id:
-        type: string
-        title: Model id that is given by the users
-      instanceId:
-        type: string
-        title: The id of the model instance that is deployed
-      task:
-        type: string
-        title: The AI task supported by this model
-    title: Pipeline records definition
-    required:
-      - uid
-      - id
-      - instanceId
-      - task
-  v1betaModelUsageData:
-    type: object
-    properties:
-      usages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaModelUsageDataUserUsageData'
-        title: Usage data of all users in the model service
-    title: Model service usage data
-  v1betaModelUsageDataUserUsageData:
-    type: object
-    properties:
-      ownerUid:
-        type: string
-        title: Owner UUID
-      modelTriggerData:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/UserUsageDataModelTriggerData'
-        title: Trigger data for each user
-      ownerType:
-        $ref: '#/definitions/v1betaOwnerType'
-        title: Owner type
-    title: Per user usage data in the model service
-    required:
-      - ownerUid
-      - modelTriggerData
-      - ownerType
-  v1betaModelUsageRecord:
-    type: object
-    properties:
-      deployTime:
-        type: string
-        format: date-time
-        title: Time when the model is ONLINE
-      recordTime:
-        type: string
-        format: date-time
-        title: Time when model online usage is recorded
-      value:
-        type: integer
-        format: int32
-        title: |-
-          The model online usage record that is logged in cumulative manner. This
-          value records the cumulative usage since model is online in the current
-          billing period
-    title: Model online usage record definition
-    required:
-      - deployTime
-      - recordTime
-      - value
-  v1betaNullMessage:
-    type: object
-    title: Nul Message for gRPC REQ/RES
   v1betaOnboardingStatus:
     type: string
     enum:
@@ -2501,21 +1700,24 @@ definitions:
         description: Update time.
         readOnly: true
       owner:
-        $ref: '#/definitions/v1betaUser'
         description: The user that owns the organization.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
       profile:
-        $ref: '#/definitions/v1betaOrganizationProfile'
         description: Profile.
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationProfile'
       permission:
-        $ref: '#/definitions/v1betaPermission'
         title: Permission
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaPermission'
     description: |-
       Organizations group several users. As entities, they can own resources such
       as pipelines or releases.
     required:
-      - id
+      - profile
   v1betaOrganizationMembership:
     type: object
     properties:
@@ -2530,17 +1732,20 @@ definitions:
         type: string
         description: Role of the user in the organization.
       state:
-        $ref: '#/definitions/v1betaMembershipState'
         description: State of the membership.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaMembershipState'
       user:
-        $ref: '#/definitions/v1betaUser'
         description: User information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         description: Organization information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     description: |-
       An organization membership defines the relationship between an organization
       and a user that is attached to it.
@@ -2573,19 +1778,25 @@ definitions:
     type: object
     properties:
       plan:
-        $ref: '#/definitions/v1betaOrganizationSubscriptionPlan'
         description: Plan identifier.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationSubscriptionPlan'
       detail:
-        $ref: '#/definitions/v1betaStripeSubscriptionDetail'
         description: Details of the associated Stripe subscription.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaStripeSubscriptionDetail'
       maxSeats:
         type: integer
         format: int32
         description: Maximum number of seats allowed.
+        readOnly: true
       usedSeats:
         type: integer
         format: int32
         description: Number of used seats within the organization subscription.
+        readOnly: true
     description: OrganizationSubscription details describe the plan (i.e., features) an organization has access to.
   v1betaOrganizationSubscriptionPlan:
     type: string
@@ -2601,21 +1812,14 @@ definitions:
        - PLAN_TEAM: Team plan.
        - PLAN_ENTERPRISE: Enterprise plan.
        - PLAN_TEAM_PRO: Team pro plan.
-  v1betaOwnerType:
-    type: string
-    enum:
-      - OWNER_TYPE_USER
-      - OWNER_TYPE_ORGANIZATION
-    description: |-
-      - OWNER_TYPE_USER: OwnerType: USER
-       - OWNER_TYPE_ORGANIZATION: OwnerType: ORGANIZATION
-    title: OwnerType enumerates the owner type of any resource
   v1betaPatchAuthenticatedUserResponse:
     type: object
     properties:
       user:
-        $ref: '#/definitions/v1betaAuthenticatedUser'
         description: The updated user resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaAuthenticatedUser'
     title: |-
       PatchAuthenticatedUserResponse contains the updated user.
       the authenticated user resource
@@ -2625,24 +1829,8 @@ definitions:
       canEdit:
         type: boolean
         description: Defines whether the resource can be modified.
+        readOnly: true
     description: Permission defines how a resource can be used.
-  v1betaPipelineData:
-    type: object
-    properties:
-      uid:
-        type: string
-        title: Pipeline unique id that is auto generated
-      id:
-        type: string
-        title: Pipeline id assigned by users
-      task:
-        type: string
-        title: Pipeline task indicate the AI task this pipeline supports
-    title: Pipeline records definition
-    required:
-      - uid
-      - id
-      - task
   v1betaPipelineTriggerChartRecord:
     type: object
     properties:
@@ -2682,305 +1870,52 @@ definitions:
         title: Number og triggers
         readOnly: true
       status:
-        $ref: '#/definitions/mgmtv1betaStatus'
         title: This field will be present when results are grouped by trigger status;
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmtv1betaStatus'
     description: |-
       PipelineTriggerCount represents a pipeline execution count with some
       aggregation params (e.g. trigger status).
-  v1betaPipelineUsageData:
-    type: object
-    properties:
-      usages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPipelineUsageDataUserUsageData'
-        title: Usage data of all users in the pipeline service
-    title: Pipeline service usage data
-  v1betaPipelineUsageDataUserUsageData:
-    type: object
-    properties:
-      ownerUid:
-        type: string
-        title: Owner UUID
-      pipelineTriggerData:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/UserUsageDataPipelineTriggerData'
-        title: Trigger data for each user
-      ownerType:
-        $ref: '#/definitions/v1betaOwnerType'
-        title: Owner type
-    title: Per user usage data in the pipeline service
-    required:
-      - ownerUid
-      - pipelineTriggerData
-      - ownerType
-  v1betaPipelineUsageRecord:
-    type: object
-    properties:
-      requestId:
-        type: string
-        description: A unique request id given by vdp when trigger the pipeline.
-      operationId:
-        type: string
-        title: A unique operation id given by vdp
-      status:
-        type: string
-        title: The HTTP status received when user trigger the pipeline
-      triggerTime:
-        type: string
-        format: date-time
-        title: Time when the pipeline is triggered
-      recordTime:
-        type: string
-        format: date-time
-        title: Time when the pipeline trigger usage is recorded
-      value:
-        type: integer
-        format: int32
-        title: |-
-          The pipeline trigger usage record. The unit of the usage should be
-          consistent with Stripe
-    title: Pipeline trigger usage record definition
-    required:
-      - requestId
-      - operationId
-      - status
-      - triggerTime
-      - recordTime
-      - value
-  v1betaPriceData:
-    type: object
-    properties:
-      time:
-        $ref: '#/definitions/v1betaTimeInterval'
-        title: Time when the price record is generated
-      currency:
-        type: string
-        title: The currency of the price
-        readOnly: true
-      amount:
-        type: number
-        format: float
-        title: The price of the query usage in the current billing period
-        readOnly: true
-    title: Pricing information
-    required:
-      - time
-  v1betaReportModelOnlineRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      model:
-        $ref: '#/definitions/v1betaModelData'
-        title: Model information
-      cumUsageRecord:
-        $ref: '#/definitions/v1betaModelUsageRecord'
-        title: Model online record
-    title: |-
-      ReportModelOnlineRequest represents a request for reporting a model-online
-      record
-    required:
-      - user
-      - model
-      - cumUsageRecord
-  v1betaReportModelOnlineResponse:
-    type: object
-    properties:
-      "null":
-        $ref: '#/definitions/v1betaNullMessage'
-        title: Null message for empty response
-    title: |-
-      ReportModelOnlineResponse represents a respond to a model-online-record
-      report request
-  v1betaReportModelOnlinesResponse:
-    type: object
-    properties:
-      "null":
-        $ref: '#/definitions/v1betaNullMessage'
-        title: Null message for empty response
-    title: |-
-      ReportModelOnlinesResponse represents a respond to a model-online-records
-      reporting bulk request
-  v1betaReportPipelineTriggerRequest:
-    type: object
-    properties:
-      user:
-        $ref: '#/definitions/v1betaUserData'
-        title: User information
-      pipeline:
-        $ref: '#/definitions/v1betaPipelineData'
-        title: Pipeline information
-      usageRecord:
-        $ref: '#/definitions/v1betaPipelineUsageRecord'
-        title: Pipeline trigger record
-    title: |-
-      ReportPipelineTriggerRequest represents a request for reporting a
-      pipeline-trigger record
-    required:
-      - user
-      - pipeline
-      - usageRecord
-  v1betaReportPipelineTriggerResponse:
-    type: object
-    properties:
-      "null":
-        $ref: '#/definitions/v1betaNullMessage'
-        title: Null message for empty response
-    title: |-
-      ReportPipelineTriggerResponse represents a respond to a
-      pipeline-trigger-record report request
-  v1betaReportPipelineTriggersResponse:
-    type: object
-    properties:
-      "null":
-        $ref: '#/definitions/v1betaNullMessage'
-        title: Null message for empty response
-    title: |-
-      ReportPipelineTriggersResponse represents a respond to a
-      pipeline-trigger-records reporting bulk request
-  v1betaSendSessionReportResponse:
-    type: object
-    title: SendReportResponse represents an empty response
-  v1betaSession:
-    type: object
-    properties:
-      name:
-        type: string
-        title: Resource name in the format of 'sessions/uid'
-        readOnly: true
-      uid:
-        type: string
-        title: Resource UUID
-        readOnly: true
-      service:
-        $ref: '#/definitions/SessionService'
-        title: name of the service to collect data from
-      edition:
-        type: string
-        title: 'Session edition, allowed values include: ''local-ce'' and ''local-ce:dev'''
-      version:
-        type: string
-        title: Version of the service
-      arch:
-        type: string
-        title: Architecture of the system
-      os:
-        type: string
-        title: Operating system
-      uptime:
-        type: string
-        format: int64
-        title: Session service uptime
-      reportTime:
-        type: string
-        format: date-time
-        title: Report time
-      token:
-        type: string
-        description: |-
-          Token to send report. The token is generated by the server and sent to
-          the client. Client needs to use the token to send report to the server.
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        title: Session creation time
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        title: Session update time
-        readOnly: true
-      ownerUid:
-        type: string
-        title: Owner UUID of the instance, can also be considered as instance UUID
-    title: |-
-      Session represents a unique session whenever a new instance of VDP service
-      gets started. The usage server returns a token that should be used as part of
-      the challenge when sending a report with data collected from this session
-    required:
-      - service
-      - edition
-      - version
-      - arch
-      - os
-      - uptime
-      - reportTime
-      - ownerUid
-  v1betaSessionReport:
-    type: object
-    properties:
-      sessionUid:
-        type: string
-        title: Session uid
-      token:
-        type: string
-        title: Session token
-      pow:
-        type: string
-        title: Proof-of-work See https://en.wikipedia.org/wiki/Proof_of_work
-      session:
-        $ref: '#/definitions/v1betaSession'
-        title: Session
-      mgmtUsageData:
-        $ref: '#/definitions/v1betaMgmtUsageData'
-        title: Management service usage data
-      connectorUsageData:
-        $ref: '#/definitions/v1betaConnectorUsageData'
-        title: Connector service usage data
-      modelUsageData:
-        $ref: '#/definitions/v1betaModelUsageData'
-        title: Model service usage data
-      pipelineUsageData:
-        $ref: '#/definitions/v1betaPipelineUsageData'
-        title: Pipeline service usage data
-      artifactUsageData:
-        $ref: '#/definitions/v1betaArtifactUsageData'
-        title: Artifact service usage data
-    title: |-
-      SessionReport represents a report to be sent to the server that includes the
-      usage data of a session
-    required:
-      - sessionUid
-      - token
-      - pow
-      - session
   v1betaStripeSubscriptionDetail:
     type: object
     properties:
       productName:
         type: string
         description: Product name associated with the subscription in Stripe.
+        readOnly: true
       id:
         type: string
         description: Unique identifier for the subscription.
+        readOnly: true
       itemId:
         type: string
         description: Identifier for the specific item within the subscription.
+        readOnly: true
       price:
         type: number
         format: float
         description: Price of the subscription.
+        readOnly: true
       canceledAt:
         type: integer
         format: int32
         description: Optional timestamp indicating when the subscription was canceled, if applicable.
+        readOnly: true
       trialEnd:
         type: integer
         format: int32
         description: Optional timestamp indicating when the trial ended, if applicable.
+        readOnly: true
       status:
-        $ref: '#/definitions/v1betaStripeSubscriptionDetailStatus'
         description: Status of the subscription.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaStripeSubscriptionDetailStatus'
       description:
         type: string
         description: Description of the subscription.
+        readOnly: true
     description: StripeSubscriptionDetail describes the details of a subscription in Stripe.
   v1betaStripeSubscriptionDetailStatus:
     type: string
@@ -3014,57 +1949,33 @@ definitions:
     description: |-
       SubtractCreditResponse contains the remaining credit of an account after the
       subtraction.
-  v1betaTimeInterval:
-    type: object
-    properties:
-      startTime:
-        type: string
-        format: date-time
-        title: Start time of the interval
-      endTime:
-        type: string
-        format: date-time
-        title: End time of the interval
-    title: Time interval
-    required:
-      - startTime
-      - endTime
   v1betaUpdateOrganizationMembershipResponse:
     type: object
     properties:
       membership:
-        $ref: '#/definitions/v1betaOrganizationMembership'
         description: The updated membership resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganizationMembership'
     description: UpdateOrganizationMembershipResponse contains the updated membership.
   v1betaUpdateOrganizationResponse:
     type: object
     properties:
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         description: The organization resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     description: UpdateOrganizationResponse contains the updated organization.
   v1betaUpdateUserMembershipResponse:
     type: object
     properties:
       membership:
-        $ref: '#/definitions/v1betaUserMembership'
         description: The updated membership resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUserMembership'
     description: UpdateUserMembershipResponse contains the updated membership.
-  v1betaUsageSummary:
-    type: object
-    properties:
-      time:
-        type: string
-        format: date-time
-        title: Time when the summary is generated
-      value:
-        type: integer
-        format: int32
-        title: The total usage since the beginning of the current billing period
-    title: Usage summary definition
-    required:
-      - time
-      - value
   v1betaUser:
     type: object
     properties:
@@ -3079,6 +1990,7 @@ definitions:
         description: |-
           User UUID. This field is optionally set by users on creation (it will be
           server-generated if unspecified).
+        readOnly: true
       id:
         type: string
         description: |-
@@ -3099,25 +2011,12 @@ definitions:
         description: Update time.
         readOnly: true
       profile:
-        $ref: '#/definitions/v1betaUserProfile'
         description: Profile.
+        allOf:
+          - $ref: '#/definitions/v1betaUserProfile'
     description: |-
       User describes an individual that interacts with Instill AI. It doesn't
       contain any private information about the user.
-    required:
-      - id
-  v1betaUserData:
-    type: object
-    properties:
-      uid:
-        type: string
-        title: User unique id
-      name:
-        type: string
-        title: User name, which is not necessary for service queries
-    title: User records definition
-    required:
-      - uid
   v1betaUserMembership:
     type: object
     properties:
@@ -3133,16 +2032,19 @@ definitions:
         description: Role of the user in the organization.
         readOnly: true
       state:
-        $ref: '#/definitions/v1betaMembershipState'
         description: State of the membership.
+        allOf:
+          - $ref: '#/definitions/v1betaMembershipState'
       user:
-        $ref: '#/definitions/v1betaUser'
         description: User information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUser'
       organization:
-        $ref: '#/definitions/v1betaOrganization'
         description: Organization information.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaOrganization'
     description: |-
       A user membership defines the relationship between a user and an
       organization they belong to.
@@ -3178,11 +2080,15 @@ definitions:
     type: object
     properties:
       plan:
-        $ref: '#/definitions/v1betaUserSubscriptionPlan'
         description: Plan identifier.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaUserSubscriptionPlan'
       detail:
-        $ref: '#/definitions/v1betaStripeSubscriptionDetail'
         description: Details of the associated Stripe subscription.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaStripeSubscriptionDetail'
     description: UserSubscription details describe the plan (i.e., features) a user has access to.
   v1betaUserSubscriptionPlan:
     type: string

@@ -4,6 +4,7 @@ repos:
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
+        exclude: common/openapi
       - id: trailing-whitespace
   - repo: https://github.com/pinglin/conventional-pre-commit
     rev: v1.1.0
@@ -11,8 +12,23 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
   - repo: https://github.com/bufbuild/buf.git
-    rev: v1.25.0
+    rev: v1.35.0
     hooks:
       - id: buf-generate
+  - repo: local
+    hooks:
+      - id: generate-openapi
+        name: generate openapi
+        entry: make openapi
+        language: system
+  - repo: https://github.com/bufbuild/buf.git
+    rev: v1.35.0
+    hooks:
       - id: buf-format
       - id: buf-lint
+  - repo: local
+    hooks:
+      - id: validate-openapi
+        name: validate openapi
+        entry: make openapi-lint
+        language: system

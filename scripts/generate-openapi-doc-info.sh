@@ -20,8 +20,8 @@ ESCAPE_NEWLINES='s/$/\\n/g'
 PATTERN_INFO='{{\$info}}'
 PATTERN_CONF='{{\$conf}}'
 
-ESCAPED_INFO=$(sed $ESCAPE_SLASHES  common/openapi/v1beta/api_info.conf | sed $ESCAPE_NEWLINES | tr -d '\n')
-ESCAPED_CONF=$(sed $ESCAPE_SLASHES  common/openapi/v1beta/api_config.conf | sed $ESCAPE_NEWLINES | tr -d '\n')
+ESCAPED_INFO=$(sed $ESCAPE_SLASHES  common/openapi/v1beta/api_info.conf | sed $ESCAPE_NEWLINES | tr -d '\n' | sed 's/..$//')
+ESCAPED_CONF=$(sed $ESCAPE_SLASHES  common/openapi/v1beta/api_config.conf | sed $ESCAPE_NEWLINES | tr -d '\n' | sed 's/..$//')
 
 # For each template file, insert the configuration in the pattern and save it
 # as an openapi.proto file.

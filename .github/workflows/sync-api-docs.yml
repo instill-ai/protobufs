@@ -1,6 +1,7 @@
 name: Sync docs in ReadMe 🦉
 
 on:
+  pull_request:
   push:
     branches:
       # This workflow will run every time changes in the OpenAPI docs are
@@ -14,8 +15,62 @@ on:
       - 'openapiv2/vdp/**'
 
 jobs:
-  sync-openapi-private:
+  sync-openapi-private-dev:
+    name: Keep private (dev) docs in sync with latest pull request
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      old_release: ${{ steps.check-new-release.outputs.old_release }}
+      new_release: ${{ steps.check-new-release.outputs.new_release }}
+    steps:
+      - name: Check out repo 📚
+        uses: actions/checkout@v3
+        with:
+          # Needed in check-new-release to compare with the previous commit.
+          fetch-depth: 0
+
+      - name: Sync Core 🔮
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/core/service.swagger.yaml --title "🔮 Core ${{ github.ref_name }}" --key=${{ secrets.README_API_KEY }} --id=669fb9c72dd8c500184c652d
+
+      - name: Sync Model ⚗️
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/model/service.swagger.yaml --title "⚗️ Model ${{ github.ref_name }}"--key=${{ secrets.README_API_KEY }} --id=669fb9c72dd8c500184c652e
+
+      - name: Sync VDP 💧
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/vdp/service.swagger.yaml --title "💧 VDP ${{ github.ref_name }}"--key=${{ secrets.README_API_KEY }} --id=669fb9c72dd8c500184c652f
+
+      - name: Sync Artifact 💾
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/artifact/service.swagger.yaml --title "💾 Artifact ${{ github.ref_name }}" --key=${{ secrets.README_API_KEY }} --id=669fb9c72dd8c500184c6531
+
+      - name: Check new release 🔍
+        id: check-new-release
+        run: |
+          # If the version in the OpenAPI configuration has changed, extract
+          # the old and new release versions (without the "v" prefix) to
+          # variables.
+          version_file=common/openapi/v1beta/api_info.conf
+          capture_old='^-\s\+\<version:'
+          capture_new='^+\s\+\<version:'
+          extract_version='s/.*"v\(.*\)".*/\1/'
+
+          old_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_old | sed $extract_version)
+          new_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_new | sed $extract_version)
+
+          if [[ $new_version ]]; then
+            echo "new_release=$new_version" >> $GITHUB_OUTPUT
+            echo "old_release=$old_version" >> $GITHUB_OUTPUT
+          fi
+
+  sync-openapi-private-staging:
     name: Keep private (staging) docs in sync with `main`
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     outputs:
       old_release: ${{ steps.check-new-release.outputs.old_release }}
@@ -42,6 +97,11 @@ jobs:
         with:
           rdme: openapi openapiv2/vdp/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65bcfc78e72e300017c0b164
 
+      - name: Sync Artifact 💾
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/artifact/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=669fb97f2071e2004a8f9183
+
       - name: Check new release 🔍
         id: check-new-release
         run: |
@@ -63,7 +123,7 @@ jobs:
 
   sync-openapi-public:
     name: Sync public docs on new release
-    needs: [sync-openapi-private]
+    needs: [sync-openapi-private-staging]
     runs-on: ubuntu-latest
     if: needs.sync-openapi-private.outputs.new_release != ''
     steps:

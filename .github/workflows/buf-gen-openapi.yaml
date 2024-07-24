@@ -28,17 +28,22 @@ jobs:
       - name: Generate OpenAPI definitions
         run: |
           make openapi
-
-          # Pass generated files to linter step
-          echo 'FILE_LIST<<EOF' >> $GITHUB_ENV
-          find openapiv2 -type f >> $GITHUB_ENV
-          echo 'EOF' >> $GITHUB_ENV
-      - name: Lint generated OpenAPI definitions
-        uses: mbowman100/swagger-validator-action@master
+      - name: Lint generated Core OpenAPI definitions
+        uses: readmeio/rdme@v8
         with:
-          # Uses the same linter than swagger-cli but spares us the
-          # installation.
-          files: ${{ env.FILE_LIST }}
+          rdme: openapi:validate openapiv2/core/service.swagger.yaml
+      - name: Lint generated VDP OpenAPI definitions
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi:validate openapiv2/vdp/service.swagger.yaml
+      - name: Lint generated Model OpenAPI definitions
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi:validate openapiv2/model/service.swagger.yaml
+      - name: Lint generated Artifact OpenAPI definitions
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi:validate openapiv2/artifact/service.swagger.yaml
       - name: Commit and push
         run: |
           if [[ `git status --porcelain` ]]; then
