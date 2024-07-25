@@ -1019,12 +1019,12 @@ paths:
       description: |-
         Returns a paginated list of secrets that belong to the specified
         namespace.
-      operationId: PipelinePublicService_ListSecrets
+      operationId: PipelinePublicService_ListNamespaceSecrets
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaListSecretsResponse'
+            $ref: '#/definitions/v1betaListNamespaceSecretsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1057,12 +1057,12 @@ paths:
     post:
       summary: Create a secret
       description: Creates a new secret under the parenthood of an namespace.
-      operationId: PipelinePublicService_CreateSecret
+      operationId: PipelinePublicService_CreateNamespaceSecret
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaCreateSecretResponse'
+            $ref: '#/definitions/v1betaCreateNamespaceSecretResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1082,11 +1082,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/v1betaSecret'
-        - name: secretId
-          description: Secret ID
-          in: query
-          required: true
-          type: string
       tags:
         - Secret
   /v1beta/namespaces/{namespaceId}/secrets/{secretId}:
@@ -1095,12 +1090,12 @@ paths:
       description: |-
         Returns the details of an namespace-owned secret by its resource name,
         which is defined by the parent namespace and the ID of the secret.
-      operationId: PipelinePublicService_GetSecret
+      operationId: PipelinePublicService_GetNamespaceSecret
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaGetSecretResponse'
+            $ref: '#/definitions/v1betaGetNamespaceSecretResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1126,12 +1121,12 @@ paths:
       description: |-
         Deletes a secret, accesing it by its resource name, which is defined by
         the parent namespace and the ID of the secret.
-      operationId: PipelinePublicService_DeleteSecret
+      operationId: PipelinePublicService_DeleteNamespaceSecret
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaDeleteSecretResponse'
+            $ref: '#/definitions/v1betaDeleteNamespaceSecretResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1159,12 +1154,12 @@ paths:
 
         In REST requests, only the supplied secret fields will be taken into
         account when updating the resource.
-      operationId: PipelinePublicService_UpdateSecret
+      operationId: PipelinePublicService_UpdateNamespaceSecret
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaUpdateSecretResponse'
+            $ref: '#/definitions/v1betaUpdateNamespaceSecretResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -5281,6 +5276,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaPipeline'
     description: CreateNamespacePipelineResponse contains the created pipeline.
+  v1betaCreateNamespaceSecretResponse:
+    type: object
+    properties:
+      secret:
+        description: The created secret resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
+    description: CreateNamespaceSecretResponse contains the created secret.
   v1betaCreateOrganizationPipelineReleaseResponse:
     type: object
     properties:
@@ -5305,15 +5309,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaSecret'
     description: CreateOrganizationSecretResponse contains the created secret.
-  v1betaCreateSecretResponse:
-    type: object
-    properties:
-      secret:
-        description: The created secret resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1betaSecret'
-    description: CreateSecretResponse contains the created secret.
   v1betaCreateUserPipelineReleaseResponse:
     type: object
     properties:
@@ -5356,6 +5351,9 @@ definitions:
   v1betaDeleteNamespacePipelineResponse:
     type: object
     description: DeleteNamespacePipelineResponse is an empty response.
+  v1betaDeleteNamespaceSecretResponse:
+    type: object
+    description: DeleteNamespaceSecretResponse is an empty response.
   v1betaDeleteOrganizationPipelineReleaseResponse:
     type: object
     description: DeleteOrganizationPipelineReleaseResponse is an empty response.
@@ -5365,9 +5363,6 @@ definitions:
   v1betaDeleteOrganizationSecretResponse:
     type: object
     description: DeleteOrganizationSecretResponse is an empty response.
-  v1betaDeleteSecretResponse:
-    type: object
-    description: DeleteSecretResponse is an empty response.
   v1betaDeleteUserPipelineReleaseResponse:
     type: object
     description: DeleteUserPipelineReleaseResponse is an empty response.
@@ -5403,6 +5398,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaPipeline'
     description: GetNamespacePipelineResponse contains the requested pipeline.
+  v1betaGetNamespaceSecretResponse:
+    type: object
+    properties:
+      secret:
+        description: The secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
+    description: GetNamespaceSecretResponse contains the requested secret.
   v1betaGetOperationResponse:
     type: object
     properties:
@@ -5444,14 +5447,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaSecret'
     description: GetOrganizationSecretResponse contains the requested secret.
-  v1betaGetSecretResponse:
-    type: object
-    properties:
-      secret:
-        description: The secret resource.
-        allOf:
-          - $ref: '#/definitions/v1betaSecret'
-    description: GetSecretResponse contains the requested secret.
   v1betaGetUserPipelineReleaseResponse:
     type: object
     properties:
@@ -5555,6 +5550,26 @@ definitions:
         description: Total number of pipelines.
         readOnly: true
     description: ListNamespacePipelinesResponse contains a list of pipelines.
+  v1betaListNamespaceSecretsResponse:
+    type: object
+    properties:
+      secrets:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaSecret'
+        description: A list of secret resources.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page secret.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of secret resources.
+        readOnly: true
+    description: ListNamespaceSecretsResponse contains a list of secrets.
   v1betaListOperatorDefinitionsResponse:
     type: object
     properties:
@@ -5685,26 +5700,6 @@ definitions:
         description: Total number of pipelines.
         readOnly: true
     description: ListPipelinesResponse contains a list of pipelines.
-  v1betaListSecretsResponse:
-    type: object
-    properties:
-      secrets:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaSecret'
-        description: A list of secret resources.
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page secret.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of secret resources.
-        readOnly: true
-    description: ListSecretsResponse contains a list of secrets.
   v1betaListUserPipelineReleasesResponse:
     type: object
     properties:
@@ -6607,6 +6602,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaPipeline'
     description: UpdateNamespacePipelineResponse contains the updated pipeline.
+  v1betaUpdateNamespaceSecretResponse:
+    type: object
+    properties:
+      secret:
+        description: The updated secret resource.
+        allOf:
+          - $ref: '#/definitions/v1betaSecret'
+    description: UpdateNamespaceSecretResponse contains the updated secret.
   v1betaUpdateOrganizationPipelineReleaseResponse:
     type: object
     properties:
@@ -6633,14 +6636,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaSecret'
     description: UpdateOrganizationSecretResponse contains the updated secret.
-  v1betaUpdateSecretResponse:
-    type: object
-    properties:
-      secret:
-        description: The updated secret resource.
-        allOf:
-          - $ref: '#/definitions/v1betaSecret'
-    description: UpdateSecretResponse contains the updated secret.
   v1betaUpdateUserPipelineReleaseResponse:
     type: object
     properties:
