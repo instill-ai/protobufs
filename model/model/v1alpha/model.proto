@@ -217,32 +217,6 @@ message Model {
   repeated string tags = 30 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ModelCard represents a README.md file that accompanies the model to describe
-// handy information with additional model metadata. Under the hood, a model
-// card is associated with a specific model. It is an crucial for
-// reproducibility, sharing and discoverability.
-//
-// Each model has exactly one README card.
-message ModelCard {
-  option (google.api.resource) = {
-    type: "api.instill.tech/ModelCard"
-    pattern: "users/{user.id}/models/{model.id}/readme"
-  };
-
-  // The resource name of the model card, which allows its access by parent
-  // user and model ID.
-  // - Format: `users/{user.id}/models/{model.id}/readme`.
-  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Size of the file in bytes.
-  int32 size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Type of the resource. Its value is fixed to `file`.
-  string type = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Content of the README file in bytes and base64 format.
-  bytes content = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Encoding type of the content. Its value is fixed to `base64`.
-  string encoding = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // ListModelsRequest represents a request to list  models.
 message ListModelsRequest {
   // The maximum number of models to return. If this parameter is unspecified,
@@ -406,49 +380,6 @@ message RenameNamespaceModelRequest {
 message RenameNamespaceModelResponse {
   // The renamed model resource.
   Model model = 1;
-}
-
-// PublishNamespacehModelRequest represents a request to publish a model.
-message PublishNamespaceModelRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Model ID
-  string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-}
-
-// PublishNamespaceModelResponse contains a published model.
-message PublishNamespaceModelResponse {
-  // The published model resource.
-  Model model = 1;
-}
-
-// UnpublishNamespaceModelRequest represents a request to unpublish a model.
-message UnpublishNamespaceModelRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Model ID
-  string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-}
-
-// UnpublishNamespaceModelResponse contains an unpublished model.
-message UnpublishNamespaceModelResponse {
-  // The unpublished model resource.
-  Model model = 1;
-}
-
-// GetNamespaceModelCardRequest represents a request to fetch the README card of a
-// model.
-message GetNamespaceModelCardRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Model ID
-  string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-}
-
-// GetNamespaceModelCardResponse contains the model's README card.
-message GetNamespaceModelCardResponse {
-  // A model card resource.
-  ModelCard readme = 1;
 }
 
 // WatchNamespaceModelRequest represents a request to fetch current state of a model
@@ -628,6 +559,25 @@ message TriggerNamespaceModelBinaryFileUploadResponse {
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
   // Model version tag
   string version = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// TriggerNamespaceModelLatestBinaryFileUploadRequest represents a request trigger a model
+// inference by uploading a binary file as the input.
+message TriggerNamespaceLatestModelBinaryFileUploadRequest {
+  // Namespace ID
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // Model ID
+  string model_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // Inference input as a binary file.
+  TaskInputStream task_input = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// TriggerNamespaceLatestModelBinaryFileUploadResponse contains the model inference results.
+message TriggerNamespaceLatestModelBinaryFileUploadResponse {
+  // Task type.
+  common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  // Model inference outputs.
+  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // GetNamespaceLatestModelOperationRequest represents a request to fetch the latest long-running
@@ -829,67 +779,6 @@ message RenameUserModelRequest {
 message RenameUserModelResponse {
   // The renamed model resource.
   Model model = 1;
-}
-
-// PublisUserhModelRequest represents a request to publish a model.
-message PublishUserModelRequest {
-  // The resource name of the model, which allows its access by parent user
-  // and ID.
-  // - Format: `users/{user.id}/models/{model.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/Model",
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_model_name"}
-    }
-  ];
-}
-
-// PublishUserModelResponse contains a published model.
-message PublishUserModelResponse {
-  // The published model resource.
-  Model model = 1;
-}
-
-// UnpublishUserModelRequest represents a request to unpublish a model.
-message UnpublishUserModelRequest {
-  // The resource name of the model, which allows its access by parent user
-  // and ID.
-  // - Format: `users/{user.id}/models/{model.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/Model",
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_model_name"}
-    }
-  ];
-}
-
-// UnpublishUserModelResponse contains an unpublished model.
-message UnpublishUserModelResponse {
-  // The unpublished model resource.
-  Model model = 1;
-}
-
-// GetUserModelCardRequest represents a request to fetch the README card of a
-// model.
-message GetUserModelCardRequest {
-  // The resource name of the model card, which allows its access by parent
-  // user and model ID.
-  // - Format: `users/{user.id}/models/{model.id}/readme`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/ModelCard",
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_model_card_name"}
-    }
-  ];
-}
-
-// GetUserModelCardResponse contains the model's README card.
-message GetUserModelCardResponse {
-  // A model card resource.
-  ModelCard readme = 1;
 }
 
 // WatchUserModelRequest represents a request to fetch current state of a model
@@ -1373,67 +1262,6 @@ message RenameOrganizationModelRequest {
 message RenameOrganizationModelResponse {
   // The renamed model resource.
   Model model = 1;
-}
-
-// PublisOrganizationhModelRequest represents a request to publish a model.
-message PublishOrganizationModelRequest {
-  // The resource name of the model, which allows its access by parent organization
-  // and ID.
-  // - Format: `organizations/{organization.id}/models/{model.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/Model",
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_model_name"}
-    }
-  ];
-}
-
-// PublishOrganizationModelResponse contains a published model.
-message PublishOrganizationModelResponse {
-  // The published model resource.
-  Model model = 1;
-}
-
-// UnpublishOrganizationModelRequest represents a request to unpublish a model.
-message UnpublishOrganizationModelRequest {
-  // The resource name of the model, which allows its access by parent organization
-  // and ID.
-  // - Format: `organizations/{organization.id}/models/{model.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/Model",
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_model_name"}
-    }
-  ];
-}
-
-// UnpublishOrganizationModelResponse contains an unpublished model.
-message UnpublishOrganizationModelResponse {
-  // The unpublished model resource.
-  Model model = 1;
-}
-
-// GetOrganizationModelCardRequest represents a request to fetch the README card of a
-// model.
-message GetOrganizationModelCardRequest {
-  // The resource name of the model card, which allows its access by parent
-  // organization and model ID.
-  // - Format: `organizations/{organization.id}/models/{model.id}/readme`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference).type = "api.instill.tech/ModelCard",
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_model_card_name"}
-    }
-  ];
-}
-
-// GetOrganizationModelCardResponse contains the model's README card.
-message GetOrganizationModelCardResponse {
-  // A model card resource.
-  ModelCard readme = 1;
 }
 
 // WatchOrganizationModelRequest represents a request to fetch current state of a model.
