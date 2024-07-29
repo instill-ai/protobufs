@@ -94,16 +94,16 @@ message ModelVersion {
   // The resource name of the model, which allows its access by parent user
   // and ID.
   // - Format: `users/{user.id}/models/{model.id}`.
-  // The name of the tag.
+  // The name of the Version.
   // - Format: `users/{user.id}/models/{model.id}/versions/{version.id}`.
   string name = 1 [(google.api.field_behavior) = IMMUTABLE];
   // The model version identifier, which is equal to image tag.
   string version = 2 [(google.api.field_behavior) = IMMUTABLE];
-  // Unique identifier, computed from the manifest the tag refers to.
+  // Unique identifier, computed from the manifest the Version refers to.
   string digest = 3 [(google.api.field_behavior) = OPTIONAL];
   // Current state of this model version.
   State state = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Tag update time, i.e. timestamp of the last push.
+  // Version update time, i.e. timestamp of the last push.
   google.protobuf.Timestamp update_time = 5 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
@@ -215,6 +215,8 @@ message Model {
   google.protobuf.Struct output_schema = 29 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Tags.
   repeated string tags = 30 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Versions.
+  repeated string versions = 31 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListModelsRequest represents a request to list  models.
@@ -388,7 +390,7 @@ message WatchNamespaceModelRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -428,7 +430,7 @@ message ListNamespaceModelVersionsRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // The maximum number of tags to return. The default and cap values are 10
+  // The maximum number of versions to return. The default and cap values are 10
   // and 100, respectively.
   optional int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
   // Page number.
@@ -439,7 +441,7 @@ message ListNamespaceModelVersionsRequest {
 message ListNamespaceModelVersionsResponse {
   // A list of model resources.
   repeated ModelVersion versions = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Total number of tags.
+  // Total number of versions.
   int32 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The requested page size.
   int32 page_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -454,7 +456,7 @@ message DeleteNamespaceModelVersionRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -469,7 +471,7 @@ message TriggerNamespaceModelRequest {
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
   // Inference input parameters.
   repeated TaskInput task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -490,7 +492,7 @@ message TriggerAsyncNamespaceModelRequest {
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
   // Inference input parameters.
   repeated TaskInput task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -547,7 +549,7 @@ message TriggerNamespaceModelBinaryFileUploadRequest {
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
   // Inference input as a binary file.
   TaskInputStream task_input = 3 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -557,7 +559,7 @@ message TriggerNamespaceModelBinaryFileUploadResponse {
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // Model inference outputs.
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -604,7 +606,7 @@ message DeployNamespaceModelAdminRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
   // Model image digest
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
@@ -623,7 +625,7 @@ message UndeployNamespaceModelAdminRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
   // Model image digest
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
@@ -793,7 +795,7 @@ message WatchUserModelRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -835,7 +837,7 @@ message WatchUserLatestModelResponse {
 // ListUserModelVersionsRequest represents a request to list all the versions
 // of a model namespace of a user.
 message ListUserModelVersionsRequest {
-  // The maximum number of tags to return. The default and cap values are 10
+  // The maximum number of versions to return. The default and cap values are 10
   // and 100, respectively.
   optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
   // Page number.
@@ -858,7 +860,7 @@ message ListUserModelVersionsRequest {
 message ListUserModelVersionsResponse {
   // A list of model resources.
   repeated ModelVersion versions = 1;
-  // Total number of tags.
+  // Total number of versions.
   int32 total_size = 2;
   // The requested page size.
   int32 page_size = 3;
@@ -879,7 +881,7 @@ message DeleteUserModelVersionRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -997,7 +999,7 @@ message TriggerUserModelRequest {
   ];
   // Inference input parameters.
   repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1024,7 +1026,7 @@ message TriggerAsyncUserModelRequest {
   ];
   // Inference input parameters.
   repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1099,7 +1101,7 @@ message TriggerUserModelBinaryFileUploadRequest {
   ];
   // Inference input as a binary file.
   TaskInputStream task_input = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1109,7 +1111,7 @@ message TriggerUserModelBinaryFileUploadResponse {
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
   // Model inference outputs.
   repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1276,7 +1278,7 @@ message WatchOrganizationModelRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1318,7 +1320,7 @@ message WatchOrganizationLatestModelResponse {
 // ListOrganizationModelVersionsRequest represents a request to list all the versions
 // of a model namespace of an organization.
 message ListOrganizationModelVersionsRequest {
-  // The maximum number of tags to return. The default and cap values are 10
+  // The maximum number of versions to return. The default and cap values are 10
   // and 100, respectively.
   optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
   // Page number.
@@ -1341,7 +1343,7 @@ message ListOrganizationModelVersionsRequest {
 message ListOrganizationModelVersionsResponse {
   // A list of model resources.
   repeated ModelVersion versions = 1;
-  // Total number of tags.
+  // Total number of versions.
   int32 total_size = 2;
   // The requested page size.
   int32 page_size = 3;
@@ -1364,7 +1366,7 @@ message DeleteOrganizationModelVersionRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1385,7 +1387,7 @@ message TriggerOrganizationModelRequest {
   ];
   // Inference input parameters.
   repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1412,7 +1414,7 @@ message TriggerAsyncOrganizationModelRequest {
   ];
   // Inference input parameters.
   repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1486,7 +1488,7 @@ message TriggerOrganizationModelBinaryFileUploadRequest {
   ];
   // Inference input as a binary file.
   TaskInputStream task_input = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -1653,7 +1655,7 @@ message DeployUserModelAdminRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
   // Model image digest
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
@@ -1678,7 +1680,7 @@ message DeployOrganizationModelAdminRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
   // Model image digest
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
@@ -1701,7 +1703,7 @@ message UndeployUserModelAdminRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
   // Model image digest
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
@@ -1727,7 +1729,7 @@ message UndeployOrganizationModelAdminRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Model version tag
+  // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
   // Model image digest
   string digest = 4 [(google.api.field_behavior) = OPTIONAL];
