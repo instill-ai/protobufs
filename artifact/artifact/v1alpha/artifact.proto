@@ -161,98 +161,98 @@ message DeleteRepositoryTagRequest {
 // DeleteRepositoryTagResponse represent an empty response.
 message DeleteRepositoryTagResponse {}
 
-// KnowledgeBase represents a knowledge base.
-message KnowledgeBase {
-  // The knowledge base identifier.
-  string kb_id = 1;
-  // The knowledge base name.
+// Catalog represents a catalog.
+message Catalog {
+  // The catalog id.
+  string catalog_id = 1;
+  // The catalog name.
   string name = 2;
-  // The knowledge base description.
+  // The catalog description.
   string description = 3;
-  // The creation time of the knowledge base.
+  // The creation time of the catalog.
   string create_time = 5;
-  // The last update time of the knowledge base.
+  // The last update time of the catalog.
   string update_time = 6;
-  // The owner of the knowledge base.
+  // The owner/namespaceof the catalog.
   string owner_name = 7;
-  // The knowledge base tags.
+  // The catalog tags.
   repeated string tags = 8;
-  // The knowledge base converting pipelines.
+  // The catalog converting pipelines.
   repeated string converting_pipelines = 9;
-  // The knowledge base splitting pipelines.
+  // The catalog splitting pipelines.
   repeated string splitting_pipelines = 10;
-  // The knowledge base embedding pipelines.
+  // The catalog embedding pipelines.
   repeated string embedding_pipelines = 11;
   // The downstream apps
   repeated string downstream_apps = 12;
-  // The total files in knowledge base.
+  // The total files in catalog.
   uint32 total_files = 13;
-  // The total tokens in knowledge base.
+  // The total tokens in catalog.
   uint32 total_tokens = 14;
-  // The current used storage in knowledge base.
+  // The current used storage in catalog.
   uint64 used_storage = 15;
 }
 
-// CreateKnowledgeBaseRequest represents a request to create a knowledge base.
-message CreateKnowledgeBaseRequest {
-  // The knowledge base owner(nammespace).
+// CreateCatalogRequest represents a request to create a catalog.
+message CreateCatalogRequest {
+  // The catalog's owner(nammespace).
   string namespace_id = 1;
-  // The knowledge base name.
+  // The catalog name.
   string name = 2;
-  // The knowledge base description.
+  // The catalog description.
   string description = 3;
-  // The knowledge base tags.
+  // The catalog tags.
   repeated string tags = 4;
 }
 
-// CreateKnowledgeBaseResponse represents a response for creating a knowledge base.
-message CreateKnowledgeBaseResponse {
-  // The created knowledge base.
-  KnowledgeBase knowledge_base = 1;
+// CreateCatalogResponse represents a response for creating a catalog.
+message CreateCatalogResponse {
+  // The created catalog.
+  Catalog catalog = 1;
 }
 
-// Request message for ListKnowledgeBases
-message ListKnowledgeBasesRequest {
-  // User ID for which to list the knowledge bases
+// Request message for ListCatalogs
+message ListCatalogsRequest {
+  // User ID for which to list the catalogs
   string namespace_id = 1;
 }
 
-// GetKnowledgeBasesResponse represents a response for getting all knowledge bases from users.
-message ListKnowledgeBasesResponse {
-  // The knowledge bases container.
-  repeated KnowledgeBase knowledge_bases = 1;
+// GetCatalogsResponse represents a response for getting all catalogs from users.
+message ListCatalogsResponse {
+  // The catalogs container.
+  repeated Catalog catalogs = 1;
 }
 
-// UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
-message UpdateKnowledgeBaseRequest {
-  // The knowledge base id.
-  string kb_id = 1;
-  // The knowledge base description.
+// UpdateCatalogRequest represents a request to update a catalog.
+message UpdateCatalogRequest {
+  // The catalog id.
+  string catalog_id = 1;
+  // The catalog description.
   string description = 2;
-  // The knowledge base tags.
+  // The catalog tags.
   repeated string tags = 3;
-  // The knowledge base owner(namespace).
+  // The catalog owner(namespace).
   string namespace_id = 4;
 }
 
-// UpdateKnowledgeBaseResponse represents a response for updating a knowledge base.
-message UpdateKnowledgeBaseResponse {
-  // The updated knowledge base.
-  KnowledgeBase knowledge_base = 1;
+// UpdateCatalogResponse represents a response for updating a catalog.
+message UpdateCatalogResponse {
+  // The updated catalog.
+  Catalog catalog = 1;
 }
 
-// DeleteKnowledgeBaseRequest represents a request to delete a knowledge base.
-message DeleteKnowledgeBaseRequest {
+// DeleteCatalogRequest represents a request to delete a catalog.
+message DeleteCatalogRequest {
   // The owner's id. i.e. namespace.
   string namespace_id = 1;
-  // The knowledge base identifier.
-  string kb_id = 2;
+  // The catalog id.
+  string catalog_id = 2;
 }
 
-// DeleteKnowledgeBaseResponse represents a response for deleting a knowledge base.
-message DeleteKnowledgeBaseResponse {
-  // The knowledge base identifier.
-  KnowledgeBase knowledge_base = 1;
+// DeleteCatalogResponse represents a response for deleting a catalog.
+message DeleteCatalogResponse {
+  // The catalog identifier.
+  Catalog catalog = 1;
 }
 
 // file embedding process status
@@ -309,12 +309,12 @@ message File {
   bool retrievable = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   // contect(this is reserved for future use)
   string content = 7 [(google.api.field_behavior) = OPTIONAL];
-  // owner uid
+  // owner/namespaceuid
   string owner_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
   // cretor uid from authn token
   string creator_uid = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // knowledge base uid
-  string kb_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // catalog uid
+  string catalog_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
   // create time
   google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
   // update time
@@ -330,68 +330,68 @@ message File {
 }
 
 // upload file request
-message UploadKnowledgeBaseFileRequest {
-  // owenr uid
+message UploadCatalogFileRequest {
+  // owner/namespace uid
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // knowledge base uid
-  string kb_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // catalog id
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
   // file
   File file = 3;
 }
 
 // upload file response
-message UploadKnowledgeBaseFileResponse {
+message UploadCatalogFileResponse {
   // file
   File file = 1;
 }
 
 // delete file request
-message DeleteKnowledgeBaseFileRequest {
+message DeleteCatalogFileRequest {
   // The file uid.
   string file_uid = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // delete file response
-message DeleteKnowledgeBaseFileResponse {
+message DeleteCatalogFileResponse {
   // The file uid.
   string file_uid = 1;
 }
 
-// Process KnowledgeBase File Request
-message ProcessKnowledgeBaseFilesRequest {
+// Process Catalog File Request
+message ProcessCatalogFilesRequest {
   // The file uid.
   repeated string file_uids = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-// Process KnowledgeBase File Response
-message ProcessKnowledgeBaseFilesResponse {
+// Process Catalog File Response
+message ProcessCatalogFilesResponse {
   // The file uid.
   repeated File files = 1;
 }
 
 // list file filter
 // todo: support more parameters
-message ListKnowledgeBaseFilesFilter {
+message ListCatalogFilesFilter {
   // The file uids.
   repeated string file_uids = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // list files request
-message ListKnowledgeBaseFilesRequest {
-  // The owner uid.
+message ListCatalogFilesRequest {
+  // The owner/namespaceuid id.
   string namespace_id = 1;
-  // The knowledge base uid.
-  string kb_id = 2;
+  // The catalog id.
+  string catalog_id = 2;
   // The page size (default:10; max 100).
   int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
   // The next page token(default from first file's token).
   string page_token = 4 [(google.api.field_behavior) = OPTIONAL];
   // The filter.
-  ListKnowledgeBaseFilesFilter filter = 5 [(google.api.field_behavior) = OPTIONAL];
+  ListCatalogFilesFilter filter = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // list files response
-message ListKnowledgeBaseFilesResponse {
+message ListCatalogFilesResponse {
   // The list of files.
   repeated File files = 1;
   // The total number of files.
@@ -401,5 +401,5 @@ message ListKnowledgeBaseFilesResponse {
   // next page token
   string next_page_token = 4;
   // The filter.
-  ListKnowledgeBaseFilesFilter filter = 5;
+  ListCatalogFilesFilter filter = 5;
 }

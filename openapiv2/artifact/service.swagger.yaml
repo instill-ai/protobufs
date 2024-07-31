@@ -19,15 +19,15 @@ consumes:
 produces:
   - application/json
 paths:
-  /v1alpha/namespaces/{namespaceId}/knowledge-bases:
+  /v1alpha/namespaces/{namespaceId}/catalogs:
     get:
-      summary: Get all knowledge bases info
-      operationId: ArtifactPublicService_ListKnowledgeBases
+      summary: Get all catalogs info
+      operationId: ArtifactPublicService_ListCatalogs
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListKnowledgeBasesResponse'
+            $ref: '#/definitions/v1alphaListCatalogsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -37,20 +37,20 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: User ID for which to list the knowledge bases
+          description: User ID for which to list the catalogs
           in: path
           required: true
           type: string
       tags:
-        - KnowledgeBase
+        - Catalog
     post:
-      summary: Create a knowledge base
-      operationId: ArtifactPublicService_CreateKnowledgeBase
+      summary: Create a catalog
+      operationId: ArtifactPublicService_CreateCatalog
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaCreateKnowledgeBaseResponse'
+            $ref: '#/definitions/v1alphaCreateCatalogResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -60,7 +60,7 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: The knowledge base owner(nammespace).
+          description: The catalog's owner(nammespace).
           in: path
           required: true
           type: string
@@ -68,18 +68,18 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ArtifactPublicServiceCreateKnowledgeBaseBody'
+            $ref: '#/definitions/ArtifactPublicServiceCreateCatalogBody'
       tags:
-        - KnowledgeBase
-  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{kbId}:
+        - Catalog
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}:
     delete:
-      summary: Delete a knowledge base
-      operationId: ArtifactPublicService_DeleteKnowledgeBase
+      summary: Delete a catalog
+      operationId: ArtifactPublicService_DeleteCatalog
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeleteKnowledgeBaseResponse'
+            $ref: '#/definitions/v1alphaDeleteCatalogResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -93,21 +93,21 @@ paths:
           in: path
           required: true
           type: string
-        - name: kbId
-          description: The knowledge base identifier.
+        - name: catalogId
+          description: The catalog id.
           in: path
           required: true
           type: string
       tags:
-        - KnowledgeBase
+        - Catalog
     put:
-      summary: Update a knowledge base info
-      operationId: ArtifactPublicService_UpdateKnowledgeBase
+      summary: Update a catalog info
+      operationId: ArtifactPublicService_UpdateCatalog
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUpdateKnowledgeBaseResponse'
+            $ref: '#/definitions/v1alphaUpdateCatalogResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -117,12 +117,12 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: The knowledge base owner(namespace).
+          description: The catalog owner(namespace).
           in: path
           required: true
           type: string
-        - name: kbId
-          description: The knowledge base id.
+        - name: catalogId
+          description: The catalog id.
           in: path
           required: true
           type: string
@@ -130,18 +130,18 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ArtifactPublicServiceUpdateKnowledgeBaseBody'
+            $ref: '#/definitions/ArtifactPublicServiceUpdateCatalogBody'
       tags:
-        - KnowledgeBase
-  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{kbId}/files:
+        - Catalog
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files:
     get:
       summary: list files
-      operationId: ArtifactPublicService_ListKnowledgeBaseFiles
+      operationId: ArtifactPublicService_ListCatalogFiles
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListKnowledgeBaseFilesResponse'
+            $ref: '#/definitions/v1alphaListCatalogFilesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -151,12 +151,12 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: The owner uid.
+          description: The owner/namespaceuid id.
           in: path
           required: true
           type: string
-        - name: kbId
-          description: The knowledge base uid.
+        - name: catalogId
+          description: The catalog id.
           in: path
           required: true
           type: string
@@ -180,15 +180,15 @@ paths:
             type: string
           collectionFormat: multi
       tags:
-        - KnowledgeBase
+        - Catalog
     post:
       summary: Create a file
-      operationId: ArtifactPublicService_UploadKnowledgeBaseFile
+      operationId: ArtifactPublicService_UploadCatalogFile
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUploadKnowledgeBaseFileResponse'
+            $ref: '#/definitions/v1alphaUploadCatalogFileResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -198,12 +198,12 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: owenr uid
+          description: owner/namespace uid
           in: path
           required: true
           type: string
-        - name: kbId
-          description: knowledge base uid
+        - name: catalogId
+          description: catalog id
           in: path
           required: true
           type: string
@@ -214,16 +214,16 @@ paths:
           schema:
             $ref: '#/definitions/v1alphaFile'
       tags:
-        - KnowledgeBase
-  /v1alpha/knowledge-bases/files:
+        - Catalog
+  /v1alpha/catalogs/files:
     delete:
       summary: Delete a file
-      operationId: ArtifactPublicService_DeleteKnowledgeBaseFile
+      operationId: ArtifactPublicService_DeleteCatalogFile
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaDeleteKnowledgeBaseFileResponse'
+            $ref: '#/definitions/v1alphaDeleteCatalogFileResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -238,16 +238,16 @@ paths:
           required: true
           type: string
       tags:
-        - KnowledgeBase
-  /v1alpha/knowledge-bases/files/processAsync:
+        - Catalog
+  /v1alpha/catalogs/files/processAsync:
     post:
       summary: process file
-      operationId: ArtifactPublicService_ProcessKnowledgeBaseFiles
+      operationId: ArtifactPublicService_ProcessCatalogFiles
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaProcessKnowledgeBaseFilesResponse'
+            $ref: '#/definitions/v1alphaProcessCatalogFilesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -260,10 +260,10 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/v1alphaProcessKnowledgeBaseFilesRequest'
+            $ref: '#/definitions/v1alphaProcessCatalogFilesRequest'
       tags:
-        - KnowledgeBase
-  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{kbId}/chunks:
+        - Catalog
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks:
     get:
       summary: List chunks
       operationId: ArtifactPublicService_ListChunks
@@ -281,12 +281,12 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: owner id (not uid)
+          description: owner/namespace id (not uid)
           in: path
           required: true
           type: string
-        - name: kbId
-          description: knowledge base name (not uid)
+        - name: catalogId
+          description: catalog id (not uid)
           in: path
           required: true
           type: string
@@ -296,8 +296,8 @@ paths:
           required: false
           type: string
       tags:
-        - KnowledgeBase
-  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{kbId}/files/{fileUid}/source:
+        - Catalog
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}/source:
     get:
       summary: Get source file
       operationId: ArtifactPublicService_GetSourceFile
@@ -315,12 +315,12 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: owner id
+          description: owner/namespace id
           in: path
           required: true
           type: string
-        - name: kbId
-          description: knowledge base name
+        - name: catalogId
+          description: catalog id
           in: path
           required: true
           type: string
@@ -330,7 +330,7 @@ paths:
           required: true
           type: string
       tags:
-        - KnowledgeBase
+        - Catalog
   /v1alpha/chunks/{chunkUid}:
     post:
       summary: Update chunk
@@ -359,8 +359,8 @@ paths:
           schema:
             $ref: '#/definitions/ArtifactPublicServiceUpdateChunkBody'
       tags:
-        - KnowledgeBase
-  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{kbId}/chunks/similarity:
+        - Catalog
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks/similarity:
     post:
       summary: Similarity chunks search
       operationId: ArtifactPublicService_SimilarityChunksSearch
@@ -378,12 +378,12 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: owner id
+          description: owner/namespace id
           in: path
           required: true
           type: string
-        - name: kbId
-          description: knowledge base name
+        - name: catalogId
+          description: catalog id
           in: path
           required: true
           type: string
@@ -393,23 +393,23 @@ paths:
           schema:
             $ref: '#/definitions/ArtifactPublicServiceSimilarityChunksSearchBody'
       tags:
-        - KnowledgeBase
+        - Catalog
 definitions:
-  ArtifactPublicServiceCreateKnowledgeBaseBody:
+  ArtifactPublicServiceCreateCatalogBody:
     type: object
     properties:
       name:
         type: string
-        description: The knowledge base name.
+        description: The catalog name.
       description:
         type: string
-        description: The knowledge base description.
+        description: The catalog description.
       tags:
         type: array
         items:
           type: string
-        description: The knowledge base tags.
-    description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+        description: The catalog tags.
+    description: CreateCatalogRequest represents a request to create a catalog.
   ArtifactPublicServiceSimilarityChunksSearchBody:
     type: object
     properties:
@@ -421,6 +421,18 @@ definitions:
         format: int64
         title: topk
     title: Similar chunnk search request
+  ArtifactPublicServiceUpdateCatalogBody:
+    type: object
+    properties:
+      description:
+        type: string
+        description: The catalog description.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The catalog tags.
+    description: UpdateCatalogRequest represents a request to update a catalog.
   ArtifactPublicServiceUpdateChunkBody:
     type: object
     properties:
@@ -428,18 +440,6 @@ definitions:
         type: boolean
         title: whether the chunk is retrievable
     title: Create chunk response
-  ArtifactPublicServiceUpdateKnowledgeBaseBody:
-    type: object
-    properties:
-      description:
-        type: string
-        description: The knowledge base description.
-      tags:
-        type: array
-        items:
-          type: string
-        description: The knowledge base tags.
-    description: UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
   protobufAny:
     type: object
     properties:
@@ -459,6 +459,65 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
+  v1alphaCatalog:
+    type: object
+    properties:
+      catalogId:
+        type: string
+        description: The catalog id.
+      name:
+        type: string
+        description: The catalog name.
+      description:
+        type: string
+        description: The catalog description.
+      createTime:
+        type: string
+        description: The creation time of the catalog.
+      updateTime:
+        type: string
+        description: The last update time of the catalog.
+      ownerName:
+        type: string
+        description: The owner/namespaceof the catalog.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The catalog tags.
+      convertingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog converting pipelines.
+      splittingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog splitting pipelines.
+      embeddingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog embedding pipelines.
+      downstreamApps:
+        type: array
+        items:
+          type: string
+        title: The downstream apps
+      totalFiles:
+        type: integer
+        format: int64
+        description: The total files in catalog.
+      totalTokens:
+        type: integer
+        format: int64
+        description: The total tokens in catalog.
+      usedStorage:
+        type: string
+        format: uint64
+        description: The current used storage in catalog.
+    description: Catalog represents a catalog.
   v1alphaChunk:
     type: object
     properties:
@@ -488,14 +547,14 @@ definitions:
         type: string
         title: original file unique identifier
     description: The Chunk message represents a chunk of data in the artifact system.
-  v1alphaCreateKnowledgeBaseResponse:
+  v1alphaCreateCatalogResponse:
     type: object
     properties:
-      knowledgeBase:
-        description: The created knowledge base.
+      catalog:
+        description: The created catalog.
         allOf:
-          - $ref: '#/definitions/v1alphaKnowledgeBase'
-    description: CreateKnowledgeBaseResponse represents a response for creating a knowledge base.
+          - $ref: '#/definitions/v1alphaCatalog'
+    description: CreateCatalogResponse represents a response for creating a catalog.
   v1alphaCreateRepositoryTagResponse:
     type: object
     properties:
@@ -504,21 +563,21 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alphaRepositoryTag'
     description: CreateRepositoryTagResponse contains the created tag.
-  v1alphaDeleteKnowledgeBaseFileResponse:
+  v1alphaDeleteCatalogFileResponse:
     type: object
     properties:
       fileUid:
         type: string
         description: The file uid.
     title: delete file response
-  v1alphaDeleteKnowledgeBaseResponse:
+  v1alphaDeleteCatalogResponse:
     type: object
     properties:
-      knowledgeBase:
-        description: The knowledge base identifier.
+      catalog:
+        description: The catalog identifier.
         allOf:
-          - $ref: '#/definitions/v1alphaKnowledgeBase'
-    description: DeleteKnowledgeBaseResponse represents a response for deleting a knowledge base.
+          - $ref: '#/definitions/v1alphaCatalog'
+    description: DeleteCatalogResponse represents a response for deleting a catalog.
   v1alphaDeleteRepositoryTagResponse:
     type: object
     description: DeleteRepositoryTagResponse represent an empty response.
@@ -554,15 +613,15 @@ definitions:
         title: contect(this is reserved for future use)
       ownerUid:
         type: string
-        title: owner uid
+        title: owner/namespaceuid
         readOnly: true
       creatorUid:
         type: string
         title: cretor uid from authn token
         readOnly: true
-      kbUid:
+      catalogUid:
         type: string
-        title: knowledge base uid
+        title: catalog uid
         readOnly: true
       createTime:
         type: string
@@ -650,76 +709,7 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alphaSourceFile'
     title: get source file response
-  v1alphaKnowledgeBase:
-    type: object
-    properties:
-      kbId:
-        type: string
-        description: The knowledge base identifier.
-      name:
-        type: string
-        description: The knowledge base name.
-      description:
-        type: string
-        description: The knowledge base description.
-      createTime:
-        type: string
-        description: The creation time of the knowledge base.
-      updateTime:
-        type: string
-        description: The last update time of the knowledge base.
-      ownerName:
-        type: string
-        description: The owner of the knowledge base.
-      tags:
-        type: array
-        items:
-          type: string
-        description: The knowledge base tags.
-      convertingPipelines:
-        type: array
-        items:
-          type: string
-        description: The knowledge base converting pipelines.
-      splittingPipelines:
-        type: array
-        items:
-          type: string
-        description: The knowledge base splitting pipelines.
-      embeddingPipelines:
-        type: array
-        items:
-          type: string
-        description: The knowledge base embedding pipelines.
-      downstreamApps:
-        type: array
-        items:
-          type: string
-        title: The downstream apps
-      totalFiles:
-        type: integer
-        format: int64
-        description: The total files in knowledge base.
-      totalTokens:
-        type: integer
-        format: int64
-        description: The total tokens in knowledge base.
-      usedStorage:
-        type: string
-        format: uint64
-        description: The current used storage in knowledge base.
-    description: KnowledgeBase represents a knowledge base.
-  v1alphaListChunksResponse:
-    type: object
-    properties:
-      chunks:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaChunk'
-        title: repeated chunks
-    description: The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
-  v1alphaListKnowledgeBaseFilesFilter:
+  v1alphaListCatalogFilesFilter:
     type: object
     properties:
       fileUids:
@@ -730,7 +720,7 @@ definitions:
     title: |-
       list file filter
       todo: support more parameters
-  v1alphaListKnowledgeBaseFilesResponse:
+  v1alphaListCatalogFilesResponse:
     type: object
     properties:
       files:
@@ -753,18 +743,28 @@ definitions:
       filter:
         description: The filter.
         allOf:
-          - $ref: '#/definitions/v1alphaListKnowledgeBaseFilesFilter'
+          - $ref: '#/definitions/v1alphaListCatalogFilesFilter'
     title: list files response
-  v1alphaListKnowledgeBasesResponse:
+  v1alphaListCatalogsResponse:
     type: object
     properties:
-      knowledgeBases:
+      catalogs:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaKnowledgeBase'
-        description: The knowledge bases container.
-    description: GetKnowledgeBasesResponse represents a response for getting all knowledge bases from users.
+          $ref: '#/definitions/v1alphaCatalog'
+        description: The catalogs container.
+    description: GetCatalogsResponse represents a response for getting all catalogs from users.
+  v1alphaListChunksResponse:
+    type: object
+    properties:
+      chunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaChunk'
+        title: repeated chunks
+    description: The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
   v1alphaListRepositoryTagsResponse:
     type: object
     properties:
@@ -787,7 +787,7 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListRepositoryTagsResponse contains a list of container image tags.
-  v1alphaProcessKnowledgeBaseFilesRequest:
+  v1alphaProcessCatalogFilesRequest:
     type: object
     properties:
       fileUids:
@@ -795,10 +795,10 @@ definitions:
         items:
           type: string
         description: The file uid.
-    title: Process KnowledgeBase File Request
+    title: Process Catalog File Request
     required:
       - fileUids
-  v1alphaProcessKnowledgeBaseFilesResponse:
+  v1alphaProcessCatalogFilesResponse:
     type: object
     properties:
       files:
@@ -807,7 +807,7 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaFile'
         description: The file uid.
-    title: Process KnowledgeBase File Response
+    title: Process Catalog File Response
   v1alphaRepositoryTag:
     type: object
     properties:
@@ -842,7 +842,7 @@ definitions:
         title: similarity score
       textContent:
         type: string
-        title: chunk
+        title: content
       sourceFile:
         type: string
         title: source file
@@ -875,6 +875,14 @@ definitions:
         format: date-time
         title: update time of the source file
     description: The SourceFile message represents a source file in the artifact system.
+  v1alphaUpdateCatalogResponse:
+    type: object
+    properties:
+      catalog:
+        description: The updated catalog.
+        allOf:
+          - $ref: '#/definitions/v1alphaCatalog'
+    description: UpdateCatalogResponse represents a response for updating a catalog.
   v1alphaUpdateChunkResponse:
     type: object
     properties:
@@ -883,15 +891,7 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alphaChunk'
     title: Updae chunk response
-  v1alphaUpdateKnowledgeBaseResponse:
-    type: object
-    properties:
-      knowledgeBase:
-        description: The updated knowledge base.
-        allOf:
-          - $ref: '#/definitions/v1alphaKnowledgeBase'
-    description: UpdateKnowledgeBaseResponse represents a response for updating a knowledge base.
-  v1alphaUploadKnowledgeBaseFileResponse:
+  v1alphaUploadCatalogFileResponse:
     type: object
     properties:
       file:
