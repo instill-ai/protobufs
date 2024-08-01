@@ -1938,3 +1938,82 @@ message LookUpPipelineAdminResponse {
   // The requested pipeline.
   Pipeline pipeline = 1;
 }
+
+message ListPipelineRunsRequest {
+  string pipeline_id = 1; // Optional: specific pipeline ID, if empty, list runs for all accessible pipelines
+  int32 page_size = 2;
+  string page_token = 3;
+  google.protobuf.Timestamp start_time = 4;
+  google.protobuf.Timestamp end_time = 5;
+  string sort_by = 6; // e.g., "created_time:desc"
+  string filter = 7; // e.g., "status:completed AND credits>10"
+  bool anonymize = 8; // Whether to anonymize runner information for runs not initiated by the requesting user
+}
+
+message ListPipelineRunsResponse {
+  repeated PipelineRun runs = 1;
+  string next_page_token = 2;
+  int32 total_size = 3;
+}
+
+message PipelineRun {
+  string run_id = 1;
+  string pipeline_id = 2;
+  string version = 3;
+  RunStatus status = 4;
+  RunSource source = 5;
+  google.protobuf.Duration total_duration = 6;
+  google.protobuf.Timestamp created_at = 7;
+  Runner runner = 8;
+  double credits = 9;
+  repeated ComponentRun components = 10;
+  repeated FileMetadata input_files = 11;
+  repeated FileMetadata output_files = 12;
+  string recipe_snapshot = 13;
+}
+
+enum RunStatus {
+  RUN_STATUS_UNSPECIFIED = 0;
+  RUN_STATUS_COMPLETED = 1;
+  RUN_STATUS_ERRORED = 2;
+  RUN_STATUS_FAILED = 3;
+}
+
+enum RunSource {
+  RUN_SOURCE_UNSPECIFIED = 0;
+  RUN_SOURCE_WEB = 1;
+  RUN_SOURCE_API = 2;
+}
+
+message Runner {
+  string id = 1; // Anonymized if necessary
+  RunnerType type = 2;
+}
+
+enum RunnerType {
+  RUNNER_TYPE_UNSPECIFIED = 0;
+  RUNNER_TYPE_SELF = 1;
+  RUNNER_TYPE_ANONYMOUS = 2;
+}
+
+message ComponentRun {
+  string component_id = 1;
+  RunStatus status = 2;
+  google.protobuf.Duration duration = 3;
+  google.protobuf.Timestamp started_at = 4;
+  google.protobuf.Timestamp completed_at = 5;
+  double credits = 6;
+  string error_message = 7;
+  string output = 8; // JSON string
+}
+
+message FileMetadata {
+  string name = 1;
+  string type = 2;
+  int64 size = 3;
+  string url = 4;  // URL for accessing, downloading, or displaying the file
+}
+
+
+
+
