@@ -1941,79 +1941,198 @@ message LookUpPipelineAdminResponse {
   Pipeline pipeline = 1;
 }
 
+// ListPipelineRunsRequest defines the parameters for querying pipeline runs.
 message ListPipelineRunsRequest {
-  string pipeline_id = 1; // Optional: specific pipeline ID, if empty, list runs for all accessible pipelines
+  // pipeline_id, if provided, filters runs for a specific pipeline.
+  // If empty, runs for all accessible pipelines are returned.
+  string pipeline_id = 1;
+  
+  // page_size determines the maximum number of runs to return in a single response.
   int32 page_size = 2;
+  
+  // page_token is used for pagination, representing the token for the next page.
   string page_token = 3;
+  
+  // start_time filters runs that started on or after this timestamp.
   google.protobuf.Timestamp start_time = 4;
+  
+  // end_time filters runs that started before this timestamp.
   google.protobuf.Timestamp end_time = 5;
-  string sort_by = 6; // e.g., "created_time:desc"
-  string filter = 7; // e.g., "status:completed AND credits>10"
-  bool anonymize = 8; // Whether to anonymize runner information for runs not initiated by the requesting user
+  
+  // sort_by specifies the field and direction for sorting results.
+  // Format: "field_name:asc" or "field_name:desc". Example: "created_time:desc"
+  string sort_by = 6;
+  
+  // filter is a string representation of filtering criteria.
+  // Example: "status:completed AND credits>10"
+  string filter = 7;
+  
+  // anonymize, when true, hides sensitive information for runs not initiated by the requesting user.
+  bool anonymize = 8;
 }
 
+// ListPipelineRunsResponse contains the list of pipeline runs and pagination information.
 message ListPipelineRunsResponse {
+  // runs is the list of pipeline runs matching the request criteria.
   repeated PipelineRun runs = 1;
+  
+  // next_page_token is the token for retrieving the next page of results.
+  // If empty, there are no more results.
   string next_page_token = 2;
+  
+  // total_size represents the total number of runs matching the query,
+  // regardless of pagination.
   int32 total_size = 3;
 }
 
+// PipelineRun represents a single execution instance of a pipeline.
 message PipelineRun {
+  // run_id is a unique identifier for this specific pipeline run.
   string run_id = 1;
+  
+  // pipeline_id identifies the pipeline that was executed.
   string pipeline_id = 2;
+  
+  // version indicates the specific version of the pipeline that was run.
   string version = 3;
+  
+  // status represents the current state of the pipeline run.
   RunStatus status = 4;
+  
+  // source indicates how the pipeline run was initiated (e.g., API, WebUI).
   RunSource source = 5;
+  
+  // total_duration is the time taken for the entire pipeline run.
   google.protobuf.Duration total_duration = 6;
+  
+  // created_at is the timestamp when the run was initially triggered.
   google.protobuf.Timestamp created_at = 7;
+  
+  // runner contains information about the entity that initiated the run.
   Runner runner = 8;
+  
+  // credits represent the computational or service credits consumed by this run.
   double credits = 9;
+  
+  // components contains detailed execution information for each component in the pipeline.
   repeated ComponentRun components = 10;
+  
+  // input_files contains metadata about input files used in this run.
   repeated FileMetadata input_files = 11;
+  
+  // output_files contains metadata about output files produced by this run.
   repeated FileMetadata output_files = 12;
+  
+  // recipe_snapshot is a JSON representation of the pipeline configuration at the time of execution.
   string recipe_snapshot = 13;
 }
 
+// RunStatus enumerates the possible states of a pipeline run.
+// This status helps track the lifecycle and outcome of each pipeline execution.
 enum RunStatus {
+  // RUN_STATUS_UNSPECIFIED is the default value, indicating an unknown or undefined status.
+  // This should generally not be used and may indicate an error in status tracking.
   RUN_STATUS_UNSPECIFIED = 0;
+
+  // RUN_STATUS_COMPLETED indicates that the pipeline run finished successfully,
+  // executing all components without any errors.
   RUN_STATUS_COMPLETED = 1;
+
+  // RUN_STATUS_ERRORED suggests that the pipeline run encountered an error during execution.
+  // This could be due to issues like component failures, invalid inputs, or system errors.
   RUN_STATUS_ERRORED = 2;
+
+  // RUN_STATUS_FAILED indicates that the pipeline run was unable to complete its execution.
+  // This might be due to critical errors, resource constraints, or manual termination.
   RUN_STATUS_FAILED = 3;
 }
 
+// RunSource indicates the origin or method by which a pipeline run was initiated.
+// This helps in tracking and categorizing pipeline runs based on their trigger source.
 enum RunSource {
+  // RUN_SOURCE_UNSPECIFIED is the default value, indicating an unknown or undefined source.
+  // This should generally not be used and may indicate an error in source tracking.
   RUN_SOURCE_UNSPECIFIED = 0;
+
+  // RUN_SOURCE_WEB indicates that the pipeline run was initiated through a web interface.
+  // This typically means a user manually triggered the run via a UI.
   RUN_SOURCE_WEB = 1;
+
+  // RUN_SOURCE_API indicates that the pipeline run was triggered programmatically via an API call.
+  // This could be from automated scripts, external systems, or other programmatic interfaces.
   RUN_SOURCE_API = 2;
 }
 
+// Runner represents the entity that initiated the pipeline run.
 message Runner {
-  string id = 1; // Anonymized if necessary
+  // id uniquely identifies the runner. May be anonymized based on permissions.
+  string id = 1;
+  
+  // type categorizes the runner (e.g., user, system, anonymous).
   RunnerType type = 2;
 }
 
+// RunnerType categorizes the types of entities that can initiate a pipeline run.
+// This enum helps in identifying and differentiating between various initiators of pipeline runs,
+// which is crucial for auditing, permissions management, and usage analytics.
 enum RunnerType {
+  // RUNNER_TYPE_UNSPECIFIED is the default value, indicating an unknown or undefined runner type.
+  // This should generally not be used and may indicate an error in runner type assignment or tracking.
   RUNNER_TYPE_UNSPECIFIED = 0;
+
+  // RUNNER_TYPE_SELF indicates that the pipeline run was initiated by the authenticated user themselves.
+  // This is typically used when a user directly triggers a pipeline run through their own account.
   RUNNER_TYPE_SELF = 1;
+
+  // RUNNER_TYPE_ANONYMOUS is used when the pipeline run is initiated by an entity that is not
+  // directly authenticated or identifiable. This could include:
+  // - Runs triggered by public access links
+  // - Runs initiated by automated systems without user context
+  // - Runs started by users who don't have full account privileges
+  // When this type is used, extra care should be taken with permissions and resource allocation.
   RUNNER_TYPE_ANONYMOUS = 2;
 }
 
+// ComponentRun represents the execution details of a single component within a pipeline run.
 message ComponentRun {
+  // component_id is the identifier of the component within the pipeline.
   string component_id = 1;
+  
+  // status represents the execution status of this specific component.
   RunStatus status = 2;
+  
+  // duration is the time taken for this component's execution.
   google.protobuf.Duration duration = 3;
+  
+  // started_at is the timestamp when this component began execution.
   google.protobuf.Timestamp started_at = 4;
+  
+  // completed_at is the timestamp when this component finished execution.
   google.protobuf.Timestamp completed_at = 5;
+  
+  // credits represent the computational or service credits consumed by this component.
   double credits = 6;
+  
+  // error_message contains any error details if the component execution failed.
   string error_message = 7;
-  string output = 8; // JSON string
+  
+  // output is a JSON string containing the component's output data.
+  string output = 8;
 }
 
+// FileMetadata represents metadata for a file used in or produced by a pipeline run.
 message FileMetadata {
+  // name is the filename.
   string name = 1;
+  
+  // type is the MIME type of the file.
   string type = 2;
+  
+  // size is the file size in bytes.
   int64 size = 3;
-  string url = 4;  // URL for accessing, downloading, or displaying the file
+  
+  // url is the location where the file can be accessed or downloaded.
+  string url = 4;
 }
 
 
