@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package artifact.artifact.v1alpha;
+// Artifact definitions
+import "artifact/artifact/v1alpha/artifact.proto";
+
+// Protocol Buffers Well-Known Types
+import "google/protobuf/timestamp.proto";
+
+// GetFileCatalogRequest
+message GetFileCatalogRequest{
+    // id of the namespace
+    string namespaceId = 1;
+    // id of the catalog
+    string catalogId = 2;
+    // id of the file(i.e. file name)
+    string fileId = 3;
+    // Uid of the file
+    string fileUid = 4;
+}
+
+// GetFileCatalogResponse
+message GetFileCatalogResponse{
+    // metadata
+    message metadata {
+        // file uid
+        string fileUid = 1;
+        // file id
+        string fileId = 2;
+        // file type
+        FileType fileType = 3;
+        // file size in bytes
+        int64 fileSize = 4;
+        // upload time
+        google.protobuf.Timestamp fileUploadTime = 5;
+        FileProcessStatus fileProcessStatus = 6;
+    }
+    // text message
+    message text{
+        // pipelines
+        repeated string pipelineIds = 1;
+        // transformed content
+        string transformedContent = 2;
+        // transformed content uid
+        string transformedContentUid = 3;
+        // transformed content chunk number
+        int32 transformedContentChunkNumber = 4;
+        // transformed content token number
+        int32 transformedContentTokenNumber = 5;
+        // transformed content update time 
+        google.protobuf.Timestamp transformedContentUpdateTime = 6;
+    }
+    // chunk type
+    enum ChunkType {
+        // text
+        CHUNK_TYPE_TEXT = 0;
+        // image
+        CHUNK_TYPE_IMAGE = 1;
+        // audio
+        CHUNK_TYPE_AUDIO = 2;
+        // video
+        CHUNK_TYPE_VIDEO = 3;
+    }
+    // chunk message
+    message chunk {
+        // chunk uid
+        string uid = 1;
+        // chunk type. i.e. text, image, audio, and video
+        ChunkType type = 2;
+        // chunk start position
+        int32 startPos = 3;
+        // chunk end position
+        int32 endPos =4;
+        // chunk content
+        string content = 5;
+        // chunk tokens num
+        int32 tokensNum = 6;
+        // embedding. float32 array
+        repeated float embedding = 7;
+        // chunk create time
+        google.protobuf.Timestamp createTime = 8;
+        // chunk retrievable
+        bool retrievable = 9;
+    }
+    // file catalog
+    metadata metadata = 1;
+    // text 
+    text text = 2;
+    // chunks
+    repeated chunk chunks = 3;
+}
