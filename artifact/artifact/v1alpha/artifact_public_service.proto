@@ -5,6 +5,8 @@ package artifact.artifact.v1alpha;
 // Artifact definitions
 import "artifact/artifact/v1alpha/artifact.proto";
 import "artifact/artifact/v1alpha/chunk.proto";
+import "artifact/artifact/v1alpha/file_catalog.proto";
+import "artifact/artifact/v1alpha/qa.proto";
 // Google API
 import "google/api/annotations.proto";
 import "google/api/visibility.proto";
@@ -125,6 +127,23 @@ service ArtifactPublicService {
     option (google.api.http) = {
       post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/chunks/similarity"
       body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+
+  // Question Answering
+  rpc QuestionAnswering(QuestionAnsweringRequest) returns (QuestionAnsweringResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/qa"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+
+  // Get file catalog
+  rpc GetFileCatalog(GetFileCatalogRequest) returns (GetFileCatalogResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/file-catalog"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
   }

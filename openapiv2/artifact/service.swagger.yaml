@@ -394,6 +394,79 @@ paths:
             $ref: '#/definitions/ArtifactPublicServiceSimilarityChunksSearchBody'
       tags:
         - Catalog
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/qa:
+    post:
+      summary: Question Answering
+      operationId: ArtifactPublicService_QuestionAnswering
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaQuestionAnsweringResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: id of the namespace
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: id of the catalog
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ArtifactPublicServiceQuestionAnsweringBody'
+      tags:
+        - Catalog
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/file-catalog:
+    get:
+      summary: Get file catalog
+      operationId: ArtifactPublicService_GetFileCatalog
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetFileCatalogResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: id of the namespace
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: id of the catalog
+          in: path
+          required: true
+          type: string
+        - name: fileId
+          description: id of the file(i.e. file name)
+          in: query
+          required: false
+          type: string
+        - name: fileUid
+          description: Uid of the file
+          in: query
+          required: false
+          type: string
+      tags:
+        - Catalog
 definitions:
   ArtifactPublicServiceCreateCatalogBody:
     type: object
@@ -410,6 +483,17 @@ definitions:
           type: string
         description: The catalog tags.
     description: CreateCatalogRequest represents a request to create a catalog.
+  ArtifactPublicServiceQuestionAnsweringBody:
+    type: object
+    properties:
+      question:
+        type: string
+        title: question to be answered
+      topk:
+        type: integer
+        format: int32
+        title: topk default to 5
+    title: QuestionAnsweringRequest
   ArtifactPublicServiceSimilarityChunksSearchBody:
     type: object
     properties:
@@ -440,6 +524,101 @@ definitions:
         type: boolean
         title: whether the chunk is retrievable
     title: Create chunk response
+  GetFileCatalogResponseChunkType:
+    type: string
+    enum:
+      - CHUNK_TYPE_TEXT
+      - CHUNK_TYPE_IMAGE
+      - CHUNK_TYPE_AUDIO
+      - CHUNK_TYPE_VIDEO
+    description: |-
+      - CHUNK_TYPE_TEXT: text
+       - CHUNK_TYPE_IMAGE: image
+       - CHUNK_TYPE_AUDIO: audio
+       - CHUNK_TYPE_VIDEO: video
+    title: chunk type
+  GetFileCatalogResponseMetadata:
+    type: object
+    properties:
+      fileUid:
+        type: string
+        title: file uid
+      fileId:
+        type: string
+        title: file id
+      fileType:
+        title: file type
+        allOf:
+          - $ref: '#/definitions/v1alphaFileType'
+      fileSize:
+        type: string
+        format: int64
+        title: file size in bytes
+      fileUploadTime:
+        type: string
+        format: date-time
+        title: upload time
+      fileProcessStatus:
+        title: file process status
+        allOf:
+          - $ref: '#/definitions/v1alphaFileProcessStatus'
+    title: metadata
+  GetFileCatalogResponseText:
+    type: object
+    properties:
+      pipelineIds:
+        type: array
+        items:
+          type: string
+        title: pipelines
+      transformedContent:
+        type: string
+        title: transformed content
+      transformedContentUid:
+        type: string
+        title: transformed content uid
+      transformedContentChunkNum:
+        type: integer
+        format: int32
+        title: transformed content chunk number
+      transformedContentTokenNum:
+        type: integer
+        format: int32
+        title: transformed content token number
+      transformedContentUpdateTime:
+        type: string
+        format: date-time
+        title: transformed content update time
+    title: text message
+  artifactv1alphaChunk:
+    type: object
+    properties:
+      chunkUid:
+        type: string
+        title: unique identifier of the chunk
+      retrievable:
+        type: boolean
+        title: whether the chunk is retrievable
+      startPos:
+        type: integer
+        format: int64
+        title: start position of the chunk in the source file
+      endPos:
+        type: integer
+        format: int64
+        title: end position of the chunk in the source file
+      tokens:
+        type: integer
+        format: int64
+        title: tokens of the chunk
+      createTime:
+        type: string
+        format: date-time
+        title: creation time of the chunk
+      originalFileUid:
+        type: string
+        title: original file unique identifier
+    description: The Chunk message represents a chunk of data in the artifact system.
   protobufAny:
     type: object
     properties:
@@ -518,35 +697,6 @@ definitions:
         format: uint64
         description: The current used storage in catalog.
     description: Catalog represents a catalog.
-  v1alphaChunk:
-    type: object
-    properties:
-      chunkUid:
-        type: string
-        title: unique identifier of the chunk
-      retrievable:
-        type: boolean
-        title: whether the chunk is retrievable
-      startPos:
-        type: integer
-        format: int64
-        title: start position of the chunk in the source file
-      endPos:
-        type: integer
-        format: int64
-        title: end position of the chunk in the source file
-      tokens:
-        type: integer
-        format: int64
-        title: tokens of the chunk
-      createTime:
-        type: string
-        format: date-time
-        title: creation time of the chunk
-      originalFileUid:
-        type: string
-        title: original file unique identifier
-    description: The Chunk message represents a chunk of data in the artifact system.
   v1alphaCreateCatalogResponse:
     type: object
     properties:
@@ -669,12 +819,12 @@ definitions:
       - FILE_PROCESS_STATUS_FAILED
     description: |-
       - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
-       - FILE_PROCESS_STATUS_WAITING: waiting
-       - FILE_PROCESS_STATUS_CONVERTING: embedding process is running
-       - FILE_PROCESS_STATUS_CHUNKING: embedding process is done
-       - FILE_PROCESS_STATUS_EMBEDDING: embedding process is failed
-       - FILE_PROCESS_STATUS_COMPLETED: COMPLETED
-       - FILE_PROCESS_STATUS_FAILED: Failed
+       - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process
+       - FILE_PROCESS_STATUS_CONVERTING: file is converting
+       - FILE_PROCESS_STATUS_CHUNKING: file is chunking
+       - FILE_PROCESS_STATUS_EMBEDDING: file is embedding
+       - FILE_PROCESS_STATUS_COMPLETED: completed
+       - FILE_PROCESS_STATUS_FAILED: failed
     title: file embedding process status
   v1alphaFileType:
     type: string
@@ -685,6 +835,11 @@ definitions:
       - FILE_TYPE_PNG
       - FILE_TYPE_JPEG
       - FILE_TYPE_JPG
+      - FILE_TYPE_HTML
+      - FILE_TYPE_DOCX
+      - FILE_TYPE_DOC
+      - FILE_TYPE_PPT
+      - FILE_TYPE_PPTX
     description: |-
       - FILE_TYPE_TEXT: text
        - FILE_TYPE_PDF: PDF
@@ -692,7 +847,69 @@ definitions:
        - FILE_TYPE_PNG: PNG
        - FILE_TYPE_JPEG: JPEG
        - FILE_TYPE_JPG: JPG
+       - FILE_TYPE_HTML: HTML
+       - FILE_TYPE_DOCX: DOCX
+       - FILE_TYPE_DOC: DOC
+       - FILE_TYPE_PPT: PPT
+       - FILE_TYPE_PPTX: PPTX
     title: file type
+  v1alphaGetFileCatalogResponse:
+    type: object
+    properties:
+      metadata:
+        title: file catalog
+        allOf:
+          - $ref: '#/definitions/GetFileCatalogResponseMetadata'
+      text:
+        title: text
+        allOf:
+          - $ref: '#/definitions/GetFileCatalogResponseText'
+      chunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaGetFileCatalogResponseChunk'
+        title: chunks
+    title: GetFileCatalogResponse
+  v1alphaGetFileCatalogResponseChunk:
+    type: object
+    properties:
+      uid:
+        type: string
+        title: chunk uid
+      type:
+        title: chunk type. i.e. text, image, audio, and video
+        allOf:
+          - $ref: '#/definitions/GetFileCatalogResponseChunkType'
+      startPos:
+        type: integer
+        format: int32
+        title: chunk start position
+      endPos:
+        type: integer
+        format: int32
+        title: chunk end position
+      content:
+        type: string
+        title: chunk content
+      tokensNum:
+        type: integer
+        format: int32
+        title: chunk tokens num
+      embedding:
+        type: array
+        items:
+          type: number
+          format: float
+        title: embedding. float32 array
+      createTime:
+        type: string
+        format: date-time
+        title: chunk create time
+      retrievable:
+        type: boolean
+        title: chunk retrievable
+    title: chunk message
   v1alphaGetRepositoryTagResponse:
     type: object
     properties:
@@ -762,7 +979,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alphaChunk'
+          $ref: '#/definitions/artifactv1alphaChunk'
         title: repeated chunks
     description: The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
   v1alphaListRepositoryTagsResponse:
@@ -808,6 +1025,19 @@ definitions:
           $ref: '#/definitions/v1alphaFile'
         description: The file uid.
     title: Process Catalog File Response
+  v1alphaQuestionAnsweringResponse:
+    type: object
+    properties:
+      answer:
+        type: string
+        title: answer to the question
+      similarChunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaSimilarityChunk'
+        title: chunks
+    title: QuestionAnsweringResponse
   v1alphaRepositoryTag:
     type: object
     properties:
@@ -889,7 +1119,7 @@ definitions:
       chunk:
         title: chunk
         allOf:
-          - $ref: '#/definitions/v1alphaChunk'
+          - $ref: '#/definitions/artifactv1alphaChunk'
     title: Updae chunk response
   v1alphaUploadCatalogFileResponse:
     type: object
