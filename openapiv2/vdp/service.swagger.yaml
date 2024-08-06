@@ -4159,6 +4159,81 @@ paths:
       tags:
         - Secret (Deprecated)
       deprecated: true
+  /v1beta/{namespace}/pipeline-runs:
+    get:
+      summary: ListPipelineRuns retrieves a paginated list of pipeline runs for a given user and namespace.
+      operationId: PipelinePublicService_ListPipelineRuns
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineRunsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespace
+          description: The namespace to list pipeline runs for.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/namespaces/[^/]+
+        - name: page
+          description: The page number to retrieve (1-based).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          description: The number of items per page.
+          in: query
+          required: false
+          type: integer
+          format: int32
+  /v1beta/{namespace}/pipeline-runs/{pipelineTriggerUid}/component-runs:
+    get:
+      summary: ListComponentRuns retrieves a paginated list of component runs for a specific pipeline run.
+      operationId: PipelinePublicService_ListComponentRuns
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListComponentRunsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespace
+          description: The namespace of the pipeline run.
+          in: path
+          required: true
+          type: string
+          pattern: users/[^/]+/namespaces/[^/]+
+        - name: pipelineTriggerUid
+          description: The unique identifier of the pipeline run to list component runs for.
+          in: path
+          required: true
+          type: string
+        - name: page
+          description: The page number to retrieve (1-based).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          description: The number of items per page.
+          in: query
+          required: false
+          type: integer
+          format: int32
 definitions:
   CheckNameResponseName:
     type: string
@@ -5143,6 +5218,63 @@ definitions:
        - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
       field).
        - VIEW_FULL: Full representation.
+  v1betaComponentRun:
+    type: object
+    properties:
+      pipelineTriggerUid:
+        type: string
+        description: Links to the parent PipelineRun.
+      componentId:
+        type: string
+        description: Unique identifier for each pipeline component.
+      status:
+        description: Completion status of the component.
+        allOf:
+          - $ref: '#/definitions/v1betaComponentRunStatus'
+      totalDuration:
+        type: string
+        format: int64
+        description: Time taken to execute the component in nanoseconds.
+      startedTime:
+        type: string
+        format: date-time
+        description: Time when the component started execution.
+      completedTime:
+        type: string
+        format: date-time
+        description: Time when the component finished execution.
+      errorMsg:
+        type: string
+        description: Error message if the component failed.
+      inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Input files for the component.
+      outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Output files from the component.
+      creditsUsed:
+        type: number
+        format: double
+        description: Credits used of internal accounting metric.
+    description: ComponentRun represents the execution details of a single component within a pipeline run.
+  v1betaComponentRunStatus:
+    type: string
+    enum:
+      - COMPONENT_RUN_STATUS_RUNNING
+      - COMPONENT_RUN_STATUS_COMPLETED
+      - COMPONENT_RUN_STATUS_FAILED
+    description: |-
+      ComponentRunStatus represents the possible states of a component run.
+
+       - COMPONENT_RUN_STATUS_RUNNING: The component run is currently in progress.
+       - COMPONENT_RUN_STATUS_COMPLETED: The component run has completed successfully.
+       - COMPONENT_RUN_STATUS_FAILED: The component run has failed.
   v1betaComponentTask:
     type: object
     properties:
@@ -5432,6 +5564,23 @@ definitions:
   v1betaDeleteUserSecretResponse:
     type: object
     description: DeleteUserSecretResponse is an empty response.
+  v1betaFileReference:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the file.
+      type:
+        type: string
+        description: Format of the file (e.g., PDF, TXT, JPG).
+      size:
+        type: string
+        format: int64
+        description: Size of the file in bytes.
+      url:
+        type: string
+        description: URL of the file (e.g., S3 URL).
+    description: FileReference represents metadata for a file.
   v1betaGetConnectorDefinitionResponse:
     type: object
     properties:
@@ -5553,6 +5702,28 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListComponentDefinitionsResponse contains a list of component definitions.
+  v1betaListComponentRunsResponse:
+    type: object
+    properties:
+      componentRuns:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaComponentRun'
+        description: The list of component runs.
+      totalCount:
+        type: string
+        format: int64
+        description: The total number of component runs matching the request.
+      page:
+        type: integer
+        format: int32
+        description: The current page number.
+      pageSize:
+        type: integer
+        format: int32
+        description: The number of items per page.
+    description: ListComponentRunsResponse is the response message for ListComponentRuns.
   v1betaListConnectorDefinitionsResponse:
     type: object
     properties:
@@ -5719,6 +5890,28 @@ definitions:
       requested by an admin user.
       For the moment, the pipeline recipes will be UID-based (permalink) instead
       of name-based. This is a temporary solution.
+  v1betaListPipelineRunsResponse:
+    type: object
+    properties:
+      pipelineRuns:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRun'
+        description: The list of pipeline runs.
+      totalCount:
+        type: string
+        format: int64
+        description: The total number of pipeline runs matching the request.
+      page:
+        type: integer
+        format: int32
+        description: The current page number.
+      pageSize:
+        type: integer
+        format: int32
+        description: The number of items per page.
+    description: ListPipelineRunsResponse is the response message for ListPipelineRuns.
   v1betaListPipelinesAdminResponse:
     type: object
     properties:
@@ -6197,6 +6390,82 @@ definitions:
     description: |-
       Pipeline releases contain the version control information of a pipeline.
       This allows users to track changes in the pipeline over time.
+  v1betaPipelineRun:
+    type: object
+    properties:
+      pipelineUid:
+        type: string
+        description: Unique identifier for the pipeline.
+      pipelineTriggerUid:
+        type: string
+        description: Unique identifier for each run.
+      pipelineVersion:
+        type: string
+        description: Pipeline version used in the run.
+      status:
+        description: Current status of the run.
+        allOf:
+          - $ref: '#/definitions/v1betaPipelineRunStatus'
+      source:
+        type: string
+        description: Origin of the run (e.g., Web click, API).
+      totalDuration:
+        type: string
+        format: int64
+        description: Time taken to complete the run in nanoseconds.
+      triggeredBy:
+        type: string
+        description: Identity of the user who initiated the run.
+      namespace:
+        type: string
+        description: Namespace of the pipeline (user or organization).
+      inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Input files for the run.
+      outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Output files from the run.
+      recipeSnapshot:
+        type: object
+        description: Snapshot of the pipeline recipe used for this run.
+      triggeredTime:
+        type: string
+        format: date-time
+        description: Time when the run was triggered.
+      startedTime:
+        type: string
+        format: date-time
+        description: Time when the run started execution.
+      completedTime:
+        type: string
+        format: date-time
+        description: Time when the run completed.
+      errorMsg:
+        type: string
+        description: Error message if the run failed.
+      creditsUsed:
+        type: number
+        format: double
+        description: Credits used of internal accounting metric.
+    description: PipelineRun represents a single execution of a pipeline.
+  v1betaPipelineRunStatus:
+    type: string
+    enum:
+      - PIPELINE_RUN_STATUS_RUNNING
+      - PIPELINE_RUN_STATUS_COMPLETED
+      - PIPELINE_RUN_STATUS_FAILED
+    description: |-
+      PipelineRunStatus represents the possible states of a pipeline run.
+
+       - PIPELINE_RUN_STATUS_RUNNING: The pipeline run is currently in progress.
+       - PIPELINE_RUN_STATUS_COMPLETED: The pipeline run has completed successfully.
+       - PIPELINE_RUN_STATUS_FAILED: The pipeline run has failed.
   v1betaPipelineValidationError:
     type: object
     properties:
