@@ -1938,3 +1938,189 @@ message LookUpPipelineAdminResponse {
   // The requested pipeline.
   Pipeline pipeline = 1;
 }
+
+// ListPipelineRunsRequest is the request message for ListPipelineRuns.
+message ListPipelineRunsRequest {
+  // The namespace to list pipeline runs for.
+  string namespace = 1;
+
+  // The page number to retrieve (1-based).
+  int32 page = 2;
+
+  // The number of items per page.
+  int32 page_size = 3;
+}
+
+// ListPipelineRunsResponse is the response message for ListPipelineRuns.
+message ListPipelineRunsResponse {
+  // The list of pipeline runs.
+  repeated PipelineRun pipeline_runs = 1;
+
+  // The total number of pipeline runs matching the request.
+  int64 total_count = 2;
+
+  // The current page number.
+  int32 page = 3;
+
+  // The number of items per page.
+  int32 page_size = 4;
+}
+
+// ListComponentRunsRequest is the request message for ListComponentRuns.
+message ListComponentRunsRequest {
+  // The namespace of the pipeline run.
+  string namespace = 1;
+
+  // The unique identifier of the pipeline run to list component runs for.
+  string pipeline_trigger_uid = 2;
+
+  // The page number to retrieve (1-based).
+  int32 page = 3;
+
+  // The number of items per page.
+  int32 page_size = 4;
+}
+
+// ListComponentRunsResponse is the response message for ListComponentRuns.
+message ListComponentRunsResponse {
+  // The list of component runs.
+  repeated ComponentRun component_runs = 1;
+
+  // The total number of component runs matching the request.
+  int64 total_count = 2;
+
+  // The current page number.
+  int32 page = 3;
+
+  // The number of items per page.
+  int32 page_size = 4;
+}
+
+// FileReference represents metadata for a file.
+message FileReference {
+  // Name of the file.
+  string name = 1;
+
+  // Format of the file (e.g., PDF, TXT, JPG).
+  string type = 2;
+
+  // Size of the file in bytes.
+  int64 size = 3;
+
+  // URL of the file (e.g., S3 URL).
+  string url = 4;
+}
+
+// PipelineRun represents a single execution of a pipeline.
+message PipelineRun {
+  // Unique identifier for the pipeline.
+  string pipeline_uid = 1;
+
+  // Unique identifier for each run.
+  string pipeline_trigger_uid = 2;
+
+  // Pipeline version used in the run.
+  string pipeline_version = 3;
+
+  // Current status of the run.
+  PipelineRunStatus status = 4;
+
+  // Origin of the run (e.g., Web click, API).
+  string source = 5;
+
+  // Time taken to complete the run in nanoseconds.
+  int64 total_duration = 6;
+
+  // Identity of the user who initiated the run.
+  string triggered_by = 7;
+
+  // Namespace of the pipeline (user or organization).
+  string namespace = 8;
+
+  // Input files for the run.
+  repeated FileReference inputs = 9;
+
+  // Output files from the run.
+  repeated FileReference outputs = 10;
+
+  // Snapshot of the pipeline recipe used for this run.
+  google.protobuf.Struct recipe_snapshot = 11;
+
+  // Time when the run was triggered.
+  google.protobuf.Timestamp triggered_time = 12;
+
+  // Time when the run started execution.
+  google.protobuf.Timestamp started_time = 13;
+
+  // Time when the run completed.
+  google.protobuf.Timestamp completed_time = 14;
+
+  // Error message if the run failed.
+  string error_msg = 15;
+
+  // Credits used of internal accounting metric.
+  double credits_used = 16;
+}
+
+// ComponentRun represents the execution details of a single component within a pipeline run.
+message ComponentRun {
+  // Links to the parent PipelineRun.
+  string pipeline_trigger_uid = 1;
+
+  // Unique identifier for each pipeline component.
+  string component_id = 2;
+
+  // Completion status of the component.
+  ComponentRunStatus status = 3;
+
+  // Time taken to execute the component in nanoseconds.
+  int64 total_duration = 4;
+
+  // Time when the component started execution.
+  google.protobuf.Timestamp started_time = 5;
+
+  // Time when the component finished execution.
+  google.protobuf.Timestamp completed_time = 6;
+
+  // Error message if the component failed.
+  string error_msg = 7;
+
+  // Input files for the component.
+  repeated FileReference inputs = 8;
+
+  // Output files from the component.
+  repeated FileReference outputs = 9;
+
+  // Credits used of internal accounting metric.
+  double credits_used = 10;
+}
+
+// PipelineRunStatus represents the possible states of a pipeline run.
+enum PipelineRunStatus {
+  // The status is unknown or not set.
+  PIPELINE_RUN_STATUS_UNSPECIFIED = 0;
+
+  // The pipeline run is currently in progress.
+  PIPELINE_RUN_STATUS_RUNNING = 1;
+
+  // The pipeline run has completed successfully.
+  PIPELINE_RUN_STATUS_COMPLETED = 2;
+
+  // The pipeline run has failed.
+  PIPELINE_RUN_STATUS_FAILED = 3;
+}
+
+// ComponentRunStatus represents the possible states of a component run.
+enum ComponentRunStatus {
+  // The status is unknown or not set.
+  COMPONENT_RUN_STATUS_UNSPECIFIED = 0;
+
+  // The component run is currently in progress.
+  COMPONENT_RUN_STATUS_RUNNING = 1;
+
+  // The component run has completed successfully.
+  COMPONENT_RUN_STATUS_COMPLETED = 2;
+
+  // The component run has failed.
+  COMPONENT_RUN_STATUS_FAILED = 3;
+}
