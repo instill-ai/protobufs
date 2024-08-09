@@ -2463,6 +2463,71 @@ paths:
       tags:
         - Trigger (Deprecated)
       deprecated: true
+  /v1alpha/model-triggers:
+    get:
+      summary: List model triggers
+      description: Returns a paginated list of model triggers
+      operationId: ModelPublicService_ListModelTriggers
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListModelTriggersResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            The maximum number of triggers to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: view
+          description: |-
+            View allows clients to specify the desired trigger view in the response.
+            The basic view excludes input / output data.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: orderBy
+          description: "Sort the results by the given expression.  \nFormat: `field [ASC | DESC], where `field` can be:\n- `create_time`\n- `update_time`\nBy default, results are sorted by descending creation time."
+          in: query
+          required: false
+          type: string
+        - name: modelId
+          description: Model ID
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Trigger
 definitions:
   ModelPublicServiceRenameNamespaceModelBody:
     type: object
@@ -2657,6 +2722,28 @@ definitions:
     description: TriggerUserModelRequest represents a request to trigger a model inference.
     required:
       - taskInputs
+  ModelTriggerTriggerSource:
+    type: string
+    enum:
+      - TRIGGER_SOURCE_CONSOLE
+      - TRIGGER_SOURCE_API
+    description: |-
+      - TRIGGER_SOURCE_CONSOLE: model trigger from frontend UI
+       - TRIGGER_SOURCE_API: model trigger from API or SDK
+    title: TriggerSource defines the source of a model trigger
+  ModelTriggerTriggerStatus:
+    type: string
+    enum:
+      - TRIGGER_STATUS_PROCESSING
+      - TRIGGER_STATUS_COMPLETED
+      - TRIGGER_STATUS_FAILED
+      - TRIGGER_STATUS_QUEUED
+    description: |-
+      - TRIGGER_STATUS_PROCESSING: model trigger in progress
+       - TRIGGER_STATUS_COMPLETED: model trigger succeeded
+       - TRIGGER_STATUS_FAILED: model trigger failed
+       - TRIGGER_STATUS_QUEUED: model trigger is waiting to be executed
+    title: TriggerStatus defines the status of a model trigger
   googlelongrunningOperation:
     type: object
     properties:
@@ -3396,6 +3483,32 @@ definitions:
         format: int32
         description: Total number of model definitions.
     description: ListModelDefinitionsResponse contains a list of model definitions.
+  v1alphaListModelTriggersResponse:
+    type: object
+    properties:
+      triggers:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelTrigger'
+        description: A list of triggers resources.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of triggers.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+        readOnly: true
+    description: ListModelTriggersResponse contains a list of model triggers.
   v1alphaListModelsAdminResponse:
     type: object
     properties:
@@ -3781,6 +3894,75 @@ definitions:
         description: Update time.
         readOnly: true
     description: ModelDefinition defines how to configure and import a model.
+  v1alphaModelTrigger:
+    type: object
+    properties:
+      uid:
+        type: string
+        title: Model Trigger UUID, which is the run ID in UI
+        readOnly: true
+      modelUid:
+        type: string
+        description: Model UUID.
+        readOnly: true
+      status:
+        title: Model trigger status
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ModelTriggerTriggerStatus'
+      source:
+        title: Trigger source
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ModelTriggerTriggerSource'
+      totalDuration:
+        type: string
+        title: Trigger total duration
+        readOnly: true
+      endTime:
+        type: string
+        format: date-time
+        title: Trigger end time
+        readOnly: true
+      requesterId:
+        type: string
+        title: Trigger requester ID
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: The amount of Instill Credit consumed by the trigger. This field will only be present on Instill Cloud.
+        readOnly: true
+      error:
+        type: string
+        title: Error message occurred during model trigger
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        title: Model trigger created time
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        title: Model trigger updated time
+        readOnly: true
+      version:
+        type: string
+        title: The model version identifier, which is same as image tag
+        readOnly: true
+      taskInput:
+        type: object
+        title: Model inference input
+        readOnly: true
+      taskOutputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
+        title: Model inference outputs
+        readOnly: true
+    description: ModelTrigger contains information about trigger of models.
   v1alphaModelVersion:
     type: object
     properties:
