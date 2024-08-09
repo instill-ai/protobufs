@@ -1765,56 +1765,46 @@ message ModelTrigger {
     TRIGGER_SOURCE_API = 2;
   }
 
-  // Model Trigger UUID.
+  // Model Trigger UUID, which is the run ID in UI
   string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model UUID.
   string model_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Pipeline Trigger UUID.
-  string trigger_uid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model trigger status
-  TriggerStatus status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Model visibility.
-  Model.Visibility visibility = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  TriggerStatus status = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Trigger source
-  TriggerSource source = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Trigger start time
-  google.protobuf.Timestamp start_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Trigger total duration in milliseconds
-  optional google.protobuf.Duration total_duration = 8 [
+  TriggerSource source = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Trigger total duration
+  optional google.protobuf.Duration total_duration = 5 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
   // Trigger end time
-  optional google.protobuf.Timestamp end_time = 9 [
+  optional google.protobuf.Timestamp end_time = 6 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
-  // Trigger requester UID.
-  string requester_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Trigger requester ID
+  string requester_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The amount of Instill Credit consumed by the trigger. This field will only be present on Instill Cloud.
-  optional float credit_amount = 11 [
+  optional float credit_amount = 8 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
   // Error message occurred during model trigger
-  optional string error = 12 [
+  optional string error = 9 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
-  // Model trigger creation time.
-  google.protobuf.Timestamp create_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Model trigger update time.
-  google.protobuf.Timestamp update_time = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The model version identifier, which is equal to image tag.
-  string version = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Tags.
-  repeated string tags = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Task type.
-  common.task.v1alpha.Task task = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Inference input parameters.
-  optional google.protobuf.Struct task_inputs = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Model inference outputs.
-  repeated TaskOutput task_outputs = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model trigger created time
+  google.protobuf.Timestamp create_time = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model trigger updated time
+  google.protobuf.Timestamp update_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The model version identifier, which is same as image tag
+  string version = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model inference input
+  optional google.protobuf.Struct task_input = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model inference outputs
+  repeated TaskOutput task_outputs = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListModelTriggersRequest represents a request to list of model triggers
@@ -1834,11 +1824,11 @@ message ListModelTriggersRequest {
   // By default, results are sorted by descending creation time.
   optional string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
   // Model ID
-  optional string model_uid = 5 [(google.api.field_behavior) = OPTIONAL];
-  // filter by start time range from
-  optional google.protobuf.Timestamp start_time_from = 6 [(google.api.field_behavior) = OPTIONAL];
-  // filter by start time range to
-  optional google.protobuf.Timestamp start_time_to = 7 [(google.api.field_behavior) = OPTIONAL];
+  string model_id = 5 [(google.api.field_behavior) = OPTIONAL];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  optional string filter = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListModelTriggersResponse contains a list of model triggers.
