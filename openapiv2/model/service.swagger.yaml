@@ -2513,23 +2513,19 @@ paths:
           in: query
           required: false
           type: string
-        - name: modelUid
+        - name: modelId
           description: Model ID
           in: query
           required: false
           type: string
-        - name: startTimeFrom
-          description: filter by start time range from
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
           in: query
           required: false
           type: string
-          format: date-time
-        - name: startTimeTo
-          description: filter by start time range to
-          in: query
-          required: false
-          type: string
-          format: date-time
       tags:
         - Trigger
 definitions:
@@ -3903,48 +3899,34 @@ definitions:
     properties:
       uid:
         type: string
-        description: Model Trigger UUID.
+        title: Model Trigger UUID, which is the run ID in UI
         readOnly: true
       modelUid:
         type: string
         description: Model UUID.
-        readOnly: true
-      triggerUid:
-        type: string
-        description: Pipeline Trigger UUID.
         readOnly: true
       status:
         title: Model trigger status
         readOnly: true
         allOf:
           - $ref: '#/definitions/ModelTriggerTriggerStatus'
-      visibility:
-        description: Model visibility.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1alphaModelVisibility'
       source:
         title: Trigger source
         readOnly: true
         allOf:
           - $ref: '#/definitions/ModelTriggerTriggerSource'
-      startTime:
-        type: string
-        format: date-time
-        title: Trigger start time
-        readOnly: true
       totalDuration:
         type: string
-        title: Trigger total duration in milliseconds
+        title: Trigger total duration
         readOnly: true
       endTime:
         type: string
         format: date-time
         title: Trigger end time
         readOnly: true
-      requesterUid:
+      requesterId:
         type: string
-        description: Trigger requester UID.
+        title: Trigger requester ID
         readOnly: true
       creditAmount:
         type: number
@@ -3958,38 +3940,27 @@ definitions:
       createTime:
         type: string
         format: date-time
-        description: Model trigger creation time.
+        title: Model trigger created time
         readOnly: true
       updateTime:
         type: string
         format: date-time
-        description: Model trigger update time.
+        title: Model trigger updated time
         readOnly: true
       version:
         type: string
-        description: The model version identifier, which is equal to image tag.
+        title: The model version identifier, which is same as image tag
         readOnly: true
-      tags:
-        type: array
-        items:
-          type: string
-        description: Tags.
-        readOnly: true
-      task:
-        description: Task type.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1alphaTask'
-      taskInputs:
+      taskInput:
         type: object
-        description: Inference input parameters.
+        title: Model inference input
         readOnly: true
       taskOutputs:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1alphaTaskOutput'
-        description: Model inference outputs.
+        title: Model inference outputs
         readOnly: true
     description: ModelTrigger contains information about trigger of models.
   v1alphaModelVersion:
