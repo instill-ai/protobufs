@@ -1489,18 +1489,26 @@ service PipelinePublicService {
     option deprecated = true;
   }
 
-  // ListPipelineRuns retrieves a paginated list of pipeline runs for a given user and namespace.
+  // List Pipeline Runs
+  //
+  // Returns a paginated list of runs for a given pipeline. When the requester
+  // is the owner of the pipeline, they will be able to all the pipeline runs,
+  // regardless the requester. Other requesters will only be able to see the
+  // runs requested by themselves.
   rpc ListPipelineRuns(ListPipelineRunsRequest) returns (ListPipelineRunsResponse) {
     option (google.api.http) = {
-      get: "/v1beta/{namespace=users/*/namespaces/*}/pipeline-runs"
+      get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/runs"
     };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Trigger"};
   }
 
-  // ListComponentRuns retrieves a paginated list of component runs for a specific pipeline run.
+  // List Component runs
+  //
+  // Returns the information of each component execution within a pipeline run.
   rpc ListComponentRuns(ListComponentRunsRequest) returns (ListComponentRunsResponse) {
     option (google.api.http) = {
-      get: "/v1beta/{namespace=users/*/namespaces/*}/pipeline-runs/{pipeline_trigger_uid}/component-runs"
+      get: "/v1beta/pipeline-runs/{pipeline_run_id}/component-runs"
     };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Trigger"};
   }
-
 }
