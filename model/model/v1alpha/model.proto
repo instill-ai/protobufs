@@ -18,18 +18,6 @@ import "google/protobuf/timestamp.proto";
 // Model definitions
 import "model/model/v1alpha/common.proto";
 import "model/model/v1alpha/model_definition.proto";
-import "model/model/v1alpha/task_classification.proto";
-import "model/model/v1alpha/task_detection.proto";
-import "model/model/v1alpha/task_image_to_image.proto";
-import "model/model/v1alpha/task_instance_segmentation.proto";
-import "model/model/v1alpha/task_keypoint.proto";
-import "model/model/v1alpha/task_ocr.proto";
-import "model/model/v1alpha/task_semantic_segmentation.proto";
-import "model/model/v1alpha/task_text_generation.proto";
-import "model/model/v1alpha/task_text_generation_chat.proto";
-import "model/model/v1alpha/task_text_to_image.proto";
-import "model/model/v1alpha/task_unspecified.proto";
-import "model/model/v1alpha/task_visual_question_answering.proto";
 // OpenAPI definition
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -201,10 +189,10 @@ message Model {
   optional string documentation_url = 22 [(google.api.field_behavior) = OPTIONAL];
   // License under which the model is distributed.
   optional string license = 23 [(google.api.field_behavior) = OPTIONAL];
-  // Sample input for this model
-  TaskInput sample_input = 24 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Sample output for this model
-  TaskOutput sample_output = 25 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Deprecated: Sample input for this model
+  reserved 24;
+  // Deprecated: Sample output for this model
+  reserved 25;
   // Model profile image in base64 format.
   optional string profile_image = 26 [(google.api.field_behavior) = OPTIONAL];
   // Permission defines how a pipeline can be used.
@@ -469,18 +457,22 @@ message TriggerNamespaceModelRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
+  // Deleteted field.
+  reserved 3;
   // Model version
   string version = 4 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 5 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerNamespaceModelResponse contains the model inference results.
 message TriggerNamespaceModelResponse {
   // Task type.
   common.task.v1alpha.Task task = 1;
+  // Deleted field.
+  reserved 2;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2;
+  repeated google.protobuf.Struct task_outputs = 3;
 }
 
 // TriggerAsyncNamespaceModelRequest represents a request to trigger a model inference
@@ -490,10 +482,12 @@ message TriggerAsyncNamespaceModelRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
+  // Deleteted field.
+  reserved 3;
   // Model version
   string version = 4 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 5 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerAsyncNamespaceModelResponse contains the information to access the
@@ -510,16 +504,20 @@ message TriggerNamespaceLatestModelRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
+  // Deleteted field.
+  reserved 3;
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerNamespaceLatestModelResponse contains the model inference results.
 message TriggerNamespaceLatestModelResponse {
   // Task type.
   common.task.v1alpha.Task task = 1;
+  // Deleted field.
+  reserved 2;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2;
+  repeated google.protobuf.Struct task_outputs = 3;
 }
 
 // TriggerAsyncNamespaceLatestModelRequest represents a request to trigger a model inference
@@ -529,8 +527,10 @@ message TriggerAsyncNamespaceLatestModelRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
+  // Deleteted field.
+  reserved 3;
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerAsyncNamespaceLatestModelResponse contains the information to access the
@@ -547,20 +547,24 @@ message TriggerNamespaceModelBinaryFileUploadRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Inference input as a binary file.
-  TaskInputStream task_input = 3 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 3;
   // Model version
   string version = 4 [(google.api.field_behavior) = REQUIRED];
+  // Inference input as a binary file.
+  repeated google.protobuf.Struct task_input = 5 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerNamespaceModelBinaryFileUploadResponse contains the model inference results.
 message TriggerNamespaceModelBinaryFileUploadResponse {
   // Task type.
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  // Deleteted field.
+  reserved 2;
+  // Deleteted field.
+  reserved 3;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version
-  string version = 3 [(google.api.field_behavior) = REQUIRED];
+  repeated google.protobuf.Struct task_outputs = 4;
 }
 
 // TriggerNamespaceModelLatestBinaryFileUploadRequest represents a request trigger a model
@@ -570,16 +574,20 @@ message TriggerNamespaceLatestModelBinaryFileUploadRequest {
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Model ID
   string model_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 3;
   // Inference input as a binary file.
-  TaskInputStream task_input = 3 [(google.api.field_behavior) = REQUIRED];
+  repeated google.protobuf.Struct task_input = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerNamespaceLatestModelBinaryFileUploadResponse contains the model inference results.
 message TriggerNamespaceLatestModelBinaryFileUploadResponse {
   // Task type.
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  reserved 2;
+  // Deleteted field.
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
+  repeated google.protobuf.Struct task_outputs = 3;
 }
 
 // GetNamespaceLatestModelOperationRequest represents a request to fetch the latest long-running
@@ -892,99 +900,6 @@ message DeleteUserModelVersionResponse {}
 //  Trigger methods
 ////////////////////////////////////
 
-// TaskInput represents a question or task for an AI model.
-message TaskInput {
-  // Input type.
-  oneof input {
-    // Image classification input.
-    ClassificationInput classification = 1;
-    // Object detection input.
-    DetectionInput detection = 2;
-    // Keypoint detection input.
-    KeypointInput keypoint = 3;
-    // Optical Character Recognition input.
-    OcrInput ocr = 4;
-    // Instance segmentation input.
-    InstanceSegmentationInput instance_segmentation = 5;
-    // Semantic segmentation input.
-    SemanticSegmentationInput semantic_segmentation = 6;
-    // Text to image input.
-    TextToImageInput text_to_image = 7;
-    // Image to image input.
-    ImageToImageInput image_to_image = 8;
-    // Text generation input.
-    TextGenerationInput text_generation = 9;
-    // Conversational text generation input.
-    TextGenerationChatInput text_generation_chat = 10;
-    // Visual question answering input.
-    VisualQuestionAnsweringInput visual_question_answering = 11;
-    // Unspecified task input.
-    UnspecifiedInput unspecified = 12;
-  }
-}
-
-// TaskInputStream represents the input to trigger a model with stream method
-message TaskInputStream {
-  // Input type
-  oneof input {
-    // The classification input
-    ClassificationInputStream classification = 1;
-    // The detection input
-    DetectionInputStream detection = 2;
-    // The keypoint input
-    KeypointInputStream keypoint = 3;
-    // The ocr input
-    OcrInputStream ocr = 4;
-    // The instance segmentation input
-    InstanceSegmentationInputStream instance_segmentation = 5;
-    // The semantic segmentation input
-    SemanticSegmentationInputStream semantic_segmentation = 6;
-    // The text to image input
-    TextToImageInput text_to_image = 7;
-    // The image to image input
-    ImageToImageInput image_to_image = 8;
-    // The text generation input
-    TextGenerationInput text_generation = 9;
-    // The text generation chat input
-    TextGenerationChatInput text_generation_chat = 10;
-    // The visual question answering input
-    VisualQuestionAnsweringInput visual_question_answering = 11;
-    // The unspecified task input
-    UnspecifiedInput unspecified = 12;
-  }
-}
-
-// TaskOutput represents the result of an AI task performed by a model.
-message TaskOutput {
-  // Inference task output.
-  oneof output {
-    // Image classification output.
-    ClassificationOutput classification = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Object detection output.
-    DetectionOutput detection = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Keypoint detection output.
-    KeypointOutput keypoint = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Optical Character Recognition output.
-    OcrOutput ocr = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Instance segmentation output.
-    InstanceSegmentationOutput instance_segmentation = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Semantic segmentation output.
-    SemanticSegmentationOutput semantic_segmentation = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Text to image output.
-    TextToImageOutput text_to_image = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Image to image output.
-    ImageToImageOutput image_to_image = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Text generation output.
-    TextGenerationOutput text_generation = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Conversational text generation output.
-    TextGenerationChatOutput text_generation_chat = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Visual question answering output.
-    VisualQuestionAnsweringOutput visual_question_answering = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
-    // Unspecified task output.
-    UnspecifiedOutput unspecified = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
-  }
-}
-
 // TriggerUserModelRequest represents a request to trigger a model inference.
 message TriggerUserModelRequest {
   // The resource name of the model , which allows its access by parent user
@@ -997,18 +912,22 @@ message TriggerUserModelRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
   // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerUserModelResponse contains the model inference results.
 message TriggerUserModelResponse {
   // Task type.
   common.task.v1alpha.Task task = 1;
+  // Deleted field.
+  reserved 2;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2;
+  repeated google.protobuf.Struct task_outputs = 3;
 }
 
 // TriggerAsyncUserModelRequest represents a request to trigger a model inference
@@ -1024,10 +943,12 @@ message TriggerAsyncUserModelRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
   // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerAsyncUserModelResponse contains the information to access the
@@ -1050,16 +971,20 @@ message TriggerUserLatestModelRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerUserLatestModelResponse contains the model inference results.
 message TriggerUserLatestModelResponse {
   // Task type.
   common.task.v1alpha.Task task = 1;
+  // Deleted field.
+  reserved 2;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2;
+  repeated google.protobuf.Struct task_outputs = 3;
 }
 
 // TriggerAsyncUserLatestModelRequest represents a request to trigger a model inference
@@ -1075,8 +1000,10 @@ message TriggerAsyncUserLatestModelRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerAsyncUserLatestModelResponse contains the information to access the
@@ -1099,20 +1026,24 @@ message TriggerUserModelBinaryFileUploadRequest {
       field_configuration: {path_param_name: "user_model_name"}
     }
   ];
-  // Inference input as a binary file.
-  TaskInputStream task_input = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
   // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerUserModelBinaryFileUploadResponse contains the model inference results.
 message TriggerUserModelBinaryFileUploadResponse {
   // Task type.
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
+  // Deleted field.
+  reserved 3;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
-  // Model version
-  string version = 3 [(google.api.field_behavior) = REQUIRED];
+  repeated google.protobuf.Struct task_outputs = 4;
 }
 
 ////////////////////////////////////
@@ -1385,18 +1316,22 @@ message TriggerOrganizationModelRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
   // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerOrganizationModelResponse contains the model inference results.
 message TriggerOrganizationModelResponse {
   // Task type.
   common.task.v1alpha.Task task = 1;
+  // Deleted field.
+  reserved 2;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2;
+  repeated google.protobuf.Struct task_outputs = 3;
 }
 
 // TriggerAsyncOrganizationModelRequest represents a request to trigger a model inference
@@ -1412,10 +1347,12 @@ message TriggerAsyncOrganizationModelRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
   // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerAsyncOrganizationModelResponse contains the information to access the
@@ -1437,16 +1374,20 @@ message TriggerOrganizationLatestModelRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerOrganizationLatestModelResponse contains the model inference results.
 message TriggerOrganizationLatestModelResponse {
   // Task type.
   common.task.v1alpha.Task task = 1;
+  // Deleted field.
+  reserved 2;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2;
+  repeated google.protobuf.Struct task_outputs = 3;
 }
 
 // TriggerAsyncOrganizationLatestModelRequest represents a request to trigger a model inference
@@ -1462,8 +1403,10 @@ message TriggerAsyncOrganizationLatestModelRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Inference input parameters.
-  repeated TaskInput task_inputs = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerAsyncOrganizationLatestModelResponse contains the information to access the
@@ -1486,18 +1429,22 @@ message TriggerOrganizationModelBinaryFileUploadRequest {
       field_configuration: {path_param_name: "organization_model_name"}
     }
   ];
-  // Inference input as a binary file.
-  TaskInputStream task_input = 2 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
   // Model version
   string version = 3 [(google.api.field_behavior) = REQUIRED];
+  // Model inference inputs.
+  repeated google.protobuf.Struct task_inputs = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
 // TriggerOrganizationModelBinaryFileUploadResponse contains the model inference results.
 message TriggerOrganizationModelBinaryFileUploadResponse {
   // Task type.
   common.task.v1alpha.Task task = 1 [(google.api.field_behavior) = REQUIRED];
+  // Deleted field.
+  reserved 2;
   // Model inference outputs.
-  repeated TaskOutput task_outputs = 2 [(google.api.field_behavior) = REQUIRED];
+  repeated google.protobuf.Struct task_outputs = 4;
 }
 
 // GetModelOperationRequest represents a request to fetch a long-running
