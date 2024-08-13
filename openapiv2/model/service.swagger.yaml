@@ -2443,6 +2443,78 @@ paths:
       tags:
         - Trigger (Deprecated)
       deprecated: true
+  /v1beta/namespaces/{namespaceId}/models/{modelId}/runs:
+    get:
+      summary: List model runs
+      description: Returns a paginated list of model runs.
+      operationId: ModelPublicService_ListModelTriggers
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListModelRunsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of runs to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: view
+          description: |-
+            View allows clients to specify the desired run view in the response.
+            The basic view excludes input / output data.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: orderBy
+          description: "Sort the results by the given expression.  \nFormat: `field [ASC | DESC], where `field` can be:\n- `create_time`\n- `update_time`\nBy default, results are sorted by descending creation time."
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            The filter can be applied to the following fields:
+            - `create_time`
+          in: query
+          required: false
+          type: string
+      tags:
+        - Trigger
 definitions:
   ModelPublicServiceRenameNamespaceModelBody:
     type: object
@@ -2625,6 +2697,30 @@ definitions:
     description: TriggerUserModelRequest represents a request to trigger a model inference.
     required:
       - taskInputs
+  ModelRunRunSource:
+    type: string
+    enum:
+      - RUN_SOURCE_CONSOLE
+      - RUN_SOURCE_API
+    description: |-
+      RunSource defines the source of a model run.
+
+       - RUN_SOURCE_CONSOLE: Model run from frontend UI.
+       - RUN_SOURCE_API: Model run from API or SDK.
+  ModelRunRunStatus:
+    type: string
+    enum:
+      - RUN_STATUS_PROCESSING
+      - RUN_STATUS_COMPLETED
+      - RUN_STATUS_FAILED
+      - RUN_STATUS_QUEUED
+    description: |-
+      RunStatus defines the status of a model run.
+
+       - RUN_STATUS_PROCESSING: Model run in progress.
+       - RUN_STATUS_COMPLETED: Model run succeeded.
+       - RUN_STATUS_FAILED: Model run failed.
+       - RUN_STATUS_QUEUED: Model run is waiting to be executed.
   googlelongrunningOperation:
     type: object
     properties:
@@ -3040,6 +3136,32 @@ definitions:
         format: int32
         description: Total number of model definitions.
     description: ListModelDefinitionsResponse contains a list of model definitions.
+  v1alphaListModelRunsResponse:
+    type: object
+    properties:
+      runs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelRun'
+        description: A list of runs resources.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of runs.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+        readOnly: true
+    description: ListModelRunsResponse contains a list of model runs.
   v1alphaListModelsAdminResponse:
     type: object
     properties:
@@ -3402,6 +3524,76 @@ definitions:
         description: Update time.
         readOnly: true
     description: ModelDefinition defines how to configure and import a model.
+  v1alphaModelRun:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: Model Run UUID.
+        readOnly: true
+      modelUid:
+        type: string
+        description: Model UUID.
+        readOnly: true
+      status:
+        description: Model run status.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ModelRunRunStatus'
+      source:
+        description: Run source.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ModelRunRunSource'
+      totalDuration:
+        type: string
+        description: Run total duration.
+        readOnly: true
+      endTime:
+        type: string
+        format: date-time
+        description: Run end time.
+        readOnly: true
+      requesterId:
+        type: string
+        description: Run requester ID.
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: The amount of Instill Credit consumed by the run. This field will only be present on Instill Cloud.
+        readOnly: true
+      error:
+        type: string
+        description: Error message occurred during model run.
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        description: Model run created time.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: Model run updated time.
+        readOnly: true
+      version:
+        type: string
+        description: The model version identifier, which is same as image tag.
+        readOnly: true
+      taskInputs:
+        type: array
+        items:
+          type: object
+        description: Model inference input.
+        readOnly: true
+      taskOutputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+        readOnly: true
+    description: ModelRun contains information about a run of models.
   v1alphaModelVersion:
     type: object
     properties:

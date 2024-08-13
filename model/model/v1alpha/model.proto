@@ -15,6 +15,7 @@ import "google/longrunning/operations.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 // Model definitions
 import "model/model/v1alpha/common.proto";
 import "model/model/v1alpha/model_definition.proto";
@@ -1684,3 +1685,111 @@ message UndeployOrganizationModelAdminRequest {
 
 // UndeployOrganizationModelAdminResponse represents a response for a undeployed model
 message UndeployOrganizationModelAdminResponse {}
+
+// ModelRun contains information about a run of models.
+message ModelRun {
+  // RunStatus defines the status of a model run.
+  enum RunStatus {
+    // Unspecified.
+    RUN_STATUS_UNSPECIFIED = 0;
+    // Model run in progress.
+    RUN_STATUS_PROCESSING = 1;
+    // Model run succeeded.
+    RUN_STATUS_COMPLETED = 2;
+    // Model run failed.
+    RUN_STATUS_FAILED = 3;
+    // Model run is waiting to be executed.
+    RUN_STATUS_QUEUED = 4;
+  }
+
+  // RunSource defines the source of a model run.
+  enum RunSource {
+    // Unspecified.
+    RUN_SOURCE_UNSPECIFIED = 0;
+    // Model run from frontend UI.
+    RUN_SOURCE_CONSOLE = 1;
+    // Model run from API or SDK.
+    RUN_SOURCE_API = 2;
+  }
+
+  // Model Run UUID.
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model UUID.
+  string model_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model run status.
+  RunStatus status = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Run source.
+  RunSource source = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Run total duration.
+  optional google.protobuf.Duration total_duration = 5 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Run end time.
+  optional google.protobuf.Timestamp end_time = 6 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Run requester ID.
+  string requester_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The amount of Instill Credit consumed by the run. This field will only be present on Instill Cloud.
+  optional float credit_amount = 8 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Error message occurred during model run.
+  optional string error = 9 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+  // Model run created time.
+  google.protobuf.Timestamp create_time = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model run updated time.
+  google.protobuf.Timestamp update_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The model version identifier, which is same as image tag.
+  string version = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model inference input.
+  repeated google.protobuf.Struct task_inputs = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model inference outputs.
+  repeated google.protobuf.Struct task_outputs = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListModelRunsRequest represents a request to list of model runs.
+message ListModelRunsRequest {
+  // The maximum number of runs to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // View allows clients to specify the desired run view in the response.
+  // The basic view excludes input / output data.
+  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Sort the results by the given expression.  
+  // Format: `field [ASC | DESC], where `field` can be:
+  // - `create_time`
+  // - `update_time`
+  // By default, results are sorted by descending creation time.
+  optional string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Namespace ID.
+  string namespace_id = 5 [(google.api.field_behavior) = REQUIRED];
+  // Model ID.
+  string model_id = 6 [(google.api.field_behavior) = REQUIRED];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  // The filter can be applied to the following fields:
+  // - `create_time`
+  optional string filter = 7 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListModelRunsResponse contains a list of model runs.
+message ListModelRunsResponse {
+  // A list of runs resources.
+  repeated ModelRun runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Total number of runs.
+  int32 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested page size.
+  int32 page_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested page offset.
+  int32 page = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
