@@ -1210,6 +1210,16 @@ paths:
               license:
                 type: string
                 description: License under which the model is distributed.
+              sampleInput:
+                title: Sample input for this model
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskInput'
+              sampleOutput:
+                title: Sample output for this model
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskOutput'
               profileImage:
                 type: string
                 description: Model profile image in base64 format.
@@ -1938,6 +1948,16 @@ paths:
               license:
                 type: string
                 description: License under which the model is distributed.
+              sampleInput:
+                title: Sample input for this model
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskInput'
+              sampleOutput:
+                title: Sample output for this model
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/v1alphaTaskOutput'
               profileImage:
                 type: string
                 description: Model profile image in base64 format.
@@ -2499,7 +2519,12 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
         - name: orderBy
-          description: "Sort the results by the given expression.  \nFormat: `field [ASC | DESC], where `field` can be:\n- `create_time`\n- `update_time`\nBy default, results are sorted by descending creation time."
+          description: |-
+            Sort the results by the given expression.
+            Format: `field [ASC | DESC], where `field` can be:
+            - `create_time`
+            - `update_time`
+            By default, results are sorted by descending creation time.
           in: query
           required: false
           type: string
@@ -2556,7 +2581,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: |-
       TriggerAsyncNamespaceLatestModelRequest represents a request to trigger a model inference
       asynchronously with the latest uploaded version.
@@ -2569,7 +2595,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: |-
       TriggerAsyncNamespaceModelRequest represents a request to trigger a model inference
       asynchronously.
@@ -2582,7 +2609,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     title: |-
       TriggerAsyncOrganizationLatestModelRequest represents a request to trigger a model inference
       asynchronously
@@ -2595,7 +2623,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     title: |-
       TriggerAsyncOrganizationModelRequest represents a request to trigger a model inference
       asynchronously
@@ -2608,7 +2637,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: |-
       TriggerAsyncUserLatestModelRequest represents a request to trigger a model inference
       asynchronously with the latest uploaded version.
@@ -2621,7 +2651,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: |-
       TriggerAsyncUserModelRequest represents a request to trigger a model inference
       asynchronously.
@@ -2634,7 +2665,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: |-
       TriggerNamespaceLatestModelRequest represents a request to trigger a model inference
       with the latest uploaded version.
@@ -2647,7 +2679,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: TriggerNamespaceModelRequest represents a request to trigger a model inference.
     required:
       - taskInputs
@@ -2658,7 +2691,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: TriggerOrganizationLatestModelRequest represents a request to trigger a model inference.
     required:
       - taskInputs
@@ -2669,7 +2703,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: TriggerOrganizationModelRequest represents a request to trigger a model inference.
     required:
       - taskInputs
@@ -2680,7 +2715,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: |-
       TriggerUserLatestModelRequest represents a request to trigger a model inference
       with the latest uploaded version.
@@ -2693,7 +2729,8 @@ definitions:
         type: array
         items:
           type: object
-        description: Model inference inputs.
+          $ref: '#/definitions/v1alphaTaskInput'
+        description: Inference input parameters.
     description: TriggerUserModelRequest represents a request to trigger a model inference.
     required:
       - taskInputs
@@ -2972,12 +3009,79 @@ definitions:
       `Value` type union.
 
       The JSON representation for `NullValue` is JSON `null`.
+  v1alphaBoundingBox:
+    type: object
+    properties:
+      top:
+        type: number
+        format: float
+        description: Top Y-axis.
+        readOnly: true
+      left:
+        type: number
+        format: float
+        description: Left X-axis.
+        readOnly: true
+      width:
+        type: number
+        format: float
+        description: Width.
+        readOnly: true
+      height:
+        type: number
+        format: float
+        description: Height.
+        readOnly: true
+    description: |-
+      BoundingBox represents a frame in an image that can be drawn when detecting
+      patterns in objects.
+  v1alphaClassificationInput:
+    type: object
+    properties:
+      imageUrl:
+        type: string
+        description: Image URL.
+      imageBase64:
+        type: string
+        description: Base64-encoded image.
+    description: ClassificationInput is the input of an image classification task.
+  v1alphaClassificationInputStream:
+    type: object
+    properties:
+      fileLengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: File length for each uploaded binary file.
+      content:
+        type: string
+        format: byte
+        description: Byte representation of the images.
+    description: |-
+      ClassificationInputStream represents the input of an image classification
+      task when the input is streamed as a binary files.
+    required:
+      - fileLengths
+      - content
+  v1alphaClassificationOutput:
+    type: object
+    properties:
+      category:
+        type: string
+        description: Category.
+        readOnly: true
+      score:
+        type: number
+        format: float
+        description: Score.
+        readOnly: true
+    description: ClassificationOutput contains the result of an image classification task.
   v1alphaCreateNamespaceModelResponse:
     type: object
     properties:
       model:
         description: The created model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: CreateNamespaceModelResponse contains the created model.
@@ -2986,7 +3090,6 @@ definitions:
     properties:
       model:
         description: The created model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: CreateOrganizationModelResponse contains the created model.
@@ -2995,7 +3098,6 @@ definitions:
     properties:
       model:
         description: The created model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: CreateUserModelResponse contains the created model.
@@ -3026,6 +3128,64 @@ definitions:
   v1alphaDeployUserModelAdminResponse:
     type: object
     title: DeployUserModelAdminResponse represents a response for a deployed model
+  v1alphaDetectionInput:
+    type: object
+    properties:
+      imageUrl:
+        type: string
+        description: Image URL.
+      imageBase64:
+        type: string
+        description: Base64-encoded image.
+    description: DetectionInput represents the input of an object detection task.
+  v1alphaDetectionInputStream:
+    type: object
+    properties:
+      fileLengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: File length for each uploaded binary file.
+      content:
+        type: string
+        format: byte
+        description: Byte representation of the images.
+    description: |-
+      DetectionInputStream represents the input of an object detection task when
+      the input is streamed as binary files.
+    required:
+      - fileLengths
+      - content
+  v1alphaDetectionObject:
+    type: object
+    properties:
+      category:
+        type: string
+        description: Category.
+        readOnly: true
+      score:
+        type: number
+        format: float
+        description: Score.
+        readOnly: true
+      boundingBox:
+        description: Bounding box.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
+    description: DetectionObject represents an identified object in an image.
+  v1alphaDetectionOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaDetectionObject'
+        description: A list of detected objects.
+        readOnly: true
+    description: DetectionOutput contains the result of an object detection task.
   v1alphaGetModelDefinitionResponse:
     type: object
     properties:
@@ -3040,7 +3200,6 @@ definitions:
     properties:
       operation:
         description: The long-running operation.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
@@ -3051,7 +3210,6 @@ definitions:
     properties:
       operation:
         description: The long-running operation.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
@@ -3062,7 +3220,6 @@ definitions:
     properties:
       model:
         description: The model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: GetNamespaceModelResponse contains the requested model.
@@ -3071,7 +3228,6 @@ definitions:
     properties:
       operation:
         description: The long-running operation.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
@@ -3082,7 +3238,6 @@ definitions:
     properties:
       model:
         description: The model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: GetOrganizationModelResponse contains the requested model.
@@ -3091,7 +3246,6 @@ definitions:
     properties:
       operation:
         description: The long-running operation.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
@@ -3102,10 +3256,218 @@ definitions:
     properties:
       model:
         description: The model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: GetUserModelResponse contains the requested model.
+  v1alphaImageContent:
+    type: object
+    properties:
+      imageUrl:
+        description: |-
+          Image as URL or base64 code.
+
+          NOTE: the `image_url` name comes from a convention from OpenAI, it doesn't
+          determine the format of the image.
+        allOf:
+          - $ref: '#/definitions/v1alphaPromptImage'
+      detail:
+        type: string
+        description: Additional information.
+    description: ImageContent holds an image with some details in plain text.
+  v1alphaImageToImageInput:
+    type: object
+    properties:
+      promptImageUrl:
+        type: string
+        description: Image URL.
+      promptImageBase64:
+        type: string
+        description: Base64-encoded image.
+      prompt:
+        type: string
+        description: Input text.
+      steps:
+        type: integer
+        format: int32
+        description: Steps, defaults to 5.
+      cfgScale:
+        type: number
+        format: float
+        title: Guidance scale, defaults to 7.5
+      seed:
+        type: integer
+        format: int32
+        description: Seed, defaults to 0.
+      samples:
+        type: integer
+        format: int32
+        description: Number of generated samples, defaults to 1.
+      extraParams:
+        type: object
+        description: Extra parameters.
+    description: ImageToImageInput represents the input of an image-to-image task.
+    required:
+      - prompt
+  v1alphaImageToImageOutput:
+    type: object
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        description: A list of generated images.
+        readOnly: true
+    description: ImageToImageOutput contains the result of an image-to-image task.
+  v1alphaInstanceSegmentationInput:
+    type: object
+    properties:
+      imageUrl:
+        type: string
+        description: Image URL.
+      imageBase64:
+        type: string
+        description: Base64-encoded image.
+    description: |-
+      InstanceSegmentationInput represents the input of an instance segmentation
+      task.
+  v1alphaInstanceSegmentationInputStream:
+    type: object
+    properties:
+      fileLengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: File length for each uploaded binary file.
+      content:
+        type: string
+        format: byte
+        description: Byte representation of the images.
+    description: |-
+      InstanceSegmentationInputStream represents the input of an instance
+      segmentation task when the input is streamed as binary files.
+    required:
+      - fileLengths
+      - content
+  v1alphaInstanceSegmentationObject:
+    type: object
+    properties:
+      rle:
+        type: string
+        description: RLE segmentation mask.
+        readOnly: true
+      category:
+        type: string
+        description: Category.
+        readOnly: true
+      score:
+        type: number
+        format: float
+        description: Score.
+        readOnly: true
+      boundingBox:
+        description: Bounding box.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
+    description: |-
+      InstanceSegmentationObject is an object in an image, localized and
+      delineated.
+  v1alphaInstanceSegmentationOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaInstanceSegmentationObject'
+        description: A list of instance segmentation objects.
+        readOnly: true
+    description: |-
+      InstanceSegmentationOutput contains the result of an instance segmentation
+      task.
+  v1alphaKeypoint:
+    type: object
+    properties:
+      x:
+        type: number
+        format: float
+        description: X coordinate.
+        readOnly: true
+      "y":
+        type: number
+        format: float
+        description: Y coordinate.
+        readOnly: true
+      v:
+        type: number
+        format: float
+        description: Visibility.
+        readOnly: true
+    description: Keypoint contains the coordinates and visibility of a keypoint in an object.
+  v1alphaKeypointInput:
+    type: object
+    properties:
+      imageUrl:
+        type: string
+        description: Image URL.
+      imageBase64:
+        type: string
+        description: Base64-encoded image.
+    description: KeypointInput represents the input of a keypoint detection task.
+  v1alphaKeypointInputStream:
+    type: object
+    properties:
+      fileLengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: File length for each uploaded binary file.
+      content:
+        type: string
+        format: byte
+        description: Byte representation of the images.
+    description: |-
+      KeypointInputStream represents the input of a keypoint detection task when
+      the input is streamed as binary files.
+    required:
+      - fileLengths
+      - content
+  v1alphaKeypointObject:
+    type: object
+    properties:
+      keypoints:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKeypoint'
+        description: Keypoints.
+        readOnly: true
+      score:
+        type: number
+        format: float
+        description: Score.
+        readOnly: true
+      boundingBox:
+        description: Bounding box.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
+    description: |-
+      KeypointObject is a detected object with its keypoints, e.g. a detected
+      human shape with its legs, arms, core, etc.
+  v1alphaKeypointOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaKeypointObject'
+        description: A list of keypoint objects.
+        readOnly: true
+    description: KeypointOutput represents the result of a keypoint detection task.
   v1alphaListAvailableRegionsResponse:
     type: object
     properties:
@@ -3115,7 +3477,6 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaRegion'
         title: A list of available region
-        readOnly: true
     description: |-
       ListAvailableRegionsResponse contains a list of available
       regions and hardware types a model can be deployed on.
@@ -3188,16 +3549,13 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaModel'
         description: A list of model resources.
-        readOnly: true
       nextPageToken:
         type: string
         description: Next page token.
-        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of models.
-        readOnly: true
     description: ListModelsResponse contains a list of models.
   v1alphaListNamespaceModelVersionsResponse:
     type: object
@@ -3234,16 +3592,13 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaModel'
         description: A list of model resources.
-        readOnly: true
       nextPageToken:
         type: string
         description: Next page token.
-        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of models.
-        readOnly: true
     description: ListNamespaceModelsResponse contains a list of models.
   v1alphaListOrganizationModelVersionsResponse:
     type: object
@@ -3254,22 +3609,18 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaModelVersion'
         description: A list of model resources.
-        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of versions.
-        readOnly: true
       pageSize:
         type: integer
         format: int32
         description: The requested page size.
-        readOnly: true
       page:
         type: integer
         format: int32
         description: The requested page offset.
-        readOnly: true
     description: ListOrganizationModelVersionsResponse contains a list of models.
   v1alphaListOrganizationModelsResponse:
     type: object
@@ -3280,16 +3631,13 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaModel'
         description: A list of model resources.
-        readOnly: true
       nextPageToken:
         type: string
         description: Next page token.
-        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of models.
-        readOnly: true
     description: ListOrganizationModelsResponse contains a list of models.
   v1alphaListUserModelVersionsResponse:
     type: object
@@ -3300,22 +3648,18 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaModelVersion'
         description: A list of model resources.
-        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of versions.
-        readOnly: true
       pageSize:
         type: integer
         format: int32
         description: The requested page size.
-        readOnly: true
       page:
         type: integer
         format: int32
         description: The requested page offset.
-        readOnly: true
     description: ListUserModelVersionsResponse contains a list of models.
   v1alphaListUserModelsResponse:
     type: object
@@ -3326,16 +3670,13 @@ definitions:
           type: object
           $ref: '#/definitions/v1alphaModel'
         description: A list of model resources.
-        readOnly: true
       nextPageToken:
         type: string
         description: Next page token.
-        readOnly: true
       totalSize:
         type: integer
         format: int32
         description: Total number of models.
-        readOnly: true
     description: ListUserModelsResponse contains a list of models.
   v1alphaLookUpModelAdminResponse:
     type: object
@@ -3345,6 +3686,39 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     title: LookUpModelResponse represents a response for a model
+  v1alphaMessage:
+    type: object
+    properties:
+      role:
+        type: string
+        description: The Role of a message, e.g. `system`, `user`, etc. Defines the way the model answers questions.
+      content:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessageContent'
+        description: Message content.
+    description: Message is used in chat history in text generation models.
+  v1alphaMessageContent:
+    type: object
+    properties:
+      type:
+        type: string
+        description: Content type.
+      imageUrl:
+        description: |-
+          Image content.
+
+          NOTE: the `image_url` name comes from a convention from OpenAI, it doesn't
+          determine the format of the image.
+        allOf:
+          - $ref: '#/definitions/v1alphaImageContent'
+      text:
+        type: string
+        description: Text content.
+    description: |-
+      MessageContent is a message in a chat history message, used in text
+      generation models.
   v1alphaModel:
     type: object
     properties:
@@ -3427,6 +3801,16 @@ definitions:
       license:
         type: string
         description: License under which the model is distributed.
+      sampleInput:
+        title: Sample input for this model
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTaskInput'
+      sampleOutput:
+        title: Sample output for this model
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTaskOutput'
       profileImage:
         type: string
         description: Model profile image in base64 format.
@@ -3634,6 +4018,76 @@ definitions:
 
        - VISIBILITY_PRIVATE: Only the owner can see the model.
        - VISIBILITY_PUBLIC: Other users can see the model.
+  v1alphaOcrInput:
+    type: object
+    properties:
+      imageUrl:
+        type: string
+        description: Image URL.
+      imageBase64:
+        type: string
+        description: Base64-encoded image.
+    description: OcrInput represents the input of an OCR task.
+  v1alphaOcrInputStream:
+    type: object
+    properties:
+      fileLengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: File length for each uploaded binary file.
+      content:
+        type: string
+        format: byte
+        description: Byte representation of the images.
+    description: |-
+      OcrInputStream represents the input of an OCR task when the input is
+      streamed as binary files.
+    required:
+      - fileLengths
+      - content
+  v1alphaOcrObject:
+    type: object
+    properties:
+      text:
+        type: string
+        description: Text.
+        readOnly: true
+      score:
+        type: number
+        format: float
+        description: Score.
+        readOnly: true
+      boundingBox:
+        description: Bounding box.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaBoundingBox'
+    description: |-
+      OcrObject is a text object within an image. OCR stands for Optical Character
+      Recognition.
+  v1alphaOcrOutput:
+    type: object
+    properties:
+      objects:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaOcrObject'
+        description: A list of text objects.
+        readOnly: true
+    description: OcrOutput contains the result of an OCR task.
+  v1alphaPromptImage:
+    type: object
+    properties:
+      promptImageUrl:
+        type: string
+        description: Image URL.
+      promptImageBase64:
+        type: string
+        description: Base64-encoded image.
+    description: PromptImage is an image input for model inference.
   v1alphaRegion:
     type: object
     properties:
@@ -3667,7 +4121,6 @@ definitions:
     properties:
       model:
         description: The renamed model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: RenameNamespaceModelResponse contains a renamed model.
@@ -3676,7 +4129,6 @@ definitions:
     properties:
       model:
         description: The renamed model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: RenameOrganizationModelResponse contains a renamed model.
@@ -3685,10 +4137,67 @@ definitions:
     properties:
       model:
         description: The renamed model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: RenameUserModelResponse contains a renamed model.
+  v1alphaSemanticSegmentationInput:
+    type: object
+    properties:
+      imageUrl:
+        type: string
+        description: Image URL.
+      imageBase64:
+        type: string
+        description: Base64-encoded image.
+    description: |-
+      SemanticSegmentationInput represents the input of a semantic segmentation
+      task.
+  v1alphaSemanticSegmentationInputStream:
+    type: object
+    properties:
+      fileLengths:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: File length for each uploaded binary file.
+      content:
+        type: string
+        format: byte
+        description: Byte representation of the images.
+    description: |-
+      SemanticSegmentationInputStream represents the input of a semantic
+      segmentation task when the input is streamed as a binary files.
+    required:
+      - fileLengths
+      - content
+  v1alphaSemanticSegmentationOutput:
+    type: object
+    properties:
+      stuffs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaSemanticSegmentationStuff'
+        description: A list of detected objects classified into categories.
+        readOnly: true
+    description: |-
+      SemanticSegmentationOutput represents the output of a semantic segmentation
+      task.
+  v1alphaSemanticSegmentationStuff:
+    type: object
+    properties:
+      rle:
+        type: string
+        description: RLE segmentation mask.
+        readOnly: true
+      category:
+        type: string
+        description: Category.
+        readOnly: true
+    description: |-
+      SemanticSegmentationStuff is an object detected within an image and
+      classified into a predefined category.
   v1alphaTask:
     type: string
     enum:
@@ -3699,11 +4208,12 @@ definitions:
       - TASK_INSTANCE_SEGMENTATION
       - TASK_SEMANTIC_SEGMENTATION
       - TASK_TEXT_TO_IMAGE
+      - TASK_TEXT_GENERATION
+      - TASK_TEXT_GENERATION_CHAT
+      - TASK_VISUAL_QUESTION_ANSWERING
       - TASK_IMAGE_TO_IMAGE
       - TASK_TEXT_EMBEDDINGS
       - TASK_SPEECH_RECOGNITION
-      - TASK_CHAT
-      - TASK_COMPLETION
     description: |-
       Task enumerates the AI task that a model is designed to solve.
 
@@ -3714,11 +4224,330 @@ definitions:
        - TASK_INSTANCE_SEGMENTATION: Instance Segmentation - detect, localize and delineate multiple objects in images.
        - TASK_SEMANTIC_SEGMENTATION: Semantic Segmentation - classify image pixels into predefined categories.
        - TASK_TEXT_TO_IMAGE: Text to Image - generate images from input text prompts.
+       - TASK_TEXT_GENERATION: Text Generation - generate texts from input text prompts.
+       - TASK_TEXT_GENERATION_CHAT: Conversational Text Generation - generate text as responses to a dialog input.
+       - TASK_VISUAL_QUESTION_ANSWERING: Visual Question Answering - generate text as a response to a visual prompt.
        - TASK_IMAGE_TO_IMAGE: Image to Image - generate an image from another image.
        - TASK_TEXT_EMBEDDINGS: Text Embeddings - generate an embedding (a representation as coordinates) from a text input.
        - TASK_SPEECH_RECOGNITION: Speech Recognition - transcribe the words in an audio input.
-       - TASK_CHAT: Conversational Text Generation - generate text as responses to a dialog input.
-       - TASK_COMPLETION: Completion Text Generation - generate text following the input prompt.
+  v1alphaTaskInput:
+    type: object
+    properties:
+      classification:
+        description: Image classification input.
+        allOf:
+          - $ref: '#/definitions/v1alphaClassificationInput'
+      detection:
+        description: Object detection input.
+        allOf:
+          - $ref: '#/definitions/v1alphaDetectionInput'
+      keypoint:
+        description: Keypoint detection input.
+        allOf:
+          - $ref: '#/definitions/v1alphaKeypointInput'
+      ocr:
+        description: Optical Character Recognition input.
+        allOf:
+          - $ref: '#/definitions/v1alphaOcrInput'
+      instanceSegmentation:
+        description: Instance segmentation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaInstanceSegmentationInput'
+      semanticSegmentation:
+        description: Semantic segmentation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaSemanticSegmentationInput'
+      textToImage:
+        description: Text to image input.
+        allOf:
+          - $ref: '#/definitions/v1alphaTextToImageInput'
+      imageToImage:
+        description: Image to image input.
+        allOf:
+          - $ref: '#/definitions/v1alphaImageToImageInput'
+      textGeneration:
+        description: Text generation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationInput'
+      textGenerationChat:
+        description: Conversational text generation input.
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationChatInput'
+      visualQuestionAnswering:
+        description: Visual question answering input.
+        allOf:
+          - $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+      unspecified:
+        description: Unspecified task input.
+        allOf:
+          - $ref: '#/definitions/v1alphaUnspecifiedInput'
+    description: TaskInput represents a question or task for an AI model.
+  v1alphaTaskInputStream:
+    type: object
+    properties:
+      classification:
+        title: The classification input
+        allOf:
+          - $ref: '#/definitions/v1alphaClassificationInputStream'
+      detection:
+        title: The detection input
+        allOf:
+          - $ref: '#/definitions/v1alphaDetectionInputStream'
+      keypoint:
+        title: The keypoint input
+        allOf:
+          - $ref: '#/definitions/v1alphaKeypointInputStream'
+      ocr:
+        title: The ocr input
+        allOf:
+          - $ref: '#/definitions/v1alphaOcrInputStream'
+      instanceSegmentation:
+        title: The instance segmentation input
+        allOf:
+          - $ref: '#/definitions/v1alphaInstanceSegmentationInputStream'
+      semanticSegmentation:
+        title: The semantic segmentation input
+        allOf:
+          - $ref: '#/definitions/v1alphaSemanticSegmentationInputStream'
+      textToImage:
+        title: The text to image input
+        allOf:
+          - $ref: '#/definitions/v1alphaTextToImageInput'
+      imageToImage:
+        title: The image to image input
+        allOf:
+          - $ref: '#/definitions/v1alphaImageToImageInput'
+      textGeneration:
+        title: The text generation input
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationInput'
+      textGenerationChat:
+        title: The text generation chat input
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationChatInput'
+      visualQuestionAnswering:
+        title: The visual question answering input
+        allOf:
+          - $ref: '#/definitions/v1alphaVisualQuestionAnsweringInput'
+      unspecified:
+        title: The unspecified task input
+        allOf:
+          - $ref: '#/definitions/v1alphaUnspecifiedInput'
+    title: TaskInputStream represents the input to trigger a model with stream method
+  v1alphaTaskOutput:
+    type: object
+    properties:
+      classification:
+        description: Image classification output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaClassificationOutput'
+      detection:
+        description: Object detection output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaDetectionOutput'
+      keypoint:
+        description: Keypoint detection output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaKeypointOutput'
+      ocr:
+        description: Optical Character Recognition output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaOcrOutput'
+      instanceSegmentation:
+        description: Instance segmentation output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaInstanceSegmentationOutput'
+      semanticSegmentation:
+        description: Semantic segmentation output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaSemanticSegmentationOutput'
+      textToImage:
+        description: Text to image output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTextToImageOutput'
+      imageToImage:
+        description: Image to image output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaImageToImageOutput'
+      textGeneration:
+        description: Text generation output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationOutput'
+      textGenerationChat:
+        description: Conversational text generation output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaTextGenerationChatOutput'
+      visualQuestionAnswering:
+        description: Visual question answering output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaVisualQuestionAnsweringOutput'
+      unspecified:
+        description: Unspecified task output.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaUnspecifiedOutput'
+    description: TaskOutput represents the result of an AI task performed by a model.
+  v1alphaTextGenerationChatInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        description: Prompt text.
+      promptImages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPromptImage'
+        description: Prompt images.
+      chatHistory:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessage'
+        description: Chat history.
+      systemMessage:
+        type: string
+        description: System message, which sets the behaviour of the assistant.
+      maxNewTokens:
+        type: integer
+        format: int32
+        description: Maximum number of generation tokens.
+      temperature:
+        type: number
+        format: float
+        description: Sampling temperature.
+      topK:
+        type: integer
+        format: int32
+        description: |-
+          Sampling Top K, number of tokens at the top from which the model will
+          sample.
+      seed:
+        type: integer
+        format: int32
+        description: Seed.
+      extraParams:
+        type: object
+        description: Extra parameters.
+    description: TextGenerationChatInput represents the input of a text generation chat task.
+    required:
+      - prompt
+  v1alphaTextGenerationChatOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        description: Text generated by the model.
+        readOnly: true
+    description: TextGenerationChatOutput contains the result of a text generation chat task.
+  v1alphaTextGenerationInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        description: Prompt text.
+      promptImages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPromptImage'
+        description: Prompt images.
+      chatHistory:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessage'
+        description: Chat history.
+      systemMessage:
+        type: string
+        description: System message, which sets the behaviour of the assistant.
+      maxNewTokens:
+        type: integer
+        format: int32
+        description: Maximum number of generation tokens.
+      temperature:
+        type: number
+        format: float
+        description: Sampling temperature.
+      topK:
+        type: integer
+        format: int32
+        description: |-
+          Sampling Top K, number of tokens at the top from which the model will
+          sample.
+      seed:
+        type: integer
+        format: int32
+        description: Seed.
+      extraParams:
+        type: object
+        description: Extra parameters.
+    description: TextGenerationInput represents the input of a text generation task.
+    required:
+      - prompt
+  v1alphaTextGenerationOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        description: Text generated by the model.
+        readOnly: true
+    description: TextGenerationOutput contains the result of a text generation task.
+  v1alphaTextToImageInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        description: Prompt text.
+      promptImageUrl:
+        type: string
+        description: Image URL.
+      promptImageBase64:
+        type: string
+        description: Base64-encoded image.
+      steps:
+        type: integer
+        format: int32
+        description: Steps, defaults to 5.
+      cfgScale:
+        type: number
+        format: float
+        description: Guidance scale, defaults to 7.5.
+      seed:
+        type: integer
+        format: int32
+        description: Seed, defaults to 0.
+      samples:
+        type: integer
+        format: int32
+        description: Number of generated samples, default is 1.
+      extraParams:
+        type: object
+        description: Extra parameters.
+    description: TextToImageInput represents the input of a text-to-image task.
+    required:
+      - prompt
+  v1alphaTextToImageOutput:
+    type: object
+    properties:
+      images:
+        type: array
+        items:
+          type: string
+        description: A list of generated images, encoded in base64.
+        readOnly: true
+    description: TextToImageOutput contains the result of a text-to-image task.
   v1alphaTriggerAsyncNamespaceLatestModelResponse:
     type: object
     properties:
@@ -3796,27 +4625,25 @@ definitions:
         type: array
         items:
           type: object
-        description: |-
-          Deleteted field.
-          Model inference outputs.
-        readOnly: true
+          $ref: '#/definitions/v1alphaTaskOutput'
+        description: Model inference outputs.
     description: TriggerNamespaceLatestModelBinaryFileUploadResponse contains the model inference results.
     required:
       - task
+      - taskOutputs
   v1alphaTriggerNamespaceLatestModelResponse:
     type: object
     properties:
       task:
         description: Task type.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
     description: TriggerNamespaceLatestModelResponse contains the model inference results.
   v1alphaTriggerNamespaceModelBinaryFileUploadResponse:
     type: object
@@ -3829,40 +4656,43 @@ definitions:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
+      version:
+        type: string
+        title: Model version
     description: TriggerNamespaceModelBinaryFileUploadResponse contains the model inference results.
     required:
       - task
+      - taskOutputs
+      - version
   v1alphaTriggerNamespaceModelResponse:
     type: object
     properties:
       task:
         description: Task type.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
     description: TriggerNamespaceModelResponse contains the model inference results.
   v1alphaTriggerOrganizationLatestModelResponse:
     type: object
     properties:
       task:
         description: Task type.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
     description: TriggerOrganizationLatestModelResponse contains the model inference results.
   v1alphaTriggerOrganizationModelBinaryFileUploadResponse:
     type: object
@@ -3875,39 +4705,39 @@ definitions:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
     description: TriggerOrganizationModelBinaryFileUploadResponse contains the model inference results.
     required:
       - task
+      - taskOutputs
   v1alphaTriggerOrganizationModelResponse:
     type: object
     properties:
       task:
         description: Task type.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
     description: TriggerOrganizationModelResponse contains the model inference results.
   v1alphaTriggerUserLatestModelResponse:
     type: object
     properties:
       task:
         description: Task type.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
     description: TriggerUserLatestModelResponse contains the model inference results.
   v1alphaTriggerUserModelBinaryFileUploadResponse:
     type: object
@@ -3920,25 +4750,29 @@ definitions:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
+      version:
+        type: string
+        title: Model version
     description: TriggerUserModelBinaryFileUploadResponse contains the model inference results.
     required:
       - task
+      - taskOutputs
+      - version
   v1alphaTriggerUserModelResponse:
     type: object
     properties:
       task:
         description: Task type.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaTask'
       taskOutputs:
         type: array
         items:
           type: object
+          $ref: '#/definitions/v1alphaTaskOutput'
         description: Model inference outputs.
-        readOnly: true
     description: TriggerUserModelResponse contains the model inference results.
   v1alphaUndeployNamespaceModelAdminResponse:
     type: object
@@ -3949,12 +4783,30 @@ definitions:
   v1alphaUndeployUserModelAdminResponse:
     type: object
     title: UndeployUserModelAdminResponse represents a response for a undeployed model
+  v1alphaUnspecifiedInput:
+    type: object
+    properties:
+      rawInputs:
+        type: array
+        items:
+          type: object
+        description: A list of values for the task.
+    description: UnspecifiedInput represents the input of an unspecified task.
+  v1alphaUnspecifiedOutput:
+    type: object
+    properties:
+      rawOutputs:
+        type: array
+        items:
+          type: object
+        description: The task outputs.
+        readOnly: true
+    description: UnspecifiedOutput contains the result of an unspecified task.
   v1alphaUpdateNamespaceModelResponse:
     type: object
     properties:
       model:
         description: The updated model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: UpdateNamespaceModelResponse contains the updated model.
@@ -3963,7 +4815,6 @@ definitions:
     properties:
       model:
         description: The updated model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: UpdateOrganizationModelResponse contains the updated model.
@@ -3972,87 +4823,131 @@ definitions:
     properties:
       model:
         description: The updated model resource.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: UpdateUserModelResponse contains the updated model.
+  v1alphaVisualQuestionAnsweringInput:
+    type: object
+    properties:
+      prompt:
+        type: string
+        description: Prompt text.
+      promptImages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaPromptImage'
+        description: Prompt images.
+      chatHistory:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessage'
+        description: Chat history.
+      systemMessage:
+        type: string
+        description: System message, which sets the behaviour of the assistant.
+      maxNewTokens:
+        type: integer
+        format: int32
+        description: Maximum number of generation tokens.
+      temperature:
+        type: number
+        format: float
+        description: Sampling temperature.
+      topK:
+        type: integer
+        format: int32
+        description: |-
+          Sampling Top K, number of tokens at the top from which the model will
+          sample.
+      seed:
+        type: integer
+        format: int32
+        description: Seed.
+      extraParams:
+        type: object
+        description: Extra parameters.
+    description: |-
+      VisualQuestionAnsweringInput represents the input of a visual
+      question-answering task.
+    required:
+      - prompt
+  v1alphaVisualQuestionAnsweringOutput:
+    type: object
+    properties:
+      text:
+        type: string
+        description: The text generated by the model.
+        readOnly: true
+    description: |-
+      VisualQuestionAnsweringOutput contains the result of a visual
+      question-answering task.
   v1alphaWatchNamespaceLatestModelResponse:
     type: object
     properties:
       state:
         description: State.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
-        readOnly: true
     description: WatchNamespaceLatestModelResponse contains the state of the latest model version.
   v1alphaWatchNamespaceModelResponse:
     type: object
     properties:
       state:
         description: State.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
-        readOnly: true
     description: WatchNamespaceModelResponse contains the state of a model.
   v1alphaWatchOrganizationLatestModelResponse:
     type: object
     properties:
       state:
         description: State.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
-        readOnly: true
     description: WatchOrganizationLatestModelResponse contains the state of the latest model version.
   v1alphaWatchOrganizationModelResponse:
     type: object
     properties:
       state:
         description: State.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
-        readOnly: true
     description: WatchOrganizationModelResponse contains the state of a model.
   v1alphaWatchUserLatestModelResponse:
     type: object
     properties:
       state:
         description: State.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
-        readOnly: true
     description: WatchUserLatestModelResponse contains the state of the latest model version.
   v1alphaWatchUserModelResponse:
     type: object
     properties:
       state:
         description: State.
-        readOnly: true
         allOf:
           - $ref: '#/definitions/modelv1alphaState'
       message:
         type: string
         title: Detail description of the state
-        readOnly: true
     description: WatchUserModelResponse contains the state of a model.
   v1betaOrganization:
     type: object
