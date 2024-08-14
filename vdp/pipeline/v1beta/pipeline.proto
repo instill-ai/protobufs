@@ -2019,18 +2019,18 @@ message FileReference {
 // PipelineRun represents a single execution of a pipeline.
 message PipelineRun {
   // Unique identifier for the pipeline.
-  string pipeline_uid = 1;
+  string pipeline_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Unique identifier for each run.
-  string pipeline_run_uid = 2;
+  string pipeline_run_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Pipeline version used in the run.
-  string pipeline_version = 3;
+  string pipeline_version = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Current status of the run.
-  RunStatus status = 4;
+  RunStatus status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // RunSource defines the source of a pipeline trigger
+  // RunSource defines the source of a pipeline run.
   enum RunSource {
     // Unspecified.
     RUN_SOURCE_UNSPECIFIED = 0;
@@ -2041,7 +2041,7 @@ message PipelineRun {
   }
 
   // Origin of the run.
-  RunSource source = 5;
+  RunSource source = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Time taken to complete the run.
   optional google.protobuf.Duration total_duration = 6 [
@@ -2053,39 +2053,45 @@ message PipelineRun {
   string requester_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Input files for the run.
-  repeated FileReference inputs = 9;
+  repeated FileReference inputs = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output files from the run.
-  repeated FileReference outputs = 10;
+  repeated FileReference outputs = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Snapshot of the pipeline recipe used for this run.
-  google.protobuf.Struct recipe_snapshot = 11;
-
-  // Time when the run was triggered.
-  google.protobuf.Timestamp triggered_time = 12;
+  google.protobuf.Struct recipe_snapshot = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Time when the run started execution.
-  google.protobuf.Timestamp start_time = 13;
+  google.protobuf.Timestamp start_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Time when the run completed.
-  google.protobuf.Timestamp complete_time = 14;
+  optional google.protobuf.Timestamp complete_time = 14 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Error message if the run failed.
-  optional string error = 15;
+  optional string error = 15 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Credits used of internal accounting metric.
-  float credit_amount = 16;
+  optional float credit_amount = 16 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 }
 
 // ComponentRun represents the execution details of a single component within a pipeline run.
 message ComponentRun {
   // Links to the parent PipelineRun.
-  string pipeline_trigger_uid = 1;
+  string pipeline_run_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Unique identifier for each pipeline component.
-  string component_id = 2;
+  string component_id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Completion status of the component.
-  RunStatus status = 3;
+  RunStatus status = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Time taken to execute the component.
   optional google.protobuf.Duration total_duration = 4 [
@@ -2094,21 +2100,30 @@ message ComponentRun {
   ];
 
   // Time when the component started execution.
-  google.protobuf.Timestamp start_time = 5;
+  google.protobuf.Timestamp start_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Time when the component finished execution.
-  google.protobuf.Timestamp complete_time = 6;
+  optional google.protobuf.Timestamp complete_time = 6 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Error message if the component failed.
-  optional string error = 7;
+  optional string error = 7 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Input files for the component.
-  repeated FileReference inputs = 8;
+  repeated FileReference inputs = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Output files from the component.
-  repeated FileReference outputs = 9;
+  repeated FileReference outputs = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Credits used of internal accounting metric.
-  float credit_amount = 10;
+  optional float credit_amount = 10 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 }
 
 // RunStatus represents the possible states of a pipeline or component run.
