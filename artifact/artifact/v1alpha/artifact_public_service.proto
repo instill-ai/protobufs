@@ -7,6 +7,8 @@ import "artifact/artifact/v1alpha/artifact.proto";
 import "artifact/artifact/v1alpha/chunk.proto";
 import "artifact/artifact/v1alpha/file_catalog.proto";
 import "artifact/artifact/v1alpha/qa.proto";
+import "artifact/artifact/v1alpha/conversation.proto";
+
 // Google API
 import "google/api/annotations.proto";
 import "google/api/visibility.proto";
@@ -125,7 +127,7 @@ service ArtifactPublicService {
   // Similarity chunks search
   rpc SimilarityChunksSearch(SimilarityChunksSearchRequest) returns (SimilarityChunksSearchResponse) {
     option (google.api.http) = {
-      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/chunks/similarity"
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/chunks/retreive"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
@@ -134,7 +136,7 @@ service ArtifactPublicService {
   // Question Answering
   rpc QuestionAnswering(QuestionAnsweringRequest) returns (QuestionAnsweringResponse) {
     option (google.api.http) = {
-      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/qa"
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/ask"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
@@ -145,4 +147,58 @@ service ArtifactPublicService {
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/file-catalog"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
   }
+
+  // CreateConversaion
+  rpc CreateConversation(CreateConversationRequest) returns (CreateConversationResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+  // ListConversations
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+  // UpdateConversation
+  rpc UpdateConversation(UpdateConversationRequest) returns (UpdateConversationResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations/{conversation_id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+  // DeleteConversation
+  rpc DeleteConversation(DeleteConversationRequest) returns (DeleteConversationResponse) {
+    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations/{conversation_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+  // CreateMessage
+  rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations/{conversation_id}/messages"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+  // ListMessages
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations/{conversation_id}/messages"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+  // UpdateMessage
+  rpc UpdateMessage(UpdateMessageRequest) returns (UpdateMessageResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations/{conversation_id}/messages/{message_uid}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+  // DeleteMessage
+  rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse) {
+    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/conversations/{conversation_id}/messages/{message_uid}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Catalog"};
+  }
+
 }
