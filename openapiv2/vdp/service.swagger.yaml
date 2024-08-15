@@ -4159,6 +4159,108 @@ paths:
       tags:
         - Secret (Deprecated)
       deprecated: true
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/runs:
+    get:
+      summary: List Pipeline Runs
+      description: |-
+        Returns a paginated list of runs for a given pipeline. When the requester
+        is the owner of the pipeline, they will be able to all the pipeline runs,
+        regardless the requester. Other requesters will only be able to see the
+        runs requested by themselves.
+      operationId: PipelinePublicService_ListPipelineRuns
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineRunsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: The ID of the owner of the pipeline.
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: The ID of the pipeline for which the runs will be listed.
+          in: path
+          required: true
+          type: string
+        - name: page
+          description: The page number to retrieve.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          description: |-
+            The maximum number of items per page to return. The default and cap values
+            are 10 and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: view
+          description: |-
+            View allows clients to specify the desired run view in the response.
+            The basic view excludes input / output data.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
+      tags:
+        - Trigger
+  /v1beta/pipeline-runs/{pipelineRunId}/component-runs:
+    get:
+      summary: List Component runs
+      description: Returns the information of each component execution within a pipeline run.
+      operationId: PipelinePublicService_ListComponentRuns
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListComponentRunsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pipelineRunId
+          description: The unique identifier of the pipeline run to list component runs for.
+          in: path
+          required: true
+          type: string
+        - name: page
+          description: The page number to retrieve.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          description: |-
+            The maximum number of items per page to return. The default and cap values
+            are 10 and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Trigger
 definitions:
   CheckNameResponseName:
     type: string
@@ -4698,6 +4800,16 @@ definitions:
     description: |-
       ValidateUserPipelineRequest represents a request to validate a pipeline
       owned by a user.
+  PipelineRunRunSource:
+    type: string
+    enum:
+      - RUN_SOURCE_CONSOLE
+      - RUN_SOURCE_API
+    description: |-
+      RunSource defines the source of a pipeline run.
+
+       - RUN_SOURCE_CONSOLE: The request was triggered from Instill Console.
+       - RUN_SOURCE_API: The request was triggered from the API or SDK.
   PipelineStats:
     type: object
     properties:
@@ -5143,6 +5255,60 @@ definitions:
        - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
       field).
        - VIEW_FULL: Full representation.
+  v1betaComponentRun:
+    type: object
+    properties:
+      pipelineRunUid:
+        type: string
+        description: Links to the parent PipelineRun.
+        readOnly: true
+      componentId:
+        type: string
+        description: Unique identifier for each pipeline component.
+        readOnly: true
+      status:
+        description: Completion status of the component.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaRunStatus'
+      totalDuration:
+        type: string
+        description: Time taken to execute the component.
+        readOnly: true
+      startTime:
+        type: string
+        format: date-time
+        description: Time when the component started execution.
+        readOnly: true
+      completeTime:
+        type: string
+        format: date-time
+        description: Time when the component finished execution.
+        readOnly: true
+      error:
+        type: string
+        description: Error message if the component failed.
+        readOnly: true
+      inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Input files for the component.
+        readOnly: true
+      outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Output files from the component.
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: Credits used of internal accounting metric.
+        readOnly: true
+    description: ComponentRun represents the execution details of a single component within a pipeline run.
   v1betaComponentTask:
     type: object
     properties:
@@ -5432,6 +5598,28 @@ definitions:
   v1betaDeleteUserSecretResponse:
     type: object
     description: DeleteUserSecretResponse is an empty response.
+  v1betaFileReference:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the file.
+      type:
+        type: string
+        description: Format of the file (e.g., PDF, TXT, JPG).
+      size:
+        type: string
+        format: int64
+        description: Size of the file in bytes.
+      url:
+        type: string
+        description: URL of the file (e.g., S3 URL).
+    description: FileReference represents metadata for a file.
+    required:
+      - name
+      - type
+      - size
+      - url
   v1betaGetConnectorDefinitionResponse:
     type: object
     properties:
@@ -5553,6 +5741,32 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListComponentDefinitionsResponse contains a list of component definitions.
+  v1betaListComponentRunsResponse:
+    type: object
+    properties:
+      componentRuns:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaComponentRun'
+        description: The list of component runs.
+        readOnly: true
+      totalSize:
+        type: string
+        format: int64
+        description: The total number of component runs matching the request.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The current page number.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The number of items per page.
+        readOnly: true
+    description: ListComponentRunsResponse is the response message for ListComponentRuns.
   v1betaListConnectorDefinitionsResponse:
     type: object
     properties:
@@ -5719,6 +5933,32 @@ definitions:
       requested by an admin user.
       For the moment, the pipeline recipes will be UID-based (permalink) instead
       of name-based. This is a temporary solution.
+  v1betaListPipelineRunsResponse:
+    type: object
+    properties:
+      pipelineRuns:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRun'
+        description: The list of pipeline runs.
+        readOnly: true
+      totalSize:
+        type: string
+        format: int64
+        description: The total number of pipeline runs matching the request.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The current page number.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The number of items per page.
+        readOnly: true
+    description: ListPipelineRunsResponse is the response message for ListPipelineRuns.
   v1betaListPipelinesAdminResponse:
     type: object
     properties:
@@ -6197,6 +6437,77 @@ definitions:
     description: |-
       Pipeline releases contain the version control information of a pipeline.
       This allows users to track changes in the pipeline over time.
+  v1betaPipelineRun:
+    type: object
+    properties:
+      pipelineUid:
+        type: string
+        description: Unique identifier for the pipeline.
+        readOnly: true
+      pipelineRunUid:
+        type: string
+        description: Unique identifier for each run.
+        readOnly: true
+      pipelineVersion:
+        type: string
+        description: Pipeline version used in the run.
+        readOnly: true
+      status:
+        description: Current status of the run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaRunStatus'
+      source:
+        description: Origin of the run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/PipelineRunRunSource'
+      totalDuration:
+        type: string
+        description: Time taken to complete the run.
+        readOnly: true
+      requesterId:
+        type: string
+        description: Identity of the user who initiated the run.
+        readOnly: true
+      inputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Input files for the run.
+        readOnly: true
+      outputs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Output files from the run.
+        readOnly: true
+      recipeSnapshot:
+        type: object
+        description: Snapshot of the pipeline recipe used for this run.
+        readOnly: true
+      startTime:
+        type: string
+        format: date-time
+        description: Time when the run started execution.
+        readOnly: true
+      completeTime:
+        type: string
+        format: date-time
+        description: Time when the run completed.
+        readOnly: true
+      error:
+        type: string
+        description: Error message if the run failed.
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: Credits used of internal accounting metric.
+        readOnly: true
+    description: PipelineRun represents a single execution of a pipeline.
   v1betaPipelineValidationError:
     type: object
     properties:
@@ -6298,6 +6609,18 @@ definitions:
 
        - ROLE_VIEWER: Viewers can see the resource properties.
        - ROLE_EXECUTOR: Executors can execute the resource (e.g. trigger a pipeline).
+  v1betaRunStatus:
+    type: string
+    enum:
+      - RUN_STATUS_RUNNING
+      - RUN_STATUS_COMPLETED
+      - RUN_STATUS_FAILED
+    description: |-
+      RunStatus represents the possible states of a pipeline or component run.
+
+       - RUN_STATUS_RUNNING: The run is currently in progress.
+       - RUN_STATUS_COMPLETED: The run has completed successfully.
+       - RUN_STATUS_FAILED: The run has failed.
   v1betaSecret:
     type: object
     properties:

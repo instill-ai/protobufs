@@ -13,6 +13,7 @@ import "google/longrunning/operations.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
 // OpenAPI definition
 import "protoc-gen-openapiv2/options/annotations.proto";
 // VDP definitions
@@ -1937,4 +1938,205 @@ message LookUpPipelineAdminRequest {
 message LookUpPipelineAdminResponse {
   // The requested pipeline.
   Pipeline pipeline = 1;
+}
+
+// ListPipelineRunsRequest is the request message for ListPipelineRuns.
+message ListPipelineRunsRequest {
+  // The ID of the owner of the pipeline.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the pipeline for which the runs will be listed.
+  string pipeline_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The page number to retrieve.
+  int32 page = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // The maximum number of items per page to return. The default and cap values
+  // are 10 and 100, respectively.
+  int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // View allows clients to specify the desired run view in the response.
+  // The basic view excludes input / output data.
+  optional Pipeline.View view = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListPipelineRunsResponse is the response message for ListPipelineRuns.
+message ListPipelineRunsResponse {
+  // The list of pipeline runs.
+  repeated PipelineRun pipeline_runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The total number of pipeline runs matching the request.
+  int64 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The current page number.
+  int32 page = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The number of items per page.
+  int32 page_size = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListComponentRunsRequest is the request message for ListComponentRuns.
+message ListComponentRunsRequest {
+  // The unique identifier of the pipeline run to list component runs for.
+  string pipeline_run_id = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The page number to retrieve.
+  optional int32 page = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // The maximum number of items per page to return. The default and cap values
+  // are 10 and 100, respectively.
+  optional int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListComponentRunsResponse is the response message for ListComponentRuns.
+message ListComponentRunsResponse {
+  // The list of component runs.
+  repeated ComponentRun component_runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The total number of component runs matching the request.
+  int64 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The current page number.
+  int32 page = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The number of items per page.
+  int32 page_size = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// FileReference represents metadata for a file.
+message FileReference {
+  // Name of the file.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Format of the file (e.g., PDF, TXT, JPG).
+  string type = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Size of the file in bytes.
+  int64 size = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // URL of the file (e.g., S3 URL).
+  string url = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// PipelineRun represents a single execution of a pipeline.
+message PipelineRun {
+  // Unique identifier for the pipeline.
+  string pipeline_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Unique identifier for each run.
+  string pipeline_run_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Pipeline version used in the run.
+  string pipeline_version = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Current status of the run.
+  RunStatus status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // RunSource defines the source of a pipeline run.
+  enum RunSource {
+    // Unspecified.
+    RUN_SOURCE_UNSPECIFIED = 0;
+    // The request was triggered from Instill Console.
+    RUN_SOURCE_CONSOLE = 1;
+    // The request was triggered from the API or SDK.
+    RUN_SOURCE_API = 2;
+  }
+
+  // Origin of the run.
+  RunSource source = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Time taken to complete the run.
+  optional google.protobuf.Duration total_duration = 6 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Identity of the user who initiated the run.
+  string requester_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Input files for the run.
+  repeated FileReference inputs = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output files from the run.
+  repeated FileReference outputs = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Snapshot of the pipeline recipe used for this run.
+  google.protobuf.Struct recipe_snapshot = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Time when the run started execution.
+  google.protobuf.Timestamp start_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Time when the run completed.
+  optional google.protobuf.Timestamp complete_time = 14 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Error message if the run failed.
+  optional string error = 15 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Credits used of internal accounting metric.
+  optional float credit_amount = 16 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+// ComponentRun represents the execution details of a single component within a pipeline run.
+message ComponentRun {
+  // Links to the parent PipelineRun.
+  string pipeline_run_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Unique identifier for each pipeline component.
+  string component_id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Completion status of the component.
+  RunStatus status = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Time taken to execute the component.
+  optional google.protobuf.Duration total_duration = 4 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Time when the component started execution.
+  google.protobuf.Timestamp start_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Time when the component finished execution.
+  optional google.protobuf.Timestamp complete_time = 6 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Error message if the component failed.
+  optional string error = 7 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Input files for the component.
+  repeated FileReference inputs = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output files from the component.
+  repeated FileReference outputs = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Credits used of internal accounting metric.
+  optional float credit_amount = 10 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+// RunStatus represents the possible states of a pipeline or component run.
+enum RunStatus {
+  // The status is unknown or not set.
+  RUN_STATUS_UNSPECIFIED = 0;
+
+  // The run is currently in progress.
+  RUN_STATUS_RUNNING = 1;
+
+  // The run has completed successfully.
+  RUN_STATUS_COMPLETED = 2;
+
+  // The run has failed.
+  RUN_STATUS_FAILED = 3;
 }
