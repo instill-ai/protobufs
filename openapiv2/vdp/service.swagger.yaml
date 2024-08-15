@@ -4800,16 +4800,6 @@ definitions:
     description: |-
       ValidateUserPipelineRequest represents a request to validate a pipeline
       owned by a user.
-  PipelineRunRunSource:
-    type: string
-    enum:
-      - RUN_SOURCE_CONSOLE
-      - RUN_SOURCE_API
-    description: |-
-      RunSource defines the source of a pipeline run.
-
-       - RUN_SOURCE_CONSOLE: The request was triggered from Instill Console.
-       - RUN_SOURCE_API: The request was triggered from the API or SDK.
   PipelineStats:
     type: object
     properties:
@@ -5101,6 +5091,30 @@ definitions:
       `Value` type union.
 
       The JSON representation for `NullValue` is JSON `null`.
+  v1alphaRunSource:
+    type: string
+    enum:
+      - RUN_SOURCE_CONSOLE
+      - RUN_SOURCE_API
+    description: |-
+      RunSource defines the source of a pipeline or model run.
+
+       - RUN_SOURCE_CONSOLE: Run from frontend UI.
+       - RUN_SOURCE_API: Run from API or SDK.
+  v1alphaRunStatus:
+    type: string
+    enum:
+      - RUN_STATUS_PROCESSING
+      - RUN_STATUS_COMPLETED
+      - RUN_STATUS_FAILED
+      - RUN_STATUS_QUEUED
+    description: |-
+      RunStatus defines the status of a pipeline or model run.
+
+       - RUN_STATUS_PROCESSING: Run in progress.
+       - RUN_STATUS_COMPLETED: Run succeeded.
+       - RUN_STATUS_FAILED: Run failed.
+       - RUN_STATUS_QUEUED: Run is waiting to be executed.
   v1betaCheckNameRequest:
     type: object
     properties:
@@ -5270,7 +5284,7 @@ definitions:
         description: Completion status of the component.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1betaRunStatus'
+          - $ref: '#/definitions/v1alphaRunStatus'
       totalDuration:
         type: string
         description: Time taken to execute the component.
@@ -6456,12 +6470,12 @@ definitions:
         description: Current status of the run.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1betaRunStatus'
+          - $ref: '#/definitions/v1alphaRunStatus'
       source:
         description: Origin of the run.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/PipelineRunRunSource'
+          - $ref: '#/definitions/v1alphaRunSource'
       totalDuration:
         type: string
         description: Time taken to complete the run.
@@ -6609,18 +6623,6 @@ definitions:
 
        - ROLE_VIEWER: Viewers can see the resource properties.
        - ROLE_EXECUTOR: Executors can execute the resource (e.g. trigger a pipeline).
-  v1betaRunStatus:
-    type: string
-    enum:
-      - RUN_STATUS_RUNNING
-      - RUN_STATUS_COMPLETED
-      - RUN_STATUS_FAILED
-    description: |-
-      RunStatus represents the possible states of a pipeline or component run.
-
-       - RUN_STATUS_RUNNING: The run is currently in progress.
-       - RUN_STATUS_COMPLETED: The run has completed successfully.
-       - RUN_STATUS_FAILED: The run has failed.
   v1betaSecret:
     type: object
     properties:
