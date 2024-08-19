@@ -1956,6 +1956,10 @@ message ListPipelineRunsRequest {
   // View allows clients to specify the desired run view in the response.
   // The basic view excludes input / output data.
   optional Pipeline.View view = 5 [(google.api.field_behavior) = OPTIONAL];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  optional string filter = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListPipelineRunsResponse is the response message for ListPipelineRuns.
@@ -1984,6 +1988,10 @@ message ListComponentRunsRequest {
   // The maximum number of items per page to return. The default and cap values
   // are 10 and 100, respectively.
   optional int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  optional string filter = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListComponentRunsResponse is the response message for ListComponentRuns.
@@ -2043,30 +2051,40 @@ message PipelineRun {
   string requester_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Input files for the run.
-  repeated FileReference inputs = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated FileReference inputs_reference = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline input parameters.
+  repeated google.protobuf.Struct inputs = 10 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Output files from the run.
-  repeated FileReference outputs = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated FileReference outputs_reference = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline inference outputs.
+  repeated google.protobuf.Struct outputs = 12 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Snapshot of the pipeline recipe used for this run.
-  google.protobuf.Struct recipe_snapshot = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Struct recipe_snapshot = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Time when the run started execution.
-  google.protobuf.Timestamp start_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp start_time = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Time when the run completed.
-  optional google.protobuf.Timestamp complete_time = 14 [
+  optional google.protobuf.Timestamp complete_time = 15 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
 
   // Error message if the run failed.
-  optional string error = 15 [
+  optional string error = 16 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
 
   // Credits used of internal accounting metric.
-  optional float credit_amount = 16 [
+  optional float credit_amount = 17 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
