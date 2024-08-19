@@ -2830,23 +2830,25 @@ definitions:
     type: string
     enum:
       - STATE_OFFLINE
-      - STATE_SCALING
       - STATE_ACTIVE
       - STATE_IDLE
       - STATE_ERROR
       - STATE_STARTING
+      - STATE_SCALING_UP
+      - STATE_SCALING_DOWN
     description: |-
       State describes the state of a model. See [Deploy
       Models](https://www.instill.tech/docs/latest/model/deploy) for more
       information.
 
        - STATE_OFFLINE: Offline is the state when the model instance number is 0.
-       - STATE_SCALING: Scaling is the transition state when a model instance is scaling up or down.
        - STATE_ACTIVE: Active is the state when a model is processing requests.
        - STATE_IDLE: Idle is the state when a model is alive but not processing requests.
        - STATE_ERROR: Error is the state when the model is undeployable.
        - STATE_STARTING: Starting is the state when the system is provisioning the necessary
       resources for the model
+       - STATE_SCALING_UP: Scaling Up is the transition state when the system is provisioning compute resource for this model instance.
+       - STATE_SCALING_DOWN: Scaling is the transition state when the system is releasing compute resource for this model instance.
   modelv1alphaView:
     type: string
     enum:
@@ -2886,8 +2888,7 @@ definitions:
 
           Note: this functionality is not currently available in the official
           protobuf release, and it is not used for type URLs beginning with
-          type.googleapis.com. As of May 2023, there are no widely used type server
-          implementations and no plans to implement one.
+          type.googleapis.com.
 
           Schemes other than `http`, `https` (or the empty scheme) might be
           used with implementation specific semantics.
@@ -2922,7 +2923,7 @@ definitions:
             foo = any.unpack(Foo.getDefaultInstance());
           }
 
-       Example 3: Pack and unpack a message in Python.
+      Example 3: Pack and unpack a message in Python.
 
           foo = Foo(...)
           any = Any()
@@ -2932,7 +2933,7 @@ definitions:
             any.Unpack(foo)
             ...
 
-       Example 4: Pack and unpack a message in Go
+      Example 4: Pack and unpack a message in Go
 
            foo := &pb.Foo{...}
            any, err := anypb.New(foo)
@@ -2952,7 +2953,7 @@ definitions:
       name "y.z".
 
       JSON
-      ====
+
       The JSON representation of an `Any` value uses the regular
       representation of the deserialized, embedded message, with an
       additional field `@type` which contains the type URL. Example:
@@ -2984,7 +2985,7 @@ definitions:
       `NullValue` is a singleton enumeration to represent the null value for the
       `Value` type union.
 
-      The JSON representation for `NullValue` is JSON `null`.
+       The JSON representation for `NullValue` is JSON `null`.
   v1alphaBoundingBox:
     type: object
     properties:
