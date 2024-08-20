@@ -4220,6 +4220,14 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
             - VIEW_RECIPE
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
       tags:
         - Trigger
   /v1beta/pipeline-runs/{pipelineRunId}/component-runs:
@@ -4259,6 +4267,14 @@ paths:
           required: false
           type: integer
           format: int32
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
       tags:
         - Trigger
 definitions:
@@ -6486,19 +6502,31 @@ definitions:
         type: string
         description: Identity of the user who initiated the run.
         readOnly: true
-      inputs:
+      inputsReference:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1betaFileReference'
         description: Input files for the run.
         readOnly: true
-      outputs:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters.
+        readOnly: true
+      outputsReference:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1betaFileReference'
         description: Output files from the run.
+        readOnly: true
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline inference outputs.
         readOnly: true
       recipeSnapshot:
         type: object
