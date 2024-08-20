@@ -125,7 +125,7 @@ jobs:
     name: Sync public docs on new release
     needs: [sync-openapi-private-staging]
     runs-on: ubuntu-latest
-    if: needs.sync-openapi-private.outputs.new_release != ''
+    if: needs.sync-openapi-private-staging.outputs.new_release != ''
     steps:
       - name: Check out repo 📚
         uses: actions/checkout@v3
@@ -133,13 +133,13 @@ jobs:
       - name: Create new version 🚀
         uses: readmeio/rdme@v8
         env:
-          Release: ${{ needs.sync-openapi-private.outputs.new_release }}
+          Release: ${{ needs.sync-openapi-private-staging.outputs.new_release }}
         with:
           rdme: versions:create ${{ env.Release }} --fork 0-beta-staging --codename=${{ env.Release}} --main true --beta true --isPublic true --key=${{ secrets.README_API_KEY }}
 
       - name: Delete old version 🧹
         uses: readmeio/rdme@v8
         env:
-          OldRelease: ${{ needs.sync-openapi-private.outputs.old_release }}
+          OldRelease: ${{ needs.sync-openapi-private-staging.outputs.old_release }}
         with:
           rdme: versions:delete ${{ env.OldRelease }} --key=${{ secrets.README_API_KEY }}
