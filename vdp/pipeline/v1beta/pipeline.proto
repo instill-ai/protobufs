@@ -1960,6 +1960,9 @@ message ListPipelineRunsRequest {
   // expression.
   // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
   optional string filter = 6 [(google.api.field_behavior) = OPTIONAL];
+  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  optional string order_by = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListPipelineRunsResponse is the response message for ListPipelineRuns.
@@ -1980,18 +1983,25 @@ message ListPipelineRunsResponse {
 // ListComponentRunsRequest is the request message for ListComponentRuns.
 message ListComponentRunsRequest {
   // The unique identifier of the pipeline run to list component runs for.
-  string pipeline_run_id = 2 [(google.api.field_behavior) = REQUIRED];
+  string pipeline_run_id = 1 [(google.api.field_behavior) = REQUIRED];
 
   // The page number to retrieve.
-  optional int32 page = 3 [(google.api.field_behavior) = OPTIONAL];
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // The maximum number of items per page to return. The default and cap values
   // are 10 and 100, respectively.
-  optional int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+  optional int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
   // expression.
   // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-  optional string filter = 6 [(google.api.field_behavior) = OPTIONAL];
+  optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  optional string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // View allows clients to specify the desired run view in the response.
+  // The basic view excludes input / output data.
+  optional Pipeline.View view = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListComponentRunsResponse is the response message for ListComponentRuns.
@@ -2047,8 +2057,11 @@ message PipelineRun {
     (google.api.field_behavior) = OPTIONAL
   ];
 
-  // Identity of the user who initiated the run.
-  string requester_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Runner ID. If current viewing requester does not have enough permission, it will return null.
+  optional string runner_id = 7 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Input files for the run.
   repeated FileReference inputs_reference = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -2121,14 +2134,24 @@ message ComponentRun {
     (google.api.field_behavior) = OPTIONAL
   ];
 
-  // Input files for the component.
-  repeated FileReference inputs = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Input files for the run.
+  repeated FileReference inputs_reference = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Component input parameters.
+  repeated google.protobuf.Struct inputs = 9 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
-  // Output files from the component.
-  repeated FileReference outputs = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output files from the run.
+  repeated FileReference outputs_reference = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Component inference outputs.
+  repeated google.protobuf.Struct outputs = 11 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 
   // Credits used of internal accounting metric.
-  optional float credit_amount = 10 [
+  optional float credit_amount = 12 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];

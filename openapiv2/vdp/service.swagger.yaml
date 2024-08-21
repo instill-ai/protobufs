@@ -4228,6 +4228,13 @@ paths:
           in: query
           required: false
           type: string
+        - name: orderBy
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
       tags:
         - Trigger
   /v1beta/pipeline-runs/{pipelineRunId}/component-runs:
@@ -4275,6 +4282,28 @@ paths:
           in: query
           required: false
           type: string
+        - name: orderBy
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired run view in the response.
+            The basic view excludes input / output data.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+             - VIEW_RECIPE: Contains the recipe of the resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_RECIPE
       tags:
         - Trigger
 definitions:
@@ -5320,19 +5349,31 @@ definitions:
         type: string
         description: Error message if the component failed.
         readOnly: true
-      inputs:
+      inputsReference:
         type: array
         items:
           type: object
           $ref: '#/definitions/v1betaFileReference'
-        description: Input files for the component.
+        description: Input files for the run.
+        readOnly: true
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Component input parameters.
+        readOnly: true
+      outputsReference:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaFileReference'
+        description: Output files from the run.
         readOnly: true
       outputs:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1betaFileReference'
-        description: Output files from the component.
+        description: Component inference outputs.
         readOnly: true
       creditAmount:
         type: number
@@ -6498,9 +6539,9 @@ definitions:
         format: int32
         description: Time taken to complete the run in milliseconds.
         readOnly: true
-      requesterId:
+      runnerId:
         type: string
-        description: Identity of the user who initiated the run.
+        description: Runner ID. If current viewing requester does not have enough permission, it will return null.
         readOnly: true
       inputsReference:
         type: array
