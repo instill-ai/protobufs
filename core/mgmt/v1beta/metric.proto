@@ -27,8 +27,6 @@ enum Status {
   STATUS_ERRORED = 2;
 }
 
-// ========== Pipeline endpoints
-
 // TriggerCount represents a execution count with some
 // aggregation params (e.g. trigger status).
 message TriggerCount {
@@ -75,19 +73,6 @@ message TriggerCount {
 // count of a requester over a time period.
 message GetPipelineTriggerCountRequest {
   // The ID of the namespace that requested the pipeline triggers.
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Beginning of the time range from which the records will be fetched.
-  // The default value is the beginning of the current day, in UTC.
-  optional google.protobuf.Timestamp start = 2;
-  // End of the time range from which the records will be fetched.
-  // The default value is the current timestamp.
-  optional google.protobuf.Timestamp stop = 3;
-}
-
-// GetModelTriggerCountRequest represents a request to fetch the trigger
-// count of a requester over a time period.
-message GetModelTriggerCountRequest {
-  // The ID of the requester that triggered the model.
   string requester_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Beginning of the time range from which the records will be fetched.
   // The default value is the beginning of the current day, in UTC.
@@ -102,6 +87,19 @@ message GetModelTriggerCountRequest {
 message GetPipelineTriggerCountResponse {
   // The trigger counts, grouped by status.
   repeated TriggerCount pipeline_trigger_counts = 1;
+}
+
+// GetModelTriggerCountRequest represents a request to fetch the trigger
+// count of a requester over a time period.
+message GetModelTriggerCountRequest {
+  // The ID of the requester that triggered the model.
+  string requester_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // Beginning of the time range from which the records will be fetched.
+  // The default value is the beginning of the current day, in UTC.
+  optional google.protobuf.Timestamp start = 2;
+  // End of the time range from which the records will be fetched.
+  // The default value is the current timestamp.
+  optional google.protobuf.Timestamp stop = 3;
 }
 
 // GetModelTriggerCountResponse contains the trigger count, grouped by
