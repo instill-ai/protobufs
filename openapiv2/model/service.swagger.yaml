@@ -814,12 +814,63 @@ paths:
           type: string
       tags:
         - Trigger
+  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/operation:
+    get:
+      summary: |-
+        Get the details of the long-running operation from a namespace model
+        with a particular version
+      description: |-
+        This method allows requesters to request the status and outcome of
+        long-running operations in a model, such as trigger.
+      operationId: ModelPublicService_GetNamespaceModelOperation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetNamespaceModelOperationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: modelId
+          description: Model ID
+          in: path
+          required: true
+          type: string
+        - name: version
+          description: Model version
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired operation result in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Model
   /v1alpha/namespaces/{namespaceId}/models/{modelId}/operation:
     get:
       summary: Get the details of the latest long-running operation from a namespace model
       description: |-
         This method allows requesters to request the status and outcome of
-        long-running operations in a model, such as deployment.
+        long-running operations in a model, such as trigger.
       operationId: ModelPublicService_GetNamespaceLatestModelOperation
       responses:
         "200":
@@ -863,7 +914,7 @@ paths:
       summary: Get the details of a long-running operation
       description: |-
         This method allows requesters to request the status and outcome of
-        long-running operations in a model, such as deployment.
+        long-running operations in a model, such as trigger.
       operationId: ModelPublicService_GetModelOperation
       responses:
         "200":
@@ -2390,7 +2441,7 @@ paths:
       summary: Get the details of the latest long-running operation from a user model
       description: |-
         This method allows requesters to request the status and outcome of
-        long-running operations in a model, such as deployment.
+        long-running operations in a model, such as trigger.
       operationId: ModelPublicService_GetUserLatestModelOperation
       responses:
         "200":
@@ -2434,7 +2485,7 @@ paths:
       summary: Get the details of the latest long-running operation from a organization model
       description: |-
         This method allows requesters to request the status and outcome of
-        long-running operations in a model, such as deployment.
+        long-running operations in a model, such as trigger.
       operationId: ModelPublicService_GetOrganizationLatestModelOperation
       responses:
         "200":
@@ -3215,7 +3266,17 @@ definitions:
         allOf:
           - $ref: '#/definitions/googlelongrunningOperation'
     description: |-
-      GetNamespaceLatestModelOperationRequest represents a request to query a long-running
+      GetNamespaceLatestModelOperationResponse represents a response to query a long-running
+      operation.
+  v1alphaGetNamespaceModelOperationResponse:
+    type: object
+    properties:
+      operation:
+        description: The long-running operation.
+        allOf:
+          - $ref: '#/definitions/googlelongrunningOperation'
+    description: |-
+      GetNamespaceModelOperationResponse represents a response to query a long-running
       operation.
   v1alphaGetNamespaceModelResponse:
     type: object
