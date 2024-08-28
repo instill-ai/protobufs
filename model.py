@@ -68,18 +68,18 @@ class ModelClient(Client):
     @grpc_handler
     def list_model_definitions(
         self,
-        page_size: int,
-        page_token: str,
         view: TYPE_ENUM,
+        page_size: int = 10,
+        page_token: str = "",
         async_enabled: bool = False,
     ) -> model_interface.ListModelDefinitionsResponse:
         if async_enabled:
             return RequestFactory(
                 method=self.hosts[self.instance].async_client.ListModelDefinitions,
                 request=model_interface.ListModelDefinitionsRequest(
+                    view=model_definition_interface.VIEW_FULL,
                     page_size=page_size,
                     page_token=page_token,
-                    view=model_definition_interface.VIEW_FULL,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -87,9 +87,9 @@ class ModelClient(Client):
         return RequestFactory(
             method=self.hosts[self.instance].client.ListModelDefinitions,
             request=model_interface.ListModelDefinitionsRequest(
+                view=model_definition_interface.VIEW_FULL,
                 page_size=page_size,
                 page_token=page_token,
-                view=model_definition_interface.VIEW_FULL,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -143,25 +143,25 @@ class ModelClient(Client):
     @grpc_handler
     def list_models(
         self,
-        page_size: int,
-        page_token: str,
         view: TYPE_ENUM,
-        show_deleted: bool,
-        filter: str,
         visibility: TYPE_ENUM,
-        order_by: str,
+        page_size: int = 10,
+        page_token: str = "",
+        show_deleted: bool = False,
+        filter_str: str = "",
+        order_by: str = "",
         async_enabled: bool = False,
     ) -> model_interface.ListModelsResponse:
         if async_enabled:
             return RequestFactory(
                 method=self.hosts[self.instance].async_client.ListModels,
                 request=model_interface.ListModelsRequest(
+                    view=model_definition_interface.VIEW_FULL,
+                    visibility=model_interface.Model.VISIBILITY_PUBLIC,
                     page_size=page_size,
                     page_token=page_token,
-                    view=model_definition_interface.VIEW_FULL,
                     show_deleted=show_deleted,
-                    filter=filter,
-                    visibility=visibility,
+                    filter=filter_str,
                     order_by=order_by,
                 ),
                 metadata=self.hosts[self.instance].metadata,
@@ -170,12 +170,12 @@ class ModelClient(Client):
         return RequestFactory(
             method=self.hosts[self.instance].client.ListModels,
             request=model_interface.ListModelsRequest(
+                view=model_definition_interface.VIEW_FULL,
+                visibility=model_interface.Model.VISIBILITY_PUBLIC,
                 page_size=page_size,
                 page_token=page_token,
-                view=model_definition_interface.VIEW_FULL,
                 show_deleted=show_deleted,
-                filter=filter,
-                visibility=visibility,
+                filter=filter_str,
                 order_by=order_by,
             ),
             metadata=self.hosts[self.instance].metadata,
@@ -211,13 +211,13 @@ class ModelClient(Client):
     def list_namespace_models(
         self,
         namespace_id: str,
-        page_size: int,
-        page_token: str,
         view: TYPE_ENUM,
-        show_deleted: bool,
-        filter: str,
         visibility: TYPE_ENUM,
-        order_by: str,
+        page_size: int = 10,
+        page_token: str = "",
+        show_deleted: bool = False,
+        filter_str: str = "",
+        order_by: str = "",
         async_enabled: bool = False,
     ) -> model_interface.ListNamespaceModelsResponse:
         if async_enabled:
@@ -225,12 +225,12 @@ class ModelClient(Client):
                 method=self.hosts[self.instance].async_client.ListNamespaceModels,
                 request=model_interface.ListNamespaceModelsRequest(
                     namespace_id=namespace_id,
+                    view=model_definition_interface.VIEW_FULL,
+                    visibility=model_interface.Model.VISIBILITY_PUBLIC,
                     page_size=page_size,
                     page_token=page_token,
-                    view=model_definition_interface.VIEW_FULL,
                     show_deleted=show_deleted,
-                    filter=filter,
-                    visibility=visibility,
+                    filter=filter_str,
                     order_by=order_by,
                 ),
                 metadata=self.hosts[self.instance].metadata,
@@ -240,12 +240,12 @@ class ModelClient(Client):
             method=self.hosts[self.instance].client.ListNamespaceModels,
             request=model_interface.ListNamespaceModelsRequest(
                 namespace_id=namespace_id,
+                view=model_definition_interface.VIEW_FULL,
+                visibility=model_interface.Model.VISIBILITY_PUBLIC,
                 page_size=page_size,
                 page_token=page_token,
-                view=model_definition_interface.VIEW_FULL,
                 show_deleted=show_deleted,
-                filter=filter,
-                visibility=visibility,
+                filter=filter_str,
                 order_by=order_by,
             ),
             metadata=self.hosts[self.instance].metadata,
@@ -453,8 +453,8 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        page_size: int,
-        page: int,
+        page_size: int = 10,
+        page: int = 0,
         async_enabled: bool = False,
     ) -> model_interface.ListNamespaceModelVersionsResponse:
         if async_enabled:
@@ -514,7 +514,7 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerNamespaceModelResponse:
@@ -546,7 +546,7 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncNamespaceModelResponse:
@@ -578,7 +578,7 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerNamespaceLatestModelResponse:
         if async_enabled:
@@ -607,7 +607,7 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncNamespaceLatestModelResponse:
         if async_enabled:
@@ -636,7 +636,7 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_input: TYPE_MESSAGE,
+        task_input: model_interface.TaskInputStream,
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerNamespaceModelBinaryFileUploadResponse:
@@ -668,7 +668,7 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_input: TYPE_MESSAGE,
+        task_input: model_interface.TaskInputStream,
         async_enabled: bool = False,
     ) -> model_interface.TriggerNamespaceLatestModelBinaryFileUploadResponse:
         if async_enabled:
@@ -688,6 +688,38 @@ class ModelClient(Client):
                 namespace_id=namespace_id,
                 model_id=model_id,
                 task_input=task_input,
+            ),
+            metadata=self.hosts[self.instance].metadata,
+        ).send_sync()
+
+    @grpc_handler
+    def get_namespace_model_operation(
+        self,
+        namespace_id: str,
+        model_id: str,
+        version: str,
+        view: TYPE_ENUM,
+        async_enabled: bool = False,
+    ) -> model_interface.GetNamespaceModelOperationResponse:
+        if async_enabled:
+            return RequestFactory(
+                method=self.hosts[self.instance].async_client.GetNamespaceModelOperation,
+                request=model_interface.GetNamespaceModelOperationRequest(
+                    namespace_id=namespace_id,
+                    model_id=model_id,
+                    version=version,
+                    view=model_definition_interface.VIEW_FULL,
+                ),
+                metadata=self.hosts[self.instance].metadata,
+            ).send_async()
+
+        return RequestFactory(
+            method=self.hosts[self.instance].client.GetNamespaceModelOperation,
+            request=model_interface.GetNamespaceModelOperationRequest(
+                namespace_id=namespace_id,
+                model_id=model_id,
+                version=version,
+                view=model_definition_interface.VIEW_FULL,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -750,27 +782,27 @@ class ModelClient(Client):
     @grpc_handler
     def list_models(
         self,
-        page_size: int,
-        page_token: str,
         view: TYPE_ENUM,
-        parent: str,
-        show_deleted: bool,
-        filter: str,
         visibility: TYPE_ENUM,
-        order_by: str,
+        page_size: int = 10,
+        page_token: str = "",
+        parent: str = "",
+        show_deleted: bool = False,
+        filter_str: str = "",
+        order_by: str = "",
         async_enabled: bool = False,
     ) -> model_interface.ListUserModelsResponse:
         if async_enabled:
             return RequestFactory(
                 method=self.hosts[self.instance].async_client.ListUserModels,
                 request=model_interface.ListUserModelsRequest(
+                    view=model_definition_interface.VIEW_FULL,
+                    visibility=model_interface.Model.VISIBILITY_PUBLIC,
                     page_size=page_size,
                     page_token=page_token,
-                    view=model_definition_interface.VIEW_FULL,
                     parent=parent,
                     show_deleted=show_deleted,
-                    filter=filter,
-                    visibility=visibility,
+                    filter=filter_str,
                     order_by=order_by,
                 ),
                 metadata=self.hosts[self.instance].metadata,
@@ -779,13 +811,13 @@ class ModelClient(Client):
         return RequestFactory(
             method=self.hosts[self.instance].client.ListUserModels,
             request=model_interface.ListUserModelsRequest(
+                view=model_definition_interface.VIEW_FULL,
+                visibility=model_interface.Model.VISIBILITY_PUBLIC,
                 page_size=page_size,
                 page_token=page_token,
-                view=model_definition_interface.VIEW_FULL,
                 parent=parent,
                 show_deleted=show_deleted,
-                filter=filter,
-                visibility=visibility,
+                filter=filter_str,
                 order_by=order_by,
             ),
             metadata=self.hosts[self.instance].metadata,
@@ -795,7 +827,7 @@ class ModelClient(Client):
     def create_model(
         self,
         model: TYPE_MESSAGE,
-        parent: str,
+        parent: str = "",
         async_enabled: bool = False,
     ) -> model_interface.CreateUserModelResponse:
         if async_enabled:
@@ -970,18 +1002,18 @@ class ModelClient(Client):
     @grpc_handler
     def list_model_versions(
         self,
-        page_size: int,
-        page: int,
         model_name: str,
+        page_size: int = 10,
+        page: int = 0,
         async_enabled: bool = False,
     ) -> model_interface.ListUserModelVersionsResponse:
         if async_enabled:
             return RequestFactory(
                 method=self.hosts[self.instance].async_client.ListUserModelVersions,
                 request=model_interface.ListUserModelVersionsRequest(
+                    name=f"{self.namespace}/models/{model_name}",
                     page_size=page_size,
                     page=page,
-                    name=f"{self.namespace}/models/{model_name}",
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -989,9 +1021,9 @@ class ModelClient(Client):
         return RequestFactory(
             method=self.hosts[self.instance].client.ListUserModelVersions,
             request=model_interface.ListUserModelVersionsRequest(
+                name=f"{self.namespace}/models/{model_name}",
                 page_size=page_size,
                 page=page,
-                name=f"{self.namespace}/models/{model_name}",
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -1026,7 +1058,7 @@ class ModelClient(Client):
     def trigger_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerUserModelResponse:
@@ -1055,7 +1087,7 @@ class ModelClient(Client):
     def trigger_async_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncUserModelResponse:
@@ -1084,7 +1116,7 @@ class ModelClient(Client):
     def trigger_latest_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerUserLatestModelResponse:
         if async_enabled:
@@ -1110,7 +1142,7 @@ class ModelClient(Client):
     def trigger_async_latest_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncUserLatestModelResponse:
         if async_enabled:
@@ -1136,7 +1168,7 @@ class ModelClient(Client):
     def trigger_model_binary_file_upload(
         self,
         model_name: str,
-        task_input: TYPE_MESSAGE,
+        task_input: model_interface.TaskInputStream,
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerUserModelBinaryFileUploadResponse:
@@ -1164,27 +1196,27 @@ class ModelClient(Client):
     @grpc_handler
     def list_organization_models(
         self,
-        page_size: int,
-        page_token: str,
         view: TYPE_ENUM,
-        parent: str,
-        show_deleted: bool,
-        filter: str,
         visibility: TYPE_ENUM,
-        order_by: str,
+        page_size: int = 10,
+        page_token: str = "",
+        parent: str = "",
+        show_deleted: bool = False,
+        filter_str: str = "",
+        order_by: str = "",
         async_enabled: bool = False,
     ) -> model_interface.ListOrganizationModelsResponse:
         if async_enabled:
             return RequestFactory(
                 method=self.hosts[self.instance].async_client.ListOrganizationModels,
                 request=model_interface.ListOrganizationModelsRequest(
+                    view=model_definition_interface.VIEW_FULL,
+                    visibility=model_interface.Model.VISIBILITY_PUBLIC,
                     page_size=page_size,
                     page_token=page_token,
-                    view=model_definition_interface.VIEW_FULL,
                     parent=parent,
                     show_deleted=show_deleted,
-                    filter=filter,
-                    visibility=visibility,
+                    filter=filter_str,
                     order_by=order_by,
                 ),
                 metadata=self.hosts[self.instance].metadata,
@@ -1193,13 +1225,13 @@ class ModelClient(Client):
         return RequestFactory(
             method=self.hosts[self.instance].client.ListOrganizationModels,
             request=model_interface.ListOrganizationModelsRequest(
+                view=model_definition_interface.VIEW_FULL,
+                visibility=model_interface.Model.VISIBILITY_PUBLIC,
                 page_size=page_size,
                 page_token=page_token,
-                view=model_definition_interface.VIEW_FULL,
                 parent=parent,
                 show_deleted=show_deleted,
-                filter=filter,
-                visibility=visibility,
+                filter=filter_str,
                 order_by=order_by,
             ),
             metadata=self.hosts[self.instance].metadata,
@@ -1209,7 +1241,7 @@ class ModelClient(Client):
     def create_organization_model(
         self,
         model: TYPE_MESSAGE,
-        parent: str,
+        parent: str = "",
         async_enabled: bool = False,
     ) -> model_interface.CreateOrganizationModelResponse:
         if async_enabled:
@@ -1384,18 +1416,18 @@ class ModelClient(Client):
     @grpc_handler
     def list_organization_model_versions(
         self,
-        page_size: int,
-        page: int,
         model_name: str,
+        page_size: int = 10,
+        page: int = 0,
         async_enabled: bool = False,
     ) -> model_interface.ListOrganizationModelVersionsResponse:
         if async_enabled:
             return RequestFactory(
                 method=self.hosts[self.instance].async_client.ListOrganizationModelVersions,
                 request=model_interface.ListOrganizationModelVersionsRequest(
+                    name=f"{self.namespace}/models/{model_name}",
                     page_size=page_size,
                     page=page,
-                    name=f"{self.namespace}/models/{model_name}",
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -1403,9 +1435,9 @@ class ModelClient(Client):
         return RequestFactory(
             method=self.hosts[self.instance].client.ListOrganizationModelVersions,
             request=model_interface.ListOrganizationModelVersionsRequest(
+                name=f"{self.namespace}/models/{model_name}",
                 page_size=page_size,
                 page=page,
-                name=f"{self.namespace}/models/{model_name}",
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -1440,7 +1472,7 @@ class ModelClient(Client):
     def trigger_organization_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerOrganizationModelResponse:
@@ -1469,7 +1501,7 @@ class ModelClient(Client):
     def trigger_async_organization_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncOrganizationModelResponse:
@@ -1498,7 +1530,7 @@ class ModelClient(Client):
     def trigger_organization_latest_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerOrganizationLatestModelResponse:
         if async_enabled:
@@ -1524,7 +1556,7 @@ class ModelClient(Client):
     def trigger_async_organization_latest_model(
         self,
         model_name: str,
-        task_inputs: TYPE_MESSAGE,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncOrganizationLatestModelResponse:
         if async_enabled:
@@ -1550,7 +1582,7 @@ class ModelClient(Client):
     def trigger_organization_model_binary_file_upload(
         self,
         model_name: str,
-        task_input: TYPE_MESSAGE,
+        task_input: model_interface.TaskInputStream,
         version: str,
         async_enabled: bool = False,
     ) -> model_interface.TriggerOrganizationModelBinaryFileUploadResponse:
@@ -1626,3 +1658,45 @@ class ModelClient(Client):
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
+
+    @grpc_handler
+    def list_model_runs(
+        self,
+        view: TYPE_ENUM,
+        namespace_id: str,
+        model_id: str,
+        page_size: int = 10,
+        page: int = 0,
+        order_by: str = "",
+        filter_str: str = "",
+        async_enabled: bool = False,
+    ) -> model_interface.ListModelRunsResponse:
+        if async_enabled:
+            return RequestFactory(
+                method=self.hosts[self.instance].async_client.ListModelRuns,
+                request=model_interface.ListModelRunsRequest(
+                    view=model_definition_interface.VIEW_FULL,
+                    namespace_id=namespace_id,
+                    model_id=model_id,
+                    page_size=page_size,
+                    page=page,
+                    order_by=order_by,
+                    filter=filter_str,
+                ),
+                metadata=self.hosts[self.instance].metadata,
+            ).send_async()
+
+        return RequestFactory(
+            method=self.hosts[self.instance].client.ListModelRuns,
+            request=model_interface.ListModelRunsRequest(
+                view=model_definition_interface.VIEW_FULL,
+                namespace_id=namespace_id,
+                model_id=model_id,
+                page_size=page_size,
+                page=page,
+                order_by=order_by,
+                filter=filter_str,
+            ),
+            metadata=self.hosts[self.instance].metadata,
+        ).send_sync()
+

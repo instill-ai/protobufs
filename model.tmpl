@@ -22,7 +22,7 @@ class ModelClient(Client):
     @grpc_handler
     def {{ .Method | toSnakeCase | convertMethod }}(
         self,
-        {{ range .InputTypes }}{{ .Name | customizeFieldName }}: {{ typeConvert .Name .Type .IsRepeated }},
+        {{ range .InputTypes }}{{ .Name | customizeFieldName }}: {{ typeConvert .Name .Type .IsRepeated }}{{ .Name | addDefaultValue | safeHTML }},
         {{ end }}async_enabled: bool = False,
     ) -> model_interface.{{ .OutputTypeName }}:
         if async_enabled:

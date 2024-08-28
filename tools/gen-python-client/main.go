@@ -26,11 +26,26 @@ var generatorConfigMap = map[string]generatorConfig{
 			// "look_up_model": "lookup_model",
 		},
 		customizedFieldNameMap: map[string]string{
-			"name": "model_name",
+			"name":   "model_name",
+			"filter": "filter_str",
+		},
+		fieldDefaultValueMap: map[string]string{
+			"page_size":    " = 10",
+			"page":         " = 0",
+			"page_token":   ` = ""`,
+			"filter":       ` = ""`,
+			"parent":       ` = ""`,
+			"order_by":     ` = ""`,
+			"show_deleted": ` = False`,
 		},
 		customizedParamMap: map[string]string{
-			"name": `f"{self.namespace}/models/{model_name}"`,
-			"view": `model_definition_interface.VIEW_FULL`,
+			"name":       `f"{self.namespace}/models/{model_name}"`,
+			"view":       `model_definition_interface.VIEW_FULL`,
+			"visibility": "model_interface.Model.VISIBILITY_PUBLIC",
+		},
+		predefinedTypeMap: map[string]string{
+			"task_inputs": "model_interface.TaskInput",
+			"task_input":  "model_interface.TaskInputStream",
 		},
 		protoDir: "./model/model/v1alpha/",
 		tmplPath: "model.tmpl",
@@ -48,7 +63,7 @@ var generatorConfigMap = map[string]generatorConfig{
 			"filter":      "filter_str",
 		},
 		fieldDefaultValueMap: map[string]string{
-			"page_size":    " = 100",
+			"page_size":    " = 10",
 			"page_token":   ` = ""`,
 			"filter":       ` = ""`,
 			"show_deleted": ` = False`,
@@ -99,7 +114,7 @@ var generatorConfigMap = map[string]generatorConfig{
 			"filter":      "filter_str",
 		},
 		fieldDefaultValueMap: map[string]string{
-			"page_size":  " = 100",
+			"page_size":  " = 10",
 			"page_token": ` = ""`,
 			"filter":     ` = ""`,
 		},
@@ -131,24 +146,37 @@ var generatorConfigMap = map[string]generatorConfig{
 		},
 		customizedFieldNameMap: map[string]string{
 			"filter": "files_filter",
+			"type":   "message_type",
 		},
 		customizedParamMap: map[string]string{
+			"type": `conversation_interface.Message.MessageType.MESSAGE_TYPE_TEXT`,
 			// "name": `f"{self.namespace}/models/{model_name}"`,
 			// "view": `model_definition_interface.VIEW_FULL`,
 		},
 		fieldDefaultValueMap: map[string]string{
-			"page_size":  " = 100",
+			"page_size":  " = 10",
 			"page_token": ` = ""`,
 		},
 		predefinedTypeMap: map[string]string{
 			"file":   "artifact_interface.File",
 			"filter": "artifact_interface.ListCatalogFilesFilter",
+			"type":   "conversation_interface.Message.MessageType.ValueType",
 		},
 		interfaceNameMap: map[string]string{
 			"ListChunks":             "chunk_interface",
 			"GetSourceFile":          "chunk_interface",
 			"UpdateChunk":            "chunk_interface",
 			"SimilarityChunksSearch": "chunk_interface",
+			"DeleteConversation":     "conversation_interface",
+			"UpdateConversation":     "conversation_interface",
+			"ListConversations":      "conversation_interface",
+			"CreateConversation":     "conversation_interface",
+			"ListMessages":           "conversation_interface",
+			"UpdateMessage":          "conversation_interface",
+			"DeleteMessage":          "conversation_interface",
+			"CreateMessage":          "conversation_interface",
+			"QuestionAnswering":      "qa_interface",
+			"GetFileCatalog":         "file_catalog_interface",
 		},
 		defaultInterfaceName: "artifact_interface",
 		protoDir:             "./artifact/artifact/v1alpha/",
@@ -159,7 +187,7 @@ var generatorConfigMap = map[string]generatorConfig{
 var config generatorConfig
 
 func main() {
-	clientType := "artifact"
+	clientType := "model"
 	config = generatorConfigMap[clientType]
 
 	// Slice to hold the names of .proto files
