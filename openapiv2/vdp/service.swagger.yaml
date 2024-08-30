@@ -4308,6 +4308,439 @@ paths:
             - VIEW_RECIPE
       tags:
         - Trigger
+  /v1beta/namespaces/{namespaceId}/connections:
+    get:
+      summary: List namespace connections
+      description: Returns a paginated list of connections created by a namespace.
+      operationId: PipelinePublicService_ListNamespaceConnections
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListNamespaceConnectionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            The following filters are supported:
+            - `integration_id`
+            - `qConnection` (fuzzy search on connection ID, integration title or vendor)
+            Examples:
+            - List connections where app name, vendor or connection ID match `googl`:
+            `q="googl"`.
+            - List connections where the component type is `openai` (e.g. to setup a
+            connector within a pipeline): `integration_id="openai"`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Integration
+  /v1beta/namespaces/{namespaceId}/connections/{connectionId}:
+    get:
+      summary: Get a namespace connection
+      description: Returns the details of a connection.
+      operationId: PipelinePublicService_GetNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: connectionId
+          description: Connection ID.
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Integration
+    delete:
+      summary: Delete a connection
+      description: Deletes a connection.
+      operationId: PipelinePublicService_DeleteNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaDeleteNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: connectionId
+          description: Connection ID.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Integration
+  /v1beta/namespaces/{connection.namespaceId}/connections:
+    post:
+      summary: Create a connection
+      description: Creates a connection under the ownership of a namespace.
+      operationId: PipelinePublicService_CreateNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connection.namespaceId
+          description: ID of the namespace owning the connection.
+          in: path
+          required: true
+          type: string
+        - name: connection
+          description: Properties of the connection to be created.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: UUID-formatted unique identifier.
+                readOnly: true
+              id:
+                type: string
+                description: ID.
+              integrationId:
+                type: string
+                description: |-
+                  Integration ID. It determines for which type of components can reference
+                  this connection.
+              integrationTitle:
+                type: string
+                description: |-
+                  Integration title. This helps the console display the results grouped by
+                  integration ID without needing an extra call to fetch title by integration
+                  ID.
+                readOnly: true
+              pipelineIds:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  The IDs of the pipelines that use this integration. All the pipelines will
+                  be within the same namespace as the connection.
+                  The length of the list will be capped to 100.
+                readOnly: true
+              method:
+                description: |-
+                  Connection method. It references the setup schema provided by the
+                  integration.
+                allOf:
+                  - $ref: '#/definitions/ConnectionMethod'
+              setup:
+                type: object
+                description: |-
+                  Connection details. This field is required on creation, optional on view.
+                  When viewing the connection details, the setup values will be redacted.
+              view:
+                description: |-
+                  View defines how the integration is presented. The `setup` field is only
+                  showed in the FULL view.
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/vdppipelinev1betaView'
+              createTime:
+                type: string
+                format: date-time
+                description: Creation timestamp.
+                readOnly: true
+              updateTime:
+                type: string
+                format: date-time
+                description: Last update timestamp.
+                readOnly: true
+            title: Properties of the connection to be created.
+            required:
+              - id
+              - integrationId
+              - method
+              - setup
+      tags:
+        - Integration
+  /v1beta/namespaces/{connection.namespaceId}/connections/{connection.id}:
+    patch:
+      summary: Update a connection
+      description: Updates a connection with the supplied connection fields.
+      operationId: PipelinePublicService_UpdateNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaUpdateNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: connection.namespaceId
+          description: ID of the namespace owning the connection.
+          in: path
+          required: true
+          type: string
+        - name: connection.id
+          description: ID.
+          in: path
+          required: true
+          type: string
+        - name: connection
+          description: Properties of the connection to be updated.
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              uid:
+                type: string
+                description: UUID-formatted unique identifier.
+                readOnly: true
+              integrationId:
+                type: string
+                description: |-
+                  Integration ID. It determines for which type of components can reference
+                  this connection.
+              integrationTitle:
+                type: string
+                description: |-
+                  Integration title. This helps the console display the results grouped by
+                  integration ID without needing an extra call to fetch title by integration
+                  ID.
+                readOnly: true
+              pipelineIds:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  The IDs of the pipelines that use this integration. All the pipelines will
+                  be within the same namespace as the connection.
+                  The length of the list will be capped to 100.
+                readOnly: true
+              method:
+                description: |-
+                  Connection method. It references the setup schema provided by the
+                  integration.
+                allOf:
+                  - $ref: '#/definitions/ConnectionMethod'
+              setup:
+                type: object
+                description: |-
+                  Connection details. This field is required on creation, optional on view.
+                  When viewing the connection details, the setup values will be redacted.
+              view:
+                description: |-
+                  View defines how the integration is presented. The `setup` field is only
+                  showed in the FULL view.
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/vdppipelinev1betaView'
+              createTime:
+                type: string
+                format: date-time
+                description: Creation timestamp.
+                readOnly: true
+              updateTime:
+                type: string
+                format: date-time
+                description: Last update timestamp.
+                readOnly: true
+            title: Properties of the connection to be updated.
+            required:
+              - integrationId
+              - method
+              - setup
+      tags:
+        - Integration
+  /v1beta/namespaces/{namespaceId}/connections/{connectionId}/test:
+    post:
+      summary: Test a connection
+      description: |-
+        Makes a request to the 3rd party app that the connection is configured to
+        communicate with, and checks the result of the call. If the test fails,
+        the response status and error message will provide more information about
+        the failure.
+
+        Note that this action might affect the quota or billing of the integrated
+        account in the 3rd party app.
+      operationId: PipelinePublicService_TestNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaTestNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: connectionId
+          description: Connection ID.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Integration
+  /v1beta/integrations:
+    get:
+      summary: List integrations
+      description: Returns a paginated list of available integrations.
+      operationId: PipelinePublicService_ListIntegrations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListIntegrationsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            The following filters are supported:
+            - `qIntegration` (fuzzy search on title or vendor)
+            - `featured`
+            Examples:
+            - List integrations where app name or vendor match `googl`: `q="googl"`.
+            - List featured integrations: `featured=true`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Integration
+  /v1beta/integrations/{integrationId}:
+    get:
+      summary: Get an integration
+      description: Returns the details of an integration.
+      operationId: PipelinePublicService_GetIntegration
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaGetIntegrationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: integrationId
+          description: Integration ID.
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Integration
 definitions:
   CheckNameResponseName:
     type: string
@@ -4377,6 +4810,32 @@ definitions:
     required:
       - componentSpecification
       - dataSpecifications
+  ConnectionMethod:
+    type: string
+    enum:
+      - METHOD_DICTIONARY
+      - METHOD_OAUTH
+    description: |-
+      Method defines how the connection is set up.
+
+       - METHOD_DICTIONARY: Key-value collection. The user is responsible of fetching the connection
+      details from the 3rd party service.
+       - METHOD_OAUTH: Access token created via OAuth 2.0 authorization.
+  IntegrationSetupSchema:
+    type: object
+    properties:
+      method:
+        description: The connection method, which will define the fields in the schema.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ConnectionMethod'
+      schema:
+        type: object
+        description: |-
+          The connection setup field definitions. Each integration will require
+          different data to connect to the 3rd party app.
+        readOnly: true
+    description: SetupSchema defines the schema for a connection setup.
   PipelinePublicServiceCloneNamespacePipelineBody:
     type: object
     properties:
@@ -5417,6 +5876,78 @@ definitions:
        - COMPONENT_TYPE_OPERATOR: Manipulate data.
        - COMPONENT_TYPE_APPLICATION: Connect with an external application.
        - COMPONENT_TYPE_GENERIC: Generic.
+  v1betaConnection:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: UUID-formatted unique identifier.
+        readOnly: true
+      id:
+        type: string
+        description: ID.
+      namespaceId:
+        type: string
+        description: ID of the namespace owning the connection.
+      integrationId:
+        type: string
+        description: |-
+          Integration ID. It determines for which type of components can reference
+          this connection.
+      integrationTitle:
+        type: string
+        description: |-
+          Integration title. This helps the console display the results grouped by
+          integration ID without needing an extra call to fetch title by integration
+          ID.
+        readOnly: true
+      pipelineIds:
+        type: array
+        items:
+          type: string
+        description: |-
+          The IDs of the pipelines that use this integration. All the pipelines will
+          be within the same namespace as the connection.
+          The length of the list will be capped to 100.
+        readOnly: true
+      method:
+        description: |-
+          Connection method. It references the setup schema provided by the
+          integration.
+        allOf:
+          - $ref: '#/definitions/ConnectionMethod'
+      setup:
+        type: object
+        description: |-
+          Connection details. This field is required on creation, optional on view.
+          When viewing the connection details, the setup values will be redacted.
+      view:
+        description: |-
+          View defines how the integration is presented. The `setup` field is only
+          showed in the FULL view.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/vdppipelinev1betaView'
+      createTime:
+        type: string
+        format: date-time
+        description: Creation timestamp.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: Last update timestamp.
+        readOnly: true
+    description: |-
+      Connection contains the parameters to communicate with a 3rd party app. A
+      component may reference a connection in their setup. One connection may be
+      used by several components and pipelines.
+    required:
+      - id
+      - namespaceId
+      - integrationId
+      - method
+      - setup
   v1betaConnectorDefinition:
     type: object
     properties:
@@ -5558,6 +6089,15 @@ definitions:
        - CONNECTOR_TYPE_OPERATOR: Operator connector.
        - CONNECTOR_TYPE_APPLICATION: Application connector.
        - CONNECTOR_TYPE_GENERIC: Generic.
+  v1betaCreateNamespaceConnectionResponse:
+    type: object
+    properties:
+      connection:
+        description: The created connection.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaConnection'
+    description: CreateNamespaceConnectionResponse contains the created connection.
   v1betaCreateNamespacePipelineReleaseResponse:
     type: object
     properties:
@@ -5645,6 +6185,9 @@ definitions:
         description: JSON schema describing the component output data.
         readOnly: true
     description: DataSpecification describes the JSON schema of component input and output.
+  v1betaDeleteNamespaceConnectionResponse:
+    type: object
+    description: DeleteNamespaceConnectionResponse is an empty response.
   v1betaDeleteNamespacePipelineReleaseResponse:
     type: object
     description: DeleteNamespacePipelineReleaseResponse is an empty response.
@@ -5702,6 +6245,24 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaConnectorDefinition'
     description: GetConnectorDefinitionResponse contains the requested connector definition.
+  v1betaGetIntegrationResponse:
+    type: object
+    properties:
+      integration:
+        description: The requested integration.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaIntegration'
+    description: GetIntegrationResponse contains the requested integration.
+  v1betaGetNamespaceConnectionResponse:
+    type: object
+    properties:
+      connection:
+        description: The requested connection.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaConnection'
+    description: GetNamespaceConnectionResponse contains the requested connection.
   v1betaGetNamespacePipelineReleaseResponse:
     type: object
     properties:
@@ -5793,6 +6354,58 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaSecret'
     description: GetUserSecretResponse contains the requested secret.
+  v1betaIntegration:
+    type: object
+    properties:
+      id:
+        type: string
+        description: |-
+          Identifier of the integration, which references a component definition.
+          Components with that definition ID will be able to use the connections
+          produced by this integration.
+        readOnly: true
+      title:
+        type: string
+        description: Title, reflects the app name.
+        readOnly: true
+      description:
+        type: string
+        description: Short description of the integrated app.
+        readOnly: true
+      vendor:
+        type: string
+        description: Integrated app vendor name.
+        readOnly: true
+      icon:
+        type: string
+        description: |-
+          Integration icon. This is a path that's relative to the root of
+          the component implementation and that allows frontend applications to pull
+          and locate the icons.
+          See the `icon` field in the `ComponentDefinition` entity for more
+          information.
+        readOnly: true
+      featured:
+        type: boolean
+        description: This field allows requesters to list only shortlisted integrations.
+        readOnly: true
+      schemas:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/IntegrationSetupSchema'
+        description: Schemas defines the supported schemas for the connection setup.
+        readOnly: true
+      view:
+        description: |-
+          View defines how the integration is presented. The `spec` field is only
+          showed in the FULL view.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/vdppipelinev1betaView'
+    description: |-
+      Integration contains the parameters to create a connection between
+      components and 3rd party apps.
   v1betaListComponentDefinitionsResponse:
     type: object
     properties:
@@ -5858,6 +6471,46 @@ definitions:
         format: int32
         description: Total number of connector definitions.
     description: ListConnectorDefinitionsResponse contains a list of connector definitions.
+  v1betaListIntegrationsResponse:
+    type: object
+    properties:
+      integrations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaIntegration'
+        description: A list of integrations matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: ListIntegrationsResponse contains a paginated list of integrations.
+  v1betaListNamespaceConnectionsResponse:
+    type: object
+    properties:
+      connections:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaConnection'
+        description: A list of connections matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: ListNamespaceConnectionsResponse contains a paginated list of connections.
   v1betaListNamespacePipelineReleasesResponse:
     type: object
     properties:
@@ -6773,6 +7426,9 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1betaRole'
     description: Describes the sharing configuration with a given user.
+  v1betaTestNamespaceConnectionResponse:
+    type: object
+    description: TestNamespaceConnectionResponse is an empty response.
   v1betaTrace:
     type: object
     properties:
@@ -7047,6 +7703,15 @@ definitions:
     description: |-
       TriggerUserPipelineWithStreamResponse contains the pipeline execution results, i.e.,
       the multiple model inference outputs.
+  v1betaUpdateNamespaceConnectionResponse:
+    type: object
+    properties:
+      connection:
+        description: The created connection.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1betaConnection'
+    description: UpdateNamespaceConnectionResponse contains the updated connection.
   v1betaUpdateNamespacePipelineReleaseResponse:
     type: object
     properties:
@@ -7203,6 +7868,19 @@ definitions:
         type: boolean
         description: Defines whether the pipeline can be released.
     description: Permission defines how a pipeline can be used.
+  vdppipelinev1betaView:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+    description: |-
+      View defines how a resource is presented. Most resources can share this view
+      definition, the particular meaning of each value should be defined in the
+      resource itself. Certain resources might have their own View definition if
+      they need to implement more than 2 (basic / full) views.
+
+       - VIEW_BASIC: Default view.
+       - VIEW_FULL: Full representation.
 securityDefinitions:
   Bearer:
     type: apiKey
