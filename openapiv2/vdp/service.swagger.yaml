@@ -4481,15 +4481,6 @@ paths:
                   integration ID without needing an extra call to fetch title by integration
                   ID.
                 readOnly: true
-              pipelineIds:
-                type: array
-                items:
-                  type: string
-                description: |-
-                  The IDs of the pipelines that use this integration. All the pipelines will
-                  be within the same namespace as the connection.
-                  The length of the list will be capped to 100.
-                readOnly: true
               method:
                 description: |-
                   Connection method. It references the setup schema provided by the
@@ -4577,15 +4568,6 @@ paths:
                   integration ID without needing an extra call to fetch title by integration
                   ID.
                 readOnly: true
-              pipelineIds:
-                type: array
-                items:
-                  type: string
-                description: |-
-                  The IDs of the pipelines that use this integration. All the pipelines will
-                  be within the same namespace as the connection.
-                  The length of the list will be capped to 100.
-                readOnly: true
               method:
                 description: |-
                   Connection method. It references the setup schema provided by the
@@ -4658,6 +4640,61 @@ paths:
           type: string
       tags:
         - Integration
+  /v1beta/namespaces/{namespaceId}/connections/{connectionId}/referenced-pipelines:
+    get:
+      summary: List pipelines that reference a connection
+      description: |-
+        Returns a paginated list with the IDs of the pipelines that reference a
+        given connection. All the pipelines will belong to the same namespace as
+        the connection.
+      operationId: PipelinePublicService_ListPipelineIDsByConnectionID
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineIDsByConnectionIDResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: connectionId
+          description: Connection ID.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            The following filters are supported:
+            - `q` (fuzzy search on pipeline ID)
+          in: query
+          required: false
+          type: string
+      tags:
+        - Integration
   /v1beta/integrations:
     get:
       summary: List integrations
@@ -4695,10 +4732,8 @@ paths:
             expression.
             The following filters are supported:
             - `qIntegration` (fuzzy search on title or vendor)
-            - `featured`
             Examples:
             - List integrations where app name or vendor match `googl`: `q="googl"`.
-            - List featured integrations: `featured=true`.
           in: query
           required: false
           type: string
@@ -5901,15 +5936,6 @@ definitions:
           integration ID without needing an extra call to fetch title by integration
           ID.
         readOnly: true
-      pipelineIds:
-        type: array
-        items:
-          type: string
-        description: |-
-          The IDs of the pipelines that use this integration. All the pipelines will
-          be within the same namespace as the connection.
-          The length of the list will be capped to 100.
-        readOnly: true
       method:
         description: |-
           Connection method. It references the setup schema provided by the
@@ -6389,9 +6415,9 @@ definitions:
           See the `icon` field in the `ComponentDefinition` entity for more
           information.
         readOnly: true
-      featured:
-        type: boolean
-        description: This field allows requesters to list only shortlisted integrations.
+      helpLink:
+        type: string
+        description: Reference to the vendor's documentation to expand the integration details.
         readOnly: true
       schemas:
         type: array
@@ -6643,6 +6669,25 @@ definitions:
         format: int32
         description: Total number of secret resources.
     description: ListOrganizationSecretsResponse contains a list of secrets.
+  v1betaListPipelineIDsByConnectionIDResponse:
+    type: object
+    properties:
+      pipelineIds:
+        type: array
+        items:
+          type: string
+        description: A list of pipeline IDs matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: ListPipelineIDsByConnectionIDResponse contains a paginated list of integrations.
   v1betaListPipelineReleasesAdminResponse:
     type: object
     properties:
