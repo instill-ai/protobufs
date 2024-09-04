@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package app.app.v1alpha;
+
+// App definitions
+import "app/app/v1alpha/app.proto";
+import "app/app/v1alpha/conversation.proto";
+// Google API
+import "google/api/annotations.proto";
+import "google/api/visibility.proto";
+// OpenAPI definition
+import "protoc-gen-openapiv2/options/annotations.proto";
+
+// AppPublicService exposes the public endpoints that allow clients to
+// manage apps.
+service AppPublicService {
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {description: "Public App endpoints"};
+
+  // Check if the app server is alive
+  //
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md.
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha/__liveness"
+      additional_bindings: [
+        {get: "/v1alpha/health/app"}]
+    };
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+  // Check if the app server is ready
+  //
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {
+      get: "/v1alpha/__readiness"
+      additional_bindings: [
+        {get: "/v1alpha/ready/app"}]
+    };
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+  // Create a App
+  rpc CreateApp(CreateAppRequest) returns (CreateAppResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/apps"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "App"};
+  }
+
+  // Get all apps info
+  rpc ListApps(ListAppsRequest) returns (ListAppsResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/apps"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "App"};
+  }
+
+  // Update a app info
+  rpc UpdateApp(UpdateAppRequest) returns (UpdateAppResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "App"};
+  }
+
+  // Delete a app
+  rpc DeleteApp(DeleteAppRequest) returns (DeleteAppResponse) {
+    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "App"};
+  }
+
+  // Create a Conversation
+  rpc CreateConversation(CreateConversationRequest) returns (CreateConversationResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+  // List conversations
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+  // Update a conversation
+  rpc UpdateConversation(UpdateConversationRequest) returns (UpdateConversationResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations/{conversation_id}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+  // Delete a conversation
+  rpc DeleteConversation(DeleteConversationRequest) returns (DeleteConversationResponse) {
+    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations/{conversation_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+  // Create a message
+  rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations/{conversation_id}/messages"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+  // List messages
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations/{conversation_id}/messages"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+  // Update a message
+  rpc UpdateMessage(UpdateMessageRequest) returns (UpdateMessageResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations/{conversation_id}/messages/{message_uid}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+  // Delete a message
+  rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse) {
+    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/conversations/{conversation_id}/messages/{message_uid}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "app"};
+  }
+}

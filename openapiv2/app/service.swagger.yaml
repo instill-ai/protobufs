@@ -1,0 +1,787 @@
+swagger: "2.0"
+info:
+  title: "\U0001F4F1 App "
+  description: App endpoints to manage app resources
+  version: v0.39.0-beta
+  contact:
+    name: Instill AI
+    url: https://github.com/instill-ai
+    email: hello@instill.tech
+  license:
+    name: Elastic License 2.0 (ELv2)
+    url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
+host: api.instill.tech
+schemes:
+  - https
+  - http
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /v1alpha/namespaces/{namespaceId}/apps:
+    get:
+      summary: Get all apps info
+      operationId: AppPublicService_ListApps
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListAppsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: User ID for which to list the apps
+          in: path
+          required: true
+          type: string
+      tags:
+        - App
+    post:
+      summary: Create a App
+      operationId: AppPublicService_CreateApp
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateAppResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: The app's owner(namespaces).
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AppPublicServiceCreateAppBody'
+      tags:
+        - App
+  /v1alpha/namespaces/{namespaceId}/apps/{appId}:
+    delete:
+      summary: Delete a app
+      operationId: AppPublicService_DeleteApp
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteAppResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: The owner's id. i.e. namespace.
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: The app id.
+          in: path
+          required: true
+          type: string
+      tags:
+        - App
+    put:
+      summary: Update a app info
+      operationId: AppPublicService_UpdateApp
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateAppResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: The app owner(namespace).
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: The app id.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AppPublicServiceUpdateAppBody'
+      tags:
+        - App
+  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations:
+    get:
+      summary: List conversations
+      operationId: AppPublicService_ListConversations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListConversationsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: page size
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: page token
+          in: query
+          required: false
+          type: string
+      tags:
+        - app
+    post:
+      summary: Create a Conversation
+      operationId: AppPublicService_CreateConversation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateConversationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AppPublicServiceCreateConversationBody'
+      tags:
+        - app
+  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}:
+    delete:
+      summary: Delete a conversation
+      operationId: AppPublicService_DeleteConversation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteConversationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: conversationId
+          description: conversation id
+          in: path
+          required: true
+          type: string
+      tags:
+        - app
+    put:
+      summary: Update a conversation
+      operationId: AppPublicService_UpdateConversation
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateConversationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: conversationId
+          description: conversation id
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AppPublicServiceUpdateConversationBody'
+      tags:
+        - app
+  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}/messages:
+    get:
+      summary: List messages
+      operationId: AppPublicService_ListMessages
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListMessagesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: conversationId
+          description: conversation id
+          in: path
+          required: true
+          type: string
+        - name: latestK
+          description: latest k messages
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          description: page size
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: page token
+          in: query
+          required: false
+          type: string
+        - name: includeSystemMessages
+          description: include system messages
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - app
+    post:
+      summary: Create a message
+      operationId: AppPublicService_CreateMessage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaCreateMessageResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: conversationId
+          description: conversation id
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AppPublicServiceCreateMessageBody'
+      tags:
+        - app
+  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}/messages/{messageUid}:
+    delete:
+      summary: Delete a message
+      operationId: AppPublicService_DeleteMessage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaDeleteMessageResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: conversationId
+          description: conversation id
+          in: path
+          required: true
+          type: string
+        - name: messageUid
+          description: message uid
+          in: path
+          required: true
+          type: string
+      tags:
+        - app
+    put:
+      summary: Update a message
+      operationId: AppPublicService_UpdateMessage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateMessageResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: conversationId
+          description: conversation id
+          in: path
+          required: true
+          type: string
+        - name: messageUid
+          description: message uid
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AppPublicServiceUpdateMessageBody'
+      tags:
+        - app
+definitions:
+  AppPublicServiceCreateAppBody:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The app name.
+      description:
+        type: string
+        description: The app description.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The app tags.
+    description: CreateAppRequest represents a request to create a app.
+    required:
+      - name
+  AppPublicServiceCreateConversationBody:
+    type: object
+    properties:
+      conversationId:
+        type: string
+        title: conversation id. only allow kebab case
+    title: CreateConversationRequest is used to create a new conversation
+    required:
+      - conversationId
+  AppPublicServiceCreateMessageBody:
+    type: object
+    properties:
+      content:
+        type: string
+        title: message content
+      role:
+        type: string
+        title: message role
+      type:
+        title: message type
+        allOf:
+          - $ref: '#/definitions/MessageMessageType'
+    title: CreateMessageRequest is used to create a new message
+    required:
+      - content
+      - role
+      - type
+  AppPublicServiceUpdateAppBody:
+    type: object
+    properties:
+      description:
+        type: string
+        description: The app description.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The app tags.
+    description: UpdateAppRequest represents a request to update a app.
+  AppPublicServiceUpdateConversationBody:
+    type: object
+    properties:
+      newConversationId:
+        type: string
+        title: new conversation id
+    title: UpdateConversationRequest is used to update a conversation
+    required:
+      - newConversationId
+  AppPublicServiceUpdateMessageBody:
+    type: object
+    properties:
+      content:
+        type: string
+        title: new message content
+    title: UpdateMessageRequest is used to update a message
+    required:
+      - content
+  MessageMessageType:
+    type: string
+    enum:
+      - MESSAGE_TYPE_TEXT
+    description: '- MESSAGE_TYPE_TEXT: text'
+    title: message type
+  protobufAny:
+    type: object
+    properties:
+      '@type':
+        type: string
+    additionalProperties: {}
+  rpcStatus:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      details:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/protobufAny'
+  v1alphaApp:
+    type: object
+    properties:
+      appId:
+        type: string
+        description: The app id.
+      name:
+        type: string
+        description: The app name.
+      description:
+        type: string
+        description: The app description.
+      createTime:
+        type: string
+        format: date-time
+        description: The creation time of the app.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: The last update time of the app.
+        readOnly: true
+      ownerName:
+        type: string
+        description: The owner/namespace of the app.
+        readOnly: true
+      tags:
+        type: array
+        items:
+          type: string
+        description: The app tags.
+    description: App represents a app.
+    required:
+      - appId
+      - name
+  v1alphaConversation:
+    type: object
+    properties:
+      uid:
+        type: string
+        title: unique identifier of the conversation created by the system
+        readOnly: true
+      namespaceId:
+        type: string
+        title: namespace id
+      appId:
+        type: string
+        title: app id
+      id:
+        type: string
+        title: conversation id/name
+      createTime:
+        type: string
+        format: date-time
+        title: creation time of the conversation
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        title: update time of the conversation
+        readOnly: true
+    title: Conversation represents a chat conversation
+    required:
+      - namespaceId
+      - appId
+      - id
+  v1alphaCreateAppResponse:
+    type: object
+    properties:
+      app:
+        description: The created app.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaApp'
+    description: CreateAppResponse represents a response for creating a app.
+  v1alphaCreateConversationResponse:
+    type: object
+    properties:
+      conversation:
+        title: conversation
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaConversation'
+    title: CreateConversationResponse returns the created conversation
+  v1alphaCreateMessageResponse:
+    type: object
+    properties:
+      message:
+        title: message
+        allOf:
+          - $ref: '#/definitions/v1alphaMessage'
+    title: CreateMessageResponse returns the created message
+  v1alphaDeleteAppResponse:
+    type: object
+    description: DeleteAppResponse represents a response for deleting a app.
+  v1alphaDeleteConversationResponse:
+    type: object
+    title: DeleteConversationResponse is empty as no content needs to be returned
+  v1alphaDeleteMessageResponse:
+    type: object
+    title: DeleteMessageResponse is empty as no content needs to be returned
+  v1alphaListAppsResponse:
+    type: object
+    properties:
+      apps:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaApp'
+        description: The apps container.
+        readOnly: true
+    description: GetAppsResponse represents a response for getting all apps from users.
+  v1alphaListConversationsResponse:
+    type: object
+    properties:
+      conversations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaConversation'
+        title: conversations
+        readOnly: true
+      nextPageToken:
+        type: string
+        title: next page token
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        title: total size
+        readOnly: true
+    title: ListConversationsResponse returns a list of conversations
+  v1alphaListMessagesResponse:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessage'
+        title: messages
+        readOnly: true
+      nextPageToken:
+        type: string
+        title: next page token
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        title: total size
+        readOnly: true
+    title: ListMessagesResponse returns a list of messages
+  v1alphaMessage:
+    type: object
+    properties:
+      uid:
+        type: string
+        title: message uid
+        readOnly: true
+      appUid:
+        type: string
+        title: app uid
+        readOnly: true
+      conversationUid:
+        type: string
+        title: conversation uid
+        readOnly: true
+      content:
+        type: string
+        title: message content
+      role:
+        type: string
+        title: message role e.g., "user" or "assistant"
+      type:
+        title: message type
+        allOf:
+          - $ref: '#/definitions/MessageMessageType'
+      createTime:
+        type: string
+        format: date-time
+        title: creation time of the message
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        title: update time of the message
+        readOnly: true
+    title: Message represents a single message in a conversation
+    required:
+      - content
+      - role
+      - type
+  v1alphaUpdateAppResponse:
+    type: object
+    properties:
+      app:
+        description: The updated app.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaApp'
+    description: UpdateAppResponse represents a response for updating a app.
+  v1alphaUpdateConversationResponse:
+    type: object
+    properties:
+      conversation:
+        title: conversation
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaConversation'
+    title: UpdateConversationResponse returns the updated conversation
+  v1alphaUpdateMessageResponse:
+    type: object
+    properties:
+      message:
+        title: message
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaMessage'
+    title: UpdateMessageResponse returns the updated message
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    description: Enter the token with the `Bearer ` prefix, e.g. `Bearer abcde12345`
+    name: Authorization
+    in: header
+    x-default: Bearer instill_sk_***
+security:
+  - Bearer: []
+externalDocs:
+  description: More about Instill AI
+  url: https://www.instill.tech/docs
