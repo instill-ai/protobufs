@@ -26,17 +26,20 @@ message Connection {
     METHOD_OAUTH = 2;
   }
   // UUID-formatted unique identifier.
-  string uid = 1 [
-    (google.api.field_behavior) = OUTPUT_ONLY,
-    (google.api.field_behavior) = IMMUTABLE
-  ];
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // ID.
   string id = 2 [(google.api.field_behavior) = REQUIRED];
   // ID of the namespace owning the connection.
-  string namespace_id = 3 [(google.api.field_behavior) = REQUIRED];
+  string namespace_id = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE
+  ];
   // Integration ID. It determines for which type of components can reference
   // this connection.
-  string integration_id = 4 [(google.api.field_behavior) = REQUIRED];
+  string integration_id = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.field_behavior) = IMMUTABLE
+  ];
   // Integration title. This helps the console display the results grouped by
   // integration ID without needing an extra call to fetch title by integration
   // ID.
@@ -69,7 +72,7 @@ message ListNamespaceConnectionsRequest {
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
   // expression.
   // The following filters are supported:
-  // - `integration_id`
+  // - `integrationId`
   // - `qConnection` (fuzzy search on connection ID, integration title or vendor)
   // Examples:
   // - List connections where app name, vendor or connection ID match `googl`:
@@ -122,13 +125,17 @@ message CreateNamespaceConnectionResponse {
 // UpdateNamespaceConnectionRequest represents a request to update a
 // connection.
 message UpdateNamespaceConnectionRequest {
-  // Properties of the connection to be updated.
-  Connection connection = 1 [(google.api.field_behavior) = REQUIRED];
+  // ID of the connection to be updated, as present in the database.
+  string connection_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // Connection object with the new properties to be updated. Immutable and
+  // output-only fields will be ignored. The Setup property must be updated
+  // in block (no partial update is supported).
+  Connection connection = 2 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
   //
   // For more information about this field, see
   // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
-  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // UpdateNamespaceConnectionResponse contains the updated connection.
