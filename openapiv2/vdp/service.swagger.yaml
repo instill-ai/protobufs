@@ -4517,7 +4517,7 @@ paths:
               - setup
       tags:
         - Integration
-  /v1beta/namespaces/{connection.namespaceId}/connections/{connection.id}:
+  /v1beta/namespaces/{connection.namespaceId}/connections/{connectionId}:
     patch:
       summary: Update a connection
       description: Updates a connection with the supplied connection fields.
@@ -4540,13 +4540,16 @@ paths:
           in: path
           required: true
           type: string
-        - name: connection.id
-          description: ID.
+        - name: connectionId
+          description: ID of the connection to be updated, as present in the database.
           in: path
           required: true
           type: string
         - name: connection
-          description: Properties of the connection to be updated.
+          description: |-
+            Connection object with the new properties to be updated. Immutable and
+            output-only fields will be ignored. The Setup property must be updated
+            in block (no partial update is supported).
           in: body
           required: true
           schema:
@@ -4556,6 +4559,9 @@ paths:
                 type: string
                 description: UUID-formatted unique identifier.
                 readOnly: true
+              id:
+                type: string
+                description: ID.
               integrationId:
                 type: string
                 description: |-
@@ -4596,8 +4602,12 @@ paths:
                 format: date-time
                 description: Last update timestamp.
                 readOnly: true
-            title: Properties of the connection to be updated.
+            title: |-
+              Connection object with the new properties to be updated. Immutable and
+              output-only fields will be ignored. The Setup property must be updated
+              in block (no partial update is supported).
             required:
+              - id
               - integrationId
               - method
               - setup
