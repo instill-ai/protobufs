@@ -66,7 +66,7 @@ class ArtifactClient(Client):
     @grpc_handler
     def liveness(
         self,
-        health_check_request: TYPE_MESSAGE,
+        health_check_request: HealthCheckRequest,
         async_enabled: bool = False,
     ) -> artifact_interface.LivenessResponse:
         if async_enabled:
@@ -89,7 +89,7 @@ class ArtifactClient(Client):
     @grpc_handler
     def readiness(
         self,
-        health_check_request: TYPE_MESSAGE,
+        health_check_request: HealthCheckRequest,
         async_enabled: bool = False,
     ) -> artifact_interface.ReadinessResponse:
         if async_enabled:
@@ -303,7 +303,7 @@ class ArtifactClient(Client):
         namespace_id: str,
         catalog_id: str,
         files_filter: artifact_interface.ListCatalogFilesFilter,
-        page_size: int = 100,
+        page_size: int = 10,
         page_token: str = "",
         async_enabled: bool = False,
     ) -> artifact_interface.ListCatalogFilesResponse:
@@ -546,7 +546,7 @@ class ArtifactClient(Client):
         self,
         namespace_id: str,
         catalog_id: str,
-        page_size: int = 100,
+        page_size: int = 10,
         page_token: str = "",
         async_enabled: bool = False,
     ) -> conversation_interface.ListConversationsResponse:
@@ -680,7 +680,7 @@ class ArtifactClient(Client):
         conversation_id: str,
         latest_k: int,
         include_system_messages: bool,
-        page_size: int = 100,
+        page_size: int = 10,
         page_token: str = "",
         async_enabled: bool = False,
     ) -> conversation_interface.ListMessagesResponse:
