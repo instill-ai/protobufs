@@ -17,6 +17,7 @@ type generatorConfig struct {
 	methodMap, customizedFieldNameMap, customizedParamMap, fieldDefaultValueMap map[string]string
 	predefinedTypeMap                                                           map[string]string
 	interfaceNameMap                                                            map[string]string
+	protoFileInterfaceMap                                                       map[string]string
 	protoDir, tmplPath, defaultInterfaceName                                    string
 }
 
@@ -65,6 +66,8 @@ var generatorConfigMap = map[string]generatorConfig{
 		fieldDefaultValueMap: map[string]string{
 			"page_size":    " = 10",
 			"page_token":   ` = ""`,
+			"page":         " = 0",
+			"order_by":     ` = ""`,
 			"filter":       ` = ""`,
 			"show_deleted": ` = False`,
 		},
@@ -79,27 +82,43 @@ var generatorConfigMap = map[string]generatorConfig{
 			"release":     "pipeline_interface.PipelineRelease",
 			"sharing":     "common_pb2.Sharing",
 			"visibility":  "pipeline_interface.Pipeline.Visibility",
-			"inputs":      "list",
-			"data":        "list",
 			"pipeline":    "pipeline_interface.Pipeline",
+			"connection":  "integration_interface.Connection",
 		},
 		interfaceNameMap: map[string]string{
-			"ListConnectorDefinitions": "component_definition",
-			"GetConnectorDefinition":   "component_definition",
-			"ListOperatorDefinitions":  "component_definition",
-			"ListComponentDefinitions": "component_definition",
-			"GetOperatorDefinition":    "component_definition",
-			"CheckName":                "common_pb2",
-			"CreateUserSecret":         "secret_interface",
-			"ListUserSecrets":          "secret_interface",
-			"GetUserSecret":            "secret_interface",
-			"UpdateUserSecret":         "secret_interface",
-			"DeleteUserSecret":         "secret_interface",
-			"CreateOrganizationSecret": "secret_interface",
-			"ListOrganizationSecrets":  "secret_interface",
-			"GetOrganizationSecret":    "secret_interface",
-			"UpdateOrganizationSecret": "secret_interface",
-			"DeleteOrganizationSecret": "secret_interface",
+			"ListConnectorDefinitions":  "component_definition",
+			"GetConnectorDefinition":    "component_definition",
+			"ListOperatorDefinitions":   "component_definition",
+			"ListComponentDefinitions":  "component_definition",
+			"GetOperatorDefinition":     "component_definition",
+			"CheckName":                 "common_pb2",
+			"CreateUserSecret":          "secret_interface",
+			"ListUserSecrets":           "secret_interface",
+			"GetUserSecret":             "secret_interface",
+			"UpdateUserSecret":          "secret_interface",
+			"DeleteUserSecret":          "secret_interface",
+			"CreateOrganizationSecret":  "secret_interface",
+			"ListOrganizationSecrets":   "secret_interface",
+			"GetOrganizationSecret":     "secret_interface",
+			"UpdateOrganizationSecret":  "secret_interface",
+			"DeleteOrganizationSecret":  "secret_interface",
+			"CreateNamespaceSecret":     "secret_interface",
+			"ListNamespaceSecrets":      "secret_interface",
+			"GetNamespaceSecret":        "secret_interface",
+			"UpdateNamespaceSecret":     "secret_interface",
+			"DeleteNamespaceSecret":     "secret_interface",
+			"GetIntegration":            "integration_interface",
+			"ListIntegrations":          "integration_interface",
+			"TestNamespaceConnection":   "integration_interface",
+			"DeleteNamespaceConnection": "integration_interface",
+			"UpdateNamespaceConnection": "integration_interface",
+			"CreateNamespaceConnection": "integration_interface",
+			"GetNamespaceConnection":    "integration_interface",
+			"ListNamespaceConnections":  "integration_interface",
+		},
+		protoFileInterfaceMap: map[string]string{
+			"vdp/pipeline/v1beta/pipeline.proto":    "pipeline_interface",
+			"vdp/pipeline/v1beta/integration.proto": "integration_interface",
 		},
 		defaultInterfaceName: "pipeline_interface",
 		protoDir:             "./vdp/pipeline/v1beta/",
@@ -187,7 +206,7 @@ var generatorConfigMap = map[string]generatorConfig{
 var config generatorConfig
 
 func main() {
-	clientType := "model"
+	clientType := "pipeline"
 	config = generatorConfigMap[clientType]
 
 	// Slice to hold the names of .proto files
@@ -296,16 +315,28 @@ func printFileDescriptor(fd *desc.FileDescriptor) []protoDefinition {
 				// if !field.IsRequired() {
 				// 	continue
 				// }
-				fieldDef := fieldDefinition{Name: field.GetName(), Type: field.GetType().String(), IsRepeated: field.IsRepeated()}
+				fieldDef := fieldDefinition{
+					Name:       field.GetName(),
+					Type:       field.GetType().String(),
+					IsRepeated: field.IsRepeated(),
+				}
+
+				if msgType := field.GetMessageType(); msgType != nil {
+					fieldDef.Type = msgType.GetName()
+					if v, ok := config.protoFileInterfaceMap[msgType.GetFile().GetName()]; ok {
+						fieldDef.Type = v + "." + fieldDef.Type
+					}
+
+					s += fmt.Sprintf(" (%s) (QualifiedName: %s)", msgType.GetName(), msgType.GetFullyQualifiedName())
+					s += fmt.Sprintf(" (file: %s)", msgType.GetFile().GetName())
+				}
+
 				if _, ok := config.fieldDefaultValueMap[fieldDef.Name]; ok {
 					inputTypesWithDefaultValue = append(inputTypesWithDefaultValue, fieldDef)
 				} else {
 					inputTypes = append(inputTypes, fieldDef)
 				}
 
-				if msgType := field.GetMessageType(); msgType != nil {
-					s += fmt.Sprintf(" (%s) ", msgType.GetName())
-				}
 				fmt.Print(s + "\n")
 			}
 			def.InputTypes = append(inputTypes, inputTypesWithDefaultValue...)
@@ -361,6 +392,7 @@ func convertType(fieldName, fieldType string, isRepeated bool) string {
 	if v, ok := typeMap[fieldType]; ok {
 		return repeatedType(isRepeated, v)
 	}
+
 	return repeatedType(isRepeated, fieldType)
 }
 
