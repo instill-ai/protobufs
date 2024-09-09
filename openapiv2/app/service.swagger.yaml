@@ -171,6 +171,16 @@ paths:
           in: query
           required: false
           type: string
+        - name: conversationId
+          description: conversation_id this is optional, if provided, only the conversation with the given conversation_id will be returned
+          in: query
+          required: false
+          type: string
+        - name: ifAll
+          description: If true, all conversations will be returned. This has higher priority over conversation_id, page_size, and page_token.
+          in: query
+          required: false
+          type: boolean
       tags:
         - app
     post:
@@ -332,6 +342,11 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: ifAll
+          description: If true, all messages will be returned. This has higher priority over latest_k, page_size, and page_token.
+          in: query
+          required: false
+          type: boolean
       tags:
         - app
     post:
@@ -454,6 +469,40 @@ paths:
             $ref: '#/definitions/AppPublicServiceUpdateMessageBody'
       tags:
         - app
+  /v1alpha/namespaces/{namespaceId}/apps/{appId}/ai_assistant_playground:
+    put:
+      summary: Update ai assistant app playground
+      operationId: AppPublicService_UpdateAiAssistantAppPlayground
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaUpdateAiAssistantAppPlaygroundResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: The namespace id.
+          in: path
+          required: true
+          type: string
+        - name: appId
+          description: The app id.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AppPublicServiceUpdateAiAssistantAppPlaygroundBody'
+      tags:
+        - app
 definitions:
   AppPublicServiceCreateAppBody:
     type: object
@@ -499,6 +548,29 @@ definitions:
       - content
       - role
       - type
+  AppPublicServiceUpdateAiAssistantAppPlaygroundBody:
+    type: object
+    properties:
+      lastAiAppCatalogUid:
+        type: string
+        description: The last ai app uses catalog uid.
+      lastAiAppTopK:
+        type: integer
+        format: int32
+        description: The last ai app uses top k.
+      lastAiAppConversationUid:
+        type: string
+        description: The last ai app uses conversation uid.
+    description: |-
+      UpdateAiAssistantAppPlaygroundRequest represents a request to update a ai assistant app playground.
+      after the update, the app's metadata will be updated with the last ai assistant app
+      uses catalog uid, top k, and conversation uid.
+      parameters:
+      - namespace_id: the namespace id.
+      - app_id: the app id.
+      - last_ai_app_catalog_uid: the last ai app catalog uid.
+      - last_ai_app_top_k: the last ai app top k.
+      - last_ai_app_conversation_uid: the last ai app conversation uid.
   AppPublicServiceUpdateAppBody:
     type: object
     properties:
@@ -554,15 +626,30 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
+  v1alphaAiAssistantAppMetadata:
+    type: object
+    properties:
+      catalogUid:
+        type: string
+        description: The ai assistant app catalog uid.
+      topK:
+        type: integer
+        format: int32
+        description: The ai assistant app top k.
+      conversationUid:
+        type: string
+        description: The ai assistant app conversation uid.
+    description: AiAssistantAppMetadata represents the metadata for the ai assistant app.
+    required:
+      - catalogUid
+      - topK
+      - conversationUid
   v1alphaApp:
     type: object
     properties:
       appId:
         type: string
         description: The app id.
-      name:
-        type: string
-        description: The app name.
       description:
         type: string
         description: The app description.
@@ -576,7 +663,7 @@ definitions:
         format: date-time
         description: The last update time of the app.
         readOnly: true
-      ownerName:
+      ownerUid:
         type: string
         description: The owner/namespace of the app.
         readOnly: true
@@ -585,10 +672,35 @@ definitions:
         items:
           type: string
         description: The app tags.
+      aiAssistantApp:
+        description: The ai assistant app metadata.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaAiAssistantAppMetadata'
+      appType:
+        description: The app type.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaAppType'
+      appUid:
+        type: string
+        title: app uid
+        readOnly: true
+      creatorUid:
+        type: string
+        title: creator uid
+        readOnly: true
     description: App represents a app.
     required:
       - appId
-      - name
+  v1alphaAppType:
+    type: string
+    enum:
+      - APP_TYPE_AI_ASSISTANT
+    description: |-
+      AppType represents the type of the app.
+
+       - APP_TYPE_AI_ASSISTANT: AppType is a AI assistant app.
   v1alphaConversation:
     type: object
     properties:
@@ -705,6 +817,13 @@ definitions:
         format: int32
         title: total size
         readOnly: true
+      senderProfiles:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaMessageSenderProfile'
+        title: message sender profiles
+        readOnly: true
     title: ListMessagesResponse returns a list of messages
   v1alphaMessage:
     type: object
@@ -741,11 +860,40 @@ definitions:
         format: date-time
         title: update time of the message
         readOnly: true
+      msgSenderUid:
+        type: string
+        title: message sender uid
+        readOnly: true
     title: Message represents a single message in a conversation
     required:
       - content
       - role
       - type
+  v1alphaMessageSenderProfile:
+    type: object
+    properties:
+      msgSenderUid:
+        type: string
+        title: sender uid
+        readOnly: true
+      msgSenderId:
+        type: string
+        title: sender id
+        readOnly: true
+      displayName:
+        type: string
+        description: Display name.
+        readOnly: true
+      avatar:
+        type: string
+        description: Avatar url. this url might be expired or not exist.
+        readOnly: true
+    description: |-
+      MessageSenderProfile describes the public data of a message sender.
+      refer to core.mgmt.v1beta.UserProfile for more details.
+  v1alphaUpdateAiAssistantAppPlaygroundResponse:
+    type: object
+    description: UpdateAiAssistantAppPlaygroundResponse represents a response for updating a ai assistant app playground.
   v1alphaUpdateAppResponse:
     type: object
     properties:

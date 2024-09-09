@@ -48,18 +48,45 @@ message ReadinessResponse {
 message App {
   // The app id.
   string app_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The app name.
-  string name = 2 [(google.api.field_behavior) = REQUIRED];
   // The app description.
-  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
   // The creation time of the app.
-  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The last update time of the app.
-  google.protobuf.Timestamp update_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The owner/namespace of the app.
-  string owner_name = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string owner_uid = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The app tags.
-  repeated string tags = 8 [(google.api.field_behavior) = OPTIONAL];
+  repeated string tags = 6 [(google.api.field_behavior) = OPTIONAL];
+  // metadata for the app.
+  oneof metadata {
+    // The ai assistant app metadata.
+    AiAssistantAppMetadata ai_assistant_app = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+  // The app type.
+  AppType app_type = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // app uid
+  string app_uid = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // creator uid
+  string creator_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// AiAssistantAppMetadata represents the metadata for the ai assistant app.
+message AiAssistantAppMetadata {
+  // The ai assistant app catalog uid.
+  string catalog_uid = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ai assistant app top k.
+  int32 top_k = 2 [(google.api.field_behavior) = REQUIRED];
+  // The ai assistant app conversation uid.
+  string conversation_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// AppType represents the type of the app.
+enum AppType {
+  // AppType is not specified.
+  APP_TYPE_UNSPECIFIED = 0;
+  // AppType is a AI assistant app.
+  APP_TYPE_AI_ASSISTANT = 1;
 }
 
 // CreateAppRequest represents a request to create a app.
@@ -120,3 +147,28 @@ message DeleteAppRequest {
 
 // DeleteAppResponse represents a response for deleting a app.
 message DeleteAppResponse {}
+
+// UpdateAiAssistantAppPlaygroundRequest represents a request to update a ai assistant app playground.
+// after the update, the app's metadata will be updated with the last ai assistant app
+// uses catalog uid, top k, and conversation uid.
+// parameters:
+// - namespace_id: the namespace id.
+// - app_id: the app id.
+// - last_ai_app_catalog_uid: the last ai app catalog uid.
+// - last_ai_app_top_k: the last ai app top k.
+// - last_ai_app_conversation_uid: the last ai app conversation uid.
+message UpdateAiAssistantAppPlaygroundRequest {
+  // The namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The app id.
+  string app_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The last ai app uses catalog uid.
+  string last_ai_app_catalog_uid = 3 [(google.api.field_behavior) = OPTIONAL];
+  // The last ai app uses top k.
+  int32 last_ai_app_top_k = 4 [(google.api.field_behavior) = OPTIONAL];
+  // The last ai app uses conversation uid.
+  string last_ai_app_conversation_uid = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// UpdateAiAssistantAppPlaygroundResponse represents a response for updating a ai assistant app playground.
+message UpdateAiAssistantAppPlaygroundResponse {}
