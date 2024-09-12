@@ -117,12 +117,12 @@ paths:
             $ref: '#/definitions/rpcStatus'
       parameters:
         - name: namespaceId
-          description: The app owner(namespace).
+          description: namespace id
           in: path
           required: true
           type: string
         - name: appId
-          description: The app id.
+          description: app id
           in: path
           required: true
           type: string
@@ -507,9 +507,12 @@ definitions:
   AppPublicServiceCreateAppBody:
     type: object
     properties:
-      name:
+      id:
         type: string
-        description: The app name.
+        description: |-
+          The app id.
+          the app id should be lowercase without any space or special character besides the hyphen,
+          it can not start with number or hyphen, and should be less than 32 characters.
       description:
         type: string
         description: The app description.
@@ -520,7 +523,7 @@ definitions:
         description: The app tags.
     description: CreateAppRequest represents a request to create a app.
     required:
-      - name
+      - id
   AppPublicServiceCreateConversationBody:
     type: object
     properties:
@@ -574,14 +577,24 @@ definitions:
   AppPublicServiceUpdateAppBody:
     type: object
     properties:
-      description:
+      newAppId:
+        type: string
+        description: The app id needs to follow the kebab case format.
+      newDescription:
         type: string
         description: The app description.
-      tags:
+      newTags:
         type: array
         items:
           type: string
         description: The app tags.
+      lastAiAssistantAppCatalogUid:
+        type: string
+        title: last ai assistant app catalog uid
+      lastAiAssistantAppTopK:
+        type: integer
+        format: int32
+        title: last ai assistant app top k
     description: UpdateAppRequest represents a request to update a app.
   AppPublicServiceUpdateConversationBody:
     type: object
