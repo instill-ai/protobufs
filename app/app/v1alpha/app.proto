@@ -93,8 +93,10 @@ enum AppType {
 message CreateAppRequest {
   // The app's owner(namespaces).
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The app name.
-  string name = 2 [(google.api.field_behavior) = REQUIRED];
+  // The app id.
+  // the app id should be lowercase without any space or special character besides the hyphen,
+  // it can not start with number or hyphen, and should be less than 32 characters.
+  string id = 2 [(google.api.field_behavior) = REQUIRED];
   // The app description.
   string description = 3 [(google.api.field_behavior) = OPTIONAL];
   // The app tags.
@@ -121,14 +123,20 @@ message ListAppsResponse {
 
 // UpdateAppRequest represents a request to update a app.
 message UpdateAppRequest {
-  // The app id.
-  string app_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // namespace id
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // app id
+  string app_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The app id needs to follow the kebab case format.
+  string new_app_id = 3 [(google.api.field_behavior) = OPTIONAL];
   // The app description.
-  string description = 2 [(google.api.field_behavior) = OPTIONAL];
+  string new_description = 4 [(google.api.field_behavior) = OPTIONAL];
   // The app tags.
-  repeated string tags = 3 [(google.api.field_behavior) = OPTIONAL];
-  // The app owner(namespace).
-  string namespace_id = 4 [(google.api.field_behavior) = REQUIRED];
+  repeated string new_tags = 5 [(google.api.field_behavior) = OPTIONAL];
+  // last ai assistant app catalog uid
+  string last_ai_assistant_app_catalog_uid = 6 [(google.api.field_behavior) = OPTIONAL];
+  // last ai assistant app top k
+  int32 last_ai_assistant_app_top_k = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // UpdateAppResponse represents a response for updating a app.
