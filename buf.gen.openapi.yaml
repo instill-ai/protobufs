@@ -1,18 +1,21 @@
-version: v1
+version: v2
 managed:
   enabled: true
-  go_package_prefix:
-    default: github.com/instill-ai/protogen-go
-    except:
-      - buf.build/googleapis/googleapis
-      - buf.build/grpc-ecosystem/grpc-gateway
+  disable:
+    - file_option: go_package
+      module: buf.build/googleapis/googleapis
+    - file_option: go_package
+      module: buf.build/grpc-ecosystem/grpc-gateway
+  override:
+    - file_option: go_package_prefix
+      value: github.com/instill-ai/protogen-go
 plugins:
-  - plugin: buf.build/grpc-ecosystem/openapiv2:v2.20.0
+  - remote: buf.build/grpc-ecosystem/openapiv2:v2.20.0
     out: .
     opt:
       - output_format=yaml
       - allow_merge=true,merge_file_name=service
-      - use_allof_for_refs=true # must be true so that the JSON `$ref` can work in OpenAPI parser.
+      - use_allof_for_refs=true
       - version=true
       - omit_enum_default_value=true
       - preserve_rpc_order=true
