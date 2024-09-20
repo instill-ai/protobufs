@@ -4498,6 +4498,21 @@ paths:
                 description: |-
                   Connection details. This field is required on creation, optional on view.
                   When viewing the connection details, the setup values will be redacted.
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  A list of scopes that identify the resources that the connection will be
+                  able to access on the user's behalf. This is typically passed on creation
+                  when the setup has been generated through an OAuth flow with a limited set
+                  of scopes.
+              oAuthAccessDetails:
+                type: object
+                description: |-
+                  When the connection method is METHOD_OAUTH, the access token might come
+                  with some extra information that might vary across vendors. This
+                  information is passed as connection metadata.
               view:
                 description: |-
                   View defines how the integration is presented. The `setup` field is only
@@ -4591,6 +4606,21 @@ paths:
                 description: |-
                   Connection details. This field is required on creation, optional on view.
                   When viewing the connection details, the setup values will be redacted.
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  A list of scopes that identify the resources that the connection will be
+                  able to access on the user's behalf. This is typically passed on creation
+                  when the setup has been generated through an OAuth flow with a limited set
+                  of scopes.
+              oAuthAccessDetails:
+                type: object
+                description: |-
+                  When the connection method is METHOD_OAUTH, the access token might come
+                  with some extra information that might vary across vendors. This
+                  information is passed as connection metadata.
               view:
                 description: |-
                   View defines how the integration is presented. The `setup` field is only
@@ -4872,6 +4902,44 @@ definitions:
        - METHOD_DICTIONARY: Key-value collection. The user is responsible of fetching the connection
       details from the 3rd party service.
        - METHOD_OAUTH: Access token created via OAuth 2.0 authorization.
+  IntegrationLink:
+    type: object
+    properties:
+      text:
+        type: string
+        description: Text contains the message to display.
+        readOnly: true
+      url:
+        type: string
+        description: URL contains the reference the link will redirect to.
+        readOnly: true
+    description: Link contains the information to display an reference to an external URL.
+  IntegrationOAuthConfig:
+    type: object
+    properties:
+      authUrl:
+        type: string
+        description: |-
+          The URL of the OAuth server to initiate the authentication and
+          authorization process.
+        readOnly: true
+      accessUrl:
+        type: string
+        description: |-
+          The URL of the OAuth server to exchange the authorization code for an
+          access token.
+        readOnly: true
+      scopes:
+        type: array
+        items:
+          type: string
+        description: |-
+          A list of scopes that identify the resources that the connection will be
+          able to access on the user's behalf.
+        readOnly: true
+    description: |-
+      OAuthConfig contains the configuration parameters for fetching an access
+      token via an OAuth 2.0 flow.
   IntegrationSetupSchema:
     type: object
     properties:
@@ -4886,7 +4954,9 @@ definitions:
           The connection setup field definitions. Each integration will require
           different data to connect to the 3rd party app.
         readOnly: true
-    description: SetupSchema defines the schema for a connection setup.
+    description: |-
+      SetupSchema defines the schema for a connection setup.
+      This message is deprecated.
   PipelinePublicServiceCloneNamespacePipelineBody:
     type: object
     properties:
@@ -5963,6 +6033,21 @@ definitions:
         description: |-
           Connection details. This field is required on creation, optional on view.
           When viewing the connection details, the setup values will be redacted.
+      scopes:
+        type: array
+        items:
+          type: string
+        description: |-
+          A list of scopes that identify the resources that the connection will be
+          able to access on the user's behalf. This is typically passed on creation
+          when the setup has been generated through an OAuth flow with a limited set
+          of scopes.
+      oAuthAccessDetails:
+        type: object
+        description: |-
+          When the connection method is METHOD_OAUTH, the access token might come
+          with some extra information that might vary across vendors. This
+          information is passed as connection metadata.
       view:
         description: |-
           View defines how the integration is presented. The `setup` field is only
@@ -6444,23 +6529,45 @@ definitions:
           information.
         readOnly: true
       helpLink:
-        type: string
         description: Reference to the vendor's documentation to expand the integration details.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/IntegrationLink'
+      setupSchema:
+        type: object
+        description: |-
+          The connection setup field definitions. Each integration will require
+          different data to connect to the 3rd party app.
+        readOnly: true
+      oAuthConfig:
+        description: |-
+          Configuration parameters required for the OAuth setup flow. This field
+          will be present only if the integration supports OAuth 2.0.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/IntegrationOAuthConfig'
+      view:
+        title: |-
+          View defines how the integration is presented. The following fields are
+          only shown in the FULL view:
+          - schemas
+          - setupSchema
+          - oAuthConfig
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/vdppipelinev1betaView'
       schemas:
         type: array
         items:
           type: object
           $ref: '#/definitions/IntegrationSetupSchema'
-        description: Schemas defines the supported schemas for the connection setup.
-        readOnly: true
-      view:
         description: |-
-          View defines how the integration is presented. The `spec` field is only
-          showed in the FULL view.
+          Schemas defines the supported schemas for the connection setup.
+          We haven't found a case for a schema that changes on the connection method
+          (components don't care about how the connection was built), so the schema
+          will be provided in the setupSchema field and the OAuth support and
+          configuration will be provided in oAuthConfig.
         readOnly: true
-        allOf:
-          - $ref: '#/definitions/vdppipelinev1betaView'
     description: |-
       Integration contains the parameters to create a connection between
       components and 3rd party apps.
