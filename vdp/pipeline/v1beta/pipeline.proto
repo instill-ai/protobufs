@@ -56,6 +56,20 @@ enum State {
   STATE_ERROR = 3;
 }
 
+// Endpoints describe the endpoints of a pipeline.
+message Endpoints {
+  // WebhookEndpoint describe a webhook endpoint.
+  message WebhookEndpoint {
+    // Webhook URL.
+    string url = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // Description.
+    string description = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
+  // Webhook endpoints.
+  map<string, WebhookEndpoint> webhooks = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // A Pipeline is an end-to-end workflow that automates a sequence of components
 // to process data.
 //
@@ -152,6 +166,8 @@ message Pipeline {
   optional string license = 30 [(google.api.field_behavior) = OPTIONAL];
   // Pipeline profile image in base64 format.
   optional string profile_image = 31 [(google.api.field_behavior) = OPTIONAL];
+  // Pipeline endpoints.
+  Endpoints endpoints = 32 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // TriggerMetadata contains the traces of the pipeline inference.
@@ -232,6 +248,8 @@ message PipelineRelease {
   // Recipe in YAML format describes the components of a pipeline and how they
   // are connected.
   string raw_recipe = 15 [(google.api.field_behavior) = OPTIONAL];
+  // Pipeline endpoints.
+  Endpoints endpoints = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListPipelinesRequest represents a request to list pipelines.
