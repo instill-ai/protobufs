@@ -2,8 +2,12 @@ syntax = "proto3";
 
 package app.app.v1alpha;
 
+// Artifact definitions
+import "artifact/artifact/v1alpha/chunk.proto";
+// Google API
 import "google/api/field_behavior.proto";
 // Protocol Buffers Well-Known Types
+import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
 // Conversation represents a chat conversation
@@ -230,3 +234,26 @@ message DeleteMessageRequest {
 
 // DeleteMessageResponse is empty as no content needs to be returned
 message DeleteMessageResponse {}
+
+// ChatRequest represents a request to send a message
+// to a chatbot synchronously and streams back the results.
+message ChatRequest {
+  // Namespace ID
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // App ID
+  string app_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // Catalog ID
+  string catalog_id = 3 [(google.api.field_behavior) = REQUIRED];
+  // Conversation UID
+  string conversation_uid = 4 [(google.api.field_behavior) = REQUIRED];
+  // User message
+  string message = 5 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ChatResponse contains the chatbot response.
+message ChatResponse {
+  // Conversation responses.
+  repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Reference chunks
+  repeated artifact.artifact.v1alpha.SimilarityChunk chunks = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
