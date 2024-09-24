@@ -868,50 +868,6 @@ paths:
             $ref: '#/definitions/v1betaCheckNamespaceRequest'
       tags:
         - Utils
-  /v1beta/metrics/vdp/pipeline/tables:
-    get:
-      summary: List pipeline trigger metrics
-      description: |-
-        Returns a paginated list of pipeline executions aggregated by pipeline ID.
-        NOTE: This method is deprecated and will be retired soon.
-      operationId: MgmtPublicService_ListPipelineTriggerTableRecords
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaListPipelineTriggerTableRecordsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: pageSize
-          description: |-
-            The maximum number of results to return. If this parameter is unspecified,
-            at most 100 pipelines will be returned. The cap value for this parameter
-            is 1000 (i.e. any value above that will be coerced to 1000).
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token.
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-          in: query
-          required: false
-          type: string
-      tags:
-        - Metric
   /v1beta/metrics/vdp/pipeline/charts:
     get:
       summary: List pipeline trigger time charts
@@ -1562,23 +1518,6 @@ definitions:
     description: |-
       ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
       chart records.
-  v1betaListPipelineTriggerTableRecordsResponse:
-    type: object
-    properties:
-      pipelineTriggerTableRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1betaPipelineTriggerTableRecord'
-        description: A list of pipeline trigger tables.
-      nextPageToken:
-        type: string
-        description: Next page token.
-      totalSize:
-        type: integer
-        format: int32
-        title: Total number of pipeline trigger records
-    description: ListPipelineTriggerTableRecordsResponse contains the pipeline metrics.
   v1betaListTokensResponse:
     type: object
     properties:
@@ -1899,36 +1838,6 @@ definitions:
     description: |-
       PipelineTriggerChartRecord contains pipeline trigger metrics, aggregated by
       pipeline ID and time frame.
-  v1betaPipelineTriggerTableRecord:
-    type: object
-    properties:
-      pipelineId:
-        type: string
-        description: Pipeline ID.
-      pipelineUid:
-        type: string
-        description: Pipeline UUID.
-      triggerCountCompleted:
-        type: integer
-        format: int32
-        description: Number of triggers with `STATUS_COMPLETED`.
-        readOnly: true
-      triggerCountErrored:
-        type: integer
-        format: int32
-        description: Number of triggers with `STATUS_ERRORED`.
-        readOnly: true
-      pipelineReleaseId:
-        type: string
-        description: Version for the triggered pipeline if it is a release pipeline.
-        readOnly: true
-      pipelineReleaseUid:
-        type: string
-        description: Release UUID for the triggered pipeline if it is a release pipeline.
-        readOnly: true
-    description: |-
-      PipelineTriggerTableRecord contains pipeline trigger metrics, aggregated by
-      pipeline ID.
   v1betaStripeSubscriptionDetail:
     type: object
     properties:
