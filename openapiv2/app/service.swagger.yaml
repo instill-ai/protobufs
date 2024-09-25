@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   title: "\U0001F4F1 App "
-  description: App endpoints to manage app resources
+  description: App endpoints to manage ready-to-use AI applications
   version: v0.41.0-beta
   contact:
     name: Instill AI
@@ -13,6 +13,10 @@ info:
 tags:
   - name: App
     description: App endpoints
+  - name: Conversation
+    description: Conversation endpoints
+  - name: Message
+    description: Message endpoints
 host: api.instill.tech
 schemes:
   - https
@@ -192,7 +196,7 @@ paths:
           required: false
           type: boolean
       tags:
-        - App
+        - Conversation
     post:
       summary: Create a Conversation
       operationId: AppPublicService_CreateConversation
@@ -225,7 +229,7 @@ paths:
           schema:
             $ref: '#/definitions/AppPublicServiceCreateConversationBody'
       tags:
-        - App
+        - Conversation
   /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}:
     delete:
       summary: Delete a conversation
@@ -259,7 +263,7 @@ paths:
           required: true
           type: string
       tags:
-        - App
+        - Conversation
     put:
       summary: Update a conversation
       operationId: AppPublicService_UpdateConversation
@@ -297,7 +301,7 @@ paths:
           schema:
             $ref: '#/definitions/AppPublicServiceUpdateConversationBody'
       tags:
-        - App
+        - Conversation
   /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}/messages:
     get:
       summary: List messages
@@ -363,7 +367,7 @@ paths:
           required: false
           type: string
       tags:
-        - App
+        - Message
     post:
       summary: Create a message
       operationId: AppPublicService_CreateMessage
@@ -401,7 +405,7 @@ paths:
           schema:
             $ref: '#/definitions/AppPublicServiceCreateMessageBody'
       tags:
-        - App
+        - Message
   /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}/messages/{messageUid}:
     delete:
       summary: Delete a message
@@ -440,7 +444,7 @@ paths:
           required: true
           type: string
       tags:
-        - App
+        - Message
     put:
       summary: Update a message
       operationId: AppPublicService_UpdateMessage
@@ -483,16 +487,16 @@ paths:
           schema:
             $ref: '#/definitions/AppPublicServiceUpdateMessageBody'
       tags:
-        - App
+        - Message
   /v1alpha/namespaces/{namespaceId}/apps/{appId}/ai_assistant_playground:
     put:
-      summary: Update ai assistant app playground
-      operationId: AppPublicService_UpdateAiAssistantAppPlayground
+      summary: Update AI assistant app playground
+      operationId: AppPublicService_UpdateAIAssistantAppPlayground
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaUpdateAiAssistantAppPlaygroundResponse'
+            $ref: '#/definitions/v1alphaUpdateAIAssistantAppPlaygroundResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -515,7 +519,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/AppPublicServiceUpdateAiAssistantAppPlaygroundBody'
+            $ref: '#/definitions/AppPublicServiceUpdateAIAssistantAppPlaygroundBody'
       tags:
         - App
 definitions:
@@ -566,29 +570,24 @@ definitions:
       - content
       - role
       - type
-  AppPublicServiceUpdateAiAssistantAppPlaygroundBody:
+  AppPublicServiceUpdateAIAssistantAppPlaygroundBody:
     type: object
     properties:
       lastAiAppCatalogUid:
         type: string
-        description: The last ai app uses catalog uid.
+        description: The last AI app uses catalog uid.
       lastAiAppTopK:
         type: integer
         format: int32
-        description: The last ai app uses top k.
+        description: The last AI app uses top k.
       lastAiAppConversationUid:
         type: string
-        description: The last ai app uses conversation uid.
+        description: The last AI app uses conversation uid.
     description: |-
-      UpdateAiAssistantAppPlaygroundRequest represents a request to update a ai assistant app playground.
-      after the update, the app's metadata will be updated with the last ai assistant app
-      uses catalog uid, top k, and conversation uid.
-      parameters:
-      - namespace_id: the namespace id.
-      - app_id: the app id.
-      - last_ai_app_catalog_uid: the last ai app catalog uid.
-      - last_ai_app_top_k: the last ai app top k.
-      - last_ai_app_conversation_uid: the last ai app conversation uid.
+      UpdateAIAssistantAppPlaygroundRequest represents a request to update an AI
+      assistant app playground.
+      After the update, the app's metadata will be updated with the last AI
+      assistant app uses catalog UID, top k, and conversation UID.
   AppPublicServiceUpdateAppBody:
     type: object
     properties:
@@ -605,11 +604,11 @@ definitions:
         description: The app tags.
       lastAiAssistantAppCatalogUid:
         type: string
-        title: last ai assistant app catalog uid
+        title: last AI assistant app catalog uid
       lastAiAssistantAppTopK:
         type: integer
         format: int32
-        title: last ai assistant app top k
+        title: last AI assistant app top k
     description: UpdateAppRequest represents a request to update a app.
   AppPublicServiceUpdateConversationBody:
     type: object
@@ -654,20 +653,20 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/protobufAny'
-  v1alphaAiAssistantAppMetadata:
+  v1alphaAIAssistantAppMetadata:
     type: object
     properties:
       catalogUid:
         type: string
-        description: The ai assistant app catalog uid.
+        description: The AI assistant app catalog uid.
       topK:
         type: integer
         format: int32
-        description: The ai assistant app top k.
+        description: The AI assistant app top k.
       conversationUid:
         type: string
-        description: The ai assistant app conversation uid.
-    description: AiAssistantAppMetadata represents the metadata for the ai assistant app.
+        description: The AI assistant app conversation uid.
+    description: AIAssistantAppMetadata represents the metadata for the AI assistant app.
     required:
       - catalogUid
       - topK
@@ -701,10 +700,10 @@ definitions:
           type: string
         description: The app tags.
       aiAssistantApp:
-        description: The ai assistant app metadata.
+        description: The AI assistant app metadata.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1alphaAiAssistantAppMetadata'
+          - $ref: '#/definitions/v1alphaAIAssistantAppMetadata'
       appType:
         description: The app type.
         readOnly: true
@@ -919,9 +918,11 @@ definitions:
     description: |-
       MessageSenderProfile describes the public data of a message sender.
       refer to core.mgmt.v1beta.UserProfile for more details.
-  v1alphaUpdateAiAssistantAppPlaygroundResponse:
+  v1alphaUpdateAIAssistantAppPlaygroundResponse:
     type: object
-    description: UpdateAiAssistantAppPlaygroundResponse represents a response for updating a ai assistant app playground.
+    description: |-
+      UpdateAIAssistantAppPlaygroundResponse represents a response for updating a
+      AI assistant app playground.
   v1alphaUpdateAppResponse:
     type: object
     properties:

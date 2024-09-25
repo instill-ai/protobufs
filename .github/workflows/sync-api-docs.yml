@@ -8,27 +8,16 @@ on:
       # pushed to the `main` branch.
       - main
     paths:
-      - 'openapiv2/artifact/**'
-      - 'openapiv2/app/**'
-      - 'openapiv2/common/**'
-      - 'openapiv2/core/**'
-      - 'openapiv2/model/**'
-      - 'openapiv2/vdp/**'
+      - 'openapiv2/**'
 
 jobs:
   sync-openapi-private-dev:
     name: Keep private (dev) docs in sync with latest pull request
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    outputs:
-      old_release: ${{ steps.check-new-release.outputs.old_release }}
-      new_release: ${{ steps.check-new-release.outputs.new_release }}
     steps:
       - name: Check out repo 📚
         uses: actions/checkout@v3
-        with:
-          # Needed in check-new-release to compare with the previous commit.
-          fetch-depth: 0
 
       - name: Sync Core 🔮
         uses: readmeio/rdme@v8
@@ -50,29 +39,10 @@ jobs:
         with:
           rdme: openapi openapiv2/artifact/service.swagger.yaml --title "💾 Artifact (PR ${{ github.ref_name }})" --key=${{ secrets.README_API_KEY }} --id=669fb9c72dd8c500184c6531
 
-      # - name: Sync App 💾
-      #   uses: readmeio/rdme@v8
-      #   with:
-      #     rdme: openapi openapiv2/app/service.swagger.yaml --title "📱 App (PR ${{ github.ref_name }})" --key=${{ secrets.README_API_KEY }} --id=669fb9c72dd8c500184c6531
-
-      - name: Check new release 🔍
-        id: check-new-release
-        run: |
-          # If the version in the OpenAPI configuration has changed, extract
-          # the old and new release versions (without the "v" prefix) to
-          # variables.
-          version_file=common/openapi/v1beta/api_info.conf
-          capture_old='^-\s\+\<version:'
-          capture_new='^+\s\+\<version:'
-          extract_version='s/.*"v\(.*\)".*/\1/'
-
-          old_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_old | sed $extract_version)
-          new_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_new | sed $extract_version)
-
-          if [[ $new_version ]]; then
-            echo "new_release=$new_version" >> $GITHUB_OUTPUT
-            echo "old_release=$old_version" >> $GITHUB_OUTPUT
-          fi
+      - name: Sync App 📱
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/app/service.swagger.yaml --title "📱 App (PR ${{ github.ref_name }})" --key=${{ secrets.README_API_KEY }} --id=66f3f3781c34e9001ff23013
 
   sync-openapi-private-staging:
     name: Keep private (staging) docs in sync with `main`
@@ -91,27 +61,27 @@ jobs:
       - name: Sync Core 🔮
         uses: readmeio/rdme@v8
         with:
-          rdme: openapi openapiv2/core/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65bcfc78e72e300017c0b162
+          rdme: openapi openapiv2/core/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=66f40c5c346c5d004a090996
 
       - name: Sync Model ⚗️
         uses: readmeio/rdme@v8
         with:
-          rdme: openapi openapiv2/model/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65bcfc78e72e300017c0b163
+          rdme: openapi openapiv2/model/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=66f40c5c346c5d004a090997
 
       - name: Sync VDP 💧
         uses: readmeio/rdme@v8
         with:
-          rdme: openapi openapiv2/vdp/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=65bcfc78e72e300017c0b164
+          rdme: openapi openapiv2/vdp/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=66f40c5c346c5d004a090998
 
       - name: Sync Artifact 💾
         uses: readmeio/rdme@v8
         with:
-          rdme: openapi openapiv2/artifact/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=669fb97f2071e2004a8f9183
+          rdme: openapi openapiv2/artifact/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=66f40c5c346c5d004a090999
 
-      # - name: Sync App 💾
-      #   uses: readmeio/rdme@v8
-      #   with:
-      #     rdme: openapi openapiv2/app/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=669fb97f2071e2004a8f9183
+      - name: Sync App 📱
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi openapiv2/app/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=66f40c5c346c5d004a09099a
 
       - name: Check new release 🔍
         id: check-new-release
