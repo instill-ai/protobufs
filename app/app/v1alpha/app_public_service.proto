@@ -128,6 +128,22 @@ service AppPublicService {
       put: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/ai_assistant_playground"
       body: "*"
     };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "App"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Playground"};
+  }
+
+  // Get Playground Conversation
+  //
+  // get the latest conversation of auth user(e.g. login user and api key user)
+  rpc GetPlaygroundConversation(GetPlaygroundConversationRequest) returns (GetPlaygroundConversationResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/ai_assistant_playground/conversation"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Playground"};
+  }
+  // Restart Playground Conversation
+  //
+  // create a new conversation and use the auth user uid as creator uid and auto
+  // generate a new conversation id on the behalf of auth user.
+  rpc RestartPlaygroundConversation(RestartPlaygroundConversationRequest) returns (RestartPlaygroundConversationResponse) {
+    option (google.api.http) = {post: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/ai_assistant_playground/restart"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Playground"};
   }
 }
