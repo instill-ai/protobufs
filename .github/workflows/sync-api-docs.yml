@@ -8,27 +8,16 @@ on:
       # pushed to the `main` branch.
       - main
     paths:
-      - 'openapiv2/artifact/**'
-      - 'openapiv2/app/**'
-      - 'openapiv2/common/**'
-      - 'openapiv2/core/**'
-      - 'openapiv2/model/**'
-      - 'openapiv2/vdp/**'
+      - 'openapiv2/**'
 
 jobs:
   sync-openapi-private-dev:
     name: Keep private (dev) docs in sync with latest pull request
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    outputs:
-      old_release: ${{ steps.check-new-release.outputs.old_release }}
-      new_release: ${{ steps.check-new-release.outputs.new_release }}
     steps:
       - name: Check out repo 📚
         uses: actions/checkout@v3
-        with:
-          # Needed in check-new-release to compare with the previous commit.
-          fetch-depth: 0
 
       - name: Sync Core 🔮
         uses: readmeio/rdme@v8
@@ -54,25 +43,6 @@ jobs:
       #   uses: readmeio/rdme@v8
       #   with:
       #     rdme: openapi openapiv2/app/service.swagger.yaml --title "📱 App (PR ${{ github.ref_name }})" --key=${{ secrets.README_API_KEY }} --id=669fb9c72dd8c500184c6531
-
-      - name: Check new release 🔍
-        id: check-new-release
-        run: |
-          # If the version in the OpenAPI configuration has changed, extract
-          # the old and new release versions (without the "v" prefix) to
-          # variables.
-          version_file=common/openapi/v1beta/api_info.conf
-          capture_old='^-\s\+\<version:'
-          capture_new='^+\s\+\<version:'
-          extract_version='s/.*"v\(.*\)".*/\1/'
-
-          old_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_old | sed $extract_version)
-          new_version=$(git diff ${{ github.event.before }} ${{ github.event.after }} $version_file | grep $capture_new | sed $extract_version)
-
-          if [[ $new_version ]]; then
-            echo "new_release=$new_version" >> $GITHUB_OUTPUT
-            echo "old_release=$old_version" >> $GITHUB_OUTPUT
-          fi
 
   sync-openapi-private-staging:
     name: Keep private (staging) docs in sync with `main`
