@@ -484,6 +484,64 @@ paths:
           type: string
       tags:
         - Catalog
+  /v1beta/namespaces/{namespaceId}/catalogs/{catalogId}/runs:
+    get:
+      summary: List Catalog Runs
+      operationId: ArtifactPublicService_ListCatalogRuns
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListCatalogRunsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: The ID of the owner of the catalog.
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: The ID of the catalog for which the runs will be listed.
+          in: path
+          required: true
+          type: string
+        - name: page
+          description: The page number to retrieve.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          description: |-
+            The maximum number of items per page to return. The default and cap values
+            are 10 and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: orderBy
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Catalog
 definitions:
   ArtifactPublicServiceCreateCatalogBody:
     type: object
@@ -639,6 +697,13 @@ definitions:
       '@type':
         type: string
     additionalProperties: {}
+  protobufNullValue:
+    type: string
+    description: |-
+      `NullValue` is a singleton enumeration to represent the null value for the
+      `Value` type union.
+
+      The JSON representation for `NullValue` is JSON `null`.
   rpcStatus:
     type: object
     properties:
@@ -714,6 +779,93 @@ definitions:
         format: uint64
         description: The current used storage in catalog.
     description: Catalog represents a catalog.
+  v1alphaCatalogRun:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: Unique identifier for each run.
+        readOnly: true
+      catalogUid:
+        type: string
+        title: catalog uid
+        readOnly: true
+      fileUids:
+        type: array
+        items:
+          type: string
+        description: The file uids.
+        readOnly: true
+      action:
+        description: Action of the catalog run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaCatalogRunAction'
+      status:
+        description: Current status of the run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaRunStatus'
+      source:
+        description: Origin of the run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alphaRunSource'
+      totalDuration:
+        type: integer
+        format: int32
+        description: Time taken to complete the run in milliseconds.
+        readOnly: true
+      runnerId:
+        type: string
+        title: Runner ID. (User UID)
+        readOnly: true
+      namespaceId:
+        type: string
+        description: Namespace ID.
+        readOnly: true
+      payload:
+        type: object
+        description: Run request payload.
+        readOnly: true
+      startTime:
+        type: string
+        format: date-time
+        description: Time when the run started execution.
+        readOnly: true
+      completeTime:
+        type: string
+        format: date-time
+        description: Time when the run completed.
+        readOnly: true
+      error:
+        type: string
+        description: Error message if the run failed.
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: Credits used of internal accounting metric.
+        readOnly: true
+    description: CatalogRun represents a single execution of a catalog action.
+  v1alphaCatalogRunAction:
+    type: string
+    enum:
+      - CATALOG_RUN_ACTION_CREATE
+      - CATALOG_RUN_ACTION_UPDATE
+      - CATALOG_RUN_ACTION_DELETE
+      - CATALOG_RUN_ACTION_CREATE_FILE
+      - CATALOG_RUN_ACTION_PROCESS_FILE
+      - CATALOG_RUN_ACTION_DELETE_FILE
+    description: |-
+      CatalogRunAction describes the actions a user has over a catalog.
+
+       - CATALOG_RUN_ACTION_CREATE: Create catalog.
+       - CATALOG_RUN_ACTION_UPDATE: Update catalog.
+       - CATALOG_RUN_ACTION_DELETE: Delete catalog.
+       - CATALOG_RUN_ACTION_CREATE_FILE: Upload catalog file.
+       - CATALOG_RUN_ACTION_PROCESS_FILE: Process catalog file.
+       - CATALOG_RUN_ACTION_DELETE_FILE: Delete catalog file.
   v1alphaCreateCatalogResponse:
     type: object
     properties:
@@ -988,6 +1140,32 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alphaListCatalogFilesFilter'
     title: list files response
+  v1alphaListCatalogRunsResponse:
+    type: object
+    properties:
+      catalogRuns:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaCatalogRun'
+        description: The list of runs.
+        readOnly: true
+      totalSize:
+        type: string
+        format: int64
+        description: The total number of runs matching the request.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The current page number.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The number of items per page.
+        readOnly: true
+    description: ListCatalogRunsResponse is the response message for ListCatalogRuns.
   v1alphaListCatalogsResponse:
     type: object
     properties:
@@ -1086,6 +1264,30 @@ definitions:
     description: |-
       RepositoryTag contains information about the version of some content in a
       repository.
+  v1alphaRunSource:
+    type: string
+    enum:
+      - RUN_SOURCE_CONSOLE
+      - RUN_SOURCE_API
+    description: |-
+      RunSource defines the source of a pipeline or model run.
+
+       - RUN_SOURCE_CONSOLE: Run from frontend UI.
+       - RUN_SOURCE_API: Run from API or SDK.
+  v1alphaRunStatus:
+    type: string
+    enum:
+      - RUN_STATUS_PROCESSING
+      - RUN_STATUS_COMPLETED
+      - RUN_STATUS_FAILED
+      - RUN_STATUS_QUEUED
+    description: |-
+      RunStatus defines the status of a pipeline or model run.
+
+       - RUN_STATUS_PROCESSING: Run in progress.
+       - RUN_STATUS_COMPLETED: Run succeeded.
+       - RUN_STATUS_FAILED: Run failed.
+       - RUN_STATUS_QUEUED: Run is waiting to be executed.
   v1alphaSimilarityChunk:
     type: object
     properties:
