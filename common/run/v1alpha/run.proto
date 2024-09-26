@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package common.run.v1alpha;
 
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+
 // RunStatus defines the status of a pipeline or model run.
 enum RunStatus {
   // Unspecified.
@@ -24,4 +27,27 @@ enum RunSource {
   RUN_SOURCE_CONSOLE = 1;
   // Run from API or SDK.
   RUN_SOURCE_API = 2;
+}
+
+// TimeRangeType defines the time range of a trend.
+enum TimeRangeType {
+  // Unspecified.
+  TIME_RANGE_TYPE_UNSPECIFIED = 0;
+  // Today.
+  TIME_RANGE_TYPE_TODAY = 1;
+  // Last 24 hours.
+  TIME_RANGE_TYPE_LAST_24_HOURS = 2;
+  // Last 7 days.
+  TIME_RANGE_TYPE_LAST_7_DAYS = 3;
+  // Last 30 days.
+  TIME_RANGE_TYPE_LAST_30_DAYS = 4;
+}
+
+// CreditTrendData represents the trend data of credits with timestamp.
+message CreditTrendData {
+  // Date time label of the trend.
+  google.protobuf.Timestamp date_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Credits sum used of internal accounting metric.
+  float credit_amount = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

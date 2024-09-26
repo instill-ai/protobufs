@@ -1972,9 +1972,9 @@ message ListPipelineRunsRequest {
   // are 10 and 100, respectively.
   int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
 
-  // View allows clients to specify the desired run view in the response.
+  // Deprecated: View allows clients to specify the desired run view in the response.
   // The basic view excludes input / output data.
-  optional Pipeline.View view = 5 [(google.api.field_behavior) = OPTIONAL];
+  reserved 5;
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
   // expression.
   // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
@@ -1984,8 +1984,43 @@ message ListPipelineRunsRequest {
   optional string order_by = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// ListPipelineRunsByCreditOwnerRequest is the request message for ListPipelineRunsByCreditOwner.
+message ListPipelineRunsByCreditOwnerRequest {
+  // The page number to retrieve.
+  int32 page = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // The maximum number of items per page to return. The default and cap values
+  // are 10 and 100, respectively.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  optional string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  optional string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
+  // The time range for the runs.
+  common.run.v1alpha.TimeRangeType time_range_type = 5 [(google.api.field_behavior) = REQUIRED];
+}
+
 // ListPipelineRunsResponse is the response message for ListPipelineRuns.
 message ListPipelineRunsResponse {
+  // The list of pipeline runs.
+  repeated PipelineRun pipeline_runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The total number of pipeline runs matching the request.
+  int64 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The current page number.
+  int32 page = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The number of items per page.
+  int32 page_size = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListPipelineRunsByCreditOwnerResponse is the response message for ListPipelineRunsByCreditOwner.
+message ListPipelineRunsByCreditOwnerResponse {
   // The list of pipeline runs.
   repeated PipelineRun pipeline_runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -2122,6 +2157,12 @@ message PipelineRun {
   ];
   // Data specifications.
   DataSpecification data_specification = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The ID of the pipeline
+  optional string pipeline_id = 19 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 }
 
 // ComponentRun represents the execution details of a single component within a pipeline run.
@@ -2176,4 +2217,16 @@ message ComponentRun {
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
+}
+
+// GetPipelineRunsTrendRequest is the request message for GetPipelineRunsTrend.
+message GetPipelineRunsTrendRequest {
+  // The time range for the trend.
+  common.run.v1alpha.TimeRangeType time_range_type = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetPipelineRunsTrendResponse is the response message for GetPipelineRunsTrend.
+message GetPipelineRunsTrendResponse {
+  // The trend data.
+  repeated common.run.v1alpha.CreditTrendData trend_data = 1;
 }
