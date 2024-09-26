@@ -990,19 +990,6 @@ paths:
           required: false
           type: integer
           format: int32
-        - name: view
-          description: |-
-            View allows clients to specify the desired run view in the response.
-            The basic view excludes input / output data.
-
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
         - name: orderBy
           description: |-
             Sort the results by the given expression.
@@ -1021,6 +1008,128 @@ paths:
             The filter can be applied to the following fields:
             - `create_time`
           in: query
+          required: false
+          type: string
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/dashboard/models/runs:
+    get:
+      summary: List Model Runs of a Namespace (user or organization)
+      description: |-
+        Returns a paginated list of runs for 1 or more models. This is mainly used by credit dashboard.
+        The requester can view all the runs that consumed their credits across different models.
+      operationId: ModelPublicService_ListModelRunsByCreditOwner
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListModelRunsByCreditOwnerResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            The maximum number of runs to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: orderBy
+          description: |-
+            Sort the results by the given expression.
+            Format: `field [ASC | DESC], where `field` can be:
+            - `create_time`
+            - `update_time`
+            By default, results are sorted by descending creation time.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            The filter can be applied to the following fields:
+            - `create_time`
+          in: query
+          required: false
+          type: string
+        - name: timeRangeType
+          description: |-
+            The time range for the runs.
+
+             - TIME_RANGE_TYPE_TODAY: Today.
+             - TIME_RANGE_TYPE_LAST_24_HOURS: Last 24 hours.
+             - TIME_RANGE_TYPE_LAST_7_DAYS: Last 7 days.
+             - TIME_RANGE_TYPE_LAST_30_DAYS: Last 30 days.
+          in: query
+          required: true
+          type: string
+          enum:
+            - TIME_RANGE_TYPE_TODAY
+            - TIME_RANGE_TYPE_LAST_24_HOURS
+            - TIME_RANGE_TYPE_LAST_7_DAYS
+            - TIME_RANGE_TYPE_LAST_30_DAYS
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/dashboard/models/runs/trend:
+    get:
+      summary: List Model Runs Trend of a Namespace (user or organization)
+      operationId: ModelPublicService_GetModelRunsTrend
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetModelRunsTrendResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: timeRangeType
+          description: |-
+            The time range for the trend.
+
+             - TIME_RANGE_TYPE_TODAY: Today.
+             - TIME_RANGE_TYPE_LAST_24_HOURS: Last 24 hours.
+             - TIME_RANGE_TYPE_LAST_7_DAYS: Last 7 days.
+             - TIME_RANGE_TYPE_LAST_30_DAYS: Last 30 days.
+          in: query
+          required: true
+          type: string
+          enum:
+            - TIME_RANGE_TYPE_TODAY
+            - TIME_RANGE_TYPE_LAST_24_HOURS
+            - TIME_RANGE_TYPE_LAST_7_DAYS
+            - TIME_RANGE_TYPE_LAST_30_DAYS
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
           required: false
           type: string
       tags:
@@ -1363,6 +1472,20 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alphaModel'
     description: CreateNamespaceModelResponse contains the created model.
+  v1alphaCreditTrendData:
+    type: object
+    properties:
+      dateTime:
+        type: string
+        format: date-time
+        description: Date time label of the trend.
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: Credits sum used of internal accounting metric.
+        readOnly: true
+    description: CreditTrendData represents the trend data of credits with timestamp.
   v1alphaDeleteNamespaceModelResponse:
     type: object
     description: DeleteNamespaceModelResponse is an empty response.
@@ -1398,6 +1521,16 @@ definitions:
     description: |-
       GetModelOperationRequest represents a request to query a long-running
       operation.
+  v1alphaGetModelRunsTrendResponse:
+    type: object
+    properties:
+      trendData:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaCreditTrendData'
+        description: The trend data.
+    description: GetModelRunsTrendRequest is the response message for GetModelRunsTrend.
   v1alphaGetNamespaceLatestModelOperationResponse:
     type: object
     properties:
@@ -1458,6 +1591,32 @@ definitions:
         format: int32
         description: Total number of model definitions.
     description: ListModelDefinitionsResponse contains a list of model definitions.
+  v1alphaListModelRunsByCreditOwnerResponse:
+    type: object
+    properties:
+      runs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelRun'
+        description: A list of runs resources.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of runs.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+        readOnly: true
+    description: ListModelRunsByCreditOwnerResponse is the request message for ListModelRunsByCreditOwner.
   v1alphaListModelRunsResponse:
     type: object
     properties:
@@ -1829,6 +1988,10 @@ definitions:
           type: object
         description: Model inference outputs.
         readOnly: true
+      modelId:
+        type: string
+        description: Model ID.
+        readOnly: true
     description: ModelRun contains information about a run of models.
   v1alphaModelVersion:
     type: object
@@ -1963,6 +2126,20 @@ definitions:
        - TASK_CHAT: Conversational Text Generation - generate text as responses to a dialog input.
        - TASK_COMPLETION: Completion Text Generation - generate text following the input prompt.
        - TASK_CUSTOM: Custom - custom task type for free form input/output.
+  v1alphaTimeRangeType:
+    type: string
+    enum:
+      - TIME_RANGE_TYPE_TODAY
+      - TIME_RANGE_TYPE_LAST_24_HOURS
+      - TIME_RANGE_TYPE_LAST_7_DAYS
+      - TIME_RANGE_TYPE_LAST_30_DAYS
+    description: |-
+      TimeRangeType defines the time range of a trend.
+
+       - TIME_RANGE_TYPE_TODAY: Today.
+       - TIME_RANGE_TYPE_LAST_24_HOURS: Last 24 hours.
+       - TIME_RANGE_TYPE_LAST_7_DAYS: Last 7 days.
+       - TIME_RANGE_TYPE_LAST_30_DAYS: Last 30 days.
   v1alphaTriggerAsyncNamespaceLatestModelResponse:
     type: object
     properties:
