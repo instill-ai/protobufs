@@ -1205,7 +1205,16 @@ service PipelinePublicService {
   // runs requested by themselves.
   rpc ListPipelineRuns(ListPipelineRunsRequest) returns (ListPipelineRunsResponse) {
     option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/runs"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Trigger"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Trigger"
+      parameters: {
+        headers: {
+          name: "Instill-Requester-Uid"
+          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
+          type: STRING
+        }
+      }
+    };
   }
 
   // List Component runs
@@ -1213,7 +1222,34 @@ service PipelinePublicService {
   // Returns the information of each component execution within a pipeline run.
   rpc ListComponentRuns(ListComponentRunsRequest) returns (ListComponentRunsResponse) {
     option (google.api.http) = {get: "/v1beta/pipeline-runs/{pipeline_run_id}/component-runs"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Trigger"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Trigger"
+      parameters: {
+        headers: {
+          name: "Instill-Requester-Uid"
+          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
+          type: STRING
+        }
+      }
+    };
+  }
+
+  // List Pipeline Runs of a Namespace (user or organization)
+  //
+  // Returns a paginated list of runs for 1 or more pipelines. This is mainly used by credit dashboard.
+  // The requester can view all the runs that consumed their credits across different pipelines.
+  rpc ListPipelineRunsByCreditOwner(ListPipelineRunsByCreditOwnerRequest) returns (ListPipelineRunsByCreditOwnerResponse) {
+    option (google.api.http) = {get: "/v1beta/dashboard/pipelines/runs"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Trigger"
+      parameters: {
+        headers: {
+          name: "Instill-Requester-Uid"
+          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
+          type: STRING
+        }
+      }
+    };
   }
 
   // List namespace connections
