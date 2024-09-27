@@ -416,13 +416,13 @@ paths:
         - Catalog
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks/retrieve:
     post:
-      summary: View similar chunks
-      operationId: ArtifactPublicService_ViewChunks
+      summary: Retrieve similar chunks
+      operationId: ArtifactPublicService_SimilarityChunksSearch
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaViewChunksResponse'
+            $ref: '#/definitions/v1alphaSimilarityChunksSearchResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -445,7 +445,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ArtifactPublicServiceViewChunksBody'
+            $ref: '#/definitions/ArtifactPublicServiceSimilarityChunksSearchBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -577,6 +577,17 @@ definitions:
         format: int32
         title: top k default to 5
     title: QuestionAnsweringRequest
+  ArtifactPublicServiceSimilarityChunksSearchBody:
+    type: object
+    properties:
+      textPrompt:
+        type: string
+        title: text prompt
+      topK:
+        type: integer
+        format: int64
+        title: top k
+    title: Similar chunk search request
   ArtifactPublicServiceUpdateCatalogBody:
     type: object
     properties:
@@ -596,17 +607,6 @@ definitions:
         type: boolean
         title: whether the chunk is retrievable
     title: Create chunk response
-  ArtifactPublicServiceViewChunksBody:
-    type: object
-    properties:
-      textPrompt:
-        type: string
-        title: text prompt
-      topK:
-        type: integer
-        format: int64
-        title: top k
-    title: View chunks request
   GetFileCatalogResponseChunkType:
     type: string
     enum:
@@ -1313,6 +1313,16 @@ definitions:
         type: string
         title: source file
     title: similarity chunks
+  v1alphaSimilarityChunksSearchResponse:
+    type: object
+    properties:
+      similarChunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaSimilarityChunk'
+        title: chunks
+    title: Similar chunk search response
   v1alphaSourceFile:
     type: object
     properties:
@@ -1355,16 +1365,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alphaFile'
     title: upload file response
-  v1alphaViewChunksResponse:
-    type: object
-    properties:
-      similarChunks:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alphaSimilarityChunk'
-        title: chunks
-    title: View chunks response
 securityDefinitions:
   Bearer:
     type: apiKey
