@@ -119,6 +119,7 @@ var generatorConfigMap = map[string]generatorConfig{
 		protoFileInterfaceMap: map[string]string{
 			"vdp/pipeline/v1beta/pipeline.proto":    "pipeline_interface",
 			"vdp/pipeline/v1beta/integration.proto": "integration_interface",
+			"app/app/v1alpha/app.proto":             "app_interface",
 		},
 		defaultInterfaceName: "pipeline_interface",
 		protoDir:             "./vdp/pipeline/v1beta/",
@@ -198,15 +199,67 @@ var generatorConfigMap = map[string]generatorConfig{
 			"GetFileCatalog":         "file_catalog_interface",
 		},
 		defaultInterfaceName: "artifact_interface",
-		protoDir:             "./artifact/artifact/v1alpha/",
-		tmplPath:             "artifact.tmpl",
+		protoFileInterfaceMap: map[string]string{
+			"app/app/v1alpha/app.proto":          "app_interface",
+			"app/app/v1alpha/conversation.proto": "conversation_interface",
+		},
+		protoDir: "./artifact/artifact/v1alpha/",
+		// protoDir: "./app/app/v1alpha/",
+		tmplPath: "artifact.tmpl",
+	},
+	"app": {
+		methodMap: map[string]string{
+			// "look_up_model": "lookup_model",
+		},
+		customizedFieldNameMap: map[string]string{
+			"filter": "files_filter",
+			"type":   "message_type",
+			"id":     "app_id",
+		},
+		customizedParamMap: map[string]string{
+			// "type": `conversation_interface.Message.MessageType.MESSAGE_TYPE_TEXT`,
+			// "name": `f"{self.namespace}/models/{model_name}"`,
+			// "view": `model_definition_interface.VIEW_FULL`,
+		},
+		fieldDefaultValueMap: map[string]string{
+			"page_size":  " = 10",
+			"page_token": ` = ""`,
+		},
+		predefinedTypeMap: map[string]string{
+			// "file":   "artifact_interface.File",
+			// "filter": "artifact_interface.ListCatalogFilesFilter",
+			// "type":   "conversation_interface.Message.MessageType.ValueType",
+		},
+		interfaceNameMap: map[string]string{
+			// "ListChunks":             "chunk_interface",
+			// "GetSourceFile":          "chunk_interface",
+			// "UpdateChunk":            "chunk_interface",
+			// "SimilarityChunksSearch": "chunk_interface",
+			// "DeleteConversation":     "conversation_interface",
+			// "UpdateConversation":     "conversation_interface",
+			// "ListConversations":      "conversation_interface",
+			// "CreateConversation":     "conversation_interface",
+			// "ListMessages":           "conversation_interface",
+			// "UpdateMessage":          "conversation_interface",
+			// "DeleteMessage":          "conversation_interface",
+			// "CreateMessage":          "conversation_interface",
+			// "QuestionAnswering":      "qa_interface",
+			// "GetFileCatalog":         "file_catalog_interface",
+		},
+		defaultInterfaceName: "app_interface",
+		protoFileInterfaceMap: map[string]string{
+			"app/app/v1alpha/app.proto":          "app_interface",
+			"app/app/v1alpha/conversation.proto": "conversation_interface",
+		},
+		protoDir: "./app/app/v1alpha/",
+		tmplPath: "app.tmpl",
 	},
 }
 
 var config generatorConfig
 
 func main() {
-	clientType := "pipeline"
+	clientType := "artifact"
 	config = generatorConfigMap[clientType]
 
 	// Slice to hold the names of .proto files
@@ -232,7 +285,7 @@ func main() {
 
 	// Create a new parser
 	parser := protoparse.Parser{
-		ImportPaths: []string{"./../../googleapis/", "./../../grpc-gateway/", "."},
+		ImportPaths: []string{"./../../googleapis/", "./../../grpc-gateway/", "./../../protoc-gen-validate/", "."},
 	}
 
 	// Parse the files
