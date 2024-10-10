@@ -1,13 +1,10 @@
 # pylint: disable=no-member,wrong-import-position,too-many-lines,no-name-in-module
-from typing import Dict
+from typing import Callable, List
 
-# artifact
-import instill.protogen.artifact.artifact.v1alpha.artifact_pb2 as artifact_interface
-import instill.protogen.artifact.artifact.v1alpha.file_catalog_pb2 as file_catalog_interface
-import instill.protogen.artifact.artifact.v1alpha.qa_pb2 as qa_interface
-import instill.protogen.app.app.v1alpha.app.pb2 as app_interface
-import instill.protogen.artifact.artifact.v1alpha.artifact_public_service_pb2_grpc as artifact_service
-import instill.protogen.artifact.artifact.v1alpha.chunk_pb2 as chunk_interface
+# app
+import instill.protogen.app.app.v1alpha.app_pb2 as app_interface
+import instill.protogen.app.app.v1alpha.app_public_service_pb2_grpc as app_service
+import instill.protogen.app.app.v1alpha.conversation_pb2 as conversation_interface
 
 # common
 import instill.protogen.common.healthcheck.v1beta.healthcheck_pb2 as healthcheck
@@ -19,47 +16,52 @@ from instill.utils.error_handler import grpc_handler
 
 
 class AppClient(Client):
-    def __init__(self, async_enabled: bool) -> None:
-        self.hosts: Dict[str, InstillInstance] = {}
-        if DEFAULT_INSTANCE in global_config.hosts:
-            self.instance = DEFAULT_INSTANCE
-        elif len(global_config.hosts) == 0:
-            self.instance = ""
-        else:
-            self.instance = list(global_config.hosts.keys())[0]
+    def __init__(
+        self,
+        api_token: str,
+        lookup_func: Callable[[str], str],
+        url: str = "api.instill.tech",
+        secure: bool = True,
+        requester_id: str = "",
+        async_enabled: bool = False,
+    ) -> None:
+        self.host: InstillInstance = InstillInstance(
+            app_service.AppPublicServiceStub,
+            url=url,
+            token=api_token,
+            secure=secure,
+            async_enabled=async_enabled,
+        )
 
-        if global_config.hosts is not None:
-            for instance, config in global_config.hosts.items():
-                self.hosts[instance] = InstillInstance(
-                    artifact_service.ArtifactPublicServiceStub,
-                    url=config.url,
-                    token=config.token,
-                    secure=config.secure,
-                    async_enabled=async_enabled,
-                )
+        self.metadata = []
+        self._lookup_uid = lookup_func
+
+        if requester_id != "":
+            requester_uid = lookup_func(requester_id)
+            self.metadata = [("instill-requester-uid", requester_uid)]
+
+    def close(self):
+        if self.is_serving():
+            self.host.channel.close()
+
+    async def async_close(self):
+        if self.is_serving():
+            self.host.channel.close()
 
     @property
-    def hosts(self):
-        return self._hosts
+    def host(self):
+        return self._host
 
-    @hosts.setter
-    def hosts(self, hosts: Dict[str, InstillInstance]):
-        self._hosts = hosts
-
-    @property
-    def instance(self):
-        return self._instance
-
-    @instance.setter
-    def instance(self, instance: str):
-        self._instance = instance
+    @host.setter
+    def host(self, host: InstillInstance):
+        self._host = host
 
     @property
     def metadata(self):
         return self._metadata
 
     @metadata.setter
-    def metadata(self, metadata: str):
+    def metadata(self, metadata: List[tuple]):
         self._metadata = metadata
 
 
@@ -71,19 +73,19 @@ class AppClient(Client):
     ) -> app_interface.LivenessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Liveness,
+                method=self.host.async_client.Liveness,
                 request=app_interface.LivenessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Liveness,
+            method=self.host.client.Liveness,
             request=app_interface.LivenessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -94,19 +96,19 @@ class AppClient(Client):
     ) -> app_interface.ReadinessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Readiness,
+                method=self.host.async_client.Readiness,
                 request=app_interface.ReadinessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Readiness,
+            method=self.host.client.Readiness,
             request=app_interface.ReadinessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -120,25 +122,25 @@ class AppClient(Client):
     ) -> app_interface.CreateAppResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateApp,
+                method=self.host.async_client.CreateApp,
                 request=app_interface.CreateAppRequest(
                     namespace_id=namespace_id,
                     id=app_id,
                     description=description,
                     tags=tags,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateApp,
+            method=self.host.client.CreateApp,
             request=app_interface.CreateAppRequest(
                 namespace_id=namespace_id,
                 id=app_id,
                 description=description,
                 tags=tags,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -149,19 +151,19 @@ class AppClient(Client):
     ) -> app_interface.ListAppsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListApps,
+                method=self.host.async_client.ListApps,
                 request=app_interface.ListAppsRequest(
                     namespace_id=namespace_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListApps,
+            method=self.host.client.ListApps,
             request=app_interface.ListAppsRequest(
                 namespace_id=namespace_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -178,7 +180,7 @@ class AppClient(Client):
     ) -> app_interface.UpdateAppResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateApp,
+                method=self.host.async_client.UpdateApp,
                 request=app_interface.UpdateAppRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
@@ -188,11 +190,11 @@ class AppClient(Client):
                     last_ai_assistant_app_catalog_uid=last_ai_assistant_app_catalog_uid,
                     last_ai_assistant_app_top_k=last_ai_assistant_app_top_k,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateApp,
+            method=self.host.client.UpdateApp,
             request=app_interface.UpdateAppRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
@@ -202,7 +204,7 @@ class AppClient(Client):
                 last_ai_assistant_app_catalog_uid=last_ai_assistant_app_catalog_uid,
                 last_ai_assistant_app_top_k=last_ai_assistant_app_top_k,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -214,21 +216,21 @@ class AppClient(Client):
     ) -> app_interface.DeleteAppResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteApp,
+                method=self.host.async_client.DeleteApp,
                 request=app_interface.DeleteAppRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteApp,
+            method=self.host.client.DeleteApp,
             request=app_interface.DeleteAppRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -238,26 +240,26 @@ class AppClient(Client):
         app_id: str,
         conversation_id: str,
         async_enabled: bool = False,
-    ) -> app_interface.CreateConversationResponse:
+    ) -> conversation_interface.CreateConversationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateConversation,
-                request=app_interface.CreateConversationRequest(
+                method=self.host.async_client.CreateConversation,
+                request=conversation_interface.CreateConversationRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_id=conversation_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateConversation,
-            request=app_interface.CreateConversationRequest(
+            method=self.host.client.CreateConversation,
+            request=conversation_interface.CreateConversationRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_id=conversation_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -267,38 +269,38 @@ class AppClient(Client):
         app_id: str,
         conversation_uid: str,
         conversation_id: str,
-        if_all: bool,
         page_size: int = 10,
         page_token: str = "",
+        if_all: bool = False,
         async_enabled: bool = False,
-    ) -> app_interface.ListConversationsResponse:
+    ) -> conversation_interface.ListConversationsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListConversations,
-                request=app_interface.ListConversationsRequest(
+                method=self.host.async_client.ListConversations,
+                request=conversation_interface.ListConversationsRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_uid=conversation_uid,
                     conversation_id=conversation_id,
-                    if_all=if_all,
                     page_size=page_size,
                     page_token=page_token,
+                    if_all=if_all,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListConversations,
-            request=app_interface.ListConversationsRequest(
+            method=self.host.client.ListConversations,
+            request=conversation_interface.ListConversationsRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_uid=conversation_uid,
                 conversation_id=conversation_id,
-                if_all=if_all,
                 page_size=page_size,
                 page_token=page_token,
+                if_all=if_all,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -308,29 +310,35 @@ class AppClient(Client):
         app_id: str,
         conversation_id: str,
         new_conversation_id: str,
+        last_used_catalog_uid: str,
+        last_used_top_k: int,
         async_enabled: bool = False,
-    ) -> app_interface.UpdateConversationResponse:
+    ) -> conversation_interface.UpdateConversationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateConversation,
-                request=app_interface.UpdateConversationRequest(
+                method=self.host.async_client.UpdateConversation,
+                request=conversation_interface.UpdateConversationRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_id=conversation_id,
                     new_conversation_id=new_conversation_id,
+                    last_used_catalog_uid=last_used_catalog_uid,
+                    last_used_top_k=last_used_top_k,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateConversation,
-            request=app_interface.UpdateConversationRequest(
+            method=self.host.client.UpdateConversation,
+            request=conversation_interface.UpdateConversationRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_id=conversation_id,
                 new_conversation_id=new_conversation_id,
+                last_used_catalog_uid=last_used_catalog_uid,
+                last_used_top_k=last_used_top_k,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -340,26 +348,26 @@ class AppClient(Client):
         app_id: str,
         conversation_id: str,
         async_enabled: bool = False,
-    ) -> app_interface.DeleteConversationResponse:
+    ) -> conversation_interface.DeleteConversationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteConversation,
-                request=app_interface.DeleteConversationRequest(
+                method=self.host.async_client.DeleteConversation,
+                request=conversation_interface.DeleteConversationRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_id=conversation_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteConversation,
-            request=app_interface.DeleteConversationRequest(
+            method=self.host.client.DeleteConversation,
+            request=conversation_interface.DeleteConversationRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_id=conversation_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -372,11 +380,11 @@ class AppClient(Client):
         role: str,
         message_type: TYPE_ENUM,
         async_enabled: bool = False,
-    ) -> app_interface.CreateMessageResponse:
+    ) -> conversation_interface.CreateMessageResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateMessage,
-                request=app_interface.CreateMessageRequest(
+                method=self.host.async_client.CreateMessage,
+                request=conversation_interface.CreateMessageRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_id=conversation_id,
@@ -384,12 +392,12 @@ class AppClient(Client):
                     role=role,
                     type=message_type,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateMessage,
-            request=app_interface.CreateMessageRequest(
+            method=self.host.client.CreateMessage,
+            request=conversation_interface.CreateMessageRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_id=conversation_id,
@@ -397,7 +405,7 @@ class AppClient(Client):
                 role=role,
                 type=message_type,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -408,43 +416,43 @@ class AppClient(Client):
         conversation_id: str,
         latest_k: int,
         include_system_messages: bool,
-        if_all: bool,
         message_uid: str,
         page_size: int = 10,
         page_token: str = "",
+        if_all: bool = False,
         async_enabled: bool = False,
-    ) -> app_interface.ListMessagesResponse:
+    ) -> conversation_interface.ListMessagesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListMessages,
-                request=app_interface.ListMessagesRequest(
+                method=self.host.async_client.ListMessages,
+                request=conversation_interface.ListMessagesRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_id=conversation_id,
                     latest_k=latest_k,
                     include_system_messages=include_system_messages,
-                    if_all=if_all,
                     message_uid=message_uid,
                     page_size=page_size,
                     page_token=page_token,
+                    if_all=if_all,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListMessages,
-            request=app_interface.ListMessagesRequest(
+            method=self.host.client.ListMessages,
+            request=conversation_interface.ListMessagesRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_id=conversation_id,
                 latest_k=latest_k,
                 include_system_messages=include_system_messages,
-                if_all=if_all,
                 message_uid=message_uid,
                 page_size=page_size,
                 page_token=page_token,
+                if_all=if_all,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -456,30 +464,30 @@ class AppClient(Client):
         message_uid: str,
         content: str,
         async_enabled: bool = False,
-    ) -> app_interface.UpdateMessageResponse:
+    ) -> conversation_interface.UpdateMessageResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateMessage,
-                request=app_interface.UpdateMessageRequest(
+                method=self.host.async_client.UpdateMessage,
+                request=conversation_interface.UpdateMessageRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_id=conversation_id,
                     message_uid=message_uid,
                     content=content,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateMessage,
-            request=app_interface.UpdateMessageRequest(
+            method=self.host.client.UpdateMessage,
+            request=conversation_interface.UpdateMessageRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_id=conversation_id,
                 message_uid=message_uid,
                 content=content,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -490,60 +498,28 @@ class AppClient(Client):
         conversation_id: str,
         message_uid: str,
         async_enabled: bool = False,
-    ) -> app_interface.DeleteMessageResponse:
+    ) -> conversation_interface.DeleteMessageResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteMessage,
-                request=app_interface.DeleteMessageRequest(
+                method=self.host.async_client.DeleteMessage,
+                request=conversation_interface.DeleteMessageRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     conversation_id=conversation_id,
                     message_uid=message_uid,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteMessage,
-            request=app_interface.DeleteMessageRequest(
+            method=self.host.client.DeleteMessage,
+            request=conversation_interface.DeleteMessageRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 conversation_id=conversation_id,
                 message_uid=message_uid,
             ),
-            metadata=self.hosts[self.instance].metadata,
-        ).send_sync()
-
-    @grpc_handler
-    def update_ai_assistant_app_playground(
-        self,
-        namespace_id: str,
-        app_id: str,
-        last_ai_app_catalog_uid: str,
-        last_ai_app_top_k: int,
-        async_enabled: bool = False,
-    ) -> app_interface.UpdateAIAssistantAppPlaygroundResponse:
-        if async_enabled:
-            return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateAIAssistantAppPlayground,
-                request=app_interface.UpdateAIAssistantAppPlaygroundRequest(
-                    namespace_id=namespace_id,
-                    app_id=app_id,
-                    last_ai_app_catalog_uid=last_ai_app_catalog_uid,
-                    last_ai_app_top_k=last_ai_app_top_k,
-                ),
-                metadata=self.hosts[self.instance].metadata,
-            ).send_async()
-
-        return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateAIAssistantAppPlayground,
-            request=app_interface.UpdateAIAssistantAppPlaygroundRequest(
-                namespace_id=namespace_id,
-                app_id=app_id,
-                last_ai_app_catalog_uid=last_ai_app_catalog_uid,
-                last_ai_app_top_k=last_ai_app_top_k,
-            ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -555,21 +531,21 @@ class AppClient(Client):
     ) -> app_interface.GetPlaygroundConversationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetPlaygroundConversation,
+                method=self.host.async_client.GetPlaygroundConversation,
                 request=app_interface.GetPlaygroundConversationRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetPlaygroundConversation,
+            method=self.host.client.GetPlaygroundConversation,
             request=app_interface.GetPlaygroundConversationRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -581,21 +557,21 @@ class AppClient(Client):
     ) -> app_interface.RestartPlaygroundConversationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RestartPlaygroundConversation,
+                method=self.host.async_client.RestartPlaygroundConversation,
                 request=app_interface.RestartPlaygroundConversationRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RestartPlaygroundConversation,
+            method=self.host.client.RestartPlaygroundConversation,
             request=app_interface.RestartPlaygroundConversationRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -606,30 +582,33 @@ class AppClient(Client):
         catalog_id: str,
         conversation_uid: str,
         message: str,
+        top_k: int,
         async_enabled: bool = False,
-    ) -> app_interface.ChatResponse:
+    ) -> conversation_interface.ChatResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Chat,
-                request=app_interface.ChatRequest(
+                method=self.host.async_client.Chat,
+                request=conversation_interface.ChatRequest(
                     namespace_id=namespace_id,
                     app_id=app_id,
                     catalog_id=catalog_id,
                     conversation_uid=conversation_uid,
                     message=message,
+                    top_k=top_k,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Chat,
-            request=app_interface.ChatRequest(
+            method=self.host.client.Chat,
+            request=conversation_interface.ChatRequest(
                 namespace_id=namespace_id,
                 app_id=app_id,
                 catalog_id=catalog_id,
                 conversation_uid=conversation_uid,
                 message=message,
+                top_k=top_k,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
