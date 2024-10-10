@@ -22,7 +22,7 @@ class ModelClient(Client):
     @grpc_handler
     def liveness(
         self,
-        health_check_request: TYPE_MESSAGE,
+        health_check_request: HealthCheckRequest,
         async_enabled: bool = False,
     ) -> model_interface.LivenessResponse:
         if async_enabled:
@@ -45,7 +45,7 @@ class ModelClient(Client):
     @grpc_handler
     def readiness(
         self,
-        health_check_request: TYPE_MESSAGE,
+        health_check_request: HealthCheckRequest,
         async_enabled: bool = False,
     ) -> model_interface.ReadinessResponse:
         if async_enabled:
@@ -255,7 +255,7 @@ class ModelClient(Client):
     def create_namespace_model(
         self,
         namespace_id: str,
-        model: TYPE_MESSAGE,
+        model: Model,
         async_enabled: bool = False,
     ) -> model_interface.CreateNamespaceModelResponse:
         if async_enabled:
@@ -311,8 +311,8 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        model: TYPE_MESSAGE,
-        update_mask: TYPE_MESSAGE,
+        model: Model,
+        update_mask: FieldMask,
         async_enabled: bool = False,
     ) -> model_interface.UpdateNamespaceModelResponse:
         if async_enabled:
@@ -514,8 +514,8 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_inputs: list[model_interface.TaskInput],
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerNamespaceModelResponse:
         if async_enabled:
@@ -524,8 +524,8 @@ class ModelClient(Client):
                 request=model_interface.TriggerNamespaceModelRequest(
                     namespace_id=namespace_id,
                     model_id=model_id,
-                    task_inputs=task_inputs,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -535,8 +535,8 @@ class ModelClient(Client):
             request=model_interface.TriggerNamespaceModelRequest(
                 namespace_id=namespace_id,
                 model_id=model_id,
-                task_inputs=task_inputs,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -546,8 +546,8 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_inputs: list[model_interface.TaskInput],
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncNamespaceModelResponse:
         if async_enabled:
@@ -556,8 +556,8 @@ class ModelClient(Client):
                 request=model_interface.TriggerAsyncNamespaceModelRequest(
                     namespace_id=namespace_id,
                     model_id=model_id,
-                    task_inputs=task_inputs,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -567,8 +567,8 @@ class ModelClient(Client):
             request=model_interface.TriggerAsyncNamespaceModelRequest(
                 namespace_id=namespace_id,
                 model_id=model_id,
-                task_inputs=task_inputs,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -636,8 +636,8 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_input: model_interface.TaskInputStream,
         version: str,
+        task_input: list[model_interface.TaskInputStream],
         async_enabled: bool = False,
     ) -> model_interface.TriggerNamespaceModelBinaryFileUploadResponse:
         if async_enabled:
@@ -646,8 +646,8 @@ class ModelClient(Client):
                 request=model_interface.TriggerNamespaceModelBinaryFileUploadRequest(
                     namespace_id=namespace_id,
                     model_id=model_id,
-                    task_input=task_input,
                     version=version,
+                    task_input=task_input,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -657,8 +657,8 @@ class ModelClient(Client):
             request=model_interface.TriggerNamespaceModelBinaryFileUploadRequest(
                 namespace_id=namespace_id,
                 model_id=model_id,
-                task_input=task_input,
                 version=version,
+                task_input=task_input,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -668,7 +668,7 @@ class ModelClient(Client):
         self,
         namespace_id: str,
         model_id: str,
-        task_input: model_interface.TaskInputStream,
+        task_input: list[model_interface.TaskInputStream],
         async_enabled: bool = False,
     ) -> model_interface.TriggerNamespaceLatestModelBinaryFileUploadResponse:
         if async_enabled:
@@ -826,7 +826,7 @@ class ModelClient(Client):
     @grpc_handler
     def create_model(
         self,
-        model: TYPE_MESSAGE,
+        model: Model,
         parent: str = "",
         async_enabled: bool = False,
     ) -> model_interface.CreateUserModelResponse:
@@ -878,8 +878,8 @@ class ModelClient(Client):
     @grpc_handler
     def update_model(
         self,
-        model: TYPE_MESSAGE,
-        update_mask: TYPE_MESSAGE,
+        model: Model,
+        update_mask: FieldMask,
         async_enabled: bool = False,
     ) -> model_interface.UpdateUserModelResponse:
         if async_enabled:
@@ -1058,8 +1058,8 @@ class ModelClient(Client):
     def trigger_model(
         self,
         model_name: str,
-        task_inputs: list[model_interface.TaskInput],
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerUserModelResponse:
         if async_enabled:
@@ -1067,8 +1067,8 @@ class ModelClient(Client):
                 method=self.hosts[self.instance].async_client.TriggerUserModel,
                 request=model_interface.TriggerUserModelRequest(
                     name=f"{self.namespace}/models/{model_name}",
-                    task_inputs=task_inputs,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -1077,8 +1077,8 @@ class ModelClient(Client):
             method=self.hosts[self.instance].client.TriggerUserModel,
             request=model_interface.TriggerUserModelRequest(
                 name=f"{self.namespace}/models/{model_name}",
-                task_inputs=task_inputs,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -1087,8 +1087,8 @@ class ModelClient(Client):
     def trigger_async_model(
         self,
         model_name: str,
-        task_inputs: list[model_interface.TaskInput],
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncUserModelResponse:
         if async_enabled:
@@ -1096,8 +1096,8 @@ class ModelClient(Client):
                 method=self.hosts[self.instance].async_client.TriggerAsyncUserModel,
                 request=model_interface.TriggerAsyncUserModelRequest(
                     name=f"{self.namespace}/models/{model_name}",
-                    task_inputs=task_inputs,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -1106,8 +1106,8 @@ class ModelClient(Client):
             method=self.hosts[self.instance].client.TriggerAsyncUserModel,
             request=model_interface.TriggerAsyncUserModelRequest(
                 name=f"{self.namespace}/models/{model_name}",
-                task_inputs=task_inputs,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -1168,8 +1168,8 @@ class ModelClient(Client):
     def trigger_model_binary_file_upload(
         self,
         model_name: str,
-        task_input: model_interface.TaskInputStream,
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerUserModelBinaryFileUploadResponse:
         if async_enabled:
@@ -1177,8 +1177,8 @@ class ModelClient(Client):
                 method=self.hosts[self.instance].async_client.TriggerUserModelBinaryFileUpload,
                 request=model_interface.TriggerUserModelBinaryFileUploadRequest(
                     name=f"{self.namespace}/models/{model_name}",
-                    task_input=task_input,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -1187,8 +1187,8 @@ class ModelClient(Client):
             method=self.hosts[self.instance].client.TriggerUserModelBinaryFileUpload,
             request=model_interface.TriggerUserModelBinaryFileUploadRequest(
                 name=f"{self.namespace}/models/{model_name}",
-                task_input=task_input,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -1240,7 +1240,7 @@ class ModelClient(Client):
     @grpc_handler
     def create_organization_model(
         self,
-        model: TYPE_MESSAGE,
+        model: Model,
         parent: str = "",
         async_enabled: bool = False,
     ) -> model_interface.CreateOrganizationModelResponse:
@@ -1292,8 +1292,8 @@ class ModelClient(Client):
     @grpc_handler
     def update_organization_model(
         self,
-        model: TYPE_MESSAGE,
-        update_mask: TYPE_MESSAGE,
+        model: Model,
+        update_mask: FieldMask,
         async_enabled: bool = False,
     ) -> model_interface.UpdateOrganizationModelResponse:
         if async_enabled:
@@ -1472,8 +1472,8 @@ class ModelClient(Client):
     def trigger_organization_model(
         self,
         model_name: str,
-        task_inputs: list[model_interface.TaskInput],
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerOrganizationModelResponse:
         if async_enabled:
@@ -1481,8 +1481,8 @@ class ModelClient(Client):
                 method=self.hosts[self.instance].async_client.TriggerOrganizationModel,
                 request=model_interface.TriggerOrganizationModelRequest(
                     name=f"{self.namespace}/models/{model_name}",
-                    task_inputs=task_inputs,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -1491,8 +1491,8 @@ class ModelClient(Client):
             method=self.hosts[self.instance].client.TriggerOrganizationModel,
             request=model_interface.TriggerOrganizationModelRequest(
                 name=f"{self.namespace}/models/{model_name}",
-                task_inputs=task_inputs,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -1501,8 +1501,8 @@ class ModelClient(Client):
     def trigger_async_organization_model(
         self,
         model_name: str,
-        task_inputs: list[model_interface.TaskInput],
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerAsyncOrganizationModelResponse:
         if async_enabled:
@@ -1510,8 +1510,8 @@ class ModelClient(Client):
                 method=self.hosts[self.instance].async_client.TriggerAsyncOrganizationModel,
                 request=model_interface.TriggerAsyncOrganizationModelRequest(
                     name=f"{self.namespace}/models/{model_name}",
-                    task_inputs=task_inputs,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -1520,8 +1520,8 @@ class ModelClient(Client):
             method=self.hosts[self.instance].client.TriggerAsyncOrganizationModel,
             request=model_interface.TriggerAsyncOrganizationModelRequest(
                 name=f"{self.namespace}/models/{model_name}",
-                task_inputs=task_inputs,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()
@@ -1582,8 +1582,8 @@ class ModelClient(Client):
     def trigger_organization_model_binary_file_upload(
         self,
         model_name: str,
-        task_input: model_interface.TaskInputStream,
         version: str,
+        task_inputs: list[model_interface.TaskInput],
         async_enabled: bool = False,
     ) -> model_interface.TriggerOrganizationModelBinaryFileUploadResponse:
         if async_enabled:
@@ -1591,8 +1591,8 @@ class ModelClient(Client):
                 method=self.hosts[self.instance].async_client.TriggerOrganizationModelBinaryFileUpload,
                 request=model_interface.TriggerOrganizationModelBinaryFileUploadRequest(
                     name=f"{self.namespace}/models/{model_name}",
-                    task_input=task_input,
                     version=version,
+                    task_inputs=task_inputs,
                 ),
                 metadata=self.hosts[self.instance].metadata,
             ).send_async()
@@ -1601,8 +1601,8 @@ class ModelClient(Client):
             method=self.hosts[self.instance].client.TriggerOrganizationModelBinaryFileUpload,
             request=model_interface.TriggerOrganizationModelBinaryFileUploadRequest(
                 name=f"{self.namespace}/models/{model_name}",
-                task_input=task_input,
                 version=version,
+                task_inputs=task_inputs,
             ),
             metadata=self.hosts[self.instance].metadata,
         ).send_sync()

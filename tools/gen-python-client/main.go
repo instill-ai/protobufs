@@ -117,9 +117,11 @@ var generatorConfigMap = map[string]generatorConfig{
 			"ListNamespaceConnections":  "integration_interface",
 		},
 		protoFileInterfaceMap: map[string]string{
-			"vdp/pipeline/v1beta/pipeline.proto":    "pipeline_interface",
-			"vdp/pipeline/v1beta/integration.proto": "integration_interface",
-			"app/app/v1alpha/app.proto":             "app_interface",
+			"vdp/pipeline/v1beta/pipeline.proto":             "pipeline_interface",
+			"vdp/pipeline/v1beta/integration.proto":          "integration_interface",
+			"vdp/pipeline/v1beta/secret.proto":               "secret_interface",
+			"vdp/pipeline/v1beta/common.proto":               "common_pb2",
+			"vdp/pipeline/v1beta/component_definition.proto": "component_definition",
 		},
 		defaultInterfaceName: "pipeline_interface",
 		protoDir:             "./vdp/pipeline/v1beta/",
@@ -224,6 +226,7 @@ var generatorConfigMap = map[string]generatorConfig{
 		fieldDefaultValueMap: map[string]string{
 			"page_size":  " = 10",
 			"page_token": ` = ""`,
+			"if_all":     ` = False`,
 		},
 		predefinedTypeMap: map[string]string{
 			// "file":   "artifact_interface.File",
@@ -259,7 +262,11 @@ var generatorConfigMap = map[string]generatorConfig{
 var config generatorConfig
 
 func main() {
-	clientType := "artifact"
+	if len(os.Args) < 2 {
+		log.Fatalln("Please provide the client type as an argument")
+	}
+
+	clientType := os.Args[1]
 	config = generatorConfigMap[clientType]
 
 	// Slice to hold the names of .proto files
@@ -298,6 +305,24 @@ func main() {
 	// Process the parsed files
 	for _, fd := range descriptors {
 		protoDefs = append(protoDefs, printFileDescriptor(fd)...)
+	}
+
+	for k, v := range typeSourceMap {
+		fmt.Println(k, v)
+	}
+	for i, def := range protoDefs {
+		if v, ok := typeSourceMap[def.InputTypeName]; ok {
+			protoDefs[i].InputTypeSourceFile = v
+			if v, ok := config.protoFileInterfaceMap[v]; ok {
+				protoDefs[i].InputTypeInterface = v
+			}
+		}
+		if v, ok := typeSourceMap[def.OutputTypeName]; ok {
+			protoDefs[i].OutputTypeSourceFile = v
+			if v, ok := config.protoFileInterfaceMap[v]; ok {
+				protoDefs[i].OutputTypeInterface = v
+			}
+		}
 	}
 
 	t, err := os.ReadFile(config.tmplPath)
@@ -343,13 +368,26 @@ type fieldDefinition struct {
 
 type protoDefinition struct {
 	Method, FileName, InputTypeName, OutputTypeName string
+	InputTypeSourceFile, OutputTypeSourceFile       string
+	InputTypeInterface, OutputTypeInterface         string
 	InputTypes                                      []fieldDefinition
 }
+
+var typeSourceMap = make(map[string]string)
 
 // Function to print file descriptor details
 func printFileDescriptor(fd *desc.FileDescriptor) []protoDefinition {
 	fmt.Printf("File: %s\n", fd.GetName())
 	var protoDefs []protoDefinition
+	// typeSourceMap := make(map[string]string)
+
+	for _, msg := range fd.GetMessageTypes() {
+		fmt.Printf("  Message: %s\n", msg.GetName())
+		typeSourceMap[msg.GetName()] = fd.GetName()
+		for _, field := range msg.GetFields() {
+			fmt.Printf("    Field: %s (type: %s)\n", field.GetName(), field.GetType().String())
+		}
+	}
 
 	for _, svc := range fd.GetServices() {
 		fmt.Printf("  Service: %s\n", svc.GetName())
@@ -357,9 +395,11 @@ func printFileDescriptor(fd *desc.FileDescriptor) []protoDefinition {
 			fmt.Printf("    Method: %s\n", method.GetName())
 			fmt.Printf("      Input: %s\n", method.GetInputType().GetName())
 			def := protoDefinition{
-				Method:        method.GetName(),
-				FileName:      fd.GetName(),
-				InputTypeName: method.GetInputType().GetName(),
+				Method:              method.GetName(),
+				FileName:            fd.GetName(),
+				InputTypeName:       method.GetInputType().GetName(),
+				InputTypeInterface:  config.defaultInterfaceName,
+				OutputTypeInterface: config.defaultInterfaceName,
 			}
 
 			var inputTypes, inputTypesWithDefaultValue []fieldDefinition
@@ -400,12 +440,6 @@ func printFileDescriptor(fd *desc.FileDescriptor) []protoDefinition {
 		}
 	}
 
-	for _, msg := range fd.GetMessageTypes() {
-		fmt.Printf("  Message: %s\n", msg.GetName())
-		for _, field := range msg.GetFields() {
-			fmt.Printf("    Field: %s (type: %s)\n", field.GetName(), field.GetType().String())
-		}
-	}
 	return protoDefs
 }
 

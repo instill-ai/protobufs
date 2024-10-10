@@ -71,18 +71,18 @@ class ArtifactClient(Client):
     ) -> {{ .Method | getInterfaceName}}.{{ .OutputTypeName }}:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.{{ .Method }},
+                method=self.host.async_client.{{ .Method }},
                 request={{ .Method | getInterfaceName}}.{{ .InputTypeName }}({{ range .InputTypes }}
                     {{ .Name }}={{ .Name | customizeParam | safeHTML }},{{ end }}
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.{{ .Method }},
+            method=self.host.client.{{ .Method }},
             request={{ .Method | getInterfaceName}}.{{ .InputTypeName }}({{ range .InputTypes }}
                 {{ .Name }}={{ .Name | customizeParam | safeHTML }},{{ end }}
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 {{ end }}

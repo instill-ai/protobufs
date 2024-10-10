@@ -25,8 +25,10 @@ openapi-lint:
 	@# keep the documents consistent.
 	@spectral lint openapi/v2/service.swagger.yaml
 
+GEN_TYPE := $(GEN_TYPE)
+
 gen-python-client:
 	cd tools/gen-python-client && go build -o gen-python-client ./main.go
 	rm log.txt || true
-	./tools/gen-python-client/gen-python-client > log.txt
+	./tools/gen-python-client/gen-python-client $(GEN_TYPE) > log.txt
 	echo "build and gen completed"

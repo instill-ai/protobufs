@@ -43,7 +43,7 @@ class MgmtClient(Client):
     @grpc_handler
     def liveness(
         self,
-        health_check_request: TYPE_MESSAGE,
+        health_check_request: HealthCheckRequest,
         async_enabled: bool = False,
     ) -> mgmt_interface.LivenessResponse:
         if async_enabled:
@@ -66,7 +66,7 @@ class MgmtClient(Client):
     @grpc_handler
     def readiness(
         self,
-        health_check_request: TYPE_MESSAGE,
+        health_check_request: HealthCheckRequest,
         async_enabled: bool = False,
     ) -> mgmt_interface.ReadinessResponse:
         if async_enabled:
@@ -109,7 +109,7 @@ class MgmtClient(Client):
     @grpc_handler
     def patch_authenticated_user(
         self,
-        user: TYPE_MESSAGE,
+        user: AuthenticatedUser,
         mask: field_mask_pb2.FieldMask,
         async_enabled: bool = False,
     ) -> mgmt_interface.PatchAuthenticatedUserResponse:
@@ -136,7 +136,7 @@ class MgmtClient(Client):
     def list_users(
         self,
         
-        total_size: int = 100,
+        total_size: int = 10,
         next_page_token: str = "",
         filter_str: str = "",
         async_enabled: bool = False,
@@ -217,7 +217,7 @@ class MgmtClient(Client):
     def list_organizations(
         self,
         
-        total_size: int = 100,
+        total_size: int = 10,
         next_page_token: str = "",
         filter_str: str = "",
         async_enabled: bool = False,
@@ -612,7 +612,7 @@ class MgmtClient(Client):
     @grpc_handler
     def list_tokens(
         self,
-        total_size: int = 100,
+        total_size: int = 10,
         next_page_token: str = "",
         async_enabled: bool = False,
     ) -> mgmt_interface.ListTokensResponse:
@@ -779,7 +779,7 @@ class MgmtClient(Client):
     @grpc_handler
     def list_pipeline_trigger_table_records(
         self,
-        total_size: int = 100,
+        total_size: int = 10,
         next_page_token: str = "",
         filter_str: str = "",
         async_enabled: bool = False,
