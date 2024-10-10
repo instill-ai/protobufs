@@ -82,19 +82,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.LivenessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Liveness,
+                method=self.host.async_client.Liveness,
                 request=pipeline_interface.LivenessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Liveness,
+            method=self.host.client.Liveness,
             request=pipeline_interface.LivenessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -105,19 +105,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ReadinessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Readiness,
+                method=self.host.async_client.Readiness,
                 request=pipeline_interface.ReadinessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Readiness,
+            method=self.host.client.Readiness,
             request=pipeline_interface.ReadinessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -127,17 +127,17 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetHubStatsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetHubStats,
+                method=self.host.async_client.GetHubStats,
                 request=pipeline_interface.GetHubStatsRequest(
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetHubStats,
+            method=self.host.client.GetHubStats,
             request=pipeline_interface.GetHubStatsRequest(
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -154,7 +154,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListPipelinesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListPipelines,
+                method=self.host.async_client.ListPipelines,
                 request=pipeline_interface.ListPipelinesRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     visibility=visibility,
@@ -164,11 +164,11 @@ class PipelineClient(Client):
                     show_deleted=show_deleted,
                     order_by=order_by,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListPipelines,
+            method=self.host.client.ListPipelines,
             request=pipeline_interface.ListPipelinesRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 visibility=visibility,
@@ -178,7 +178,7 @@ class PipelineClient(Client):
                 show_deleted=show_deleted,
                 order_by=order_by,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -190,21 +190,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.LookUpPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.LookUpPipeline,
+                method=self.host.async_client.LookUpPipeline,
                 request=pipeline_interface.LookUpPipelineRequest(
                     permalink=permalink,
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.LookUpPipeline,
+            method=self.host.client.LookUpPipeline,
             request=pipeline_interface.LookUpPipelineRequest(
                 permalink=permalink,
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -222,7 +222,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListNamespacePipelinesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListNamespacePipelines,
+                method=self.host.async_client.ListNamespacePipelines,
                 request=pipeline_interface.ListNamespacePipelinesRequest(
                     namespace_id=namespace_id,
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
@@ -233,11 +233,11 @@ class PipelineClient(Client):
                     show_deleted=show_deleted,
                     order_by=order_by,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListNamespacePipelines,
+            method=self.host.client.ListNamespacePipelines,
             request=pipeline_interface.ListNamespacePipelinesRequest(
                 namespace_id=namespace_id,
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
@@ -248,7 +248,7 @@ class PipelineClient(Client):
                 show_deleted=show_deleted,
                 order_by=order_by,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -260,21 +260,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.CreateNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateNamespacePipeline,
+                method=self.host.async_client.CreateNamespacePipeline,
                 request=pipeline_interface.CreateNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline=pipeline,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateNamespacePipeline,
+            method=self.host.client.CreateNamespacePipeline,
             request=pipeline_interface.CreateNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline=pipeline,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -287,23 +287,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetNamespacePipeline,
+                method=self.host.async_client.GetNamespacePipeline,
                 request=pipeline_interface.GetNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetNamespacePipeline,
+            method=self.host.client.GetNamespacePipeline,
             request=pipeline_interface.GetNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -317,25 +317,25 @@ class PipelineClient(Client):
     ) -> pipeline_interface.UpdateNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateNamespacePipeline,
+                method=self.host.async_client.UpdateNamespacePipeline,
                 request=pipeline_interface.UpdateNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     pipeline=pipeline,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateNamespacePipeline,
+            method=self.host.client.UpdateNamespacePipeline,
             request=pipeline_interface.UpdateNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 pipeline=pipeline,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -347,21 +347,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.DeleteNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteNamespacePipeline,
+                method=self.host.async_client.DeleteNamespacePipeline,
                 request=pipeline_interface.DeleteNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteNamespacePipeline,
+            method=self.host.client.DeleteNamespacePipeline,
             request=pipeline_interface.DeleteNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -373,21 +373,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ValidateNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ValidateNamespacePipeline,
+                method=self.host.async_client.ValidateNamespacePipeline,
                 request=pipeline_interface.ValidateNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ValidateNamespacePipeline,
+            method=self.host.client.ValidateNamespacePipeline,
             request=pipeline_interface.ValidateNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -400,23 +400,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.RenameNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RenameNamespacePipeline,
+                method=self.host.async_client.RenameNamespacePipeline,
                 request=pipeline_interface.RenameNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     new_pipeline_id=new_pipeline_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RenameNamespacePipeline,
+            method=self.host.client.RenameNamespacePipeline,
             request=pipeline_interface.RenameNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 new_pipeline_id=new_pipeline_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -424,34 +424,37 @@ class PipelineClient(Client):
         self,
         namespace_id: str,
         pipeline_id: str,
-        target: str,
         description: str,
         sharing: common_pb2.Sharing,
+        target_namespace_id: str,
+        target_pipeline_id: str,
         async_enabled: bool = False,
     ) -> pipeline_interface.CloneNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CloneNamespacePipeline,
+                method=self.host.async_client.CloneNamespacePipeline,
                 request=pipeline_interface.CloneNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
-                    target=f"{self.target_namespace}/pipelines/{target}",
                     description=description,
                     sharing=sharing,
+                    target_namespace_id=target_namespace_id,
+                    target_pipeline_id=target_pipeline_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CloneNamespacePipeline,
+            method=self.host.client.CloneNamespacePipeline,
             request=pipeline_interface.CloneNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
-                target=f"{self.target_namespace}/pipelines/{target}",
                 description=description,
                 sharing=sharing,
+                target_namespace_id=target_namespace_id,
+                target_pipeline_id=target_pipeline_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -466,7 +469,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.SendNamespacePipelineEventResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.SendNamespacePipelineEvent,
+                method=self.host.async_client.SendNamespacePipelineEvent,
                 request=pipeline_interface.SendNamespacePipelineEventRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
@@ -474,11 +477,11 @@ class PipelineClient(Client):
                     code=code,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.SendNamespacePipelineEvent,
+            method=self.host.client.SendNamespacePipelineEvent,
             request=pipeline_interface.SendNamespacePipelineEventRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
@@ -486,7 +489,7 @@ class PipelineClient(Client):
                 code=code,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -502,7 +505,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.SendNamespacePipelineReleaseEventResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.SendNamespacePipelineReleaseEvent,
+                method=self.host.async_client.SendNamespacePipelineReleaseEvent,
                 request=pipeline_interface.SendNamespacePipelineReleaseEventRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
@@ -511,11 +514,11 @@ class PipelineClient(Client):
                     code=code,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.SendNamespacePipelineReleaseEvent,
+            method=self.host.client.SendNamespacePipelineReleaseEvent,
             request=pipeline_interface.SendNamespacePipelineReleaseEventRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
@@ -524,7 +527,7 @@ class PipelineClient(Client):
                 code=code,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -538,25 +541,25 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerNamespacePipeline,
+                method=self.host.async_client.TriggerNamespacePipeline,
                 request=pipeline_interface.TriggerNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerNamespacePipeline,
+            method=self.host.client.TriggerNamespacePipeline,
             request=pipeline_interface.TriggerNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -570,25 +573,25 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerNamespacePipelineWithStreamResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerNamespacePipelineWithStream,
+                method=self.host.async_client.TriggerNamespacePipelineWithStream,
                 request=pipeline_interface.TriggerNamespacePipelineWithStreamRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerNamespacePipelineWithStream,
+            method=self.host.client.TriggerNamespacePipelineWithStream,
             request=pipeline_interface.TriggerNamespacePipelineWithStreamRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -602,25 +605,25 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerAsyncNamespacePipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerAsyncNamespacePipeline,
+                method=self.host.async_client.TriggerAsyncNamespacePipeline,
                 request=pipeline_interface.TriggerAsyncNamespacePipelineRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerAsyncNamespacePipeline,
+            method=self.host.client.TriggerAsyncNamespacePipeline,
             request=pipeline_interface.TriggerAsyncNamespacePipelineRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -633,23 +636,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.CreateNamespacePipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateNamespacePipelineRelease,
+                method=self.host.async_client.CreateNamespacePipelineRelease,
                 request=pipeline_interface.CreateNamespacePipelineReleaseRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     release=release,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateNamespacePipelineRelease,
+            method=self.host.client.CreateNamespacePipelineRelease,
             request=pipeline_interface.CreateNamespacePipelineReleaseRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 release=release,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -666,7 +669,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListNamespacePipelineReleasesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListNamespacePipelineReleases,
+                method=self.host.async_client.ListNamespacePipelineReleases,
                 request=pipeline_interface.ListNamespacePipelineReleasesRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
@@ -676,11 +679,11 @@ class PipelineClient(Client):
                     filter=filter_str,
                     show_deleted=show_deleted,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListNamespacePipelineReleases,
+            method=self.host.client.ListNamespacePipelineReleases,
             request=pipeline_interface.ListNamespacePipelineReleasesRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
@@ -690,7 +693,7 @@ class PipelineClient(Client):
                 filter=filter_str,
                 show_deleted=show_deleted,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -704,25 +707,25 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetNamespacePipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetNamespacePipelineRelease,
+                method=self.host.async_client.GetNamespacePipelineRelease,
                 request=pipeline_interface.GetNamespacePipelineReleaseRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     release_id=release_id,
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetNamespacePipelineRelease,
+            method=self.host.client.GetNamespacePipelineRelease,
             request=pipeline_interface.GetNamespacePipelineReleaseRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 release_id=release_id,
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -737,7 +740,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.UpdateNamespacePipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateNamespacePipelineRelease,
+                method=self.host.async_client.UpdateNamespacePipelineRelease,
                 request=pipeline_interface.UpdateNamespacePipelineReleaseRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
@@ -745,11 +748,11 @@ class PipelineClient(Client):
                     release=release,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateNamespacePipelineRelease,
+            method=self.host.client.UpdateNamespacePipelineRelease,
             request=pipeline_interface.UpdateNamespacePipelineReleaseRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
@@ -757,7 +760,7 @@ class PipelineClient(Client):
                 release=release,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -770,23 +773,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.DeleteNamespacePipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteNamespacePipelineRelease,
+                method=self.host.async_client.DeleteNamespacePipelineRelease,
                 request=pipeline_interface.DeleteNamespacePipelineReleaseRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     release_id=release_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteNamespacePipelineRelease,
+            method=self.host.client.DeleteNamespacePipelineRelease,
             request=pipeline_interface.DeleteNamespacePipelineReleaseRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 release_id=release_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -795,36 +798,39 @@ class PipelineClient(Client):
         namespace_id: str,
         pipeline_id: str,
         release_id: str,
-        target: str,
         description: str,
         sharing: common_pb2.Sharing,
+        target_namespace_id: str,
+        target_pipeline_id: str,
         async_enabled: bool = False,
     ) -> pipeline_interface.CloneNamespacePipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CloneNamespacePipelineRelease,
+                method=self.host.async_client.CloneNamespacePipelineRelease,
                 request=pipeline_interface.CloneNamespacePipelineReleaseRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
                     release_id=release_id,
-                    target=f"{self.target_namespace}/pipelines/{target}",
                     description=description,
                     sharing=sharing,
+                    target_namespace_id=target_namespace_id,
+                    target_pipeline_id=target_pipeline_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CloneNamespacePipelineRelease,
+            method=self.host.client.CloneNamespacePipelineRelease,
             request=pipeline_interface.CloneNamespacePipelineReleaseRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
                 release_id=release_id,
-                target=f"{self.target_namespace}/pipelines/{target}",
                 description=description,
                 sharing=sharing,
+                target_namespace_id=target_namespace_id,
+                target_pipeline_id=target_pipeline_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -839,7 +845,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerNamespacePipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerNamespacePipelineRelease,
+                method=self.host.async_client.TriggerNamespacePipelineRelease,
                 request=pipeline_interface.TriggerNamespacePipelineReleaseRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
@@ -847,11 +853,11 @@ class PipelineClient(Client):
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerNamespacePipelineRelease,
+            method=self.host.client.TriggerNamespacePipelineRelease,
             request=pipeline_interface.TriggerNamespacePipelineReleaseRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
@@ -859,7 +865,7 @@ class PipelineClient(Client):
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -874,7 +880,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerAsyncNamespacePipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerAsyncNamespacePipelineRelease,
+                method=self.host.async_client.TriggerAsyncNamespacePipelineRelease,
                 request=pipeline_interface.TriggerAsyncNamespacePipelineReleaseRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
@@ -882,11 +888,11 @@ class PipelineClient(Client):
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerAsyncNamespacePipelineRelease,
+            method=self.host.client.TriggerAsyncNamespacePipelineRelease,
             request=pipeline_interface.TriggerAsyncNamespacePipelineReleaseRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
@@ -894,7 +900,7 @@ class PipelineClient(Client):
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -906,21 +912,21 @@ class PipelineClient(Client):
     ) -> secret_interface.CreateNamespaceSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateNamespaceSecret,
+                method=self.host.async_client.CreateNamespaceSecret,
                 request=secret_interface.CreateNamespaceSecretRequest(
                     namespace_id=namespace_id,
                     secret=secret,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateNamespaceSecret,
+            method=self.host.client.CreateNamespaceSecret,
             request=secret_interface.CreateNamespaceSecretRequest(
                 namespace_id=namespace_id,
                 secret=secret,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -933,23 +939,23 @@ class PipelineClient(Client):
     ) -> secret_interface.ListNamespaceSecretsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListNamespaceSecrets,
+                method=self.host.async_client.ListNamespaceSecrets,
                 request=secret_interface.ListNamespaceSecretsRequest(
                     namespace_id=namespace_id,
                     page_size=total_size,
                     page_token=next_page_token,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListNamespaceSecrets,
+            method=self.host.client.ListNamespaceSecrets,
             request=secret_interface.ListNamespaceSecretsRequest(
                 namespace_id=namespace_id,
                 page_size=total_size,
                 page_token=next_page_token,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -961,21 +967,21 @@ class PipelineClient(Client):
     ) -> secret_interface.GetNamespaceSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetNamespaceSecret,
+                method=self.host.async_client.GetNamespaceSecret,
                 request=secret_interface.GetNamespaceSecretRequest(
                     namespace_id=namespace_id,
                     secret_id=secret_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetNamespaceSecret,
+            method=self.host.client.GetNamespaceSecret,
             request=secret_interface.GetNamespaceSecretRequest(
                 namespace_id=namespace_id,
                 secret_id=secret_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -989,25 +995,25 @@ class PipelineClient(Client):
     ) -> secret_interface.UpdateNamespaceSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateNamespaceSecret,
+                method=self.host.async_client.UpdateNamespaceSecret,
                 request=secret_interface.UpdateNamespaceSecretRequest(
                     namespace_id=namespace_id,
                     secret_id=secret_id,
                     secret=secret,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateNamespaceSecret,
+            method=self.host.client.UpdateNamespaceSecret,
             request=secret_interface.UpdateNamespaceSecretRequest(
                 namespace_id=namespace_id,
                 secret_id=secret_id,
                 secret=secret,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1019,21 +1025,21 @@ class PipelineClient(Client):
     ) -> secret_interface.DeleteNamespaceSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteNamespaceSecret,
+                method=self.host.async_client.DeleteNamespaceSecret,
                 request=secret_interface.DeleteNamespaceSecretRequest(
                     namespace_id=namespace_id,
                     secret_id=secret_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteNamespaceSecret,
+            method=self.host.client.DeleteNamespaceSecret,
             request=secret_interface.DeleteNamespaceSecretRequest(
                 namespace_id=namespace_id,
                 secret_id=secret_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1047,25 +1053,25 @@ class PipelineClient(Client):
     ) -> component_definition.ListComponentDefinitionsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListComponentDefinitions,
+                method=self.host.async_client.ListComponentDefinitions,
                 request=component_definition.ListComponentDefinitionsRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     page_size=total_size,
                     filter=filter_str,
                     page=page,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListComponentDefinitions,
+            method=self.host.client.ListComponentDefinitions,
             request=component_definition.ListComponentDefinitionsRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 page_size=total_size,
                 filter=filter_str,
                 page=page,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1076,19 +1082,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetOperationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOperation,
+                method=self.host.async_client.GetOperation,
                 request=pipeline_interface.GetOperationRequest(
                     operation_id=operation_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOperation,
+            method=self.host.client.GetOperation,
             request=pipeline_interface.GetOperationRequest(
                 operation_id=operation_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1100,21 +1106,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.CreateUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateUserPipeline,
+                method=self.host.async_client.CreateUserPipeline,
                 request=pipeline_interface.CreateUserPipelineRequest(
                     pipeline=pipeline,
                     parent=parent,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateUserPipeline,
+            method=self.host.client.CreateUserPipeline,
             request=pipeline_interface.CreateUserPipelineRequest(
                 pipeline=pipeline,
                 parent=parent,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1132,7 +1138,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListUserPipelinesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListUserPipelines,
+                method=self.host.async_client.ListUserPipelines,
                 request=pipeline_interface.ListUserPipelinesRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     parent=parent,
@@ -1143,11 +1149,11 @@ class PipelineClient(Client):
                     show_deleted=show_deleted,
                     order_by=order_by,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListUserPipelines,
+            method=self.host.client.ListUserPipelines,
             request=pipeline_interface.ListUserPipelinesRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 parent=parent,
@@ -1158,7 +1164,7 @@ class PipelineClient(Client):
                 show_deleted=show_deleted,
                 order_by=order_by,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1170,21 +1176,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetUserPipeline,
+                method=self.host.async_client.GetUserPipeline,
                 request=pipeline_interface.GetUserPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetUserPipeline,
+            method=self.host.client.GetUserPipeline,
             request=pipeline_interface.GetUserPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1196,21 +1202,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.UpdateUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateUserPipeline,
+                method=self.host.async_client.UpdateUserPipeline,
                 request=pipeline_interface.UpdateUserPipelineRequest(
                     pipeline=pipeline,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateUserPipeline,
+            method=self.host.client.UpdateUserPipeline,
             request=pipeline_interface.UpdateUserPipelineRequest(
                 pipeline=pipeline,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1221,19 +1227,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.DeleteUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteUserPipeline,
+                method=self.host.async_client.DeleteUserPipeline,
                 request=pipeline_interface.DeleteUserPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteUserPipeline,
+            method=self.host.client.DeleteUserPipeline,
             request=pipeline_interface.DeleteUserPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1244,19 +1250,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ValidateUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ValidateUserPipeline,
+                method=self.host.async_client.ValidateUserPipeline,
                 request=pipeline_interface.ValidateUserPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ValidateUserPipeline,
+            method=self.host.client.ValidateUserPipeline,
             request=pipeline_interface.ValidateUserPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1268,85 +1274,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.RenameUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RenameUserPipeline,
+                method=self.host.async_client.RenameUserPipeline,
                 request=pipeline_interface.RenameUserPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     new_pipeline_id=new_pipeline_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RenameUserPipeline,
+            method=self.host.client.RenameUserPipeline,
             request=pipeline_interface.RenameUserPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 new_pipeline_id=new_pipeline_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
-        ).send_sync()
-
-    @grpc_handler
-    def clone_pipeline(
-        self,
-        name: str,
-        target: str,
-        description: str,
-        sharing: common_pb2.Sharing,
-        async_enabled: bool = False,
-    ) -> pipeline_interface.CloneUserPipelineResponse:
-        if async_enabled:
-            return RequestFactory(
-                method=self.hosts[self.instance].async_client.CloneUserPipeline,
-                request=pipeline_interface.CloneUserPipelineRequest(
-                    name=f"{self.target_namespace}/pipelines/{name}",
-                    target=f"{self.target_namespace}/pipelines/{target}",
-                    description=description,
-                    sharing=sharing,
-                ),
-                metadata=self.hosts[self.instance].metadata,
-            ).send_async()
-
-        return RequestFactory(
-            method=self.hosts[self.instance].client.CloneUserPipeline,
-            request=pipeline_interface.CloneUserPipelineRequest(
-                name=f"{self.target_namespace}/pipelines/{name}",
-                target=f"{self.target_namespace}/pipelines/{target}",
-                description=description,
-                sharing=sharing,
-            ),
-            metadata=self.hosts[self.instance].metadata,
-        ).send_sync()
-
-    @grpc_handler
-    def clone_pipeline_release(
-        self,
-        name: str,
-        target: str,
-        description: str,
-        sharing: common_pb2.Sharing,
-        async_enabled: bool = False,
-    ) -> pipeline_interface.CloneUserPipelineReleaseResponse:
-        if async_enabled:
-            return RequestFactory(
-                method=self.hosts[self.instance].async_client.CloneUserPipelineRelease,
-                request=pipeline_interface.CloneUserPipelineReleaseRequest(
-                    name=f"{self.target_namespace}/pipelines/{name}",
-                    target=f"{self.target_namespace}/pipelines/{target}",
-                    description=description,
-                    sharing=sharing,
-                ),
-                metadata=self.hosts[self.instance].metadata,
-            ).send_async()
-
-        return RequestFactory(
-            method=self.hosts[self.instance].client.CloneUserPipelineRelease,
-            request=pipeline_interface.CloneUserPipelineReleaseRequest(
-                name=f"{self.target_namespace}/pipelines/{name}",
-                target=f"{self.target_namespace}/pipelines/{target}",
-                description=description,
-                sharing=sharing,
-            ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1359,23 +1301,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerUserPipeline,
+                method=self.host.async_client.TriggerUserPipeline,
                 request=pipeline_interface.TriggerUserPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerUserPipeline,
+            method=self.host.client.TriggerUserPipeline,
             request=pipeline_interface.TriggerUserPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1388,23 +1330,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerUserPipelineWithStreamResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerUserPipelineWithStream,
+                method=self.host.async_client.TriggerUserPipelineWithStream,
                 request=pipeline_interface.TriggerUserPipelineWithStreamRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerUserPipelineWithStream,
+            method=self.host.client.TriggerUserPipelineWithStream,
             request=pipeline_interface.TriggerUserPipelineWithStreamRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1417,23 +1359,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerAsyncUserPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerAsyncUserPipeline,
+                method=self.host.async_client.TriggerAsyncUserPipeline,
                 request=pipeline_interface.TriggerAsyncUserPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerAsyncUserPipeline,
+            method=self.host.client.TriggerAsyncUserPipeline,
             request=pipeline_interface.TriggerAsyncUserPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1445,21 +1387,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.CreateUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateUserPipelineRelease,
+                method=self.host.async_client.CreateUserPipelineRelease,
                 request=pipeline_interface.CreateUserPipelineReleaseRequest(
                     release=release,
                     parent=parent,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateUserPipelineRelease,
+            method=self.host.client.CreateUserPipelineRelease,
             request=pipeline_interface.CreateUserPipelineReleaseRequest(
                 release=release,
                 parent=parent,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1475,7 +1417,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListUserPipelineReleasesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListUserPipelineReleases,
+                method=self.host.async_client.ListUserPipelineReleases,
                 request=pipeline_interface.ListUserPipelineReleasesRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     parent=parent,
@@ -1484,11 +1426,11 @@ class PipelineClient(Client):
                     filter=filter_str,
                     show_deleted=show_deleted,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListUserPipelineReleases,
+            method=self.host.client.ListUserPipelineReleases,
             request=pipeline_interface.ListUserPipelineReleasesRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 parent=parent,
@@ -1497,7 +1439,7 @@ class PipelineClient(Client):
                 filter=filter_str,
                 show_deleted=show_deleted,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1509,21 +1451,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetUserPipelineRelease,
+                method=self.host.async_client.GetUserPipelineRelease,
                 request=pipeline_interface.GetUserPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetUserPipelineRelease,
+            method=self.host.client.GetUserPipelineRelease,
             request=pipeline_interface.GetUserPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1535,21 +1477,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.UpdateUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateUserPipelineRelease,
+                method=self.host.async_client.UpdateUserPipelineRelease,
                 request=pipeline_interface.UpdateUserPipelineReleaseRequest(
                     release=release,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateUserPipelineRelease,
+            method=self.host.client.UpdateUserPipelineRelease,
             request=pipeline_interface.UpdateUserPipelineReleaseRequest(
                 release=release,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1560,19 +1502,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.DeleteUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteUserPipelineRelease,
+                method=self.host.async_client.DeleteUserPipelineRelease,
                 request=pipeline_interface.DeleteUserPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteUserPipelineRelease,
+            method=self.host.client.DeleteUserPipelineRelease,
             request=pipeline_interface.DeleteUserPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1583,19 +1525,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.RestoreUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RestoreUserPipelineRelease,
+                method=self.host.async_client.RestoreUserPipelineRelease,
                 request=pipeline_interface.RestoreUserPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RestoreUserPipelineRelease,
+            method=self.host.client.RestoreUserPipelineRelease,
             request=pipeline_interface.RestoreUserPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1607,21 +1549,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.RenameUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RenameUserPipelineRelease,
+                method=self.host.async_client.RenameUserPipelineRelease,
                 request=pipeline_interface.RenameUserPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     new_pipeline_release_id=new_pipeline_release_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RenameUserPipelineRelease,
+            method=self.host.client.RenameUserPipelineRelease,
             request=pipeline_interface.RenameUserPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 new_pipeline_release_id=new_pipeline_release_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1634,23 +1576,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerUserPipelineRelease,
+                method=self.host.async_client.TriggerUserPipelineRelease,
                 request=pipeline_interface.TriggerUserPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerUserPipelineRelease,
+            method=self.host.client.TriggerUserPipelineRelease,
             request=pipeline_interface.TriggerUserPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1663,23 +1605,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerAsyncUserPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerAsyncUserPipelineRelease,
+                method=self.host.async_client.TriggerAsyncUserPipelineRelease,
                 request=pipeline_interface.TriggerAsyncUserPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerAsyncUserPipelineRelease,
+            method=self.host.client.TriggerAsyncUserPipelineRelease,
             request=pipeline_interface.TriggerAsyncUserPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1691,21 +1633,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.CreateOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateOrganizationPipeline,
+                method=self.host.async_client.CreateOrganizationPipeline,
                 request=pipeline_interface.CreateOrganizationPipelineRequest(
                     pipeline=pipeline,
                     parent=parent,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateOrganizationPipeline,
+            method=self.host.client.CreateOrganizationPipeline,
             request=pipeline_interface.CreateOrganizationPipelineRequest(
                 pipeline=pipeline,
                 parent=parent,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1723,7 +1665,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListOrganizationPipelinesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListOrganizationPipelines,
+                method=self.host.async_client.ListOrganizationPipelines,
                 request=pipeline_interface.ListOrganizationPipelinesRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     parent=parent,
@@ -1734,11 +1676,11 @@ class PipelineClient(Client):
                     show_deleted=show_deleted,
                     order_by=order_by,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListOrganizationPipelines,
+            method=self.host.client.ListOrganizationPipelines,
             request=pipeline_interface.ListOrganizationPipelinesRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 parent=parent,
@@ -1749,7 +1691,7 @@ class PipelineClient(Client):
                 show_deleted=show_deleted,
                 order_by=order_by,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1761,21 +1703,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOrganizationPipeline,
+                method=self.host.async_client.GetOrganizationPipeline,
                 request=pipeline_interface.GetOrganizationPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOrganizationPipeline,
+            method=self.host.client.GetOrganizationPipeline,
             request=pipeline_interface.GetOrganizationPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1787,21 +1729,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.UpdateOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateOrganizationPipeline,
+                method=self.host.async_client.UpdateOrganizationPipeline,
                 request=pipeline_interface.UpdateOrganizationPipelineRequest(
                     pipeline=pipeline,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateOrganizationPipeline,
+            method=self.host.client.UpdateOrganizationPipeline,
             request=pipeline_interface.UpdateOrganizationPipelineRequest(
                 pipeline=pipeline,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1812,19 +1754,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.DeleteOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteOrganizationPipeline,
+                method=self.host.async_client.DeleteOrganizationPipeline,
                 request=pipeline_interface.DeleteOrganizationPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteOrganizationPipeline,
+            method=self.host.client.DeleteOrganizationPipeline,
             request=pipeline_interface.DeleteOrganizationPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1835,19 +1777,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ValidateOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ValidateOrganizationPipeline,
+                method=self.host.async_client.ValidateOrganizationPipeline,
                 request=pipeline_interface.ValidateOrganizationPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ValidateOrganizationPipeline,
+            method=self.host.client.ValidateOrganizationPipeline,
             request=pipeline_interface.ValidateOrganizationPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1859,85 +1801,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.RenameOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RenameOrganizationPipeline,
+                method=self.host.async_client.RenameOrganizationPipeline,
                 request=pipeline_interface.RenameOrganizationPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     new_pipeline_id=new_pipeline_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RenameOrganizationPipeline,
+            method=self.host.client.RenameOrganizationPipeline,
             request=pipeline_interface.RenameOrganizationPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 new_pipeline_id=new_pipeline_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
-        ).send_sync()
-
-    @grpc_handler
-    def clone_organization_pipeline(
-        self,
-        name: str,
-        target: str,
-        description: str,
-        sharing: common_pb2.Sharing,
-        async_enabled: bool = False,
-    ) -> pipeline_interface.CloneOrganizationPipelineResponse:
-        if async_enabled:
-            return RequestFactory(
-                method=self.hosts[self.instance].async_client.CloneOrganizationPipeline,
-                request=pipeline_interface.CloneOrganizationPipelineRequest(
-                    name=f"{self.target_namespace}/pipelines/{name}",
-                    target=f"{self.target_namespace}/pipelines/{target}",
-                    description=description,
-                    sharing=sharing,
-                ),
-                metadata=self.hosts[self.instance].metadata,
-            ).send_async()
-
-        return RequestFactory(
-            method=self.hosts[self.instance].client.CloneOrganizationPipeline,
-            request=pipeline_interface.CloneOrganizationPipelineRequest(
-                name=f"{self.target_namespace}/pipelines/{name}",
-                target=f"{self.target_namespace}/pipelines/{target}",
-                description=description,
-                sharing=sharing,
-            ),
-            metadata=self.hosts[self.instance].metadata,
-        ).send_sync()
-
-    @grpc_handler
-    def clone_organization_pipeline_release(
-        self,
-        name: str,
-        target: str,
-        description: str,
-        sharing: common_pb2.Sharing,
-        async_enabled: bool = False,
-    ) -> pipeline_interface.CloneOrganizationPipelineReleaseResponse:
-        if async_enabled:
-            return RequestFactory(
-                method=self.hosts[self.instance].async_client.CloneOrganizationPipelineRelease,
-                request=pipeline_interface.CloneOrganizationPipelineReleaseRequest(
-                    name=f"{self.target_namespace}/pipelines/{name}",
-                    target=f"{self.target_namespace}/pipelines/{target}",
-                    description=description,
-                    sharing=sharing,
-                ),
-                metadata=self.hosts[self.instance].metadata,
-            ).send_async()
-
-        return RequestFactory(
-            method=self.hosts[self.instance].client.CloneOrganizationPipelineRelease,
-            request=pipeline_interface.CloneOrganizationPipelineReleaseRequest(
-                name=f"{self.target_namespace}/pipelines/{name}",
-                target=f"{self.target_namespace}/pipelines/{target}",
-                description=description,
-                sharing=sharing,
-            ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1950,23 +1828,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerOrganizationPipelineStreamResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerOrganizationPipelineStream,
+                method=self.host.async_client.TriggerOrganizationPipelineStream,
                 request=pipeline_interface.TriggerOrganizationPipelineStreamRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerOrganizationPipelineStream,
+            method=self.host.client.TriggerOrganizationPipelineStream,
             request=pipeline_interface.TriggerOrganizationPipelineStreamRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -1979,23 +1857,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerOrganizationPipeline,
+                method=self.host.async_client.TriggerOrganizationPipeline,
                 request=pipeline_interface.TriggerOrganizationPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerOrganizationPipeline,
+            method=self.host.client.TriggerOrganizationPipeline,
             request=pipeline_interface.TriggerOrganizationPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2008,23 +1886,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerAsyncOrganizationPipelineResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerAsyncOrganizationPipeline,
+                method=self.host.async_client.TriggerAsyncOrganizationPipeline,
                 request=pipeline_interface.TriggerAsyncOrganizationPipelineRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerAsyncOrganizationPipeline,
+            method=self.host.client.TriggerAsyncOrganizationPipeline,
             request=pipeline_interface.TriggerAsyncOrganizationPipelineRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2036,21 +1914,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.CreateOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateOrganizationPipelineRelease,
+                method=self.host.async_client.CreateOrganizationPipelineRelease,
                 request=pipeline_interface.CreateOrganizationPipelineReleaseRequest(
                     release=release,
                     parent=parent,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateOrganizationPipelineRelease,
+            method=self.host.client.CreateOrganizationPipelineRelease,
             request=pipeline_interface.CreateOrganizationPipelineReleaseRequest(
                 release=release,
                 parent=parent,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2066,7 +1944,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListOrganizationPipelineReleasesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListOrganizationPipelineReleases,
+                method=self.host.async_client.ListOrganizationPipelineReleases,
                 request=pipeline_interface.ListOrganizationPipelineReleasesRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     parent=parent,
@@ -2075,11 +1953,11 @@ class PipelineClient(Client):
                     filter=filter_str,
                     show_deleted=show_deleted,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListOrganizationPipelineReleases,
+            method=self.host.client.ListOrganizationPipelineReleases,
             request=pipeline_interface.ListOrganizationPipelineReleasesRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 parent=parent,
@@ -2088,7 +1966,7 @@ class PipelineClient(Client):
                 filter=filter_str,
                 show_deleted=show_deleted,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2100,21 +1978,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.GetOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOrganizationPipelineRelease,
+                method=self.host.async_client.GetOrganizationPipelineRelease,
                 request=pipeline_interface.GetOrganizationPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOrganizationPipelineRelease,
+            method=self.host.client.GetOrganizationPipelineRelease,
             request=pipeline_interface.GetOrganizationPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2126,21 +2004,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.UpdateOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateOrganizationPipelineRelease,
+                method=self.host.async_client.UpdateOrganizationPipelineRelease,
                 request=pipeline_interface.UpdateOrganizationPipelineReleaseRequest(
                     release=release,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateOrganizationPipelineRelease,
+            method=self.host.client.UpdateOrganizationPipelineRelease,
             request=pipeline_interface.UpdateOrganizationPipelineReleaseRequest(
                 release=release,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2151,19 +2029,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.DeleteOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteOrganizationPipelineRelease,
+                method=self.host.async_client.DeleteOrganizationPipelineRelease,
                 request=pipeline_interface.DeleteOrganizationPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteOrganizationPipelineRelease,
+            method=self.host.client.DeleteOrganizationPipelineRelease,
             request=pipeline_interface.DeleteOrganizationPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2174,19 +2052,19 @@ class PipelineClient(Client):
     ) -> pipeline_interface.RestoreOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RestoreOrganizationPipelineRelease,
+                method=self.host.async_client.RestoreOrganizationPipelineRelease,
                 request=pipeline_interface.RestoreOrganizationPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RestoreOrganizationPipelineRelease,
+            method=self.host.client.RestoreOrganizationPipelineRelease,
             request=pipeline_interface.RestoreOrganizationPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2198,21 +2076,21 @@ class PipelineClient(Client):
     ) -> pipeline_interface.RenameOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.RenameOrganizationPipelineRelease,
+                method=self.host.async_client.RenameOrganizationPipelineRelease,
                 request=pipeline_interface.RenameOrganizationPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     new_pipeline_release_id=new_pipeline_release_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.RenameOrganizationPipelineRelease,
+            method=self.host.client.RenameOrganizationPipelineRelease,
             request=pipeline_interface.RenameOrganizationPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 new_pipeline_release_id=new_pipeline_release_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2225,23 +2103,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerOrganizationPipelineRelease,
+                method=self.host.async_client.TriggerOrganizationPipelineRelease,
                 request=pipeline_interface.TriggerOrganizationPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerOrganizationPipelineRelease,
+            method=self.host.client.TriggerOrganizationPipelineRelease,
             request=pipeline_interface.TriggerOrganizationPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2254,23 +2132,23 @@ class PipelineClient(Client):
     ) -> pipeline_interface.TriggerAsyncOrganizationPipelineReleaseResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TriggerAsyncOrganizationPipelineRelease,
+                method=self.host.async_client.TriggerAsyncOrganizationPipelineRelease,
                 request=pipeline_interface.TriggerAsyncOrganizationPipelineReleaseRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     inputs=inputs,
                     data=data,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TriggerAsyncOrganizationPipelineRelease,
+            method=self.host.client.TriggerAsyncOrganizationPipelineRelease,
             request=pipeline_interface.TriggerAsyncOrganizationPipelineReleaseRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 inputs=inputs,
                 data=data,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2284,25 +2162,25 @@ class PipelineClient(Client):
     ) -> component_definition.ListConnectorDefinitionsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListConnectorDefinitions,
+                method=self.host.async_client.ListConnectorDefinitions,
                 request=component_definition.ListConnectorDefinitionsRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     page_size=total_size,
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListConnectorDefinitions,
+            method=self.host.client.ListConnectorDefinitions,
             request=component_definition.ListConnectorDefinitionsRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 page_size=total_size,
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2314,21 +2192,21 @@ class PipelineClient(Client):
     ) -> component_definition.GetConnectorDefinitionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetConnectorDefinition,
+                method=self.host.async_client.GetConnectorDefinition,
                 request=component_definition.GetConnectorDefinitionRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetConnectorDefinition,
+            method=self.host.client.GetConnectorDefinition,
             request=component_definition.GetConnectorDefinitionRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2342,25 +2220,25 @@ class PipelineClient(Client):
     ) -> component_definition.ListOperatorDefinitionsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListOperatorDefinitions,
+                method=self.host.async_client.ListOperatorDefinitions,
                 request=component_definition.ListOperatorDefinitionsRequest(
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                     page_size=total_size,
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListOperatorDefinitions,
+            method=self.host.client.ListOperatorDefinitions,
             request=component_definition.ListOperatorDefinitionsRequest(
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 page_size=total_size,
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2372,21 +2250,21 @@ class PipelineClient(Client):
     ) -> component_definition.GetOperatorDefinitionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOperatorDefinition,
+                method=self.host.async_client.GetOperatorDefinition,
                 request=component_definition.GetOperatorDefinitionRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOperatorDefinition,
+            method=self.host.client.GetOperatorDefinition,
             request=component_definition.GetOperatorDefinitionRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2397,19 +2275,19 @@ class PipelineClient(Client):
     ) -> common_pb2.CheckNameResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CheckName,
+                method=self.host.async_client.CheckName,
                 request=common_pb2.CheckNameRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CheckName,
+            method=self.host.client.CheckName,
             request=common_pb2.CheckNameRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2421,21 +2299,21 @@ class PipelineClient(Client):
     ) -> secret_interface.CreateUserSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateUserSecret,
+                method=self.host.async_client.CreateUserSecret,
                 request=secret_interface.CreateUserSecretRequest(
                     secret=secret,
                     parent=parent,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateUserSecret,
+            method=self.host.client.CreateUserSecret,
             request=secret_interface.CreateUserSecretRequest(
                 secret=secret,
                 parent=parent,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2448,23 +2326,23 @@ class PipelineClient(Client):
     ) -> secret_interface.ListUserSecretsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListUserSecrets,
+                method=self.host.async_client.ListUserSecrets,
                 request=secret_interface.ListUserSecretsRequest(
                     parent=parent,
                     page_size=total_size,
                     page_token=next_page_token,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListUserSecrets,
+            method=self.host.client.ListUserSecrets,
             request=secret_interface.ListUserSecretsRequest(
                 parent=parent,
                 page_size=total_size,
                 page_token=next_page_token,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2475,19 +2353,19 @@ class PipelineClient(Client):
     ) -> secret_interface.GetUserSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetUserSecret,
+                method=self.host.async_client.GetUserSecret,
                 request=secret_interface.GetUserSecretRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetUserSecret,
+            method=self.host.client.GetUserSecret,
             request=secret_interface.GetUserSecretRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2499,21 +2377,21 @@ class PipelineClient(Client):
     ) -> secret_interface.UpdateUserSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateUserSecret,
+                method=self.host.async_client.UpdateUserSecret,
                 request=secret_interface.UpdateUserSecretRequest(
                     secret=secret,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateUserSecret,
+            method=self.host.client.UpdateUserSecret,
             request=secret_interface.UpdateUserSecretRequest(
                 secret=secret,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2524,19 +2402,19 @@ class PipelineClient(Client):
     ) -> secret_interface.DeleteUserSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteUserSecret,
+                method=self.host.async_client.DeleteUserSecret,
                 request=secret_interface.DeleteUserSecretRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteUserSecret,
+            method=self.host.client.DeleteUserSecret,
             request=secret_interface.DeleteUserSecretRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2548,21 +2426,21 @@ class PipelineClient(Client):
     ) -> secret_interface.CreateOrganizationSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateOrganizationSecret,
+                method=self.host.async_client.CreateOrganizationSecret,
                 request=secret_interface.CreateOrganizationSecretRequest(
                     secret=secret,
                     parent=parent,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateOrganizationSecret,
+            method=self.host.client.CreateOrganizationSecret,
             request=secret_interface.CreateOrganizationSecretRequest(
                 secret=secret,
                 parent=parent,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2575,23 +2453,23 @@ class PipelineClient(Client):
     ) -> secret_interface.ListOrganizationSecretsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListOrganizationSecrets,
+                method=self.host.async_client.ListOrganizationSecrets,
                 request=secret_interface.ListOrganizationSecretsRequest(
                     parent=parent,
                     page_size=total_size,
                     page_token=next_page_token,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListOrganizationSecrets,
+            method=self.host.client.ListOrganizationSecrets,
             request=secret_interface.ListOrganizationSecretsRequest(
                 parent=parent,
                 page_size=total_size,
                 page_token=next_page_token,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2602,19 +2480,19 @@ class PipelineClient(Client):
     ) -> secret_interface.GetOrganizationSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOrganizationSecret,
+                method=self.host.async_client.GetOrganizationSecret,
                 request=secret_interface.GetOrganizationSecretRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOrganizationSecret,
+            method=self.host.client.GetOrganizationSecret,
             request=secret_interface.GetOrganizationSecretRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2626,21 +2504,21 @@ class PipelineClient(Client):
     ) -> secret_interface.UpdateOrganizationSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateOrganizationSecret,
+                method=self.host.async_client.UpdateOrganizationSecret,
                 request=secret_interface.UpdateOrganizationSecretRequest(
                     secret=secret,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateOrganizationSecret,
+            method=self.host.client.UpdateOrganizationSecret,
             request=secret_interface.UpdateOrganizationSecretRequest(
                 secret=secret,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2651,19 +2529,19 @@ class PipelineClient(Client):
     ) -> secret_interface.DeleteOrganizationSecretResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteOrganizationSecret,
+                method=self.host.async_client.DeleteOrganizationSecret,
                 request=secret_interface.DeleteOrganizationSecretRequest(
                     name=f"{self.target_namespace}/pipelines/{name}",
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteOrganizationSecret,
+            method=self.host.client.DeleteOrganizationSecret,
             request=secret_interface.DeleteOrganizationSecretRequest(
                 name=f"{self.target_namespace}/pipelines/{name}",
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2680,7 +2558,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListPipelineRunsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListPipelineRuns,
+                method=self.host.async_client.ListPipelineRuns,
                 request=pipeline_interface.ListPipelineRunsRequest(
                     namespace_id=namespace_id,
                     pipeline_id=pipeline_id,
@@ -2690,11 +2568,11 @@ class PipelineClient(Client):
                     filter=filter_str,
                     order_by=order_by,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListPipelineRuns,
+            method=self.host.client.ListPipelineRuns,
             request=pipeline_interface.ListPipelineRunsRequest(
                 namespace_id=namespace_id,
                 pipeline_id=pipeline_id,
@@ -2704,7 +2582,7 @@ class PipelineClient(Client):
                 filter=filter_str,
                 order_by=order_by,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2720,7 +2598,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListComponentRunsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListComponentRuns,
+                method=self.host.async_client.ListComponentRuns,
                 request=pipeline_interface.ListComponentRunsRequest(
                     pipeline_run_id=pipeline_run_id,
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
@@ -2729,11 +2607,11 @@ class PipelineClient(Client):
                     filter=filter_str,
                     order_by=order_by,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListComponentRuns,
+            method=self.host.client.ListComponentRuns,
             request=pipeline_interface.ListComponentRunsRequest(
                 pipeline_run_id=pipeline_run_id,
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
@@ -2742,7 +2620,7 @@ class PipelineClient(Client):
                 filter=filter_str,
                 order_by=order_by,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2756,25 +2634,25 @@ class PipelineClient(Client):
     ) -> integration_interface.ListNamespaceConnectionsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListNamespaceConnections,
+                method=self.host.async_client.ListNamespaceConnections,
                 request=integration_interface.ListNamespaceConnectionsRequest(
                     namespace_id=namespace_id,
                     page_size=total_size,
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListNamespaceConnections,
+            method=self.host.client.ListNamespaceConnections,
             request=integration_interface.ListNamespaceConnectionsRequest(
                 namespace_id=namespace_id,
                 page_size=total_size,
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2787,23 +2665,23 @@ class PipelineClient(Client):
     ) -> integration_interface.GetNamespaceConnectionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetNamespaceConnection,
+                method=self.host.async_client.GetNamespaceConnection,
                 request=integration_interface.GetNamespaceConnectionRequest(
                     namespace_id=namespace_id,
                     connection_id=connection_id,
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetNamespaceConnection,
+            method=self.host.client.GetNamespaceConnection,
             request=integration_interface.GetNamespaceConnectionRequest(
                 namespace_id=namespace_id,
                 connection_id=connection_id,
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2814,19 +2692,19 @@ class PipelineClient(Client):
     ) -> integration_interface.CreateNamespaceConnectionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateNamespaceConnection,
+                method=self.host.async_client.CreateNamespaceConnection,
                 request=integration_interface.CreateNamespaceConnectionRequest(
                     connection=connection,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateNamespaceConnection,
+            method=self.host.client.CreateNamespaceConnection,
             request=integration_interface.CreateNamespaceConnectionRequest(
                 connection=connection,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2839,23 +2717,23 @@ class PipelineClient(Client):
     ) -> integration_interface.UpdateNamespaceConnectionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateNamespaceConnection,
+                method=self.host.async_client.UpdateNamespaceConnection,
                 request=integration_interface.UpdateNamespaceConnectionRequest(
                     connection_id=connection_id,
                     connection=connection,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateNamespaceConnection,
+            method=self.host.client.UpdateNamespaceConnection,
             request=integration_interface.UpdateNamespaceConnectionRequest(
                 connection_id=connection_id,
                 connection=connection,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2867,21 +2745,21 @@ class PipelineClient(Client):
     ) -> integration_interface.DeleteNamespaceConnectionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteNamespaceConnection,
+                method=self.host.async_client.DeleteNamespaceConnection,
                 request=integration_interface.DeleteNamespaceConnectionRequest(
                     namespace_id=namespace_id,
                     connection_id=connection_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteNamespaceConnection,
+            method=self.host.client.DeleteNamespaceConnection,
             request=integration_interface.DeleteNamespaceConnectionRequest(
                 namespace_id=namespace_id,
                 connection_id=connection_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2893,21 +2771,21 @@ class PipelineClient(Client):
     ) -> integration_interface.TestNamespaceConnectionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.TestNamespaceConnection,
+                method=self.host.async_client.TestNamespaceConnection,
                 request=integration_interface.TestNamespaceConnectionRequest(
                     namespace_id=namespace_id,
                     connection_id=connection_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.TestNamespaceConnection,
+            method=self.host.client.TestNamespaceConnection,
             request=integration_interface.TestNamespaceConnectionRequest(
                 namespace_id=namespace_id,
                 connection_id=connection_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2922,7 +2800,7 @@ class PipelineClient(Client):
     ) -> pipeline_interface.ListPipelineIDsByConnectionIDResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListPipelineIDsByConnectionID,
+                method=self.host.async_client.ListPipelineIDsByConnectionID,
                 request=pipeline_interface.ListPipelineIDsByConnectionIDRequest(
                     namespace_id=namespace_id,
                     connection_id=connection_id,
@@ -2930,11 +2808,11 @@ class PipelineClient(Client):
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListPipelineIDsByConnectionID,
+            method=self.host.client.ListPipelineIDsByConnectionID,
             request=pipeline_interface.ListPipelineIDsByConnectionIDRequest(
                 namespace_id=namespace_id,
                 connection_id=connection_id,
@@ -2942,7 +2820,7 @@ class PipelineClient(Client):
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2955,23 +2833,23 @@ class PipelineClient(Client):
     ) -> integration_interface.ListIntegrationsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListIntegrations,
+                method=self.host.async_client.ListIntegrations,
                 request=integration_interface.ListIntegrationsRequest(
                     page_size=total_size,
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListIntegrations,
+            method=self.host.client.ListIntegrations,
             request=integration_interface.ListIntegrationsRequest(
                 page_size=total_size,
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -2983,20 +2861,20 @@ class PipelineClient(Client):
     ) -> integration_interface.GetIntegrationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetIntegration,
+                method=self.host.async_client.GetIntegration,
                 request=integration_interface.GetIntegrationRequest(
                     integration_id=integration_id,
                     view=pipeline_interface.Pipeline.VIEW_RECIPE,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetIntegration,
+            method=self.host.client.GetIntegration,
             request=integration_interface.GetIntegrationRequest(
                 integration_id=integration_id,
                 view=pipeline_interface.Pipeline.VIEW_RECIPE,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 

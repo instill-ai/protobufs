@@ -71,19 +71,19 @@ class ArtifactClient(Client):
     ) -> artifact_interface.LivenessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Liveness,
+                method=self.host.async_client.Liveness,
                 request=artifact_interface.LivenessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Liveness,
+            method=self.host.client.Liveness,
             request=artifact_interface.LivenessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -94,19 +94,19 @@ class ArtifactClient(Client):
     ) -> artifact_interface.ReadinessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Readiness,
+                method=self.host.async_client.Readiness,
                 request=artifact_interface.ReadinessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Readiness,
+            method=self.host.client.Readiness,
             request=artifact_interface.ReadinessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -120,25 +120,25 @@ class ArtifactClient(Client):
     ) -> artifact_interface.CreateCatalogResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateCatalog,
+                method=self.host.async_client.CreateCatalog,
                 request=artifact_interface.CreateCatalogRequest(
                     namespace_id=namespace_id,
                     name=name,
                     description=description,
                     tags=tags,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateCatalog,
+            method=self.host.client.CreateCatalog,
             request=artifact_interface.CreateCatalogRequest(
                 namespace_id=namespace_id,
                 name=name,
                 description=description,
                 tags=tags,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -149,19 +149,19 @@ class ArtifactClient(Client):
     ) -> artifact_interface.ListCatalogsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListCatalogs,
+                method=self.host.async_client.ListCatalogs,
                 request=artifact_interface.ListCatalogsRequest(
                     namespace_id=namespace_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListCatalogs,
+            method=self.host.client.ListCatalogs,
             request=artifact_interface.ListCatalogsRequest(
                 namespace_id=namespace_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -175,25 +175,25 @@ class ArtifactClient(Client):
     ) -> artifact_interface.UpdateCatalogResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateCatalog,
+                method=self.host.async_client.UpdateCatalog,
                 request=artifact_interface.UpdateCatalogRequest(
                     catalog_id=catalog_id,
                     description=description,
                     tags=tags,
                     namespace_id=namespace_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateCatalog,
+            method=self.host.client.UpdateCatalog,
             request=artifact_interface.UpdateCatalogRequest(
                 catalog_id=catalog_id,
                 description=description,
                 tags=tags,
                 namespace_id=namespace_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -205,21 +205,21 @@ class ArtifactClient(Client):
     ) -> artifact_interface.DeleteCatalogResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteCatalog,
+                method=self.host.async_client.DeleteCatalog,
                 request=artifact_interface.DeleteCatalogRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteCatalog,
+            method=self.host.client.DeleteCatalog,
             request=artifact_interface.DeleteCatalogRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -232,23 +232,23 @@ class ArtifactClient(Client):
     ) -> artifact_interface.UploadCatalogFileResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UploadCatalogFile,
+                method=self.host.async_client.UploadCatalogFile,
                 request=artifact_interface.UploadCatalogFileRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
                     file=file,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UploadCatalogFile,
+            method=self.host.client.UploadCatalogFile,
             request=artifact_interface.UploadCatalogFileRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
                 file=file,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -259,19 +259,19 @@ class ArtifactClient(Client):
     ) -> artifact_interface.DeleteCatalogFileResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteCatalogFile,
+                method=self.host.async_client.DeleteCatalogFile,
                 request=artifact_interface.DeleteCatalogFileRequest(
                     file_uid=file_uid,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteCatalogFile,
+            method=self.host.client.DeleteCatalogFile,
             request=artifact_interface.DeleteCatalogFileRequest(
                 file_uid=file_uid,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -282,19 +282,19 @@ class ArtifactClient(Client):
     ) -> artifact_interface.ProcessCatalogFilesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ProcessCatalogFiles,
+                method=self.host.async_client.ProcessCatalogFiles,
                 request=artifact_interface.ProcessCatalogFilesRequest(
                     file_uids=file_uids,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ProcessCatalogFiles,
+            method=self.host.client.ProcessCatalogFiles,
             request=artifact_interface.ProcessCatalogFilesRequest(
                 file_uids=file_uids,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -309,7 +309,7 @@ class ArtifactClient(Client):
     ) -> artifact_interface.ListCatalogFilesResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListCatalogFiles,
+                method=self.host.async_client.ListCatalogFiles,
                 request=artifact_interface.ListCatalogFilesRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
@@ -317,11 +317,11 @@ class ArtifactClient(Client):
                     page_size=page_size,
                     page_token=page_token,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListCatalogFiles,
+            method=self.host.client.ListCatalogFiles,
             request=artifact_interface.ListCatalogFilesRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
@@ -329,7 +329,7 @@ class ArtifactClient(Client):
                 page_size=page_size,
                 page_token=page_token,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -343,25 +343,25 @@ class ArtifactClient(Client):
     ) -> chunk_interface.ListChunksResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListChunks,
+                method=self.host.async_client.ListChunks,
                 request=chunk_interface.ListChunksRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
                     file_uid=file_uid,
                     chunk_uids=chunk_uids,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListChunks,
+            method=self.host.client.ListChunks,
             request=chunk_interface.ListChunksRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
                 file_uid=file_uid,
                 chunk_uids=chunk_uids,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -374,23 +374,23 @@ class ArtifactClient(Client):
     ) -> chunk_interface.GetSourceFileResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetSourceFile,
+                method=self.host.async_client.GetSourceFile,
                 request=chunk_interface.GetSourceFileRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
                     file_uid=file_uid,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetSourceFile,
+            method=self.host.client.GetSourceFile,
             request=chunk_interface.GetSourceFileRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
                 file_uid=file_uid,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -402,53 +402,53 @@ class ArtifactClient(Client):
     ) -> chunk_interface.UpdateChunkResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateChunk,
+                method=self.host.async_client.UpdateChunk,
                 request=chunk_interface.UpdateChunkRequest(
                     chunk_uid=chunk_uid,
                     retrievable=retrievable,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateChunk,
+            method=self.host.client.UpdateChunk,
             request=chunk_interface.UpdateChunkRequest(
                 chunk_uid=chunk_uid,
                 retrievable=retrievable,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
-    def view_chunks(
+    def similarity_chunks_search(
         self,
         namespace_id: str,
         catalog_id: str,
         text_prompt: str,
         top_k: int,
         async_enabled: bool = False,
-    ) -> artifact_interface.ViewChunksResponse:
+    ) -> chunk_interface.SimilarityChunksSearchResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ViewChunks,
-                request=artifact_interface.ViewChunksRequest(
+                method=self.host.async_client.SimilarityChunksSearch,
+                request=chunk_interface.SimilarityChunksSearchRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
                     text_prompt=text_prompt,
                     top_k=top_k,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ViewChunks,
-            request=artifact_interface.ViewChunksRequest(
+            method=self.host.client.SimilarityChunksSearch,
+            request=chunk_interface.SimilarityChunksSearchRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
                 text_prompt=text_prompt,
                 top_k=top_k,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -462,25 +462,25 @@ class ArtifactClient(Client):
     ) -> qa_interface.QuestionAnsweringResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.QuestionAnswering,
+                method=self.host.async_client.QuestionAnswering,
                 request=qa_interface.QuestionAnsweringRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
                     question=question,
                     top_k=top_k,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.QuestionAnswering,
+            method=self.host.client.QuestionAnswering,
             request=qa_interface.QuestionAnsweringRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
                 question=question,
                 top_k=top_k,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -494,25 +494,25 @@ class ArtifactClient(Client):
     ) -> file_catalog_interface.GetFileCatalogResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetFileCatalog,
+                method=self.host.async_client.GetFileCatalog,
                 request=file_catalog_interface.GetFileCatalogRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
                     file_id=file_id,
                     file_uid=file_uid,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetFileCatalog,
+            method=self.host.client.GetFileCatalog,
             request=file_catalog_interface.GetFileCatalogRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
                 file_id=file_id,
                 file_uid=file_uid,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -528,7 +528,7 @@ class ArtifactClient(Client):
     ) -> artifact_interface.ListCatalogRunsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListCatalogRuns,
+                method=self.host.async_client.ListCatalogRuns,
                 request=artifact_interface.ListCatalogRunsRequest(
                     namespace_id=namespace_id,
                     catalog_id=catalog_id,
@@ -537,11 +537,11 @@ class ArtifactClient(Client):
                     order_by=order_by,
                     page_size=page_size,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListCatalogRuns,
+            method=self.host.client.ListCatalogRuns,
             request=artifact_interface.ListCatalogRunsRequest(
                 namespace_id=namespace_id,
                 catalog_id=catalog_id,
@@ -550,6 +550,6 @@ class ArtifactClient(Client):
                 order_by=order_by,
                 page_size=page_size,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 

@@ -30,8 +30,10 @@ openapi-lint:
 	@# Lint each file under openapiv2.
 	find openapiv2 -type f | xargs -I '{}' rdme openapi:validate {}
 
+GEN_TYPE := $(GEN_TYPE)
+
 gen-python-client:
 	cd tools/gen-python-client && go build -o gen-python-client ./main.go
 	rm log.txt || true
-	./tools/gen-python-client/gen-python-client > log.txt
+	./tools/gen-python-client/gen-python-client $(GEN_TYPE) > log.txt
 	echo "build and gen completed"
