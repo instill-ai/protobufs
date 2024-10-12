@@ -1328,21 +1328,6 @@ paths:
           required: false
           type: integer
           format: int32
-        - name: view
-          description: |-
-            View allows clients to specify the desired run view in the response.
-            The basic view excludes input / output data.
-
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-             - VIEW_RECIPE: Contains the recipe of the resource.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-            - VIEW_RECIPE
         - name: filter
           description: |-
             Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
@@ -1356,6 +1341,11 @@ paths:
             Order by field, with options for ordering by `id`, `create_time` or `update_time`.
             Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
           in: query
+          required: false
+          type: string
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
           required: false
           type: string
       tags:
@@ -1427,6 +1417,83 @@ paths:
             - VIEW_BASIC
             - VIEW_FULL
             - VIEW_RECIPE
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1beta/dashboard/pipelines/runs:
+    get:
+      summary: List Pipeline Runs of a Namespace (user or organization)
+      description: |-
+        Returns a paginated list of runs for 1 or more pipelines. This is mainly used by credit dashboard.
+        The requester can view all the runs that consumed their credits across different pipelines.
+      operationId: PipelinePublicService_ListPipelineRunsByCreditOwner
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaListPipelineRunsByCreditOwnerResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: page
+          description: The page number to retrieve.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageSize
+          description: |-
+            The maximum number of items per page to return. The default and cap values
+            are 10 and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+          in: query
+          required: false
+          type: string
+        - name: orderBy
+          description: |-
+            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+          in: query
+          required: false
+          type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
       tags:
         - Trigger
   /v1beta/namespaces/{namespaceId}/connections:
@@ -3276,6 +3343,32 @@ definitions:
       requested by an admin user.
       For the moment, the pipeline recipes will be UID-based (permalink) instead
       of name-based. This is a temporary solution.
+  v1betaListPipelineRunsByCreditOwnerResponse:
+    type: object
+    properties:
+      pipelineRuns:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1betaPipelineRun'
+        description: The list of pipeline runs.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: The total number of pipeline runs matching the request.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The current page number.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The number of items per page.
+        readOnly: true
+    description: ListPipelineRunsByCreditOwnerResponse is the response message for ListPipelineRunsByCreditOwner.
   v1betaListPipelineRunsResponse:
     type: object
     properties:
@@ -3705,6 +3798,10 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/v1betaDataSpecification'
+      pipelineId:
+        type: string
+        title: The ID of the pipeline
+        readOnly: true
     description: PipelineRun represents a single execution of a pipeline.
   v1betaPipelineView:
     type: string
