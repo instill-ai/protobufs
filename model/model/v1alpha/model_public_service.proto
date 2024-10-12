@@ -721,6 +721,33 @@ service ModelPublicService {
   // Returns a paginated list of model runs.
   rpc ListModelRuns(ListModelRunsRequest) returns (ListModelRunsResponse) {
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/models/{model_id}/runs"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Trigger"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Trigger"
+      parameters: {
+        headers: {
+          name: "Instill-Requester-Uid"
+          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
+          type: STRING
+        }
+      }
+    };
+  }
+
+  // List Model Runs of a Namespace (user or organization)
+  //
+  // Returns a paginated list of runs for 1 or more models. This is mainly used by credit dashboard.
+  // The requester can view all the runs that consumed their credits across different models.
+  rpc ListModelRunsByCreditOwner(ListModelRunsByCreditOwnerRequest) returns (ListModelRunsByCreditOwnerResponse) {
+    option (google.api.http) = {get: "/v1alpha/dashboard/models/runs"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Trigger"
+      parameters: {
+        headers: {
+          name: "Instill-Requester-Uid"
+          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
+          type: STRING
+        }
+      }
+    };
   }
 }

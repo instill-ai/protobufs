@@ -990,19 +990,6 @@ paths:
           required: false
           type: integer
           format: int32
-        - name: view
-          description: |-
-            View allows clients to specify the desired run view in the response.
-            The basic view excludes input / output data.
-
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
         - name: orderBy
           description: |-
             Sort the results by the given expression.
@@ -1021,6 +1008,88 @@ paths:
             The filter can be applied to the following fields:
             - `create_time`
           in: query
+          required: false
+          type: string
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - Trigger
+  /v1alpha/dashboard/models/runs:
+    get:
+      summary: List Model Runs of a Namespace (user or organization)
+      description: |-
+        Returns a paginated list of runs for 1 or more models. This is mainly used by credit dashboard.
+        The requester can view all the runs that consumed their credits across different models.
+      operationId: ModelPublicService_ListModelRunsByCreditOwner
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaListModelRunsByCreditOwnerResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: pageSize
+          description: |-
+            The maximum number of runs to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: page
+          description: Page number.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: orderBy
+          description: |-
+            Sort the results by the given expression.
+            Format: `field [ASC | DESC], where `field` can be:
+            - `create_time`
+            - `update_time`
+            By default, results are sorted by descending creation time.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression.
+            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            The filter can be applied to the following fields:
+            - `create_time`
+          in: query
+          required: false
+          type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
           required: false
           type: string
       tags:
@@ -1458,6 +1527,32 @@ definitions:
         format: int32
         description: Total number of model definitions.
     description: ListModelDefinitionsResponse contains a list of model definitions.
+  v1alphaListModelRunsByCreditOwnerResponse:
+    type: object
+    properties:
+      runs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alphaModelRun'
+        description: A list of runs resources.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of runs.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+        readOnly: true
+    description: ListModelRunsByCreditOwnerResponse is the request message for ListModelRunsByCreditOwner.
   v1alphaListModelRunsResponse:
     type: object
     properties:
@@ -1828,6 +1923,10 @@ definitions:
         items:
           type: object
         description: Model inference outputs.
+        readOnly: true
+      modelId:
+        type: string
+        description: Model ID.
         readOnly: true
     description: ModelRun contains information about a run of models.
   v1alphaModelVersion:

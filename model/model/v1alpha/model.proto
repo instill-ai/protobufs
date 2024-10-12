@@ -1765,6 +1765,11 @@ message ModelRun {
   repeated google.protobuf.Struct task_inputs = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Model inference outputs.
   repeated google.protobuf.Struct task_outputs = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Model ID.
+  optional string model_id = 15 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
 }
 
 // ListModelRunsRequest represents a request to list of model runs.
@@ -1774,9 +1779,9 @@ message ListModelRunsRequest {
   optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
   // Page number.
   optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
-  // View allows clients to specify the desired run view in the response.
+  // Deprecated: View allows clients to specify the desired run view in the response.
   // The basic view excludes input / output data.
-  optional View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  reserved 3;
   // Sort the results by the given expression.
   // Format: `field [ASC | DESC], where `field` can be:
   // - `create_time`
@@ -1795,8 +1800,47 @@ message ListModelRunsRequest {
   optional string filter = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// ListModelRunsByCreditOwnerRequest is the request message for ListModelRunsByCreditOwner.
+message ListModelRunsByCreditOwnerRequest {
+  // The maximum number of runs to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Sort the results by the given expression.
+  // Format: `field [ASC | DESC], where `field` can be:
+  // - `create_time`
+  // - `update_time`
+  // By default, results are sorted by descending creation time.
+  optional string order_by = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  // The filter can be applied to the following fields:
+  // - `create_time`
+  optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Beginning of the time range from which the records will be fetched.
+  // The default value is the beginning of the current day, in UTC.
+  optional google.protobuf.Timestamp start = 5;
+  // End of the time range from which the records will be fetched.
+  // The default value is the current timestamp.
+  optional google.protobuf.Timestamp stop = 6;
+}
+
 // ListModelRunsResponse contains a list of model runs.
 message ListModelRunsResponse {
+  // A list of runs resources.
+  repeated ModelRun runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Total number of runs.
+  int32 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested page size.
+  int32 page_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested page offset.
+  int32 page = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListModelRunsByCreditOwnerResponse is the request message for ListModelRunsByCreditOwner.
+message ListModelRunsByCreditOwnerResponse {
   // A list of runs resources.
   repeated ModelRun runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Total number of runs.
