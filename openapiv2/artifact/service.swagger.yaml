@@ -13,6 +13,8 @@ info:
 tags:
   - name: Catalog
     description: Catalog endpoints
+  - name: Object
+    description: Object endpoints
 host: api.instill.tech
 schemes:
   - https
@@ -550,6 +552,106 @@ paths:
           type: string
       tags:
         - Catalog
+  /v1alpha/namespaces/{namespaceId}/object-upload-url:
+    get:
+      summary: Get Object Upload URL
+      operationId: ArtifactPublicService_GetObjectUploadURL
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetObjectUploadURLResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: id of the namespace
+          in: path
+          required: true
+          type: string
+        - name: objectName
+          description: |-
+            name of the object with length limit to 1024 characters.
+            this is the unique identifier of the object in the namespace
+          in: query
+          required: true
+          type: string
+        - name: expirationTime
+          description: |-
+            expiration time in minutes for the URL with a default value of 1440 minutes (1 day).
+            minimum is 60 minutes (1 hour) and maximum is 20160 minutes (14 days)
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: lastModifiedTime
+          description: last modified time this value is provided by the client when the object url is created
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: objectExpireDays
+          description: |-
+            object live time in days
+            minimum is 1 day. if not set, the object will not be deleted automatically
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Object
+  /v1alpha/namespaces/{namespaceId}/object-download-url:
+    get:
+      summary: Get Object Download URL
+      operationId: ArtifactPublicService_GetObjectDownloadURL
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1alphaGetObjectDownloadURLResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpcStatus'
+      parameters:
+        - name: namespaceId
+          description: id of the namespace
+          in: path
+          required: true
+          type: string
+        - name: objectUid
+          description: |-
+            uid of the object
+            if provided, object name is not required
+            uid has priority over name
+          in: query
+          required: false
+          type: string
+        - name: objectName
+          description: |-
+            object name
+            if provided, object uid is not required
+          in: query
+          required: false
+          type: string
+        - name: expirationTime
+          description: |-
+            expiration time in minutes for url with default value to 1440 minutes (1 day).
+            minimum is 60 minutes (1 hour) and maximum is 20160 minutes (14 days)
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Object
 definitions:
   ArtifactPublicServiceCreateCatalogBody:
     type: object
@@ -1096,6 +1198,36 @@ definitions:
         type: boolean
         title: chunk retrievable
     title: chunk message
+  v1alphaGetObjectDownloadURLResponse:
+    type: object
+    properties:
+      downloadUrl:
+        type: string
+        title: download url
+      urlExpireAt:
+        type: string
+        format: date-time
+        title: expire at in UTC (UTC+0)
+      object:
+        title: object
+        allOf:
+          - $ref: '#/definitions/v1alphaObject'
+    title: GetObjectDownloadURLResponse
+  v1alphaGetObjectUploadURLResponse:
+    type: object
+    properties:
+      uploadUrl:
+        type: string
+        title: upload url
+      urlExpireAt:
+        type: string
+        format: date-time
+        title: expire at in UTC (UTC+0)
+      object:
+        title: object
+        allOf:
+          - $ref: '#/definitions/v1alphaObject'
+    title: GetObjectUploadURLResponse
   v1alphaGetRepositoryTagResponse:
     type: object
     properties:
@@ -1216,6 +1348,51 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListRepositoryTagsResponse contains a list of container image tags.
+  v1alphaObject:
+    type: object
+    properties:
+      uid:
+        type: string
+        title: uid
+      name:
+        type: string
+        title: name of the object
+      size:
+        type: string
+        format: int64
+        title: size in bytes
+      contentType:
+        type: string
+        title: |-
+          content type
+          this is from content-type header of http request
+      namespaceUid:
+        type: string
+        title: namespace uid
+      creator:
+        type: string
+        title: creator
+      isUploaded:
+        type: boolean
+        title: if file is uploaded
+      path:
+        type: string
+        title: object path(optional)
+      objectExpireDays:
+        type: integer
+        format: int32
+        title: |-
+          object live time in days
+          minimum is 1 day. if not set, the object will not be deleted automatically
+      createdTime:
+        type: string
+        format: date-time
+        title: created time
+      updatedTime:
+        type: string
+        format: date-time
+        title: updated time
+    title: Object
   v1alphaProcessCatalogFilesRequest:
     type: object
     properties:
