@@ -1430,12 +1430,12 @@ paths:
       description: |-
         Returns a paginated list of runs for 1 or more pipelines. This is mainly used by credit dashboard.
         The requester can view all the runs that consumed their credits across different pipelines.
-      operationId: PipelinePublicService_ListPipelineRunsByCreditOwner
+      operationId: PipelinePublicService_ListPipelineRunsByRequester
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1betaListPipelineRunsByCreditOwnerResponse'
+            $ref: '#/definitions/v1betaListPipelineRunsByRequesterResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1462,7 +1462,11 @@ paths:
           description: |-
             Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
             expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            The following filters are supported:
+            - `status`
+            - `source`
+
+            **Example**: `status="RUN_STATUS_COMPLETED"`.
           in: query
           required: false
           type: string
@@ -3343,7 +3347,7 @@ definitions:
       requested by an admin user.
       For the moment, the pipeline recipes will be UID-based (permalink) instead
       of name-based. This is a temporary solution.
-  v1betaListPipelineRunsByCreditOwnerResponse:
+  v1betaListPipelineRunsByRequesterResponse:
     type: object
     properties:
       pipelineRuns:
@@ -3368,7 +3372,7 @@ definitions:
         format: int32
         description: The number of items per page.
         readOnly: true
-    description: ListPipelineRunsByCreditOwnerResponse is the response message for ListPipelineRunsByCreditOwner.
+    description: ListPipelineRunsByRequesterResponse is the response message for ListPipelineRunsByRequester.
   v1betaListPipelineRunsResponse:
     type: object
     properties:
@@ -3801,6 +3805,10 @@ definitions:
       pipelineId:
         type: string
         title: The ID of the pipeline
+        readOnly: true
+      requesterId:
+        type: string
+        description: Requester ID. If current viewing requester does not have enough permission, it will return null.
         readOnly: true
     description: PipelineRun represents a single execution of a pipeline.
   v1betaPipelineView:
