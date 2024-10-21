@@ -48,19 +48,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.LivenessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Liveness,
+                method=self.host.async_client.Liveness,
                 request=mgmt_interface.LivenessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Liveness,
+            method=self.host.client.Liveness,
             request=mgmt_interface.LivenessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -71,19 +71,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.ReadinessResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.Readiness,
+                method=self.host.async_client.Readiness,
                 request=mgmt_interface.ReadinessRequest(
                     health_check_request=health_check_request,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.Readiness,
+            method=self.host.client.Readiness,
             request=mgmt_interface.ReadinessRequest(
                 health_check_request=health_check_request,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -93,17 +93,17 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetAuthenticatedUserResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetAuthenticatedUser,
+                method=self.host.async_client.GetAuthenticatedUser,
                 request=mgmt_interface.GetAuthenticatedUserRequest(
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetAuthenticatedUser,
+            method=self.host.client.GetAuthenticatedUser,
             request=mgmt_interface.GetAuthenticatedUserRequest(
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -115,21 +115,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.PatchAuthenticatedUserResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.PatchAuthenticatedUser,
+                method=self.host.async_client.PatchAuthenticatedUser,
                 request=mgmt_interface.PatchAuthenticatedUserRequest(
                     user=user,
                     update_mask=mask,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.PatchAuthenticatedUser,
+            method=self.host.client.PatchAuthenticatedUser,
             request=mgmt_interface.PatchAuthenticatedUserRequest(
                 user=user,
                 update_mask=mask,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -143,25 +143,25 @@ class MgmtClient(Client):
     ) -> mgmt_interface.ListUsersResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListUsers,
+                method=self.host.async_client.ListUsers,
                 request=mgmt_interface.ListUsersRequest(
                     view=mgmt_interface.VIEW_FULL,
                     page_size=total_size,
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListUsers,
+            method=self.host.client.ListUsers,
             request=mgmt_interface.ListUsersRequest(
                 view=mgmt_interface.VIEW_FULL,
                 page_size=total_size,
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -173,21 +173,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetUserResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetUser,
+                method=self.host.async_client.GetUser,
                 request=mgmt_interface.GetUserRequest(
                     view=mgmt_interface.VIEW_FULL,
                     user_id=user_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetUser,
+            method=self.host.client.GetUser,
             request=mgmt_interface.GetUserRequest(
                 view=mgmt_interface.VIEW_FULL,
                 user_id=user_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -198,19 +198,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.CreateOrganizationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateOrganization,
+                method=self.host.async_client.CreateOrganization,
                 request=mgmt_interface.CreateOrganizationRequest(
                     organization=organization,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateOrganization,
+            method=self.host.client.CreateOrganization,
             request=mgmt_interface.CreateOrganizationRequest(
                 organization=organization,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -224,25 +224,25 @@ class MgmtClient(Client):
     ) -> mgmt_interface.ListOrganizationsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListOrganizations,
+                method=self.host.async_client.ListOrganizations,
                 request=mgmt_interface.ListOrganizationsRequest(
                     view=mgmt_interface.VIEW_FULL,
                     page_size=total_size,
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListOrganizations,
+            method=self.host.client.ListOrganizations,
             request=mgmt_interface.ListOrganizationsRequest(
                 view=mgmt_interface.VIEW_FULL,
                 page_size=total_size,
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -254,21 +254,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetOrganizationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOrganization,
+                method=self.host.async_client.GetOrganization,
                 request=mgmt_interface.GetOrganizationRequest(
                     view=mgmt_interface.VIEW_FULL,
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOrganization,
+            method=self.host.client.GetOrganization,
             request=mgmt_interface.GetOrganizationRequest(
                 view=mgmt_interface.VIEW_FULL,
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -281,23 +281,23 @@ class MgmtClient(Client):
     ) -> mgmt_interface.UpdateOrganizationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateOrganization,
+                method=self.host.async_client.UpdateOrganization,
                 request=mgmt_interface.UpdateOrganizationRequest(
                     organization=organization,
                     update_mask=mask,
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateOrganization,
+            method=self.host.client.UpdateOrganization,
             request=mgmt_interface.UpdateOrganizationRequest(
                 organization=organization,
                 update_mask=mask,
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -308,19 +308,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.DeleteOrganizationResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteOrganization,
+                method=self.host.async_client.DeleteOrganization,
                 request=mgmt_interface.DeleteOrganizationRequest(
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteOrganization,
+            method=self.host.client.DeleteOrganization,
             request=mgmt_interface.DeleteOrganizationRequest(
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -331,19 +331,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.ListUserMembershipsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListUserMemberships,
+                method=self.host.async_client.ListUserMemberships,
                 request=mgmt_interface.ListUserMembershipsRequest(
                     user_id=user_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListUserMemberships,
+            method=self.host.client.ListUserMemberships,
             request=mgmt_interface.ListUserMembershipsRequest(
                 user_id=user_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -356,23 +356,23 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetUserMembershipResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetUserMembership,
+                method=self.host.async_client.GetUserMembership,
                 request=mgmt_interface.GetUserMembershipRequest(
                     view=mgmt_interface.VIEW_FULL,
                     user_id=user_id,
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetUserMembership,
+            method=self.host.client.GetUserMembership,
             request=mgmt_interface.GetUserMembershipRequest(
                 view=mgmt_interface.VIEW_FULL,
                 user_id=user_id,
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -386,25 +386,25 @@ class MgmtClient(Client):
     ) -> mgmt_interface.UpdateUserMembershipResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateUserMembership,
+                method=self.host.async_client.UpdateUserMembership,
                 request=mgmt_interface.UpdateUserMembershipRequest(
                     membership=membership,
                     update_mask=mask,
                     user_id=user_id,
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateUserMembership,
+            method=self.host.client.UpdateUserMembership,
             request=mgmt_interface.UpdateUserMembershipRequest(
                 membership=membership,
                 update_mask=mask,
                 user_id=user_id,
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -416,21 +416,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.DeleteUserMembershipResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteUserMembership,
+                method=self.host.async_client.DeleteUserMembership,
                 request=mgmt_interface.DeleteUserMembershipRequest(
                     user_id=user_id,
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteUserMembership,
+            method=self.host.client.DeleteUserMembership,
             request=mgmt_interface.DeleteUserMembershipRequest(
                 user_id=user_id,
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -441,19 +441,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.ListOrganizationMembershipsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListOrganizationMemberships,
+                method=self.host.async_client.ListOrganizationMemberships,
                 request=mgmt_interface.ListOrganizationMembershipsRequest(
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListOrganizationMemberships,
+            method=self.host.client.ListOrganizationMemberships,
             request=mgmt_interface.ListOrganizationMembershipsRequest(
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -466,23 +466,23 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetOrganizationMembershipResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOrganizationMembership,
+                method=self.host.async_client.GetOrganizationMembership,
                 request=mgmt_interface.GetOrganizationMembershipRequest(
                     view=mgmt_interface.VIEW_FULL,
                     organization_id=organization_id,
                     user_id=user_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOrganizationMembership,
+            method=self.host.client.GetOrganizationMembership,
             request=mgmt_interface.GetOrganizationMembershipRequest(
                 view=mgmt_interface.VIEW_FULL,
                 organization_id=organization_id,
                 user_id=user_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -496,25 +496,25 @@ class MgmtClient(Client):
     ) -> mgmt_interface.UpdateOrganizationMembershipResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.UpdateOrganizationMembership,
+                method=self.host.async_client.UpdateOrganizationMembership,
                 request=mgmt_interface.UpdateOrganizationMembershipRequest(
                     membership=membership,
                     update_mask=mask,
                     organization_id=organization_id,
                     user_id=user_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.UpdateOrganizationMembership,
+            method=self.host.client.UpdateOrganizationMembership,
             request=mgmt_interface.UpdateOrganizationMembershipRequest(
                 membership=membership,
                 update_mask=mask,
                 organization_id=organization_id,
                 user_id=user_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -526,21 +526,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.DeleteOrganizationMembershipResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteOrganizationMembership,
+                method=self.host.async_client.DeleteOrganizationMembership,
                 request=mgmt_interface.DeleteOrganizationMembershipRequest(
                     organization_id=organization_id,
                     user_id=user_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteOrganizationMembership,
+            method=self.host.client.DeleteOrganizationMembership,
             request=mgmt_interface.DeleteOrganizationMembershipRequest(
                 organization_id=organization_id,
                 user_id=user_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -550,17 +550,17 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetAuthenticatedUserSubscriptionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetAuthenticatedUserSubscription,
+                method=self.host.async_client.GetAuthenticatedUserSubscription,
                 request=mgmt_interface.GetAuthenticatedUserSubscriptionRequest(
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetAuthenticatedUserSubscription,
+            method=self.host.client.GetAuthenticatedUserSubscription,
             request=mgmt_interface.GetAuthenticatedUserSubscriptionRequest(
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -571,19 +571,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetOrganizationSubscriptionResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetOrganizationSubscription,
+                method=self.host.async_client.GetOrganizationSubscription,
                 request=mgmt_interface.GetOrganizationSubscriptionRequest(
                     organization_id=organization_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetOrganizationSubscription,
+            method=self.host.client.GetOrganizationSubscription,
             request=mgmt_interface.GetOrganizationSubscriptionRequest(
                 organization_id=organization_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -594,19 +594,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.CreateTokenResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CreateToken,
+                method=self.host.async_client.CreateToken,
                 request=mgmt_interface.CreateTokenRequest(
                     token=token,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CreateToken,
+            method=self.host.client.CreateToken,
             request=mgmt_interface.CreateTokenRequest(
                 token=token,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -618,21 +618,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.ListTokensResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListTokens,
+                method=self.host.async_client.ListTokens,
                 request=mgmt_interface.ListTokensRequest(
                     page_size=total_size,
                     page_token=next_page_token,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListTokens,
+            method=self.host.client.ListTokens,
             request=mgmt_interface.ListTokensRequest(
                 page_size=total_size,
                 page_token=next_page_token,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -643,19 +643,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetTokenResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetToken,
+                method=self.host.async_client.GetToken,
                 request=mgmt_interface.GetTokenRequest(
                     token_id=token_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetToken,
+            method=self.host.client.GetToken,
             request=mgmt_interface.GetTokenRequest(
                 token_id=token_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -666,19 +666,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.DeleteTokenResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.DeleteToken,
+                method=self.host.async_client.DeleteToken,
                 request=mgmt_interface.DeleteTokenRequest(
                     token_id=token_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.DeleteToken,
+            method=self.host.client.DeleteToken,
             request=mgmt_interface.DeleteTokenRequest(
                 token_id=token_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -688,17 +688,17 @@ class MgmtClient(Client):
     ) -> mgmt_interface.ValidateTokenResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ValidateToken,
+                method=self.host.async_client.ValidateToken,
                 request=mgmt_interface.ValidateTokenRequest(
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ValidateToken,
+            method=self.host.client.ValidateToken,
             request=mgmt_interface.ValidateTokenRequest(
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -709,19 +709,19 @@ class MgmtClient(Client):
     ) -> mgmt_interface.GetRemainingCreditResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetRemainingCredit,
+                method=self.host.async_client.GetRemainingCredit,
                 request=mgmt_interface.GetRemainingCreditRequest(
                     namespace_id=namespace_id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetRemainingCredit,
+            method=self.host.client.GetRemainingCredit,
             request=mgmt_interface.GetRemainingCreditRequest(
                 namespace_id=namespace_id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -732,19 +732,48 @@ class MgmtClient(Client):
     ) -> mgmt_interface.CheckNamespaceResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.CheckNamespace,
+                method=self.host.async_client.CheckNamespace,
                 request=mgmt_interface.CheckNamespaceRequest(
                     id=id,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.CheckNamespace,
+            method=self.host.client.CheckNamespace,
             request=mgmt_interface.CheckNamespaceRequest(
                 id=id,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
+        ).send_sync()
+
+    @grpc_handler
+    def list_pipeline_trigger_records(
+        self,
+        total_size: int = 10,
+        next_page_token: str = "",
+        filter_str: str = "",
+        async_enabled: bool = False,
+    ) -> metric_interface.ListPipelineTriggerRecordsResponse:
+        if async_enabled:
+            return RequestFactory(
+                method=self.host.async_client.ListPipelineTriggerRecords,
+                request=metric_interface.ListPipelineTriggerRecordsRequest(
+                    page_size=total_size,
+                    page_token=next_page_token,
+                    filter=filter_str,
+                ),
+                metadata=self.host.metadata + self.metadata,
+            ).send_async()
+
+        return RequestFactory(
+            method=self.host.client.ListPipelineTriggerRecords,
+            request=metric_interface.ListPipelineTriggerRecordsRequest(
+                page_size=total_size,
+                page_token=next_page_token,
+                filter=filter_str,
+            ),
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -754,26 +783,55 @@ class MgmtClient(Client):
         start: timestamp_pb2.Timestamp,
         stop: timestamp_pb2.Timestamp,
         async_enabled: bool = False,
-    ) -> mgmt_interface.GetPipelineTriggerCountResponse:
+    ) -> metric_interface.GetPipelineTriggerCountResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.GetPipelineTriggerCount,
-                request=mgmt_interface.GetPipelineTriggerCountRequest(
+                method=self.host.async_client.GetPipelineTriggerCount,
+                request=metric_interface.GetPipelineTriggerCountRequest(
                     namespace_id=namespace_id,
                     start=start,
                     stop=stop,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.GetPipelineTriggerCount,
-            request=mgmt_interface.GetPipelineTriggerCountRequest(
+            method=self.host.client.GetPipelineTriggerCount,
+            request=metric_interface.GetPipelineTriggerCountRequest(
                 namespace_id=namespace_id,
                 start=start,
                 stop=stop,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
+        ).send_sync()
+
+    @grpc_handler
+    def get_model_trigger_count(
+        self,
+        requester_id: str,
+        start: timestamp_pb2.Timestamp,
+        stop: timestamp_pb2.Timestamp,
+        async_enabled: bool = False,
+    ) -> metric_interface.GetModelTriggerCountResponse:
+        if async_enabled:
+            return RequestFactory(
+                method=self.host.async_client.GetModelTriggerCount,
+                request=metric_interface.GetModelTriggerCountRequest(
+                    requester_id=requester_id,
+                    start=start,
+                    stop=stop,
+                ),
+                metadata=self.host.metadata + self.metadata,
+            ).send_async()
+
+        return RequestFactory(
+            method=self.host.client.GetModelTriggerCount,
+            request=metric_interface.GetModelTriggerCountRequest(
+                requester_id=requester_id,
+                start=start,
+                stop=stop,
+            ),
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -786,23 +844,23 @@ class MgmtClient(Client):
     ) -> metric_interface.ListPipelineTriggerTableRecordsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListPipelineTriggerTableRecords,
+                method=self.host.async_client.ListPipelineTriggerTableRecords,
                 request=metric_interface.ListPipelineTriggerTableRecordsRequest(
                     page_size=total_size,
                     page_token=next_page_token,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListPipelineTriggerTableRecords,
+            method=self.host.client.ListPipelineTriggerTableRecords,
             request=metric_interface.ListPipelineTriggerTableRecordsRequest(
                 page_size=total_size,
                 page_token=next_page_token,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -814,21 +872,53 @@ class MgmtClient(Client):
     ) -> metric_interface.ListPipelineTriggerChartRecordsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListPipelineTriggerChartRecords,
+                method=self.host.async_client.ListPipelineTriggerChartRecords,
                 request=metric_interface.ListPipelineTriggerChartRecordsRequest(
                     aggregation_window=aggregation_window,
                     filter=filter_str,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListPipelineTriggerChartRecords,
+            method=self.host.client.ListPipelineTriggerChartRecords,
             request=metric_interface.ListPipelineTriggerChartRecordsRequest(
                 aggregation_window=aggregation_window,
                 filter=filter_str,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
+        ).send_sync()
+
+    @grpc_handler
+    def list_model_trigger_chart_records(
+        self,
+        requester_id: str,
+        aggregation_window: str,
+        start: timestamp_pb2.Timestamp,
+        stop: timestamp_pb2.Timestamp,
+        async_enabled: bool = False,
+    ) -> metric_interface.ListModelTriggerChartRecordsResponse:
+        if async_enabled:
+            return RequestFactory(
+                method=self.host.async_client.ListModelTriggerChartRecords,
+                request=metric_interface.ListModelTriggerChartRecordsRequest(
+                    requester_id=requester_id,
+                    aggregation_window=aggregation_window,
+                    start=start,
+                    stop=stop,
+                ),
+                metadata=self.host.metadata + self.metadata,
+            ).send_async()
+
+        return RequestFactory(
+            method=self.host.client.ListModelTriggerChartRecords,
+            request=metric_interface.ListModelTriggerChartRecordsRequest(
+                requester_id=requester_id,
+                aggregation_window=aggregation_window,
+                start=start,
+                stop=stop,
+            ),
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -842,25 +932,25 @@ class MgmtClient(Client):
     ) -> metric_interface.ListCreditConsumptionChartRecordsResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.ListCreditConsumptionChartRecords,
+                method=self.host.async_client.ListCreditConsumptionChartRecords,
                 request=metric_interface.ListCreditConsumptionChartRecordsRequest(
                     namespace_id=namespace_id,
                     aggregation_window=aggregation_window,
                     start=start,
                     stop=stop,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.ListCreditConsumptionChartRecords,
+            method=self.host.client.ListCreditConsumptionChartRecords,
             request=metric_interface.ListCreditConsumptionChartRecordsRequest(
                 namespace_id=namespace_id,
                 aggregation_window=aggregation_window,
                 start=start,
                 stop=stop,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -872,21 +962,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.AuthTokenIssuerResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.AuthTokenIssuer,
+                method=self.host.async_client.AuthTokenIssuer,
                 request=mgmt_interface.AuthTokenIssuerRequest(
                     username=username,
                     password=password,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.AuthTokenIssuer,
+            method=self.host.client.AuthTokenIssuer,
             request=mgmt_interface.AuthTokenIssuerRequest(
                 username=username,
                 password=password,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -898,21 +988,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.AuthLoginResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.AuthLogin,
+                method=self.host.async_client.AuthLogin,
                 request=mgmt_interface.AuthLoginRequest(
                     username=username,
                     password=password,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.AuthLogin,
+            method=self.host.client.AuthLogin,
             request=mgmt_interface.AuthLoginRequest(
                 username=username,
                 password=password,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -922,17 +1012,17 @@ class MgmtClient(Client):
     ) -> mgmt_interface.AuthLogoutResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.AuthLogout,
+                method=self.host.async_client.AuthLogout,
                 request=mgmt_interface.AuthLogoutRequest(
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.AuthLogout,
+            method=self.host.client.AuthLogout,
             request=mgmt_interface.AuthLogoutRequest(
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -944,21 +1034,21 @@ class MgmtClient(Client):
     ) -> mgmt_interface.AuthChangePasswordResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.AuthChangePassword,
+                method=self.host.async_client.AuthChangePassword,
                 request=mgmt_interface.AuthChangePasswordRequest(
                     old_password=old_password,
                     new_password=new_password,
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.AuthChangePassword,
+            method=self.host.client.AuthChangePassword,
             request=mgmt_interface.AuthChangePasswordRequest(
                 old_password=old_password,
                 new_password=new_password,
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 
     @grpc_handler
@@ -968,16 +1058,16 @@ class MgmtClient(Client):
     ) -> mgmt_interface.AuthValidateAccessTokenResponse:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.AuthValidateAccessToken,
+                method=self.host.async_client.AuthValidateAccessToken,
                 request=mgmt_interface.AuthValidateAccessTokenRequest(
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.AuthValidateAccessToken,
+            method=self.host.client.AuthValidateAccessToken,
             request=mgmt_interface.AuthValidateAccessTokenRequest(
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 

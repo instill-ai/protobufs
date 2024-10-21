@@ -1,18 +1,20 @@
-from typing import Dict
+# pylint: disable=no-member,wrong-import-position,too-many-lines,no-name-in-module
+from datetime import datetime
+from typing import Callable, List, Optional
 
-from google.protobuf import field_mask_pb2
+from google.protobuf import field_mask_pb2, timestamp_pb2
+from google.protobuf.struct_pb2 import Struct
 
 # common
 import instill.protogen.common.healthcheck.v1beta.healthcheck_pb2 as healthcheck
+import instill.protogen.common.task.v1alpha.task_pb2 as task_interface
 import instill.protogen.model.model.v1alpha.model_definition_pb2 as model_definition_interface
 
 # model
 import instill.protogen.model.model.v1alpha.model_pb2 as model_interface
 import instill.protogen.model.model.v1alpha.model_public_service_pb2_grpc as model_service
 from instill.clients.base import Client, RequestFactory
-from instill.clients.constant import DEFAULT_INSTANCE
 from instill.clients.instance import InstillInstance
-from instill.configuration import global_config
 from instill.utils.error_handler import grpc_handler
 
 
@@ -27,18 +29,18 @@ class ModelClient(Client):
     ) -> model_interface.{{ .OutputTypeName }}:
         if async_enabled:
             return RequestFactory(
-                method=self.hosts[self.instance].async_client.{{ .Method }},
+                method=self.host.async_client.{{ .Method }},
                 request=model_interface.{{ .InputTypeName }}({{ range .InputTypes }}
                     {{ .Name }}={{ .Name | customizeParam | safeHTML }},{{ end }}
                 ),
-                metadata=self.hosts[self.instance].metadata,
+                metadata=self.host.metadata + self.metadata,
             ).send_async()
 
         return RequestFactory(
-            method=self.hosts[self.instance].client.{{ .Method }},
+            method=self.host.client.{{ .Method }},
             request=model_interface.{{ .InputTypeName }}({{ range .InputTypes }}
                 {{ .Name }}={{ .Name | customizeParam | safeHTML }},{{ end }}
             ),
-            metadata=self.hosts[self.instance].metadata,
+            metadata=self.host.metadata + self.metadata,
         ).send_sync()
 {{ end }}

@@ -1,21 +1,22 @@
 # pylint: disable=no-member,wrong-import-position,too-many-lines,no-name-in-module
-from typing import Dict
+from datetime import datetime
+from typing import Callable, List, Optional
+
+# common
+from google.protobuf import timestamp_pb2
 
 # artifact
 import instill.protogen.artifact.artifact.v1alpha.artifact_pb2 as artifact_interface
-import instill.protogen.artifact.artifact.v1alpha.file_catalog_pb2 as file_catalog_interface
-import instill.protogen.artifact.artifact.v1alpha.qa_pb2 as qa_interface
-import instill.protogen.app.app.v1alpha as app_interface
 import instill.protogen.artifact.artifact.v1alpha.artifact_public_service_pb2_grpc as artifact_service
 import instill.protogen.artifact.artifact.v1alpha.chunk_pb2 as chunk_interface
-
-# common
+import instill.protogen.artifact.artifact.v1alpha.file_catalog_pb2 as file_catalog_interface
+import instill.protogen.artifact.artifact.v1alpha.object_pb2 as object_interface
+import instill.protogen.artifact.artifact.v1alpha.qa_pb2 as qa_interface
 import instill.protogen.common.healthcheck.v1beta.healthcheck_pb2 as healthcheck
 from instill.clients.base import Client, RequestFactory
-from instill.clients.constant import DEFAULT_INSTANCE
 from instill.clients.instance import InstillInstance
-from instill.configuration import global_config
 from instill.utils.error_handler import grpc_handler
+from instill.utils.process_file import process_file
 
 
 class ArtifactClient(Client):
@@ -549,6 +550,70 @@ class ArtifactClient(Client):
                 filter=files_filter,
                 order_by=order_by,
                 page_size=page_size,
+            ),
+            metadata=self.host.metadata + self.metadata,
+        ).send_sync()
+
+    @grpc_handler
+    def get_object_upload_url(
+        self,
+        namespace_id: str,
+        object_name: str,
+        url_expire_days: int,
+        last_modified_time: datetime,
+        object_expire_days: int,
+        async_enabled: bool = False,
+    ) -> object_interface.GetObjectUploadURLResponse:
+        if async_enabled:
+            return RequestFactory(
+                method=self.host.async_client.GetObjectUploadURL,
+                request=object_interface.GetObjectUploadURLRequest(
+                    namespace_id=namespace_id,
+                    object_name=object_name,
+                    url_expire_days=url_expire_days,
+                    last_modified_time=last_modified_time,
+                    object_expire_days=object_expire_days,
+                ),
+                metadata=self.host.metadata + self.metadata,
+            ).send_async()
+
+        return RequestFactory(
+            method=self.host.client.GetObjectUploadURL,
+            request=object_interface.GetObjectUploadURLRequest(
+                namespace_id=namespace_id,
+                object_name=object_name,
+                url_expire_days=url_expire_days,
+                last_modified_time=last_modified_time,
+                object_expire_days=object_expire_days,
+            ),
+            metadata=self.host.metadata + self.metadata,
+        ).send_sync()
+
+    @grpc_handler
+    def get_object_download_url(
+        self,
+        namespace_id: str,
+        object_uid: str,
+        url_expire_days: int,
+        async_enabled: bool = False,
+    ) -> object_interface.GetObjectDownloadURLResponse:
+        if async_enabled:
+            return RequestFactory(
+                method=self.host.async_client.GetObjectDownloadURL,
+                request=object_interface.GetObjectDownloadURLRequest(
+                    namespace_id=namespace_id,
+                    object_uid=object_uid,
+                    url_expire_days=url_expire_days,
+                ),
+                metadata=self.host.metadata + self.metadata,
+            ).send_async()
+
+        return RequestFactory(
+            method=self.host.client.GetObjectDownloadURL,
+            request=object_interface.GetObjectDownloadURLRequest(
+                namespace_id=namespace_id,
+                object_uid=object_uid,
+                url_expire_days=url_expire_days,
             ),
             metadata=self.host.metadata + self.metadata,
         ).send_sync()

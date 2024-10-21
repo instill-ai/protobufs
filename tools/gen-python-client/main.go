@@ -158,6 +158,9 @@ var generatorConfigMap = map[string]generatorConfig{
 			"ListPipelineTriggerChartRecords":   "metric_interface",
 			"ListCreditConsumptionChartRecords": "metric_interface",
 		},
+		protoFileInterfaceMap: map[string]string{
+			"core/mgmt/v1beta/metric.proto": "metric_interface",
+		},
 		defaultInterfaceName: "mgmt_interface",
 		protoDir:             "./core/mgmt/v1beta/",
 		tmplPath:             "mgmt.tmpl",
@@ -202,8 +205,12 @@ var generatorConfigMap = map[string]generatorConfig{
 		},
 		defaultInterfaceName: "artifact_interface",
 		protoFileInterfaceMap: map[string]string{
-			"app/app/v1alpha/app.proto":          "app_interface",
-			"app/app/v1alpha/conversation.proto": "conversation_interface",
+			"app/app/v1alpha/app.proto":                    "app_interface",
+			"app/app/v1alpha/conversation.proto":           "conversation_interface",
+			"artifact/artifact/v1alpha/object.proto":       "object_interface",
+			"artifact/artifact/v1alpha/chunk.proto":        "chunk_interface",
+			"artifact/artifact/v1alpha/qa.proto":           "qa_interface",
+			"artifact/artifact/v1alpha/file_catalog.proto": "file_catalog_interface",
 		},
 		protoDir: "./artifact/artifact/v1alpha/",
 		// protoDir: "./app/app/v1alpha/",
@@ -463,6 +470,7 @@ var typeMap = map[string]string{
 	"TYPE_UINT32": "int",
 	"TYPE_STRING": "str",
 	"TYPE_BOOL":   "bool",
+	"Timestamp":   "datetime",
 }
 
 func repeatedType(isRepeated bool, fieldType string) string {
