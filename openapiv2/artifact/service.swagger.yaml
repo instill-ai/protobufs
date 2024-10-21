@@ -581,16 +581,18 @@ paths:
           in: query
           required: true
           type: string
-        - name: expirationTime
+        - name: urlExpireDays
           description: |-
-            expiration time in minutes for the URL with a default value of 1440 minutes (1 day).
-            minimum is 60 minutes (1 hour) and maximum is 20160 minutes (14 days)
+            Expiration time in days for the URL.
+            Minimum is 1 day and maximum is 7 days. If not set or set to 0, defaults to 1 day.
           in: query
           required: false
           type: integer
           format: int32
         - name: lastModifiedTime
-          description: last modified time this value is provided by the client when the object url is created
+          description: |-
+            last modified time this value is provided by the client when the object url is created
+            it must be in RFC3339 formatted date-time string
           in: query
           required: false
           type: string
@@ -598,7 +600,7 @@ paths:
         - name: objectExpireDays
           description: |-
             object live time in days
-            minimum is 1 day. if not set, the object will not be deleted automatically
+            minimum is 1 day. if set to 0, the object will not be deleted automatically
           in: query
           required: false
           type: integer
@@ -642,10 +644,10 @@ paths:
           in: query
           required: false
           type: string
-        - name: expirationTime
+        - name: urlExpireDays
           description: |-
-            expiration time in minutes for url with default value to 1440 minutes (1 day).
-            minimum is 60 minutes (1 hour) and maximum is 20160 minutes (14 days)
+            Expiration time in days for the URL.
+            Minimum is 1 day and maximum is 7 days. If not set or set to 0, defaults to 1 day.
           in: query
           required: false
           type: integer
@@ -1365,7 +1367,7 @@ definitions:
         type: string
         title: |-
           content type
-          this is from content-type header of http request
+          this is mime type from content-type header of http request or from file extension
       namespaceUid:
         type: string
         title: namespace uid
@@ -1383,7 +1385,11 @@ definitions:
         format: int32
         title: |-
           object live time in days
-          minimum is 1 day. if not set, the object will not be deleted automatically
+          if set to 0, the object will not be deleted automatically
+      lastModifiedTime:
+        type: string
+        format: date-time
+        title: last modified time
       createdTime:
         type: string
         format: date-time

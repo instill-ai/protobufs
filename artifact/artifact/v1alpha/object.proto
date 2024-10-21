@@ -16,7 +16,7 @@ message Object {
   // size in bytes
   int64 size = 3;
   // content type
-  // this is from content-type header of http request
+  // this is mime type from content-type header of http request or from file extension
   string content_type = 4;
   // namespace uid
   string namespace_uid = 6;
@@ -27,12 +27,14 @@ message Object {
   // object path(optional)
   optional string path = 9;
   // object live time in days
-  // minimum is 1 day. if not set, the object will not be deleted automatically
+  // if set to 0, the object will not be deleted automatically
   int32 object_expire_days = 10;
+  // last modified time
+  optional google.protobuf.Timestamp last_modified_time = 11;
   // created time
-  google.protobuf.Timestamp created_time = 11;
+  google.protobuf.Timestamp created_time = 12;
   // updated time
-  google.protobuf.Timestamp updated_time = 12;
+  google.protobuf.Timestamp updated_time = 13;
 }
 
 // GetObjectUploadURLRequest
@@ -42,13 +44,14 @@ message GetObjectUploadURLRequest {
   // name of the object with length limit to 1024 characters.
   // this is the unique identifier of the object in the namespace
   string object_name = 2 [(google.api.field_behavior) = REQUIRED];
-  // expiration time in minutes for the URL with a default value of 1440 minutes (1 day).
-  // minimum is 60 minutes (1 hour) and maximum is 20160 minutes (14 days)
-  int32 expiration_time = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Expiration time in days for the URL.
+  // Minimum is 1 day and maximum is 7 days. If not set or set to 0, defaults to 1 day.
+  int32 url_expire_days = 3 [(google.api.field_behavior) = OPTIONAL];
   // last modified time this value is provided by the client when the object url is created
+  // it must be in RFC3339 formatted date-time string
   google.protobuf.Timestamp last_modified_time = 4 [(google.api.field_behavior) = OPTIONAL];
   // object live time in days
-  // minimum is 1 day. if not set, the object will not be deleted automatically
+  // minimum is 1 day. if set to 0, the object will not be deleted automatically
   int32 object_expire_days = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
@@ -73,9 +76,9 @@ message GetObjectDownloadURLRequest {
   // object name
   // if provided, object uid is not required
   string object_name = 3 [(google.api.field_behavior) = OPTIONAL];
-  // expiration time in minutes for url with default value to 1440 minutes (1 day).
-  // minimum is 60 minutes (1 hour) and maximum is 20160 minutes (14 days)
-  int32 expiration_time = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Expiration time in days for the URL.
+  // Minimum is 1 day and maximum is 7 days. If not set or set to 0, defaults to 1 day.
+  int32 url_expire_days = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetObjectDownloadURLResponse
