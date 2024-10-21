@@ -1021,14 +1021,14 @@ paths:
     get:
       summary: List Model Runs of a Namespace (user or organization)
       description: |-
-        Returns a paginated list of runs for 1 or more models. This is mainly used by credit dashboard.
-        The requester can view all the runs that consumed their credits across different models.
-      operationId: ModelPublicService_ListModelRunsByCreditOwner
+        Returns a paginated list of runs for 1 or more models. This is mainly used by dashboard.
+        The requester can view all the runs by the requester across different models.
+      operationId: ModelPublicService_ListModelRunsByRequester
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/v1alphaListModelRunsByCreditOwnerResponse'
+            $ref: '#/definitions/v1alphaListModelRunsByRequesterResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1065,9 +1065,10 @@ paths:
           description: |-
             Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
             expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            - Example: `status="RUN_STATUS_COMPLETED"`.
             The filter can be applied to the following fields:
-            - `create_time`
+            - `status`
+            - `source`
           in: query
           required: false
           type: string
@@ -1087,6 +1088,11 @@ paths:
           required: false
           type: string
           format: date-time
+        - name: requesterId
+          description: Requester ID.
+          in: query
+          required: true
+          type: string
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -1527,7 +1533,7 @@ definitions:
         format: int32
         description: Total number of model definitions.
     description: ListModelDefinitionsResponse contains a list of model definitions.
-  v1alphaListModelRunsByCreditOwnerResponse:
+  v1alphaListModelRunsByRequesterResponse:
     type: object
     properties:
       runs:
@@ -1552,7 +1558,7 @@ definitions:
         format: int32
         description: The requested page offset.
         readOnly: true
-    description: ListModelRunsByCreditOwnerResponse is the request message for ListModelRunsByCreditOwner.
+    description: ListModelRunsByRequesterResponse is the request message for ListModelRunsByRequester.
   v1alphaListModelRunsResponse:
     type: object
     properties:
@@ -1927,6 +1933,12 @@ definitions:
       modelId:
         type: string
         description: Model ID.
+        readOnly: true
+      requesterId:
+        type: string
+        description: |-
+          Requester ID. This field might be empty if the model run belongs to a
+          deleted namespace.
         readOnly: true
     description: ModelRun contains information about a run of models.
   v1alphaModelVersion:

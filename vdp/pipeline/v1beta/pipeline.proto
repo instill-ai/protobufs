@@ -1880,8 +1880,8 @@ message ListPipelineRunsRequest {
   optional string order_by = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ListPipelineRunsByCreditOwnerRequest is the request message for ListPipelineRunsByCreditOwner.
-message ListPipelineRunsByCreditOwnerRequest {
+// ListPipelineRunsByRequesterRequest is the request message for ListPipelineRunsByRequester.
+message ListPipelineRunsByRequesterRequest {
   // The page number to retrieve.
   int32 page = 1 [(google.api.field_behavior) = OPTIONAL];
 
@@ -1891,7 +1891,11 @@ message ListPipelineRunsByCreditOwnerRequest {
 
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
   // expression.
-  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  // The following filters are supported:
+  // - `status`
+  // - `source`
+  //
+  // **Example**: `status="RUN_STATUS_COMPLETED"`.
   optional string filter = 3 [(google.api.field_behavior) = OPTIONAL];
   // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
   // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
@@ -1902,6 +1906,8 @@ message ListPipelineRunsByCreditOwnerRequest {
   // End of the time range from which the records will be fetched.
   // The default value is the current timestamp.
   optional google.protobuf.Timestamp stop = 6;
+  // Requester ID.
+  string requester_id = 7 [(google.api.field_behavior) = REQUIRED];
 }
 
 // ListPipelineRunsResponse is the response message for ListPipelineRuns.
@@ -1919,8 +1925,8 @@ message ListPipelineRunsResponse {
   int32 page_size = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListPipelineRunsByCreditOwnerResponse is the response message for ListPipelineRunsByCreditOwner.
-message ListPipelineRunsByCreditOwnerResponse {
+// ListPipelineRunsByRequesterResponse is the response message for ListPipelineRunsByRequester.
+message ListPipelineRunsByRequesterResponse {
   // The list of pipeline runs.
   repeated PipelineRun pipeline_runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -2065,6 +2071,10 @@ message PipelineRun {
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
+
+  // Requester ID. This field might be empty if the pipeline run belongs to a
+  // deleted namespace.
+  string requester_id = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ComponentRun represents the execution details of a single component within a pipeline run.
