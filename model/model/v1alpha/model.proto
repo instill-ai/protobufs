@@ -1770,6 +1770,9 @@ message ModelRun {
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
+  // Requester ID. This field might be empty if the model run belongs to a
+  // deleted namespace.
+  string requester_id = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListModelRunsRequest represents a request to list of model runs.
@@ -1800,8 +1803,8 @@ message ListModelRunsRequest {
   optional string filter = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ListModelRunsByCreditOwnerRequest is the request message for ListModelRunsByCreditOwner.
-message ListModelRunsByCreditOwnerRequest {
+// ListModelRunsByRequesterRequest is the request message for ListModelRunsByRequester.
+message ListModelRunsByRequesterRequest {
   // The maximum number of runs to return. The default and cap values are 10
   // and 100, respectively.
   optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
@@ -1815,9 +1818,10 @@ message ListModelRunsByCreditOwnerRequest {
   optional string order_by = 3 [(google.api.field_behavior) = OPTIONAL];
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
   // expression.
-  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  // - Example: `status="RUN_STATUS_COMPLETED"`.
   // The filter can be applied to the following fields:
-  // - `create_time`
+  // - `status`
+  // - `source`
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
   // Beginning of the time range from which the records will be fetched.
   // The default value is the beginning of the current day, in UTC.
@@ -1825,6 +1829,8 @@ message ListModelRunsByCreditOwnerRequest {
   // End of the time range from which the records will be fetched.
   // The default value is the current timestamp.
   optional google.protobuf.Timestamp stop = 6;
+  // Requester ID.
+  string requester_id = 7 [(google.api.field_behavior) = REQUIRED];
 }
 
 // ListModelRunsResponse contains a list of model runs.
@@ -1839,8 +1845,8 @@ message ListModelRunsResponse {
   int32 page = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListModelRunsByCreditOwnerResponse is the request message for ListModelRunsByCreditOwner.
-message ListModelRunsByCreditOwnerResponse {
+// ListModelRunsByRequesterResponse is the request message for ListModelRunsByRequester.
+message ListModelRunsByRequesterResponse {
   // A list of runs resources.
   repeated ModelRun runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Total number of runs.
