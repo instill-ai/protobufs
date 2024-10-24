@@ -11,6 +11,7 @@ SED_IN_PLACE := sed -i
 ifeq (${OS_NAME}, darwin)
 	SED_IN_PLACE = gsed -i
 endif
+.PHONY: openapi
 openapi:
 	@# ====
 	@# Generate one OpenAPI file per service. These files are uploaded to
@@ -24,7 +25,7 @@ openapi:
 	@# Generate an OpenAPI definition for each directory at the root that
 	@# contains at least one public proto file.
 	@echo '-> Generate service OpenAPI specs'
-	@find . -name '*public*proto' | cut -d'/' -f 2-2 | sort | uniq | xargs -I '{}' buf generate --template buf.gen.openapi.yaml --path {} --path common -o openapiv2/{}
+	@find . -name '*public*proto' | cut -d'/' -f 2-2 | sort | uniq | xargs -I '{}' buf generate --template buf.gen.openapi.yaml --path {} --path common -o openapi/v2/{}
 
 	@# Clean up generated OpenAPI config files
 	@find . -name 'openapi.proto' -delete
@@ -35,9 +36,9 @@ openapi:
 	@# the generated code, and they require a merged OpenAPI spec.
 	@# ====
 	@echo '-> Generate gateway OpenAPI specs'
-	@buf generate --template buf.gen.openapi.yaml --output openapiv2
-	@echo \# This file is auto-generated. DO NOT EDIT. | cat - openapiv2/service.swagger.yaml > openapiv2/service.swagger.tmp.yaml
-	@mv openapiv2/service.swagger.tmp.yaml openapiv2/service.swagger.yaml
+	@buf generate --template buf.gen.openapi.yaml --output openapi/v2
+	@echo \# This file is auto-generated. DO NOT EDIT. | cat - openapi/v2/service.swagger.yaml > openapi/v2/service.swagger.tmp.yaml
+	@mv openapi/v2/service.swagger.tmp.yaml openapi/v2/service.swagger.yaml
 
 	@# ====
 	@# Lint generated files.
@@ -48,9 +49,10 @@ openapi:
 	@# used before importing the definitions and exposing them in a public
 	@# server.
 	@#
-	@# For each file in openapiv2, remove empty enum declarations.
+	@# For each file in openapi/v2, remove empty enum declarations.
 	@echo '-> Remove empty enum declarations'
-	@find openapiv2 -type f | xargs -I '{}' ${SED_IN_PLACE} '/^[[:space:]]*enum: \[\]/,+0d' {}
+	@find openapi/v2 -type f | xargs -I '{}' ${SED_IN_PLACE} '/^[[:space:]]*enum: \[\]/,+0d' {}
+.PHONY: openapi-lint
 openapi-lint:
-	@# Lint each file under openapiv2.
-	@find openapiv2 -type f | xargs -I '{}' rdme openapi:validate {}
+	@# Lint each file under openapi/v2.
+	@find openapi/v2 -type f | xargs -I '{}' rdme openapi:validate {}
