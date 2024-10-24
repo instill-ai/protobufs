@@ -11,21 +11,48 @@ SED_IN_PLACE := sed -i
 ifeq (${OS_NAME}, darwin)
 	SED_IN_PLACE = gsed -i
 endif
+.PHONY: openapi
 openapi:
+	@# ====
+	@# Generate one OpenAPI file per service. These files are uploaded to
+	@# readme.com and each file represents a category.
+	@# ====
+
 	@# Inject common API configuration into each OpenAPI proto template.
-	./scripts/generate-openapi-doc-info.sh
+	@echo '-> Generate common configuration from templates'
+	@./scripts/generate-openapi-doc-info.sh
 
 	@# Generate an OpenAPI definition for each directory at the root that
 	@# contains at least one public proto file.
-	find . -name '*public*proto' | cut -d'/' -f 2-2 | sort | uniq | xargs -I '{}' buf generate --template buf.gen.openapi.yaml --path {} --path common -o openapiv2/{}
+	@echo '-> Generate service OpenAPI specs'
+	@find . -name '*public*proto' | cut -d'/' -f 2-2 | sort | uniq | xargs -I '{}' buf generate --template buf.gen.openapi.yaml --path {} --path common -o openapi/v2/{}
+
+	@# Clean up generated OpenAPI config files
+	@find . -name 'openapi.proto' -delete
+
+	@# ====
+	@# Generate a common OpenAPI file, representing the interface at the
+	@# gateway. Some SDKs like C# use the OpenAPI spec as the source for
+	@# the generated code, and they require a merged OpenAPI spec.
+	@# ====
+	@echo '-> Generate gateway OpenAPI specs'
+	@buf generate --template buf.gen.openapi.yaml --output openapi/v2
+	@echo \# This file is auto-generated. DO NOT EDIT. | cat - openapi/v2/service.swagger.yaml > openapi/v2/service.swagger.tmp.yaml
+	@mv openapi/v2/service.swagger.tmp.yaml openapi/v2/service.swagger.yaml
+
+	@# ====
+	@# Lint generated files.
+	@# ====
 
 	@# grpc-ecosystem/openapiv2:v2.19.0 will define protobufNullValue as an
 	@# empty enum, which isn't allowed by the linter we use. This linter is
 	@# used before importing the definitions and exposing them in a public
 	@# server.
 	@#
-	@# For each file in openapiv2, remove empty enum declarations.
-	find openapiv2 -type f | xargs -I '{}' ${SED_IN_PLACE} '/^[[:space:]]*enum: \[\]/,+0d' {}
+	@# For each file in openapi/v2, remove empty enum declarations.
+	@echo '-> Remove empty enum declarations'
+	@find openapi/v2 -type f | xargs -I '{}' ${SED_IN_PLACE} '/^[[:space:]]*enum: \[\]/,+0d' {}
+.PHONY: openapi-lint
 openapi-lint:
-	@# Lint each file under openapiv2.
-	find openapiv2 -type f | xargs -I '{}' rdme openapi:validate {}
+	@# Lint each file under openapi/v2.
+	@find openapi/v2 -type f | xargs -I '{}' rdme openapi:validate {}
