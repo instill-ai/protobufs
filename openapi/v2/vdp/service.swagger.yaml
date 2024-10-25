@@ -1552,6 +1552,38 @@ paths:
           type: string
       tags:
         - Integration
+    post:
+      summary: Create a connection
+      description: Creates a connection under the ownership of a namespace.
+      operationId: PipelinePublicService_CreateNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/v1betaCreateNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/googlerpcStatus'
+      parameters:
+        - name: namespaceId
+          description: ID of the namespace that owns the connection.
+          in: path
+          required: true
+          type: string
+        - name: connection
+          description: Properties of the connection to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/v1betaConnection'
+            required:
+              - connection
+      tags:
+        - Integration
   /v1beta/namespaces/{namespaceId}/connections/{connectionId}:
     get:
       summary: Get a namespace connection
@@ -1623,116 +1655,6 @@ paths:
           type: string
       tags:
         - Integration
-  /v1beta/namespaces/{connection.namespaceId}/connections:
-    post:
-      summary: Create a connection
-      description: Creates a connection under the ownership of a namespace.
-      operationId: PipelinePublicService_CreateNamespaceConnection
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/v1betaCreateNamespaceConnectionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/googlerpcStatus'
-      parameters:
-        - name: connection.namespaceId
-          description: ID of the namespace owning the connection.
-          in: path
-          required: true
-          type: string
-        - name: connection
-          description: Properties of the connection to be created.
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              uid:
-                type: string
-                description: UUID-formatted unique identifier.
-                readOnly: true
-              id:
-                type: string
-                description: ID.
-              integrationId:
-                type: string
-                description: |-
-                  Integration ID. It determines for which type of components can reference
-                  this connection.
-              integrationTitle:
-                type: string
-                description: |-
-                  Integration title. This helps the console display the results grouped by
-                  integration ID without needing an extra call to fetch title by integration
-                  ID.
-                readOnly: true
-              method:
-                description: |-
-                  Connection method. It references the setup schema provided by the
-                  integration.
-                allOf:
-                  - $ref: '#/definitions/ConnectionMethod'
-              setup:
-                type: object
-                description: |-
-                  Connection details. This field is required on creation, optional on view.
-                  When viewing the connection details, the setup values will be redacted.
-              scopes:
-                type: array
-                items:
-                  type: string
-                description: |-
-                  A list of scopes that identify the resources that the connection will be
-                  able to access on the user's behalf. This is typically passed on creation
-                  when the setup has been generated through an OAuth flow with a limited set
-                  of scopes.
-              identity:
-                type: string
-                description: |-
-                  When the connection method is METHOD_OAUTH, this field will hold the
-                  identity (e.g., email, username) with which the access token has been
-                  generated.
-              oAuthAccessDetails:
-                type: object
-                description: |-
-                  When the connection method is METHOD_OAUTH, the access token might come
-                  with some extra information that might vary across vendors. This
-                  information is passed as connection metadata.
-              view:
-                title: |-
-                  View defines how the connection is presented. The following fields are
-                  only shown in the FULL view:
-                  - setup
-                  - scopes
-                  - oAuthAccessDetails
-                readOnly: true
-                allOf:
-                  - $ref: '#/definitions/vdppipelinev1betaView'
-              createTime:
-                type: string
-                format: date-time
-                description: Creation timestamp.
-                readOnly: true
-              updateTime:
-                type: string
-                format: date-time
-                description: Last update timestamp.
-                readOnly: true
-            title: Properties of the connection to be created.
-            required:
-              - id
-              - integrationId
-              - method
-              - setup
-      tags:
-        - Integration
-  /v1beta/namespaces/{connection.namespaceId}/connections/{connectionId}:
     patch:
       summary: Update a connection
       description: Updates a connection with the supplied connection fields.
@@ -1750,8 +1672,8 @@ paths:
           schema:
             $ref: '#/definitions/googlerpcStatus'
       parameters:
-        - name: connection.namespaceId
-          description: ID of the namespace owning the connection.
+        - name: namespaceId
+          description: ID of the namespace that owns the connection.
           in: path
           required: true
           type: string
@@ -1768,88 +1690,9 @@ paths:
           in: body
           required: true
           schema:
-            type: object
-            properties:
-              uid:
-                type: string
-                description: UUID-formatted unique identifier.
-                readOnly: true
-              id:
-                type: string
-                description: ID.
-              integrationId:
-                type: string
-                description: |-
-                  Integration ID. It determines for which type of components can reference
-                  this connection.
-              integrationTitle:
-                type: string
-                description: |-
-                  Integration title. This helps the console display the results grouped by
-                  integration ID without needing an extra call to fetch title by integration
-                  ID.
-                readOnly: true
-              method:
-                description: |-
-                  Connection method. It references the setup schema provided by the
-                  integration.
-                allOf:
-                  - $ref: '#/definitions/ConnectionMethod'
-              setup:
-                type: object
-                description: |-
-                  Connection details. This field is required on creation, optional on view.
-                  When viewing the connection details, the setup values will be redacted.
-              scopes:
-                type: array
-                items:
-                  type: string
-                description: |-
-                  A list of scopes that identify the resources that the connection will be
-                  able to access on the user's behalf. This is typically passed on creation
-                  when the setup has been generated through an OAuth flow with a limited set
-                  of scopes.
-              identity:
-                type: string
-                description: |-
-                  When the connection method is METHOD_OAUTH, this field will hold the
-                  identity (e.g., email, username) with which the access token has been
-                  generated.
-              oAuthAccessDetails:
-                type: object
-                description: |-
-                  When the connection method is METHOD_OAUTH, the access token might come
-                  with some extra information that might vary across vendors. This
-                  information is passed as connection metadata.
-              view:
-                title: |-
-                  View defines how the connection is presented. The following fields are
-                  only shown in the FULL view:
-                  - setup
-                  - scopes
-                  - oAuthAccessDetails
-                readOnly: true
-                allOf:
-                  - $ref: '#/definitions/vdppipelinev1betaView'
-              createTime:
-                type: string
-                format: date-time
-                description: Creation timestamp.
-                readOnly: true
-              updateTime:
-                type: string
-                format: date-time
-                description: Last update timestamp.
-                readOnly: true
-            title: |-
-              Connection object with the new properties to be updated. Immutable and
-              output-only fields will be ignored. The Setup property must be updated
-              in block (no partial update is supported).
+            $ref: '#/definitions/v1betaConnection'
             required:
-              - id
-              - integrationId
-              - method
-              - setup
+              - connection
       tags:
         - Integration
   /v1beta/namespaces/{namespaceId}/connections/{connectionId}/test:
