@@ -39,19 +39,6 @@ openapi:
 	@buf generate --template buf.gen.openapi.yaml --output openapi/v2
 	@echo \# This file is auto-generated. DO NOT EDIT. | cat - openapi/v2/service.swagger.yaml > openapi/v2/service.swagger.tmp.yaml
 	@mv openapi/v2/service.swagger.tmp.yaml openapi/v2/service.swagger.yaml
-
-	@# ====
-	@# Lint generated files.
-	@# ====
-
-	@# grpc-ecosystem/openapiv2:v2.19.0 will define protobufNullValue as an
-	@# empty enum, which isn't allowed by the linter we use. This linter is
-	@# used before importing the definitions and exposing them in a public
-	@# server.
-	@#
-	@# For each file in openapi/v2, remove empty enum declarations.
-	@echo '-> Remove empty enum declarations'
-	@find openapi/v2 -type f | xargs -I '{}' ${SED_IN_PLACE} '/^[[:space:]]*enum: \[\]/,+0d' {}
 .PHONY: openapi-lint
 openapi-lint:
 	@# Lint each file under openapi/v2.
