@@ -42,4 +42,8 @@ openapi:
 .PHONY: openapi-lint
 openapi-lint:
 	@# Lint each file under openapi/v2.
+	@# Validate file can be uploaded to readme.com.
 	@find openapi/v2 -type f | xargs -I '{}' rdme openapi:validate {}
+	@# The spectral ruleset adds extra validation rules that allow us to
+	@# keep the documents consistent.
+	@spectral lint openapi/v2/service.swagger.yaml
