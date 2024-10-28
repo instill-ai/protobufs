@@ -4,11 +4,9 @@ on:
   pull_request:
     paths:
       - '**.proto'
-      - '**.proto.templ'
       - 'buf.gen.*.yaml'
       - 'Makefile'
       - 'scripts/generate-openapi-doc-info.sh'
-      - 'common/openapi/**'
       - '.spectral.yaml'
 
 jobs:
@@ -29,34 +27,10 @@ jobs:
       - name: Generate OpenAPI definitions
         run: |
           make openapi
-      - name: Lint generated Core OpenAPI definitions
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi:validate openapi/v2/core/service.swagger.yaml
-      - name: Lint generated VDP OpenAPI definitions
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi:validate openapi/v2/vdp/service.swagger.yaml
-      - name: Lint generated Model OpenAPI definitions
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi:validate openapi/v2/model/service.swagger.yaml
-      - name: Lint generated Artifact OpenAPI definitions
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi:validate openapi/v2/artifact/service.swagger.yaml
-      - name: Lint generated App OpenAPI definitions
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi:validate openapi/v2/app/service.swagger.yaml
-      - name: Lint OpenAPI against custom ruleset
+      - name: Lint generated OpenAPI definitions
         uses: stoplightio/spectral-action@latest
         with:
           file_glob: 'openapi/v2/*.swagger.yaml'
-      - name: Lint generated Gateway OpenAPI definitions
-        uses: readmeio/rdme@v8
-        with:
-          rdme: openapi:validate openapi/v2/service.swagger.yaml
       - name: Commit and push
         run: |
           if [[ `git status --porcelain` ]]; then
