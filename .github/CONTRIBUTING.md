@@ -7,13 +7,107 @@ We appreciate your contribution to this amazing project! Any form of engagement 
 - roadmap suggestion
 - ...and so on!
 
-Please refer to the [community contributing section](https://github.com/instill-ai/community#contributing) for more details.
+## Introduction
 
-## Development and codebase contribution
+Before delving into the details to come up with your first PR, please
+familiarize yourself with the project structure of 🔮 [**Instill
+Core**](https://github.com/instill-ai/instill-core).
 
-Before delving into the details to come up with your first PR, please familiarise yourself with the project structure of [Instill Core](https://github.com/instill-ai/community#instill-core).
+Instill AI contracts are defined as [Protocol
+Buffers](https://protobuf.dev/). The proto files are the source from which
+different code is auto-generated (e.g., language SDKs, OpenAPI
+specification of the contracts).
 
-### Sending PRs
+### OpenAPI contracts
+
+All the public endpoints are exposed in a single service
+([`api-gateway`](https://github.com/instill-ai/api-gateway)]). These
+endpoints are documented [in OpenAPI V2
+format](../openapi/v2/service.swagger.yaml) and publicly available at
+[openapi.instill.tech](https://openapi.instill.tech/) through
+(readme.com)[https://readme.com/]. The OpenAPI specification is
+auto-generated via [`grpc-gateway`](https://grpc-ecosystem.github.io/grpc-gateway/)
+and it only reflects the protobuf specification.
+
+## Codebase contribution
+
+The Instill AI contracts follow most of the guidelines provided by [Google
+AIP](https://google.aip.dev/) but have made adjustments in certain areas
+based on our product experience and specific needs.
+
+Some of these conventions are checked at the CI workflows, though for some
+others we rely on the developer's awareness and good judgement. Please,
+use the following guidelines to align your contract updates with our
+conventions.
+
+### Field Behavior
+
+APIs **MUST** apply the `google.api.field_behavior` annotation on every
+field on a message or sub-message used in a request. Even `optional` fields
+must include this annotation in order to keep annotations consistent.
+
+This helps users to understand how an endpoint works. Annotations also
+[modify the generated OpenAPI
+spec](https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_openapi_output/#using-googleapifield_behavior)
+marking fields as `required` or `readonly`.
+
+### Method Tags
+
+Every **public** endpoint **MUST** have one (and only one) tag. This tag
+**MUST** also be defined in the [OpenAPI
+configuration](../openapi/v2/conf.proto) with a name and description. The
+tag can be added with `grpc-gateway`'s `tags` operation option:
+
+```proto
+// Get a pipeline
+//
+// Returns the details of a pipeline.
+rpc GetNamespacePipeline(GetNamespacePipelineRequest) returns (GetNamespacePipelineResponse) {
+    option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "💧 VDP"};
+}
+```
+
+We tend to group our endpoints by service (i.e., use a single tag for all
+the endpoints in a service), though this isn't a hard requirement.
+
+[openapi.instill.tech](https://openapi.instill.tech) groups the endpoints
+under the first tag defined in their specification and supports exactly one
+tag. If more tags are defined, it will result in empty sections at the end
+of the sidebar.
+
+### Method Title & Description
+
+Every **public** method **MUST** have a comment with a title and a
+description, separated by a blank comment line. The description might have
+several paragraphs separated by blank lines. Try to document the endpoint
+in detail, including behaviors such as who can access a given resource of
+perform an operation, how to access the result of the operation or if the
+endpoint produces any effect in the system that might not be obvious.
+
+```proto
+// Update a pipeline
+//
+// Udpates a pipeline, accessing it by its resource name, which is defined by
+// the parent namespace and the ID of the pipeline. The authenticated namespace must be
+// the parent of the pipeline in order to modify it.
+//
+// In REST requests, only the supplied pipeline fields will be taken into
+// account when updating the resource.
+rpc UpdateNamespacePipeline(UpdateNamespacePipelineRequest) returns (UpdateNamespacePipelineResponse) {
+    option (google.api.http) = {
+        patch: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"
+        body: "pipeline"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "💧 VDP"};
+}
+```
+
+[openapi.instill.tech](https://openapi.instill.tech) will render each part
+as the endpoint title (which can also used in the search engine) and the
+description in the endpoint's view.
+
+## Sending PRs
 
 Please take these general guidelines into consideration when you are sending a PR:
 
