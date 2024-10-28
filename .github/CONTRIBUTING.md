@@ -18,7 +18,7 @@ Buffers](https://protobuf.dev/). The proto files are the source from which
 different code is auto-generated (e.g., language SDKs, OpenAPI
 specification of the contracts).
 
-### OpenAPI contracts
+### OpenAPI Contracts
 
 All the public endpoints are exposed in a single service
 ([`api-gateway`](https://github.com/instill-ai/api-gateway)]). These
@@ -29,7 +29,7 @@ format](../openapi/v2/service.swagger.yaml) and publicly available at
 auto-generated via [`grpc-gateway`](https://grpc-ecosystem.github.io/grpc-gateway/)
 and it only reflects the protobuf specification.
 
-## Codebase contribution
+## Codebase Contribution
 
 The Instill AI contracts follow most of the guidelines provided by [Google
 AIP](https://google.aip.dev/) but have made adjustments in certain areas
@@ -99,13 +99,39 @@ rpc UpdateNamespacePipeline(UpdateNamespacePipelineRequest) returns (UpdateNames
         patch: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"
         body: "pipeline"
     };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "💧 VDP"};
 }
 ```
 
 [openapi.instill.tech](https://openapi.instill.tech) will render each part
 as the endpoint title (which can also used in the search engine) and the
 description in the endpoint's view.
+
+### Swagger Extensions
+
+The [Swagger
+Extension](https://swagger.io/docs/specification/2-0/swagger-extensions/)
+`x-stage` **MUST** be present in every **public** method for endpoints in
+_alpha_ or _beta_ stage. This extension can be added with the
+`openapiv2_operation` option:
+
+```proto
+// Get a pipeline
+//
+// Returns the details of a pipeline.
+rpc GetNamespacePipeline(GetNamespacePipelineRequest) returns (GetNamespacePipelineResponse) {
+    option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+    tags: "💧 VDP"
+    extensions: {
+        key: "x-stage"
+            value {string_value: "beta"}
+        }
+    };
+}
+```
+
+This is used in the C# SDK generator to warn about the stage of the
+endpoints
 
 ## Sending PRs
 
