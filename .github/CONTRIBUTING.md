@@ -40,6 +40,17 @@ others we rely on the developer's awareness and good judgement. Please,
 use the following guidelines to align your contract updates with our
 conventions.
 
+### Field Behavior
+
+APIs **MUST** apply the `google.api.field_behavior` annotation on every
+field on a message or sub-message used in a request. Even `optional` fields
+must include this annotation in order to keep annotations consistent.
+
+This helps users to understand how an endpoint works. Annotations also
+[modify the generated OpenAPI
+spec](https://grpc-ecosystem.github.io/grpc-gateway/docs/mapping/customizing_openapi_output/#using-googleapifield_behavior)
+marking fields as `required` or `readonly`.
+
 ### Method Tags
 
 Every **public** endpoint **MUST** have one (and only one) tag. This tag
