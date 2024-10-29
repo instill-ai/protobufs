@@ -229,11 +229,39 @@ message ListPipelineTriggerChartRecordsRequest {
   optional string filter = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// ListModelTriggerChartRecordsRequest represents a request to list model
+// trigger metrics, aggregated by model ID and time frame.
+message ListModelTriggerChartRecordsRequest {
+  // The ID of the namespace that requested the model triggers.
+  string requester_id = 3 [(google.api.field_behavior) = REQUIRED];
+  // Aggregation window. The value is a positive duration string, i.e. a
+  // sequence of decimal numbers, each with optional fraction and a unit
+  // suffix, such as "300ms", "1.5h" or "2h45m".
+  // The minimum (and default) window is 1h.
+  optional string aggregation_window = 4;
+  // Beginning of the time range from which the records will be fetched.
+  // The default value is the beginning of the current day, in UTC.
+  optional google.protobuf.Timestamp start = 5;
+  // End of the time range from which the records will be fetched.
+  // The default value is the current timestamp.
+  optional google.protobuf.Timestamp stop = 6;
+}
+
 // ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
 // chart records.
 message ListPipelineTriggerChartRecordsResponse {
   // A list of pipeline trigger records.
   repeated PipelineTriggerChartRecord pipeline_trigger_chart_records = 1;
+}
+
+// ListModelTriggerChartRecordsResponse contains a list of model trigger
+// chart records.
+message ListModelTriggerChartRecordsResponse {
+  // Model trigger counts. Until we allow filtering or grouping by fields
+  // like model ID, this list will contain only one element with the
+  // timeline of trigger counts for a given requester, regardless the model
+  // ID, trigger mode, final status or other fields.
+  repeated ModelTriggerChartRecord model_trigger_chart_records = 1;
 }
 
 // PipelineTriggerChartRecord contains pipeline trigger metrics, aggregated by
@@ -304,4 +332,18 @@ message ListPipelineTriggerRecordsResponse {
   string next_page_token = 2;
   // Total number of pipeline triggers.
   int32 total_size = 3;
+}
+
+// ModelTriggerChartRecord represents a timeline of model triggers. It
+// contains a collection of (timestamp, count) pairs that represent the total
+// model triggers in a given time bucket.
+message ModelTriggerChartRecord {
+  // This field will be present present when the information is grouped by model.
+  optional string model_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Time buckets.
+  repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Aggregated trigger count in each time bucket.
+  repeated int32 trigger_counts = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The ID of the namespace that requested the model triggers.
+  string requester_id = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
