@@ -2157,6 +2157,59 @@ paths:
           type: string
       tags:
         - "\U0001F4CA Metrics"
+  /v1beta/model-runs:query-charts:
+    get:
+      summary: List model trigger time charts
+      description: |-
+        Returns a timeline of model trigger counts for a given requester. The
+        response will contain one set of records (datapoints), representing the
+        amount of triggers in a time bucket.
+      operationId: MgmtPublicService_ListModelTriggerChartRecords
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListModelTriggerChartRecordsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: requesterId
+          description: The ID of the namespace that requested the model triggers.
+          in: query
+          required: true
+          type: string
+        - name: aggregationWindow
+          description: |-
+            Aggregation window. The value is a positive duration string, i.e. a
+            sequence of decimal numbers, each with optional fraction and a unit
+            suffix, such as "300ms", "1.5h" or "2h45m".
+            The minimum (and default) window is 1h.
+          in: query
+          required: false
+          type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
+      tags:
+        - "\U0001F4CA Metrics"
   /v1beta/metrics/credit/charts:
     get:
       summary: List Instill Credit consumption time charts
@@ -7403,6 +7456,22 @@ definitions:
         description: The requested page offset.
         readOnly: true
     description: ListModelRunsResponse contains a list of model runs.
+  ListModelTriggerChartRecordsResponse:
+    type: object
+    properties:
+      modelTriggerChartRecords:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/ModelTriggerChartRecord'
+        description: |-
+          Model trigger counts. Until we allow filtering or grouping by fields
+          like model ID, this list will contain only one element with the
+          timeline of trigger counts for a given requester, regardless the model
+          ID, trigger mode, final status or other fields.
+    description: |-
+      ListModelTriggerChartRecordsResponse contains a list of model trigger
+      chart records.
   ListModelsAdminResponse:
     type: object
     properties:
@@ -8272,6 +8341,35 @@ definitions:
           deleted namespace.
         readOnly: true
     description: ModelRun contains information about a run of models.
+  ModelTriggerChartRecord:
+    type: object
+    properties:
+      modelId:
+        type: string
+        description: This field will be present present when the information is grouped by model.
+        readOnly: true
+      timeBuckets:
+        type: array
+        items:
+          type: string
+          format: date-time
+        description: Time buckets.
+        readOnly: true
+      triggerCounts:
+        type: array
+        items:
+          type: integer
+          format: int32
+        description: Aggregated trigger count in each time bucket.
+        readOnly: true
+      requesterId:
+        type: string
+        description: The ID of the namespace that requested the model triggers.
+        readOnly: true
+    description: |-
+      ModelTriggerChartRecord represents a timeline of model triggers. It
+      contains a collection of (timestamp, count) pairs that represent the total
+      model triggers in a given time bucket.
   ModelVersion:
     type: object
     properties:
