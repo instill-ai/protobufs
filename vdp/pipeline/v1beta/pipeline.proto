@@ -170,38 +170,6 @@ message Pipeline {
   Endpoints endpoints = 32 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// TriggerMetadata contains the traces of the pipeline inference.
-message TriggerMetadata {
-  // Each key in the `traces` object is a component ID. The value is a Trace
-  // object containing the execution details.
-  map<string, Trace> traces = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-// Trace contains the execution details of a component.
-message Trace {
-  // Status holds the the component execution outcome.
-  enum Status {
-    // Unspecified.
-    STATUS_UNSPECIFIED = 0;
-    // Successfully completed.
-    STATUS_COMPLETED = 1;
-    // Skipped.
-    STATUS_SKIPPED = 2;
-    // Aborted with error.
-    STATUS_ERROR = 3;
-  }
-  // Statuses contains an execution status per input.
-  repeated Status statuses = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Component inputs.
-  repeated google.protobuf.Struct inputs = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Component outputs.
-  repeated google.protobuf.Struct outputs = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Error details.
-  google.protobuf.Struct error = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Computation time in seconds.
-  float compute_time_in_seconds = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // GetHubStatsRequest represents a request to get hub stats.
 message GetHubStatsRequest {}
 
@@ -537,74 +505,6 @@ message SendNamespacePipelineReleaseEventResponse {
   google.protobuf.Struct data = 1;
 }
 
-// TriggerNamespacePipelineRequest represents a request to trigger a user-owned
-// pipeline synchronously.
-message TriggerNamespacePipelineRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline ID
-  string pipeline_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 3 [(google.api.field_behavior) = REQUIRED];
-  // Data
-  repeated TriggerData data = 4 [(google.api.field_behavior) = REQUIRED];
-}
-
-// TriggerNamespacePipelineResponse contains the pipeline execution results, i.e.,
-// the multiple model inference outputs.
-message TriggerNamespacePipelineResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-// TriggerNamespacePipelineWithStreamRequest represents a request to trigger a user-owned
-// pipeline synchronously and streams back the results.
-message TriggerNamespacePipelineWithStreamRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline ID
-  string pipeline_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 3 [(google.api.field_behavior) = OPTIONAL];
-  // Data
-  repeated TriggerData data = 4 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// TriggerNamespacePipelineWithStreamResponse contains the pipeline execution results, i.e.,
-// the multiple model inference outputs.
-message TriggerNamespacePipelineWithStreamResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-// TriggerNamespacePipelineRequest represents a request to trigger a user-owned
-// pipeline synchronously.
-message TriggerAsyncNamespacePipelineRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline ID
-  string pipeline_id = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 3 [(google.api.field_behavior) = OPTIONAL];
-  // Data
-  repeated TriggerData data = 4 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// TriggerAsyncNamespacePipelineResponse contains the information to access the
-// status of an asynchronous pipeline execution.
-message TriggerAsyncNamespacePipelineResponse {
-  // Long-running operation information.
-  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // CreateNamespacePipelineReleaseRequest represents a request to release a version
 // in a user-owned pipeline.
 message CreateNamespacePipelineReleaseRequest {
@@ -723,59 +623,6 @@ message DeleteNamespacePipelineReleaseRequest {
 
 // DeleteNamespacePipelineReleaseResponse is an empty response.
 message DeleteNamespacePipelineReleaseResponse {}
-
-// TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-// release of a user-owned pipeline.
-message TriggerNamespacePipelineReleaseRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline ID
-  string pipeline_id = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Release ID
-  string release_id = 3 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 4 [(google.api.field_behavior) = OPTIONAL];
-  // Data
-  repeated TriggerData data = 5 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// TriggerNamespacePipelineReleaseResponse contains the pipeline execution results,
-// i.e., the multiple model inference outputs.
-message TriggerNamespacePipelineReleaseResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-// TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-// release of a user-owned pipeline asynchronously.
-message TriggerAsyncNamespacePipelineReleaseRequest {
-  // Namespace ID
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline ID
-  string pipeline_id = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Release ID
-  string release_id = 3 [(google.api.field_behavior) = REQUIRED];
-
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 4 [(google.api.field_behavior) = OPTIONAL];
-
-  // Data
-  repeated TriggerData data = 5 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// TriggerAsyncNamespacePipelineReleaseResponse contains the information to access
-// the status of an asynchronous pipeline execution.
-message TriggerAsyncNamespacePipelineReleaseResponse {
-  // Long-running operation information.
-  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
 
 // CreateUserPipelineRequest represents a request from a user to create a
 // pipeline.
@@ -959,97 +806,6 @@ message RenameUserPipelineResponse {
   Pipeline pipeline = 1;
 }
 
-// TriggerUserPipelineRequest represents a request to trigger a user-owned
-// pipeline synchronously.
-message TriggerUserPipelineRequest {
-  // The resource name of the pipeline, which allows its access by parent user
-  // and ID.
-  // - Format: `users/{user.id}/pipelines/{pipeline.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_pipeline_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerUserPipelineResponse contains the pipeline execution results, i.e.,
-// the multiple model inference outputs.
-message TriggerUserPipelineResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1;
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2;
-}
-
-// TriggerUserPipelineWithStreamRequest represents a request to trigger a user-owned
-// pipeline synchronously and streams back the results.
-message TriggerUserPipelineWithStreamRequest {
-  // The resource name of the pipeline, which allows its access by parent user
-  // and ID.
-  // - Format: `users/{user.id}/pipelines/{pipeline.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_pipeline_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerUserPipelineWithStreamResponse contains the pipeline execution results, i.e.,
-// the multiple model inference outputs.
-message TriggerUserPipelineWithStreamResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1;
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2;
-}
-
-// Data
-message TriggerData {
-  // Variables
-  google.protobuf.Struct variable = 1 [(google.api.field_behavior) = OPTIONAL];
-  // Variables
-  map<string, string> secret = 2 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// TriggerUserPipelineRequest represents a request to trigger a user-owned
-// pipeline synchronously.
-message TriggerAsyncUserPipelineRequest {
-  // The resource name of the pipeline, which allows its access by parent user
-  // and ID.
-  // - Format: `users/{user.id}/pipelines/{pipeline.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_pipeline_name"}
-    }
-  ];
-
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerAsyncUserPipelineResponse contains the information to access the
-// status of an asynchronous pipeline execution.
-message TriggerAsyncUserPipelineResponse {
-  // Long-running operation information.
-  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // CreateUserPipelineReleaseRequest represents a request to release a version
 // in a user-owned pipeline.
 message CreateUserPipelineReleaseRequest {
@@ -1213,61 +969,6 @@ message RenameUserPipelineReleaseRequest {
 message RenameUserPipelineReleaseResponse {
   // The renamed pipeline release.
   PipelineRelease release = 1;
-}
-
-// TriggerUserPipelineReleaseRequest represents a request to trigger a pinned
-// release of a user-owned pipeline.
-message TriggerUserPipelineReleaseRequest {
-  // The resource name of the pipeline release, which allows its access by
-  // parent pipeline and ID.
-  // - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_pipeline_release_name"}
-    }
-  ];
-
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerUserPipelineReleaseResponse contains the pipeline execution results,
-// i.e., the multiple model inference outputs.
-message TriggerUserPipelineReleaseResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1;
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2;
-}
-
-// TriggerUserPipelineReleaseRequest represents a request to trigger a pinned
-// release of a user-owned pipeline asynchronously.
-message TriggerAsyncUserPipelineReleaseRequest {
-  // The resource name of the pipeline release, which allows its access by
-  // parent pipeline and ID.
-  // - Format: `users/{user.id}/pipelines/{pipeline.id}/releases/{release.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "user_pipeline_release_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerAsyncUserPipelineReleaseResponse contains the information to access
-// the status of an asynchronous pipeline execution.
-message TriggerAsyncUserPipelineReleaseResponse {
-  // Long-running operation information.
-  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // CreateOrganizationPipelineRequest represents a request from an organization
@@ -1443,88 +1144,6 @@ message RenameOrganizationPipelineResponse {
   Pipeline pipeline = 1;
 }
 
-// TriggerOrganizationPipelineRequest represents a request to trigger an
-// organization-owned pipeline synchronously.
-message TriggerOrganizationPipelineRequest {
-  // The resource name of the pipeline, which allows its access by parent
-  // organization and ID.
-  // - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_pipeline_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerOrganizationPipelineResponse contains the pipeline execution results,
-// i.e., the multiple model inference outputs.
-message TriggerOrganizationPipelineResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1;
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2;
-}
-
-// TriggerOrganizationPipelineRequest represents a request to trigger an
-// organization-owned pipeline synchronously.
-message TriggerOrganizationPipelineStreamRequest {
-  // The resource name of the pipeline, which allows its access by parent
-  // organization and ID.
-  // - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_pipeline_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerOrganizationPipelineResponse contains the pipeline execution results,
-// i.e., the multiple model inference outputs.
-message TriggerOrganizationPipelineStreamResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1;
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2;
-}
-
-// TriggerOrganizationPipelineRequest represents a request to trigger an
-// organization-owned pipeline synchronously.
-message TriggerAsyncOrganizationPipelineRequest {
-  // The resource name of the pipeline, which allows its access by parent
-  // organization and ID.
-  // - Format: `organizations/{organization.id}/pipelines/{pipeline.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/Pipeline"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_pipeline_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerAsyncOrganizationPipelineResponse contains the information to access
-// the status of an asynchronous pipeline execution.
-message TriggerAsyncOrganizationPipelineResponse {
-  // Long-running operation information.
-  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // CreateOrganizationPipelineReleaseRequest represents a request to release a
 // version in an organization-owned pipeline.
 message CreateOrganizationPipelineReleaseRequest {
@@ -1694,62 +1313,6 @@ message RenameOrganizationPipelineReleaseRequest {
 message RenameOrganizationPipelineReleaseResponse {
   // The renamed pipeline release.
   PipelineRelease release = 1;
-}
-
-// TriggerOrganizationPipelineReleaseRequest represents a request to trigger a
-// pinned release of an organization-owned pipeline.
-message TriggerOrganizationPipelineReleaseRequest {
-  // The resource name of the pipeline release, which allows its access by
-  // parent pipeline and ID.
-  // - Format:
-  // `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_pipeline_release_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerOrganizationPipelineReleaseResponse contains the pipeline execution
-// results, i.e., the multiple model inference outputs.
-message TriggerOrganizationPipelineReleaseResponse {
-  // Model inference outputs.
-  repeated google.protobuf.Struct outputs = 1;
-  // Traces of the pipeline inference.
-  TriggerMetadata metadata = 2;
-}
-
-// TriggerOrganizationPipelineReleaseRequest represents a request to trigger a
-// pinned release of an organization-owned pipeline asynchronously.
-message TriggerAsyncOrganizationPipelineReleaseRequest {
-  // The resource name of the pipeline release, which allows its access by
-  // parent pipeline and ID.
-  // - Format:
-  // `organizations/{organization.id}/pipelines/{pipeline.id}/releases/{release.id}`.
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/PipelineRelease"},
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      field_configuration: {path_param_name: "organization_pipeline_release_name"}
-    }
-  ];
-  // Pipeline input parameters, it will be deprecated soon.
-  repeated google.protobuf.Struct inputs = 2;
-  // Data
-  repeated TriggerData data = 3;
-}
-
-// TriggerAsyncOrganizationPipelineReleaseResponse contains the information to
-// access the status of an asynchronous pipeline execution.
-message TriggerAsyncOrganizationPipelineReleaseResponse {
-  // Long-running operation information.
-  google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // GetOperationRequest represents a request to query a long-running operation.

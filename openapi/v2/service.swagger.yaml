@@ -1,9 +1,9 @@
 # This file is auto-generated. DO NOT EDIT.
 swagger: "2.0"
 info:
-  title: "\U0001F52E Instill AI API"
-  description: Interact with Instill AI through its public API
-  version: v0.44.1-beta
+  title: "\U0001F4F1 App "
+  description: App endpoints to manage ready-to-use AI applications
+  version: v0.41.0-beta
   contact:
     name: Instill AI
     url: https://github.com/instill-ai
@@ -12,20 +12,14 @@ info:
     name: Elastic License 2.0 (ELv2)
     url: https://github.com/instill-ai/protobufs/blob/main/LICENSE
 tags:
-  - name: "\U0001FA86 Namespace"
-    description: Namespaces (e.g. User, Organization) that structure the resource hierarchy.
-  - name: "\U0001F4A7 VDP"
-    description: Pipeline orchestration in VDP (Versatile Data Pipeline).
-  - name: ⚗️ Model
-    description: AI Model resources for MLOps/LLMOps.
-  - name: "\U0001F4BE Artifact"
-    description: Data orchestration for unified unstructured data representation.
-  - name: "\U0001F34E App"
-    description: Ready-to-use AI applications.
-  - name: "\U0001F4CA Metrics"
-    description: Resource usage metrics.
-  - name: "\U0001F91D Subscription"
-    description: Pricing plans on Instill Cloud.
+  - name: App
+    description: App endpoints
+  - name: Conversation
+    description: Conversation endpoints
+  - name: Message
+    description: Message endpoints
+  - name: Playground
+    description: Playground endpoints
 host: api.instill.tech
 schemes:
   - https
@@ -3855,155 +3849,6 @@ paths:
       tags:
         - "\U0001F4A7 VDP"
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger:
-    post:
-      summary: Trigger a pipeline
-      description: |-
-        Triggers the execution of a pipeline synchronously, i.e., the result is
-        sent back to the namespace right after the data is processed. This method is
-        intended for real-time inference when low latency is of concern.
-
-        The pipeline is identified by its resource name, formed by the parent namespace
-        and ID of the pipeline.
-
-        For more information, see [Run NamespacePipeline](https://www.instill.tech/docs/vdp/run).
-      operationId: PipelinePublicService_TriggerNamespacePipeline
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/TriggerNamespacePipelineResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: Namespace ID
-          in: path
-          required: true
-          type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TriggerNamespacePipelineBody'
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
-      tags:
-        - "\U0001F4A7 VDP"
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-stream:
-    post:
-      summary: Trigger a pipeline via streaming
-      description: |-
-        Triggers the execution of a pipeline asynchronously and streams back the response.
-        This method is intended for real-time inference when low latency is of concern
-        and the response needs to be processed incrementally.
-
-        The pipeline is identified by its resource name, formed by the parent namespace
-        and ID of the pipeline.
-      operationId: PipelinePublicService_TriggerNamespacePipelineWithStream
-      responses:
-        "200":
-          description: A successful response.(streaming responses)
-          schema:
-            type: object
-            properties:
-              result:
-                $ref: '#/definitions/TriggerNamespacePipelineWithStreamResponse'
-              error:
-                $ref: '#/definitions/rpc.Status'
-            title: Stream result of TriggerNamespacePipelineWithStreamResponse
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: Namespace ID
-          in: path
-          required: true
-          type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TriggerNamespacePipelineWithStreamBody'
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
-      tags:
-        - "\U0001F4A7 VDP"
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-async:
-    post:
-      summary: Trigger a pipeline asynchronously
-      description: |-
-        Triggers the execution of a pipeline asynchronously, i.e., the result
-        contains the necessary information to access the result and status of the
-        operation. This method is intended for cases that require long-running
-        workloads.
-
-        The pipeline is identified by its resource name, formed by the parent namespace
-        and ID of the pipeline.
-
-        For more information, see [Run NamespacePipeline](https://www.instill.tech/docs/vdp/run).
-      operationId: PipelinePublicService_TriggerAsyncNamespacePipeline
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: Namespace ID
-          in: path
-          required: true
-          type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineBody'
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
-      tags:
-        - "\U0001F4A7 VDP"
   /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases:
     get:
       summary: List the releases in a pipeline
@@ -4302,9 +4147,102 @@ paths:
       tags:
         - "\U0001F4A7 VDP"
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger:
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}:trigger:
     post:
-      summary: Trigger a pipeline release
+      summary: Trigger a pipeline
+      description: |-
+        Triggers the execution of a pipeline synchronously, i.e., the result is
+        sent back to the namespace right after the data is processed. This method is
+        intended for real-time inference when low latency is of concern.
+
+        The pipeline is identified by its resource name, formed by the parent namespace
+        and ID of the pipeline.
+
+        For more information, see [Run NamespacePipeline](https://www.instill.tech/docs/vdp/run).
+      operationId: PipelinePublicService_TriggerNamespacePipelineWithJSON
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/TriggerNamespacePipelineWithJSONResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TriggerNamespacePipelineWithJSONBody'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - "\U0001F4A7 VDP"
+      x-stage: beta
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger:
+    post:
+      summary: Trigger a pipeline
+      description: |-
+        Triggers the execution of a pipeline synchronously, i.e., the result is
+        sent back to the namespace right after the data is processed. This method is
+        intended for real-time inference when low latency is of concern.
+
+        The pipeline is identified by its resource name, formed by the parent namespace
+        and ID of the pipeline.
+
+        For more information, see [Run NamespacePipeline](https://www.instill.tech/docs/vdp/run).
+      operationId: PipelinePublicService_TriggerNamespacePipelineWithJSON2
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/TriggerNamespacePipelineWithJSONResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID
+          in: path
+          required: true
+          type: string
+        - name: pipelineId
+          description: Pipeline ID
+          in: path
+          required: true
+          type: string
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
+          type: string
+      tags:
+        - "\U0001F4A7 VDP"
+      x-stage: beta
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}:trigger:
+    post:
+      summary: Trigger a pipeline release with JSON
       description: |-
         Triggers the synchronous execution of of a pipeline. While the trigger
         endpoint (where the release version isn't specified) triggers the pipeline
@@ -4313,12 +4251,12 @@ paths:
 
         The pipeline is identified by its resource name, formed by its parent namespace
         and ID.
-      operationId: PipelinePublicService_TriggerNamespacePipelineRelease
+      operationId: PipelinePublicService_TriggerNamespacePipelineReleaseWithJSON
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/TriggerNamespacePipelineReleaseWithJSONResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -4346,7 +4284,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerNamespacePipelineReleaseBody'
+            $ref: '#/definitions/TriggerNamespacePipelineReleaseWithJSONBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -4354,23 +4292,24 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger-async:
+      x-stage: beta
+  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger:
     post:
-      summary: Trigger a pipeline release asynchronously
+      summary: Trigger a pipeline release with JSON
       description: |-
-        Triggers the asynchronous execution of of a pipeline. While the trigger
+        Triggers the synchronous execution of of a pipeline. While the trigger
         endpoint (where the release version isn't specified) triggers the pipeline
         at its latest release, this method allows the client to specified any
         committed release.
 
         The pipeline is identified by its resource name, formed by its parent namespace
         and ID.
-      operationId: PipelinePublicService_TriggerAsyncNamespacePipelineRelease
+      operationId: PipelinePublicService_TriggerNamespacePipelineReleaseWithJSON2
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/TriggerNamespacePipelineReleaseWithJSONResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -4394,11 +4333,6 @@ paths:
           in: path
           required: true
           type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineReleaseBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -4406,6 +4340,7 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/secrets:
     get:
       summary: List secrets
@@ -9785,62 +9720,6 @@ definitions:
     description: |-
       TriggerAsyncNamespaceModelResponse contains the information to access the
       status of an asynchronous model inference.
-  TriggerAsyncNamespacePipelineBody:
-    type: object
-    properties:
-      inputs:
-        type: array
-        items:
-          type: object
-        description: Pipeline input parameters, it will be deprecated soon.
-      data:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/TriggerData'
-        title: Data
-    description: |-
-      TriggerNamespacePipelineRequest represents a request to trigger a user-owned
-      pipeline synchronously.
-  TriggerAsyncNamespacePipelineReleaseBody:
-    type: object
-    properties:
-      inputs:
-        type: array
-        items:
-          type: object
-        description: Pipeline input parameters, it will be deprecated soon.
-      data:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/TriggerData'
-        title: Data
-    description: |-
-      TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-      release of a user-owned pipeline asynchronously.
-  TriggerAsyncNamespacePipelineReleaseResponse:
-    type: object
-    properties:
-      operation:
-        description: Long-running operation information.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/longrunning.Operation'
-    description: |-
-      TriggerAsyncNamespacePipelineReleaseResponse contains the information to access
-      the status of an asynchronous pipeline execution.
-  TriggerAsyncNamespacePipelineResponse:
-    type: object
-    properties:
-      operation:
-        description: Long-running operation information.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/longrunning.Operation'
-    description: |-
-      TriggerAsyncNamespacePipelineResponse contains the information to access the
-      status of an asynchronous pipeline execution.
   TriggerData:
     type: object
     properties:
@@ -9953,7 +9832,7 @@ definitions:
         description: Model inference outputs.
         readOnly: true
     description: TriggerNamespaceModelResponse contains the model inference results.
-  TriggerNamespacePipelineBody:
+  TriggerNamespacePipelineReleaseWithJSONBody:
     type: object
     properties:
       inputs:
@@ -9968,29 +9847,46 @@ definitions:
           $ref: '#/definitions/TriggerData'
         title: Data
     description: |-
-      TriggerNamespacePipelineRequest represents a request to trigger a user-owned
+      TriggerNamespacePipelineReleaseWithJSONRequest represents a request to trigger a pinned
+      release of a user-owned pipeline.
+  TriggerNamespacePipelineReleaseWithJSONResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+        readOnly: true
+      metadata:
+        description: Traces of the pipeline inference.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/TriggerMetadata'
+    description: |-
+      TriggerNamespacePipelineReleaseWithJSONResponse contains the pipeline execution results,
+      i.e., the multiple model inference outputs.
+  TriggerNamespacePipelineWithJSONBody:
+    type: object
+    properties:
+      inputs:
+        type: array
+        items:
+          type: object
+        description: Pipeline input parameters, it will be deprecated soon.
+      data:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/TriggerData'
+        title: Data
+    description: |-
+      TriggerNamespacePipelineWithJSONRequest represents a request to trigger a user-owned
       pipeline synchronously.
     required:
       - inputs
       - data
-  TriggerNamespacePipelineReleaseBody:
-    type: object
-    properties:
-      inputs:
-        type: array
-        items:
-          type: object
-        description: Pipeline input parameters, it will be deprecated soon.
-      data:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/TriggerData'
-        title: Data
-    description: |-
-      TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-      release of a user-owned pipeline.
-  TriggerNamespacePipelineReleaseResponse:
+  TriggerNamespacePipelineWithJSONResponse:
     type: object
     properties:
       outputs:
@@ -10005,58 +9901,7 @@ definitions:
         allOf:
           - $ref: '#/definitions/TriggerMetadata'
     description: |-
-      TriggerNamespacePipelineReleaseResponse contains the pipeline execution results,
-      i.e., the multiple model inference outputs.
-  TriggerNamespacePipelineResponse:
-    type: object
-    properties:
-      outputs:
-        type: array
-        items:
-          type: object
-        description: Model inference outputs.
-        readOnly: true
-      metadata:
-        description: Traces of the pipeline inference.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/TriggerMetadata'
-    description: |-
-      TriggerNamespacePipelineResponse contains the pipeline execution results, i.e.,
-      the multiple model inference outputs.
-  TriggerNamespacePipelineWithStreamBody:
-    type: object
-    properties:
-      inputs:
-        type: array
-        items:
-          type: object
-        description: Pipeline input parameters, it will be deprecated soon.
-      data:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/TriggerData'
-        title: Data
-    description: |-
-      TriggerNamespacePipelineWithStreamRequest represents a request to trigger a user-owned
-      pipeline synchronously and streams back the results.
-  TriggerNamespacePipelineWithStreamResponse:
-    type: object
-    properties:
-      outputs:
-        type: array
-        items:
-          type: object
-        description: Model inference outputs.
-        readOnly: true
-      metadata:
-        description: Traces of the pipeline inference.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/TriggerMetadata'
-    description: |-
-      TriggerNamespacePipelineWithStreamResponse contains the pipeline execution results, i.e.,
+      TriggerNamespacePipelineWithJSONResponse contains the pipeline execution results, i.e.,
       the multiple model inference outputs.
   UndeployNamespaceModelAdminResponse:
     type: object
