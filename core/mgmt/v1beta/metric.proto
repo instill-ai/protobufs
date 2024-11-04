@@ -218,6 +218,44 @@ message ListPipelineTriggerTableRecordsResponse {
   int32 total_size = 3;
 }
 
+// ModelTriggerTableRecord contains model trigger metrics, aggregated by
+// model ID.
+message ModelTriggerTableRecord {
+  // Model ID.
+  string model_id = 1;
+  // Model UUID.
+  string model_uid = 2;
+  // Number of triggers with `STATUS_COMPLETED`.
+  int32 trigger_count_completed = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Number of triggers with `STATUS_ERRORED`.
+  int32 trigger_count_errored = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListModelTriggerTableRecordsRequest represents a request to list the
+// model triggers metrics, aggregated by model ID.
+message ListModelTriggerTableRecordsRequest {
+  // The maximum number of results to return. If this parameter is unspecified,
+  // at most 100 models will be returned. The cap value for this parameter
+  // is 1000 (i.e. any value above that will be coerced to 1000).
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page token.
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  optional string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListModelTriggerTableRecordsResponse contains the model metrics.
+message ListModelTriggerTableRecordsResponse {
+  // A list of model trigger tables.
+  repeated ModelTriggerTableRecord model_trigger_table_records = 1;
+  // Next page token.
+  string next_page_token = 2;
+  // Total number of model trigger records
+  int32 total_size = 3;
+}
+
 // ListPipelineTriggerChartRecordsRequest represents a request to list pipeline
 // trigger metrics, aggregated by pipeline ID and time frame.
 message ListPipelineTriggerChartRecordsRequest {
