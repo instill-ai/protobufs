@@ -29,9 +29,9 @@ enum Status {
 
 // ========== Pipeline endpoints
 
-// PipelineTriggerCount represents a pipeline execution count with some
+// TriggerCount represents a execution count with some
 // aggregation params (e.g. trigger status).
-message PipelineTriggerCount {
+message TriggerCount {
   // Number of triggers.
   int32 trigger_count = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // This field will be present when results are grouped by trigger status.
@@ -84,11 +84,31 @@ message GetPipelineTriggerCountRequest {
   optional google.protobuf.Timestamp stop = 3;
 }
 
+// GetModelTriggerCountRequest represents a request to fetch the trigger
+// count of a requester over a time period.
+message GetModelTriggerCountRequest {
+  // The ID of the requester that triggered the model.
+  string requester_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // Beginning of the time range from which the records will be fetched.
+  // The default value is the beginning of the current day, in UTC.
+  optional google.protobuf.Timestamp start = 2;
+  // End of the time range from which the records will be fetched.
+  // The default value is the current timestamp.
+  optional google.protobuf.Timestamp stop = 3;
+}
+
 // GetPipelineTriggerCountResponse contains the trigger count, grouped by
 // trigger status.
 message GetPipelineTriggerCountResponse {
   // The trigger counts, grouped by status.
-  repeated PipelineTriggerCount pipeline_trigger_counts = 1;
+  repeated TriggerCount pipeline_trigger_counts = 1;
+}
+
+// GetModelTriggerCountResponse contains the trigger count, grouped by
+// trigger status.
+message GetModelTriggerCountResponse {
+  // The trigger counts, grouped by status.
+  repeated TriggerCount model_trigger_counts = 1;
 }
 
 /*

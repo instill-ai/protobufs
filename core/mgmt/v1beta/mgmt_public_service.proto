@@ -471,6 +471,24 @@ service MgmtPublicService {
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
+  // Get model trigger count
+  //
+  // Returns the model trigger count of a given requester within a timespan.
+  // Results are grouped by trigger status.
+  rpc GetModelTriggerCount(GetModelTriggerCountRequest) returns (GetModelTriggerCountResponse) {
+    option (google.api.http) = {get: "/v1beta/model-runs:count"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "📊 Metrics"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+    // This endpoint will remain hidden until the new dashboard is implemented
+    // in the frontend. Until then, the server might return empty data.
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
   // List pipeline trigger metrics
   //
   // Returns a paginated list of pipeline executions aggregated by pipeline ID.
