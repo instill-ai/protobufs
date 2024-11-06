@@ -2176,13 +2176,101 @@ paths:
       tags:
         - "\U0001F4CA Metrics"
       x-stage: beta
-  /v1beta/metrics/vdp/pipeline/charts:
+  /v1beta/pipeline-runs/count:
+    get:
+      summary: Get pipeline trigger count
+      description: |-
+        Returns the pipeline trigger count of a given requester within a timespan.
+        Results are grouped by trigger status.
+      operationId: MgmtPublicService_GetPipelineTriggerCount
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetPipelineTriggerCountResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that requested the pipeline triggers.
+          in: query
+          required: true
+          type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
+      tags:
+        - "\U0001F4CA Metrics"
+      x-stage: beta
+  /v1beta/model-runs/count:
+    get:
+      summary: Get model trigger count
+      description: |-
+        Returns the model trigger count of a given requester within a timespan.
+        Results are grouped by trigger status.
+      operationId: MgmtPublicService_GetModelTriggerCount
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetModelTriggerCountResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: requesterId
+          description: The ID of the requester that triggered the model.
+          in: query
+          required: true
+          type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
+      tags:
+        - "\U0001F4CA Metrics"
+      x-stage: beta
+  /v1beta/pipeline-runs/query-charts:
     get:
       summary: List pipeline trigger time charts
       description: |-
-        Returns a timeline of pipline trigger counts for the pipelines of a given
-        owner.
-        NOTE: This method will soon return the trigger counts of a given requester.
+        Returns a timeline of pipline trigger counts for a given requester. The
+        response will contain one set of records (datapoints), representing the
+        amount of triggers in a time bucket.
       operationId: MgmtPublicService_ListPipelineTriggerChartRecords
       responses:
         "200":
@@ -2197,20 +2285,36 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: aggregationWindow
-          description: Aggregation window in nanoseconds.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+        - name: requesterId
+          description: The ID of the namespace that requested the pipeline triggers.
           in: query
           required: false
           type: string
+        - name: aggregationWindow
+          description: |-
+            Aggregation window. The value is a positive duration string, i.e. a
+            sequence of decimal numbers, each with optional fraction and a unit
+            suffix, such as "300ms", "1.5h" or "2h45m".
+            The minimum (and default) window is 1h.
+          in: query
+          required: false
+          type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
       tags:
         - "\U0001F4CA Metrics"
       x-stage: beta
@@ -6909,6 +7013,18 @@ definitions:
     description: |-
       GetModelOperationRequest represents a request to query a long-running
       operation.
+  GetModelTriggerCountResponse:
+    type: object
+    properties:
+      modelTriggerCounts:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/TriggerCount'
+        description: The trigger counts, grouped by status.
+    description: |-
+      GetModelTriggerCountResponse contains the trigger count, grouped by
+      trigger status.
   GetNamespaceConnectionResponse:
     type: object
     properties:
@@ -7072,6 +7188,18 @@ definitions:
         allOf:
           - $ref: '#/definitions/OrganizationSubscription'
     description: GetOrganizationSubscriptionResponse contains the requested subscription.
+  GetPipelineTriggerCountResponse:
+    type: object
+    properties:
+      pipelineTriggerCounts:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/TriggerCount'
+        description: The trigger counts, grouped by status.
+    description: |-
+      GetPipelineTriggerCountResponse contains the trigger count, grouped by
+      trigger status.
   GetPlaygroundConversationResponse:
     type: object
     properties:
@@ -7894,7 +8022,11 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/PipelineTriggerChartRecord'
-        description: A list of pipeline trigger records.
+        description: |-
+          Pipeline trigger counts. Until we allow filtering or grouping by fields
+          like pipeline ID, this list will contain only one element with the
+          timeline of trigger counts for a given requester, regardless the pipeline
+          ID, trigger mode, final status or other fields.
     description: |-
       ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
       chart records.
@@ -8376,10 +8508,6 @@ definitions:
         type: string
         description: Model Run UUID.
         readOnly: true
-      modelUid:
-        type: string
-        description: Model UUID.
-        readOnly: true
       status:
         description: Model run status.
         readOnly: true
@@ -8402,7 +8530,9 @@ definitions:
         readOnly: true
       runnerId:
         type: string
-        description: Runner ID. If current viewing requester does not have enough permission, it will return null.
+        description: |-
+          Runner ID. The user triggered the run. If current viewing requester does not
+          have enough permission, it will return null.
         readOnly: true
       creditAmount:
         type: number
@@ -8446,12 +8576,12 @@ definitions:
       requesterId:
         type: string
         description: |-
-          Requester ID. This field might be empty if the model run belongs to a
-          deleted namespace.
+          Requester ID. The namespace used to trigger the run. This field might be
+          empty if the model run belongs to a deleted namespace.
         readOnly: true
-      namespaceId:
+      modelNamespaceId:
         type: string
-        description: Namespace ID.
+        description: ID of the namespace that owns the model.
         readOnly: true
     description: ModelRun contains information about a run of models.
   ModelTriggerChartRecord:
@@ -9043,10 +9173,6 @@ definitions:
   PipelineRun:
     type: object
     properties:
-      pipelineUid:
-        type: string
-        description: Unique identifier for the pipeline.
-        readOnly: true
       pipelineRunUid:
         type: string
         description: Unique identifier for each run.
@@ -9072,7 +9198,9 @@ definitions:
         readOnly: true
       runnerId:
         type: string
-        description: Runner ID. If current viewing requester does not have enough permission, it will return null.
+        description: |-
+          Runner ID. The user triggered the run. If current viewing requester does not
+          have enough permission, it will return null.
         readOnly: true
       inputs:
         type: array
@@ -9121,12 +9249,12 @@ definitions:
       requesterId:
         type: string
         description: |-
-          Requester ID. This field might be empty if the pipeline run belongs to a
-          deleted namespace.
+          Requester ID. The namespace used to trigger the run. This field might be
+          empty if the pipeline run belongs to a deleted namespace.
         readOnly: true
-      namespaceId:
+      pipelineNamespaceId:
         type: string
-        title: Namespace ID
+        description: ID of the namespace that owns the pipeline.
         readOnly: true
     description: PipelineRun represents a single execution of a pipeline.
   PipelineTriggerChartRecord:
@@ -9134,19 +9262,8 @@ definitions:
     properties:
       pipelineId:
         type: string
-        description: Pipeline ID.
-      pipelineUid:
-        type: string
-        description: Pipeline UUID.
-      triggerMode:
-        description: Trigger mode.
-        allOf:
-          - $ref: '#/definitions/Mode'
-      status:
-        description: Final status.
+        description: This field will be present present when the information is grouped by pipeline.
         readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1beta.Status'
       timeBuckets:
         type: array
         items:
@@ -9161,23 +9278,14 @@ definitions:
           format: int32
         description: Aggregated trigger count in each time bucket.
         readOnly: true
-      computeTimeDuration:
-        type: array
-        items:
-          type: number
-          format: float
-        description: Total computation time duration in each time bucket.
-        readOnly: true
-      pipelineReleaseId:
+      requesterId:
         type: string
-        description: Version for the triggered pipeline if it is a release pipeline.
-        readOnly: true
-      pipelineReleaseUid:
-        type: string
-        description: Release UUID for the triggered pipeline if it is a release pipeline.
+        description: The ID of the namespace that requested the model triggers.
         readOnly: true
     description: |-
-      PipelineTriggerChartRecord contains pipeline trigger metrics, aggregated by
+      PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
+      contains a collection of (timestamp, count) pairs that represent the total
+      pipeline triggers in a given time bucket.
       pipeline ID and time frame.
   PipelineTriggerRecord:
     type: object
@@ -9849,6 +9957,22 @@ definitions:
     description: |-
       TriggerAsyncNamespacePipelineResponse contains the information to access the
       status of an asynchronous pipeline execution.
+  TriggerCount:
+    type: object
+    properties:
+      triggerCount:
+        type: integer
+        format: int32
+        description: Number of triggers.
+        readOnly: true
+      status:
+        description: This field will be present when results are grouped by trigger status.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1beta.Status'
+    description: |-
+      TriggerCount represents a execution count with some
+      aggregation params (e.g. trigger status).
   TriggerData:
     type: object
     properties:
