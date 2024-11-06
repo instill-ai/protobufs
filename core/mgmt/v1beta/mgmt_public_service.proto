@@ -458,7 +458,7 @@ service MgmtPublicService {
   // Returns the pipeline trigger count of a given requester within a timespan.
   // Results are grouped by trigger status.
   rpc GetPipelineTriggerCount(GetPipelineTriggerCountRequest) returns (GetPipelineTriggerCountResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/trigger-count"};
+    option (google.api.http) = {get: "/v1beta/pipeline-runs/count"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "📊 Metrics"
       extensions: {
@@ -466,9 +466,6 @@ service MgmtPublicService {
         value: {string_value: "beta"}
       }
     };
-    // This endpoint will remain hidden until the new dashboard is implemented
-    // in the frontend. Until then, the server might return empty data.
-    option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
   // Get model trigger count
@@ -489,30 +486,13 @@ service MgmtPublicService {
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
-  // List pipeline trigger metrics
-  //
-  // Returns a paginated list of pipeline executions aggregated by pipeline ID.
-  // NOTE: This method is deprecated and will be retired soon.
-  rpc ListPipelineTriggerTableRecords(ListPipelineTriggerTableRecordsRequest) returns (ListPipelineTriggerTableRecordsResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/tables"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "📊 Metrics"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-    option deprecated = true;
-    option (google.api.method_visibility).restriction = "INTERNAL";
-  }
-
   // List pipeline trigger time charts
   //
-  // Returns a timeline of pipline trigger counts for the pipelines of a given
-  // owner.
-  // NOTE: This method will soon return the trigger counts of a given requester.
+  // Returns a timeline of pipline trigger counts for a given requester. The
+  // response will contain one set of records (datapoints), representing the
+  // amount of triggers in a time bucket.
   rpc ListPipelineTriggerChartRecords(ListPipelineTriggerChartRecordsRequest) returns (ListPipelineTriggerChartRecordsResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/charts"};
+    option (google.api.http) = {get: "/v1beta/pipeline-runs/query-charts"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "📊 Metrics"
       extensions: {
