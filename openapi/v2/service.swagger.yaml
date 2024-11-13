@@ -6073,6 +6073,13 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/ComponentDefinition.ReleaseStage'
+      events:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/ComponentEvent'
+        description: List of events that can be produced by the component.
+        readOnly: true
     description: ComponentDefinition describes a certain type of Component.
   ComponentDefinition.ReleaseStage:
     type: string
@@ -6126,6 +6133,24 @@ definitions:
        - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
       field).
        - VIEW_FULL: Full representation.
+  ComponentEvent:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The event name, e.g. `EVENT_NEW`.
+        readOnly: true
+      title:
+        type: string
+        description: Title is the event name in a human-friendly format.
+        readOnly: true
+      description:
+        type: string
+        description: Description contains information about the event.
+        readOnly: true
+    description: |-
+      ComponentEvent contains information about an event that a component can
+      produce.
   ComponentRun:
     type: object
     properties:
@@ -6560,7 +6585,9 @@ definitions:
         type: object
         description: JSON schema describing the component output data.
         readOnly: true
-    description: DataSpecification describes the JSON schema of component input and output.
+    description: |-
+      DataSpecification describes the JSON schema of component input and output.
+      Note: This message will be renamed to TaskSpecifications in the future.
   DeleteAppResponse:
     type: object
     description: DeleteAppResponse represents a response for deleting a app.
@@ -6649,6 +6676,24 @@ definitions:
     description: |-
       ErrPipelineValidation contains information about a failed pipeline
       validation.
+  EventSpecification:
+    type: object
+    properties:
+      setupSchema:
+        type: object
+        description: JSON schema describing the component event setup data.
+        readOnly: true
+      messageSchema:
+        type: object
+        description: JSON schema describing the component event message data.
+        readOnly: true
+      messageExamples:
+        type: array
+        items:
+          type: object
+        description: JSON schema describing the component event examples.
+        readOnly: true
+    description: EventSpecification describes the JSON schema of component event setup and examples.
   File:
     type: object
     properties:
@@ -9560,6 +9605,7 @@ definitions:
       componentSpecification:
         type: object
         description: Component specification.
+        readOnly: true
       dataSpecifications:
         type: object
         additionalProperties:
@@ -9567,10 +9613,17 @@ definitions:
         description: |-
           Data specifications.
           The key represents the task, and the value is the corresponding data_specification.
+          Note: This field will be renamed to task_specifications in the future.
+        readOnly: true
+      eventSpecifications:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/EventSpecification'
+        description: |-
+          Event specifications.
+          The key represents the event, and the value is the corresponding event_specification.
+        readOnly: true
     description: Spec represents a specification data model.
-    required:
-      - componentSpecification
-      - dataSpecifications
   StripeSubscriptionDetail:
     type: object
     properties:
