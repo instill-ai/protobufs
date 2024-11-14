@@ -232,22 +232,37 @@ service PipelinePublicService {
     };
   }
 
-  // SendNamespacePipelineEvent
-  rpc SendNamespacePipelineEvent(SendNamespacePipelineEventRequest) returns (SendNamespacePipelineEventResponse) {
+  // HandleNamespacePipelineWebhookEvent
+  rpc HandleNamespacePipelineWebhookEvent(HandleNamespacePipelineWebhookEventRequest) returns (HandleNamespacePipelineWebhookEventResponse) {
     option (google.api.http) = {
-      post: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/events"
+      post: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/webhooks"
       body: "data"
       response_body: "data"
     };
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
-  // SendNamespacePipelineReleaseEvent
-  rpc SendNamespacePipelineReleaseEvent(SendNamespacePipelineReleaseEventRequest) returns (SendNamespacePipelineReleaseEventResponse) {
+  // HandleNamespacePipelineReleaseWebhookEvent
+  rpc HandleNamespacePipelineReleaseWebhookEvent(HandleNamespacePipelineReleaseWebhookEventRequest) returns (HandleNamespacePipelineReleaseWebhookEventResponse) {
     option (google.api.http) = {
-      post: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/releases/{release_id}/events"
+      post: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/releases/{release_id}/webhooks"
       body: "data"
       response_body: "data"
+    };
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+  // Dispatch Pipeline Webhook Event
+  //
+  // Handles webhook events by routing them to the appropriate pipeline based on the webhook type and message.
+  // The webhook type determines which component processes the event, while the message payload contains data
+  // that triggers pipeline execution. The pipeline processes the event using configured handlers and returns
+  // a response to the webhook sender.
+  rpc DispatchPipelineWebhookEvent(DispatchPipelineWebhookEventRequest) returns (DispatchPipelineWebhookEventResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/pipeline-webhooks/{webhook_type}"
+      body: "message"
+      response_body: "response"
     };
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
