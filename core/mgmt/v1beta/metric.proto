@@ -76,75 +76,48 @@ message GetModelTriggerCountResponse {
   repeated TriggerCount model_trigger_counts = 1;
 }
 
-/*
-   // PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
-   // contains a collection of (timestamp, count) pairs that represent the total
-   // pipeline triggers in a given time bucket.
-   // pipeline ID and time frame.
-   message PipelineTriggerChartRecord {
-     // This field will be present present when the information is grouped by pipeline.
-     optional string pipeline_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-     // 2 is reserved for the pipeline UUID.
-     reserved 2;
-     // 3 is reserved for the trigger mode. The server wasn't grouping results by this
-     // field.
-     reserved 3;
-     // 4 is reserved for the trigger status. The server wasn't grouping results
-     // by this field.
-     reserved 4;
-     // Time buckets.
-     repeated google.protobuf.Timestamp time_buckets = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-     // Aggregated trigger count in each time bucket.
-     repeated int32 trigger_counts = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-     // 7 is reserved for the trigger execution duration.
-     reserved 7;
-     // 8 is reserved for the pipeline release ID. The server wasn't grouping
-     // results by this field.
-     reserved 8;
-     // 9 is reserved for the pipeline release UUID. The server wasn't grouping
-     // results by this field.
-     reserved 9;
-     // The ID of the namespace that requested the pipeline triggers.
-     string namespace_id = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
-   }
+// PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
+// contains a collection of (timestamp, count) pairs that represent the total
+// pipeline triggers in a given time bucket.
+// pipeline ID and time frame.
+message PipelineTriggerChartRecord {
+  // This field will be present present when the information is grouped by pipeline.
+  optional string pipeline_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Time buckets.
+  repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Aggregated trigger count in each time bucket.
+  repeated int32 trigger_counts = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The ID of the namespace that requested the pipeline triggers.
+  string requester_id = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
 
-   // ListPipelineTriggerChartRecordsRequest represents a request to list pipeline
-   // trigger chart records for a given requester, grouped by time buckets.
-   message ListPipelineTriggerChartRecordsRequest {
-     // 1 is reserved for the aggregation window in nanoseconds. This is
-     // deprecated in favour of an aggregation window string that represents a
-     // duration.
-     reserved 1;
-     // 2 is reserved for the filter. For now, this endpoint won't allow filtering
-     // but in the future we might implement a filter to show the trigger count of
-     // only certain pipelines and to group by the pipeline ID.
-     reserved 2;
+// ListPipelineTriggerChartRecordsRequest represents a request to list pipeline
+// trigger chart records for a given requester, grouped by time buckets.
+message ListPipelineTriggerChartRecordsRequest {
+  // The ID of the namespace that requested the pipeline triggers.
+  string requester_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // Aggregation window. The value is a positive duration string, i.e. a
+  // sequence of decimal numbers, each with optional fraction and a unit
+  // suffix, such as "300ms", "1.5h" or "2h45m".
+  // The minimum (and default) window is 1h.
+  optional string aggregation_window = 2;
+  // Beginning of the time range from which the records will be fetched.
+  // The default value is the beginning of the current day, in UTC.
+  optional google.protobuf.Timestamp start = 3;
+  // End of the time range from which the records will be fetched.
+  // The default value is the current timestamp.
+  optional google.protobuf.Timestamp stop = 4;
+}
 
-     // The ID of the namespace that requested the pipeline triggers.
-     string namespace_id = 3 [(google.api.field_behavior) = REQUIRED];
-     // Aggregation window. The value is a positive duration string, i.e. a
-     // sequence of decimal numbers, each with optional fraction and a unit
-     // suffix, such as "300ms", "1.5h" or "2h45m".
-     // The minimum (and default) window is 1h.
-     optional string aggregation_window = 4;
-     // Beginning of the time range from which the records will be fetched.
-     // The default value is the beginning of the current day, in UTC.
-     optional google.protobuf.Timestamp start = 5;
-     // End of the time range from which the records will be fetched.
-     // The default value is the current timestamp.
-     optional google.protobuf.Timestamp stop = 6;
-   }
-
-   // ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
-   // chart records.
-   message ListPipelineTriggerChartRecordsResponse {
-     // Pipeline trigger counts. Until we allow filtering or grouping by fields
-     // like pipeline ID, this list will contain only one element with the
-     // timeline of trigger counts for a given requester, regardless the pipeline
-     // ID, trigger mode, final status or other fields.
-     repeated PipelineTriggerChartRecord pipeline_trigger_chart_records = 1;
-   }
-*/
+// ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
+// chart records.
+message ListPipelineTriggerChartRecordsResponse {
+  // Pipeline trigger counts. Until we allow filtering or grouping by fields
+  // like pipeline ID, this list will contain only one element with the
+  // timeline of trigger counts for a given requester, regardless the pipeline
+  // ID, trigger mode, final status or other fields.
+  repeated PipelineTriggerChartRecord pipeline_trigger_chart_records = 1;
+}
 
 // ModelTriggerChartRecord represents a timeline of model triggers. It
 // contains a collection of (timestamp, count) pairs that represent the total
@@ -164,18 +137,18 @@ message ModelTriggerChartRecord {
 // trigger metrics, aggregated by model ID and time frame.
 message ListModelTriggerChartRecordsRequest {
   // The ID of the namespace that requested the model triggers.
-  string requester_id = 3 [(google.api.field_behavior) = REQUIRED];
+  string requester_id = 1 [(google.api.field_behavior) = REQUIRED];
   // Aggregation window. The value is a positive duration string, i.e. a
   // sequence of decimal numbers, each with optional fraction and a unit
   // suffix, such as "300ms", "1.5h" or "2h45m".
   // The minimum (and default) window is 1h.
-  optional string aggregation_window = 4;
+  optional string aggregation_window = 2;
   // Beginning of the time range from which the records will be fetched.
   // The default value is the beginning of the current day, in UTC.
-  optional google.protobuf.Timestamp start = 5;
+  optional google.protobuf.Timestamp start = 3;
   // End of the time range from which the records will be fetched.
   // The default value is the current timestamp.
-  optional google.protobuf.Timestamp stop = 6;
+  optional google.protobuf.Timestamp stop = 4;
 }
 
 // ListModelTriggerChartRecordsResponse contains a list of model trigger
