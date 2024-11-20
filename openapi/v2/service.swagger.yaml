@@ -2133,56 +2133,13 @@ paths:
       tags:
         - "\U0001FA86 Namespace"
       x-stage: beta
-  /v1beta/metrics/vdp/pipeline/triggers:
-    get:
-      summary: List pipeline triggers
-      description: Returns a paginated list of pipeline executions.
-      operationId: MgmtPublicService_ListPipelineTriggerRecords
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListPipelineTriggerRecordsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: pageSize
-          description: |-
-            The maximum number of triggers to return. If this parameter is unspecified,
-            at most 100 pipelines will be returned. The cap value for this parameter is
-            1000 (i.e. any value above that will be coerced to 100).
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token.
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-          in: query
-          required: false
-          type: string
-      tags:
-        - "\U0001F4CA Metrics"
-      x-stage: beta
-  /v1beta/metrics/vdp/pipeline/charts:
+  /v1beta/pipeline-runs/query-charts:
     get:
       summary: List pipeline trigger time charts
       description: |-
-        Returns a timeline of pipline trigger counts for the pipelines of a given
-        owner.
-        NOTE: This method will soon return the trigger counts of a given requester.
+        Returns a timeline of pipline trigger counts for a given requester. The
+        response will contain one set of records (datapoints), representing the
+        amount of triggers in a time bucket.
       operationId: MgmtPublicService_ListPipelineTriggerChartRecords
       responses:
         "200":
@@ -2197,20 +2154,36 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: aggregationWindow
-          description: Aggregation window in nanoseconds.
+        - name: requesterId
+          description: The ID of the namespace that requested the pipeline triggers.
           in: query
-          required: false
-          type: integer
-          format: int32
-        - name: filter
+          required: true
+          type: string
+        - name: aggregationWindow
           description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+            Aggregation window. The value is a positive duration string, i.e. a
+            sequence of decimal numbers, each with optional fraction and a unit
+            suffix, such as "300ms", "1.5h" or "2h45m".
+            The minimum (and default) window is 1h.
           in: query
           required: false
           type: string
+        - name: start
+          description: |-
+            Beginning of the time range from which the records will be fetched.
+            The default value is the beginning of the current day, in UTC.
+          in: query
+          required: false
+          type: string
+          format: date-time
+        - name: stop
+          description: |-
+            End of the time range from which the records will be fetched.
+            The default value is the current timestamp.
+          in: query
+          required: false
+          type: string
+          format: date-time
       tags:
         - "\U0001F4CA Metrics"
       x-stage: beta
@@ -2268,7 +2241,7 @@ paths:
       tags:
         - "\U0001F4CA Metrics"
       x-stage: beta
-  /v1beta/metrics/credit/charts:
+  /v1beta/credit/query-charts:
     get:
       summary: List Instill Credit consumption time charts
       description: |-
@@ -2276,6 +2249,8 @@ paths:
         response will contain one set of records (datapoints) per consumption
         source (e.g. "pipeline", "model"). Each datapoint represents the amount
         consumed in a time bucket.
+
+        This endpoint is only exposed on Instill Cloud.
       operationId: MgmtPublicService_ListCreditConsumptionChartRecords
       responses:
         "200":
@@ -7953,27 +7928,14 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/PipelineTriggerChartRecord'
-        description: A list of pipeline trigger records.
+        description: |-
+          Pipeline trigger counts. Until we allow filtering or grouping by fields
+          like pipeline ID, this list will contain only one element with the
+          timeline of trigger counts for a given requester, regardless the pipeline
+          ID, trigger mode, final status or other fields.
     description: |-
       ListPipelineTriggerChartRecordsResponse contains a list of pipeline trigger
       chart records.
-  ListPipelineTriggerRecordsResponse:
-    type: object
-    properties:
-      pipelineTriggerRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/PipelineTriggerRecord'
-        description: A list of pipeline triggers.
-      nextPageToken:
-        type: string
-        description: Next page token.
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of pipeline triggers.
-    description: ListPipelineTriggerRecordsResponse contains a list of pipeline triggers.
   ListPipelinesAdminResponse:
     type: object
     properties:
@@ -8210,16 +8172,6 @@ definitions:
        - METHOD_DICTIONARY: Key-value collection. The user is responsible of fetching the connection
       details from the 3rd party service.
        - METHOD_OAUTH: Access token created via OAuth 2.0 authorization.
-  Mode:
-    type: string
-    enum:
-      - MODE_SYNC
-      - MODE_ASYNC
-    description: |-
-      Mode describes the execution mode of the pipeline (sync or async).
-
-       - MODE_SYNC: Synchronous (result is returned in the response).
-       - MODE_ASYNC: Asynchronous (response only contains acknowledgement).
   Model:
     type: object
     properties:
@@ -9193,19 +9145,8 @@ definitions:
     properties:
       pipelineId:
         type: string
-        description: Pipeline ID.
-      pipelineUid:
-        type: string
-        description: Pipeline UUID.
-      triggerMode:
-        description: Trigger mode.
-        allOf:
-          - $ref: '#/definitions/Mode'
-      status:
-        description: Final status.
+        description: This field will be present present when the information is grouped by pipeline.
         readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1beta.Status'
       timeBuckets:
         type: array
         items:
@@ -9220,63 +9161,15 @@ definitions:
           format: int32
         description: Aggregated trigger count in each time bucket.
         readOnly: true
-      computeTimeDuration:
-        type: array
-        items:
-          type: number
-          format: float
-        description: Total computation time duration in each time bucket.
-        readOnly: true
-      pipelineReleaseId:
+      requesterId:
         type: string
-        description: Version for the triggered pipeline if it is a release pipeline.
-        readOnly: true
-      pipelineReleaseUid:
-        type: string
-        description: Release UUID for the triggered pipeline if it is a release pipeline.
+        description: The ID of the namespace that requested the pipeline triggers.
         readOnly: true
     description: |-
-      PipelineTriggerChartRecord contains pipeline trigger metrics, aggregated by
+      PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
+      contains a collection of (timestamp, count) pairs that represent the total
+      pipeline triggers in a given time bucket.
       pipeline ID and time frame.
-  PipelineTriggerRecord:
-    type: object
-    properties:
-      triggerTime:
-        type: string
-        format: date-time
-        description: The moment when the pipeline was triggered.
-      pipelineTriggerId:
-        type: string
-        description: UUID of the trigger.
-      pipelineId:
-        type: string
-        description: Pipeline ID.
-      pipelineUid:
-        type: string
-        description: Pipeline UUID.
-      triggerMode:
-        description: Trigger mode.
-        allOf:
-          - $ref: '#/definitions/Mode'
-      computeTimeDuration:
-        type: number
-        format: float
-        description: Total execution duration.
-        readOnly: true
-      status:
-        description: Final status.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1beta.Status'
-      pipelineReleaseId:
-        type: string
-        description: If a release of the pipeline was triggered, pipeline version.
-        readOnly: true
-      pipelineReleaseUid:
-        type: string
-        description: If a release of the pipeline was triggered, release UUID.
-        readOnly: true
-    description: PipelineTriggerRecord represents a pipeline execution event.
   ProcessCatalogFilesRequest:
     type: object
     properties:
@@ -10745,16 +10638,6 @@ definitions:
 
        - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
        - VIEW_FULL: Full representation.
-  v1beta.Status:
-    type: string
-    enum:
-      - STATUS_COMPLETED
-      - STATUS_ERRORED
-    description: |-
-      Status describes the output of an execution.
-
-       - STATUS_COMPLETED: Successfully completed.
-       - STATUS_ERRORED: Finished with error.
   v1beta.User:
     type: object
     properties:
