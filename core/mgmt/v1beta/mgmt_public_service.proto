@@ -439,26 +439,12 @@ service MgmtPublicService {
     };
   }
 
-  // List pipeline triggers
-  //
-  // Returns a paginated list of pipeline executions.
-  rpc ListPipelineTriggerRecords(ListPipelineTriggerRecordsRequest) returns (ListPipelineTriggerRecordsResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/triggers"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "📊 Metrics"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
   // Get pipeline trigger count
   //
   // Returns the pipeline trigger count of a given requester within a timespan.
   // Results are grouped by trigger status.
   rpc GetPipelineTriggerCount(GetPipelineTriggerCountRequest) returns (GetPipelineTriggerCountResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/trigger-count"};
+    option (google.api.http) = {get: "/v1beta/pipeline-runs/count"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "📊 Metrics"
       extensions: {
@@ -489,30 +475,13 @@ service MgmtPublicService {
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
-  // List pipeline trigger metrics
-  //
-  // Returns a paginated list of pipeline executions aggregated by pipeline ID.
-  // NOTE: This method is deprecated and will be retired soon.
-  rpc ListPipelineTriggerTableRecords(ListPipelineTriggerTableRecordsRequest) returns (ListPipelineTriggerTableRecordsResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/tables"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "📊 Metrics"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-    option deprecated = true;
-    option (google.api.method_visibility).restriction = "INTERNAL";
-  }
-
   // List pipeline trigger time charts
   //
-  // Returns a timeline of pipline trigger counts for the pipelines of a given
-  // owner.
-  // NOTE: This method will soon return the trigger counts of a given requester.
+  // Returns a timeline of pipline trigger counts for a given requester. The
+  // response will contain one set of records (datapoints), representing the
+  // amount of triggers in a time bucket.
   rpc ListPipelineTriggerChartRecords(ListPipelineTriggerChartRecordsRequest) returns (ListPipelineTriggerChartRecordsResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/charts"};
+    option (google.api.http) = {get: "/v1beta/pipeline-runs/query-charts"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "📊 Metrics"
       extensions: {
@@ -544,8 +513,10 @@ service MgmtPublicService {
   // response will contain one set of records (datapoints) per consumption
   // source (e.g. "pipeline", "model"). Each datapoint represents the amount
   // consumed in a time bucket.
+  //
+  // This endpoint is only exposed on Instill Cloud.
   rpc ListCreditConsumptionChartRecords(ListCreditConsumptionChartRecordsRequest) returns (ListCreditConsumptionChartRecordsResponse) {
-    option (google.api.http) = {get: "/v1beta/metrics/credit/charts"};
+    option (google.api.http) = {get: "/v1beta/credit/query-charts"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "📊 Metrics"
       extensions: {
@@ -602,6 +573,65 @@ service MgmtPublicService {
   // Checks the validity of an access token.
   rpc AuthValidateAccessToken(AuthValidateAccessTokenRequest) returns (AuthValidateAccessTokenResponse) {
     option (google.api.http) = {post: "/v1beta/auth/validate_access_token"};
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+  // ===========================================================================
+  // Deprecated endpoints, to be retired after new pipeline dashboard is rolled
+  // out.
+  // ===========================================================================
+
+  // List pipeline triggers
+  //
+  // Returns a paginated list of pipeline executions.
+  // NOTE: This method is deprecated and will be retired soon.
+  rpc ListPipelineTriggerRecords(ListPipelineTriggerRecordsRequest) returns (ListPipelineTriggerRecordsResponse) {
+    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/triggers"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "📊 Metrics"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+    option deprecated = true;
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+
+  // List pipeline trigger metrics
+  //
+  // Returns a paginated list of pipeline executions aggregated by pipeline ID.
+  // NOTE: This method is deprecated and will be retired soon.
+  rpc ListPipelineTriggerTableRecords(ListPipelineTriggerTableRecordsRequest) returns (ListPipelineTriggerTableRecordsResponse) {
+    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/tables"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "📊 Metrics"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+    option deprecated = true;
+    option (google.api.method_visibility).restriction = "INTERNAL";
+  }
+
+  // List pipeline trigger time charts
+  //
+  // Returns a timeline of pipline trigger counts for the pipelines of a given
+  // owner.
+  // NOTE: This method will soon be retired and replaced by
+  // ListPipelineTriggerchartRecords.
+  rpc ListPipelineTriggerChartRecordsV0(ListPipelineTriggerChartRecordsV0Request) returns (ListPipelineTriggerChartRecordsV0Response) {
+    option (google.api.http) = {get: "/v1beta/metrics/vdp/pipeline/charts"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "📊 Metrics"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+    option deprecated = true;
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 }
