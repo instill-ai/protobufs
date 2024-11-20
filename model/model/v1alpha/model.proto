@@ -1724,8 +1724,9 @@ message UndeployOrganizationModelAdminResponse {}
 message ModelRun {
   // Model Run UUID.
   string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Model UUID.
-  string model_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // 2 is reserved for the model UUID. Public resources should be identified by
+  // their ID and parent resource.
+  reserved 2;
   // Model run status.
   common.run.v1alpha.RunStatus status = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Run source.
@@ -1770,11 +1771,11 @@ message ModelRun {
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
   ];
-  // Requester ID. This field might be empty if the model run belongs to a
-  // deleted namespace.
+  // Requester ID. The namespace used to trigger the run. This field might be
+  // empty if the model run belongs to a deleted namespace.
   string requester_id = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Namespace ID.
-  string namespace_id = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // ID of the namespace that owns the model.
+  string model_namespace_id = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListModelRunsRequest represents a request to list of model runs.
