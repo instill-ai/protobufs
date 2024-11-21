@@ -852,8 +852,9 @@ service ModelPublicService {
   //
   // Returns a paginated list of runs for a given model. When the requester is
   // the owner of the model, they will be able to all the model runs,
-  // regardless who requested the trigger. Other requesters will only be able
-  // to see the runs requested by themselves.
+  // regardless who requested the trigger (the view will be partial to hide
+  // sensitive data like e.g. the trigger input and output). Other requesters
+  // will only be able to see the runs requested by themselves.
   rpc ListModelRuns(ListModelRunsRequest) returns (ListModelRunsResponse) {
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/models/{model_id}/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -880,13 +881,6 @@ service ModelPublicService {
     option (google.api.http) = {get: "/v1alpha/dashboard/models/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
-      parameters: {
-        headers: {
-          name: "Instill-Requester-Uid"
-          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
-          type: STRING
-        }
-      }
       extensions: {
         key: "x-stage"
         value: {string_value: "alpha"}
