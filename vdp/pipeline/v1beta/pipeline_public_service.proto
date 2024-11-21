@@ -1322,8 +1322,8 @@ service PipelinePublicService {
   //
   // Returns a paginated list of runs for a given pipeline. When the requester
   // is the owner of the pipeline, they will be able to all the pipeline runs,
-  // regardless the requester. Other requesters will only be able to see the
-  // runs requested by themselves.
+  // regardless who requested the trigger. Other requesters will only be able
+  // to see the runs requested by themselves.
   rpc ListPipelineRuns(ListPipelineRunsRequest) returns (ListPipelineRunsResponse) {
     option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -1342,7 +1342,7 @@ service PipelinePublicService {
     };
   }
 
-  // List Component runs
+  // List Component Runs
   //
   // Returns the information of each component execution within a pipeline run.
   rpc ListComponentRuns(ListComponentRunsRequest) returns (ListComponentRunsResponse) {
@@ -1363,10 +1363,10 @@ service PipelinePublicService {
     };
   }
 
-  // List Pipeline Runs of a Namespace (user or organization)
+  // List Pipeline Runs By Requester
   //
-  // Returns a paginated list of runs for 1 or more pipelines. This is mainly used by dashboard.
-  // The requester can view all the runs by the requester across different pipelines.
+  // Returns a paginated list of runs for requested by a namespace. The
+  // response may contain runs from several pipelines.
   rpc ListPipelineRunsByRequester(ListPipelineRunsByRequesterRequest) returns (ListPipelineRunsByRequesterResponse) {
     option (google.api.http) = {get: "/v1beta/dashboard/pipelines/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
