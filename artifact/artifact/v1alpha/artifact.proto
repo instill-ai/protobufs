@@ -269,6 +269,16 @@ message Catalog {
   uint64 used_storage = 15;
 }
 
+// Catalog Type. e.g. "persistent" or "ephemeral"
+enum CatalogType {
+  // UNSPECIFIED
+  CATALOG_TYPE_UNSPECIFIED = 0;
+  // PERSISTENT
+  CATALOG_TYPE_PERSISTENT = 1;
+  // EPHEMERAL
+  CATALOG_TYPE_EPHEMERAL = 2;
+}
+
 // CreateCatalogRequest represents a request to create a catalog.
 message CreateCatalogRequest {
   // The catalog's owner(namespaces).
@@ -279,6 +289,8 @@ message CreateCatalogRequest {
   string description = 3;
   // The catalog tags.
   repeated string tags = 4;
+  // The catalog type. default is PERSISTENT
+  CatalogType type = 5;
 }
 
 // CreateCatalogResponse represents a response for creating a catalog.
@@ -287,7 +299,7 @@ message CreateCatalogResponse {
   Catalog catalog = 1;
 }
 
-// Request message for ListCatalogs
+// Request message for ListCatalogs(not include the ephemeral catalogs)
 message ListCatalogsRequest {
   // User ID for which to list the catalogs
   string namespace_id = 1;
@@ -422,6 +434,9 @@ message File {
 
   // Custom metadata provided by the user during file upload
   optional google.protobuf.Struct external_metadata = 17 [(google.api.field_behavior) = OPTIONAL];
+  // objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
+  // then no need the base64 encoding for the file content.
+  string object_uid = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // upload file request

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package app.app.v1alpha;
+
+// Google API
+import "google/api/field_behavior.proto";
+import "google/protobuf/struct.proto";
+// Protocol Buffers Well-Known Types
+import "google/protobuf/timestamp.proto";
+
+// AIAgentAppMetadata represents the metadata for the AI agent app.
+message AIAgentAppMetadata {
+  // The instructions for the AI agent app.
+  string instructions = 1 [(google.api.field_behavior) = OPTIONAL];
+  // The tools(pipelines) that the AI agent app can use.
+  repeated Tool tools = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The catalog uids that the AI agent app can use.
+  repeated string catalog_uids = 3 [(google.api.field_behavior) = OPTIONAL];
+  // The AI agent app top k.
+  int32 chunk_top_k = 4 [(google.api.field_behavior) = OPTIONAL];
+  // The AI agent chunk weight.
+  float chunk_weight = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// tool definitions
+message Tool {
+  // The tool name. e.g. ["preset/pipeline@v1.0.0", "preset/pipeline-2@v2.0.0"].
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  // The tool config
+  google.protobuf.Struct config = 3 [(google.api.field_behavior) = OPTIONAL];
+}
