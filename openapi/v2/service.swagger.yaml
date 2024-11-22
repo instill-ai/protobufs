@@ -58,6 +58,18 @@ paths:
           in: path
           required: true
           type: string
+        - name: appType
+          description: |-
+            app type(default is APP_TYPE_AI_ASSISTANT)
+
+             - APP_TYPE_AI_ASSISTANT: AppType is a AI assistant app.
+             - APP_TYPE_AI_AGENT: AppType is a AI agent app.
+          in: query
+          required: false
+          type: string
+          enum:
+            - APP_TYPE_AI_ASSISTANT
+            - APP_TYPE_AI_AGENT
       tags:
         - "\U0001F34E App"
       x-stage: alpha
@@ -213,6 +225,18 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: chatWith
+          description: |-
+            chat with
+
+             - CHAT_WITH_AI_ASSISTANT: chat with ai assistant(default)
+             - CHAT_WITH_AI_AGENT: chat with ai agent
+          in: query
+          required: false
+          type: string
+          enum:
+            - CHAT_WITH_AI_ASSISTANT
+            - CHAT_WITH_AI_AGENT
       tags:
         - "\U0001F34E App"
       x-stage: alpha
@@ -5247,6 +5271,32 @@ paths:
         - "\U0001F4A7 VDP"
       x-stage: beta
 definitions:
+  AIAgentAppMetadata:
+    type: object
+    properties:
+      instructions:
+        type: string
+        description: The instructions for the AI agent app.
+      tools:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Tool'
+        description: The tools(pipelines) that the AI agent app can use.
+      catalogUids:
+        type: array
+        items:
+          type: string
+        description: The catalog uids that the AI agent app can use.
+      chunkTopK:
+        type: integer
+        format: int32
+        description: The AI agent app top k.
+      chunkWeight:
+        type: number
+        format: float
+        description: The AI agent chunk weight.
+    description: AIAgentAppMetadata represents the metadata for the AI agent app.
   AIAssistantAppMetadata:
     type: object
     properties:
@@ -5492,6 +5542,11 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/AIAssistantAppMetadata'
+      aiAgentApp:
+        description: The AI agent app metadata.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/AIAgentAppMetadata'
       appType:
         description: The app type.
         readOnly: true
@@ -5512,10 +5567,12 @@ definitions:
     type: string
     enum:
       - APP_TYPE_AI_ASSISTANT
+      - APP_TYPE_AI_AGENT
     description: |-
       AppType represents the type of the app.
 
        - APP_TYPE_AI_ASSISTANT: AppType is a AI assistant app.
+       - APP_TYPE_AI_AGENT: AppType is a AI agent app.
   AuthenticatedUser:
     type: object
     properties:
@@ -5741,6 +5798,15 @@ definitions:
        - CATALOG_RUN_ACTION_CREATE_FILE: Upload catalog file.
        - CATALOG_RUN_ACTION_PROCESS_FILE: Process catalog file.
        - CATALOG_RUN_ACTION_DELETE_FILE: Delete catalog file.
+  CatalogType:
+    type: string
+    enum:
+      - CATALOG_TYPE_PERSISTENT
+      - CATALOG_TYPE_EPHEMERAL
+    description: |-
+      - CATALOG_TYPE_PERSISTENT: PERSISTENT
+       - CATALOG_TYPE_EPHEMERAL: EPHEMERAL
+    title: Catalog Type. e.g. "persistent" or "ephemeral"
   ChatBody:
     type: object
     properties:
@@ -5787,6 +5853,15 @@ definitions:
         title: Reference chunks
         readOnly: true
     description: ChatResponse contains the chatbot response.
+  ChatWith:
+    type: string
+    enum:
+      - CHAT_WITH_AI_ASSISTANT
+      - CHAT_WITH_AI_AGENT
+    description: |-
+      - CHAT_WITH_AI_ASSISTANT: chat with ai assistant(default)
+       - CHAT_WITH_AI_AGENT: chat with ai agent
+    title: ChatWith enum
   CheckNamespaceAdminResponse:
     type: object
     properties:
@@ -6353,6 +6428,22 @@ definitions:
         format: date-time
         title: update time of the conversation
         readOnly: true
+      aiAgentApp:
+        title: agent metadata
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/AIAgentAppMetadata'
+      tempCatalogId:
+        type: string
+        title: temp catalog id automatically created for ai agent app
+      chatWith:
+        title: chat with
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ChatWith'
+      conversationDisplayName:
+        type: string
+        title: conversation display name
     title: Conversation represents a chat conversation
     required:
       - namespaceId
@@ -6375,9 +6466,22 @@ definitions:
         items:
           type: string
         description: The app tags.
+      appType:
+        title: app type(default is APP_TYPE_AI_ASSISTANT)
+        allOf:
+          - $ref: '#/definitions/AppType'
+      aiAssistantApp:
+        title: ai assistant app metadata
+        allOf:
+          - $ref: '#/definitions/AIAssistantAppMetadata'
+      aiAgentApp:
+        title: ai agent app metadata
+        allOf:
+          - $ref: '#/definitions/AIAgentAppMetadata'
     description: CreateAppRequest represents a request to create a app.
     required:
       - id
+      - appType
   CreateAppResponse:
     type: object
     properties:
@@ -6401,6 +6505,10 @@ definitions:
         items:
           type: string
         description: The catalog tags.
+      type:
+        title: The catalog type. default is PERSISTENT
+        allOf:
+          - $ref: '#/definitions/CatalogType'
     description: CreateCatalogRequest represents a request to create a catalog.
   CreateCatalogResponse:
     type: object
@@ -6416,6 +6524,17 @@ definitions:
       conversationId:
         type: string
         title: conversation id. only allow kebab case
+      chatWith:
+        title: chat with(optional) default is CHAT_WITH_AI_ASSISTANT
+        allOf:
+          - $ref: '#/definitions/ChatWith'
+      conversationDisplayName:
+        type: string
+        title: conversation display name
+      aiAgentApp:
+        title: agent metadata
+        allOf:
+          - $ref: '#/definitions/AIAgentAppMetadata'
     title: CreateConversationRequest is used to create a new conversation
     required:
       - conversationId
@@ -6758,6 +6877,12 @@ definitions:
       externalMetadata:
         type: object
         title: Custom metadata provided by the user during file upload
+      objectUid:
+        type: string
+        description: |-
+          objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
+          then no need the base64 encoding for the file content.
+        readOnly: true
     title: file
     required:
       - name
@@ -9662,6 +9787,18 @@ definitions:
         format: date-time
         title: transformed content update time
     title: text message
+  Tool:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The tool name. e.g. ["preset/pipeline@v1.0.0", "preset/pipeline-2@v2.0.0"].
+      config:
+        type: object
+        title: The tool config
+    title: tool definitions
+    required:
+      - name
   Trace:
     type: object
     properties:
@@ -10066,6 +10203,14 @@ definitions:
         description: |-
           last AI assistant app top k
           If the last AI assistant app top k is empty, the last AI assistant app top k will be set to empty.
+      aiAssistantApp:
+        title: ai assistant app metadata
+        allOf:
+          - $ref: '#/definitions/AIAssistantAppMetadata'
+      aiAgentApp:
+        title: ai agent app metadata
+        allOf:
+          - $ref: '#/definitions/AIAgentAppMetadata'
     description: UpdateAppRequest represents a request to update a app.
   UpdateAppResponse:
     type: object
@@ -10119,11 +10264,18 @@ definitions:
         title: new conversation id
       lastUsedCatalogUid:
         type: string
-        title: last used catalog uid
+        title: last used catalog uid(only for ai assistant app)
       lastUsedTopK:
         type: integer
         format: int64
-        title: last used top k
+        title: last used top k(only for ai assistant app)
+      aiAgentApp:
+        title: ai agent app metadata
+        allOf:
+          - $ref: '#/definitions/AIAgentAppMetadata'
+      conversationDisplayName:
+        type: string
+        title: conversation display name
     title: UpdateConversationRequest is used to update a conversation
   UpdateConversationResponse:
     type: object
@@ -10408,7 +10560,7 @@ definitions:
         title: message content
       role:
         type: string
-        title: message role e.g., "user" or "assistant"
+        title: message role e.g., "user" or "assistant" or "agent"
       type:
         title: message type
         allOf:
@@ -10426,6 +10578,17 @@ definitions:
       msgSenderUid:
         type: string
         title: message sender uid
+        readOnly: true
+      chunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alpha.Chunk'
+        title: the chunks attached to the message
+        readOnly: true
+      standaloneQuestion:
+        type: string
+        title: standalone question
         readOnly: true
     title: Message represents a single message in a conversation
     required:
