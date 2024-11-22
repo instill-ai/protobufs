@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package app.app.v1alpha;
 
+import "app/app/v1alpha/agent.proto";
 import "app/app/v1alpha/conversation.proto";
 import "common/healthcheck/v1beta/healthcheck.proto";
 // Google API
@@ -61,13 +62,15 @@ message App {
   oneof metadata {
     // The AI assistant app metadata.
     AIAssistantAppMetadata ai_assistant_app = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // The AI agent app metadata.
+    AIAgentAppMetadata ai_agent_app = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
   // The app type.
-  AppType app_type = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  AppType app_type = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
   // app uid
-  string app_uid = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string app_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
   // creator uid
-  string creator_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string creator_uid = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // AIAssistantAppMetadata represents the metadata for the AI assistant app.
@@ -84,6 +87,8 @@ enum AppType {
   APP_TYPE_UNSPECIFIED = 0;
   // AppType is a AI assistant app.
   APP_TYPE_AI_ASSISTANT = 1;
+  // AppType is a AI agent app.
+  APP_TYPE_AI_AGENT = 2;
 }
 
 // CreateAppRequest represents a request to create a app.
@@ -98,6 +103,15 @@ message CreateAppRequest {
   string description = 3 [(google.api.field_behavior) = OPTIONAL];
   // The app tags.
   repeated string tags = 4 [(google.api.field_behavior) = OPTIONAL];
+  // app type(default is APP_TYPE_AI_ASSISTANT)
+  AppType app_type = 5 [(google.api.field_behavior) = REQUIRED];
+  // app metadata
+  oneof metadata {
+    // ai assistant app metadata
+    AIAssistantAppMetadata ai_assistant_app = 6 [(google.api.field_behavior) = OPTIONAL];
+    // ai agent app metadata
+    AIAgentAppMetadata ai_agent_app = 7 [(google.api.field_behavior) = OPTIONAL];
+  }
 }
 
 // CreateAppResponse represents a response for creating a app.
@@ -110,6 +124,8 @@ message CreateAppResponse {
 message ListAppsRequest {
   // User ID for which to list the apps
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // app type(default is APP_TYPE_AI_ASSISTANT)
+  AppType app_type = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetAppsResponse represents a response for getting all apps from users.
@@ -139,6 +155,13 @@ message UpdateAppRequest {
   // last AI assistant app top k
   // If the last AI assistant app top k is empty, the last AI assistant app top k will be set to empty.
   int32 last_ai_assistant_app_top_k = 7 [(google.api.field_behavior) = OPTIONAL];
+  // update app metadata
+  oneof metadata {
+    // ai assistant app metadata
+    AIAssistantAppMetadata ai_assistant_app = 8 [(google.api.field_behavior) = OPTIONAL];
+    // ai agent app metadata
+    AIAgentAppMetadata ai_agent_app = 9 [(google.api.field_behavior) = OPTIONAL];
+  }
 }
 
 // UpdateAppResponse represents a response for updating a app.
