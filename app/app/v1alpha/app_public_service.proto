@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package app.app.v1alpha;
 
+import "app/app/v1alpha/agent.proto";
 // App definitions
 import "app/app/v1alpha/app.proto";
 import "app/app/v1alpha/conversation.proto";
@@ -71,7 +72,7 @@ service AppPublicService {
     };
   }
 
-  // Update a app info
+  // Update an app's information
   //
   // Updates the information of an app.
   rpc UpdateApp(UpdateAppRequest) returns (UpdateAppResponse) {
@@ -88,7 +89,7 @@ service AppPublicService {
     };
   }
 
-  // Delete a app
+  // Delete an app
   //
   // Deletes an app.
   rpc DeleteApp(DeleteAppRequest) returns (DeleteAppResponse) {
@@ -164,6 +165,68 @@ service AppPublicService {
     };
   }
 
+  // Create an agent
+  //
+  // Creates an agent.
+  rpc CreateAgent(CreateAgentRequest) returns (CreateAgentResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/agents"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "🍎 App"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // List all agents info
+  //
+  // Returns a paginated list of agents.
+  rpc ListAgents(ListAgentsRequest) returns (ListAgentsResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/agents"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "🍎 App"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Update an agent
+  //
+  // Updates the information of an agent.
+  rpc UpdateAgent(UpdateAgentRequest) returns (UpdateAgentResponse) {
+    option (google.api.http) = {
+      put: "/v1alpha/namespaces/{namespace_id}/agents/{agent_uid}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "🍎 App"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Delete an agent
+  //
+  // Deletes an agent.
+  rpc DeleteAgent(DeleteAgentRequest) returns (DeleteAgentResponse) {
+    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/agents/{agent_uid}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "🍎 App"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
   // Create a chat
   //
   // Creates a chat.
@@ -183,7 +246,7 @@ service AppPublicService {
 
   // List chats
   //
-  // Returns a paginated list of conversations.
+  // Returns a list of chats.
   rpc ListChats(ListChatsRequest) returns (ListChatsResponse) {
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/chats"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -290,9 +353,23 @@ service AppPublicService {
 
   // Get Playground Conversation
   //
-  // Returns the latest conversation of auth user(e.g. login user and api key user).
+  // Returns the latest conversation for the authenticated user (e.g., logged-in user or API key user).
   rpc GetPlaygroundConversation(GetPlaygroundConversationRequest) returns (GetPlaygroundConversationResponse) {
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/ai_assistant_playground/conversation"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "🍎 App"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // List all tools
+  //
+  // Returns a list of tools.
+  rpc ListTools(ListToolsRequest) returns (ListToolsResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/tools"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "🍎 App"
       extensions: {
@@ -318,8 +395,8 @@ service AppPublicService {
 
   // Restart Playground Conversation
   //
-  // Creates a new conversation and uses the auth user UID as creator UID and
-  // auto-generates a new conversation ID on the behalf of auth user.
+  // Creates a new conversation using the authenticated user's UID as creator and
+  // auto-generates a new conversation ID on behalf of the authenticated user.
   rpc RestartPlaygroundConversation(RestartPlaygroundConversationRequest) returns (RestartPlaygroundConversationResponse) {
     option (google.api.http) = {post: "/v1alpha/namespaces/{namespace_id}/apps/{app_id}/ai_assistant_playground/restart"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
