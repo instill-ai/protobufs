@@ -64,6 +64,30 @@ message Chat {
 //   CHAT_WITH_AI_AGENT = 2;
 // }
 
+// type of the citations message
+enum CitationsType {
+  // Unspecified citation type
+  CITATIONS_TYPE_UNSPECIFIED = 0;
+  // Chunk-based citation
+  CITATIONS_TYPE_CHUNK = 1;
+  // URL-based citation
+  CITATIONS_TYPE_URL = 2;
+}
+
+// Citation message
+message Citation {
+  // Type of citation
+  CitationsType type = 1;
+  // Name of the citation
+  string name = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // URL of the citation (only applicable for URL-type citations)
+  optional string url = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Chunk UID (only applicable for chunk-type citations)
+  optional string chunk_uid = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // File UID (only applicable for chunk-type citations)
+  optional string file_uid = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // Message represents a single message in a conversation
 message Message {
   // message type
@@ -89,12 +113,12 @@ message Message {
   google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // update time of the message
   google.protobuf.Timestamp update_time = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // message sender uid
+  // message sender uid(only for user messages)
   string msg_sender_uid = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // the chunks attached to the message
-  repeated artifact.artifact.v1alpha.Chunk chunks = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // standalone question
-  string standalone_question = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // standalone question(only for user messages)
+  string standalone_question = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // citations(only for agent messages)
+  repeated Citation citations = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // CreateConversationRequest is used to create a new conversation
