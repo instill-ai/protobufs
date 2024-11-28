@@ -6343,6 +6343,39 @@ definitions:
        - CHUNK_TYPE_AUDIO: audio
        - CHUNK_TYPE_VIDEO: video
     title: chunk type
+  Citation:
+    type: object
+    properties:
+      type:
+        title: Type of citation
+        allOf:
+          - $ref: '#/definitions/CitationsType'
+      name:
+        type: string
+        title: Name of the citation
+        readOnly: true
+      url:
+        type: string
+        title: URL of the citation (only applicable for URL-type citations)
+        readOnly: true
+      chunkUid:
+        type: string
+        title: Chunk UID (only applicable for chunk-type citations)
+        readOnly: true
+      fileUid:
+        type: string
+        title: File UID (only applicable for chunk-type citations)
+        readOnly: true
+    title: Citation message
+  CitationsType:
+    type: string
+    enum:
+      - CITATIONS_TYPE_CHUNK
+      - CITATIONS_TYPE_URL
+    description: |-
+      - CITATIONS_TYPE_CHUNK: Chunk-based citation
+       - CITATIONS_TYPE_URL: URL-based citation
+    title: type of the citations message
   CloneNamespacePipelineBody:
     type: object
     properties:
@@ -11038,18 +11071,18 @@ definitions:
         readOnly: true
       msgSenderUid:
         type: string
-        title: message sender uid
-        readOnly: true
-      chunks:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/v1alpha.Chunk'
-        title: the chunks attached to the message
+        title: message sender uid(only for user messages)
         readOnly: true
       standaloneQuestion:
         type: string
-        title: standalone question
+        title: standalone question(only for user messages)
+        readOnly: true
+      citations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Citation'
+        title: citations(only for agent messages)
         readOnly: true
     title: Message represents a single message in a conversation
     required:
