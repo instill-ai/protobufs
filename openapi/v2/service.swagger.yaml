@@ -1313,8 +1313,34 @@ paths:
           in: query
           required: false
           type: string
+      tags:
+        - "\U0001F4BE Artifact"
+      x-stage: beta
+  /v1alpha/namespaces/{namespaceId}/chunks:
+    get:
+      summary: Search catalog chunks
+      description: Returns a paginated list of catalog chunks based on search criteria.
+      operationId: ArtifactPublicService_SearchChunks
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/SearchChunksResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: owner/namespace id (not uid)
+          in: path
+          required: true
+          type: string
         - name: chunkUids
-          description: repeated chunk uid(not implemented yet)
+          description: chunk uids
           in: query
           required: false
           type: array
@@ -1357,6 +1383,40 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - "\U0001F4BE Artifact"
+      x-stage: beta
+  /v1alpha/namespaces/{namespaceId}/source-files:
+    get:
+      summary: Search single-source-of-truth files
+      description: Searches the single-source-of-truth files of a catalog.
+      operationId: ArtifactPublicService_SearchSourceFiles
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/SearchSourceFilesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: owner/namespace id
+          in: path
+          required: true
+          type: string
+        - name: fileUids
+          description: search file uid
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
       tags:
         - "\U0001F4BE Artifact"
       x-stage: beta
@@ -9940,6 +10000,26 @@ definitions:
        - RUN_STATUS_COMPLETED: Run succeeded.
        - RUN_STATUS_FAILED: Run failed.
        - RUN_STATUS_QUEUED: Run is waiting to be executed.
+  SearchChunksResponse:
+    type: object
+    properties:
+      chunks:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/v1alpha.Chunk'
+        title: repeated chunks
+    title: Search chunks response
+  SearchSourceFilesResponse:
+    type: object
+    properties:
+      sourceFiles:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/SourceFile'
+        title: source files
+    title: search source file response
   Secret:
     type: object
     properties:
@@ -10092,6 +10172,9 @@ definitions:
         type: string
         format: date-time
         title: update time of the source file
+      originalFileName:
+        type: string
+        title: original file name
     description: The SourceFile message represents a source file in the artifact system.
   Spec:
     type: object
