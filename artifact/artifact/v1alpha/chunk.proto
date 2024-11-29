@@ -33,12 +33,24 @@ message ListChunksRequest {
   string catalog_id = 2;
   // unique identifier of the file
   string file_uid = 3;
-  // repeated chunk uid(not implemented yet)
-  repeated string chunk_uids = 4;
 }
 
 // The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
 message ListChunksResponse {
+  // repeated chunks
+  repeated Chunk chunks = 1;
+}
+
+// Search chunks request
+message SearchChunksRequest {
+  // owner/namespace id (not uid)
+  string namespace_id = 1;
+  // chunk uids
+  repeated string chunk_uids = 2;
+}
+
+// Search chunks response
+message SearchChunksResponse {
   // repeated chunks
   repeated Chunk chunks = 1;
 }
@@ -53,6 +65,8 @@ message SourceFile {
   google.protobuf.Timestamp create_time = 5;
   // update time of the source file
   google.protobuf.Timestamp update_time = 6;
+  // original file name
+  string original_file_name = 7;
 }
 
 // get source file request
@@ -69,6 +83,20 @@ message GetSourceFileRequest {
 message GetSourceFileResponse {
   // source file(either original file or converted file)
   SourceFile source_file = 1;
+}
+
+// search source file request
+message SearchSourceFileRequest {
+  // owner/namespace id
+  string namespace_id = 1;
+  // search file uid
+  repeated string file_uids = 2;
+}
+
+// search source file response
+message SearchSourceFileResponse {
+  // source files
+  repeated SourceFile source_files = 1;
 }
 
 // Create chunk response
