@@ -289,6 +289,10 @@ service ModelPublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -310,6 +314,10 @@ service ModelPublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -331,6 +339,10 @@ service ModelPublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -352,6 +364,10 @@ service ModelPublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -369,6 +385,10 @@ service ModelPublicService {
   rpc TriggerNamespaceModelBinaryFileUpload(stream TriggerNamespaceModelBinaryFileUploadRequest) returns (TriggerNamespaceModelBinaryFileUploadResponse) {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -386,6 +406,10 @@ service ModelPublicService {
   rpc TriggerNamespaceLatestModelBinaryFileUpload(stream TriggerNamespaceLatestModelBinaryFileUploadRequest) returns (TriggerNamespaceLatestModelBinaryFileUploadResponse) {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -824,9 +848,13 @@ service ModelPublicService {
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
-  // List model runs
+  // List Model Runs
   //
-  // Returns a paginated list of model runs.
+  // Returns a paginated list of runs for a given model. When the requester is
+  // the owner of the model, they will be able to all the model runs,
+  // regardless who requested the trigger (the view will be partial to hide
+  // sensitive data like e.g. the trigger input and output). Other requesters
+  // will only be able to see the runs requested by themselves.
   rpc ListModelRuns(ListModelRunsRequest) returns (ListModelRunsResponse) {
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/models/{model_id}/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -838,23 +866,24 @@ service ModelPublicService {
           type: STRING
         }
       }
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
     };
   }
 
-  // List Model Runs of a Namespace (user or organization)
+  // List Model Runs By Requester
   //
-  // Returns a paginated list of runs for 1 or more models. This is mainly used by dashboard.
-  // The requester can view all the runs by the requester across different models.
+  // Returns a paginated list of runs requested by a namespace. The response
+  // may contain runs from several models.
   rpc ListModelRunsByRequester(ListModelRunsByRequesterRequest) returns (ListModelRunsByRequesterResponse) {
     option (google.api.http) = {get: "/v1alpha/dashboard/models/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "⚗️ Model"
-      parameters: {
-        headers: {
-          name: "Instill-Requester-Uid"
-          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
-          type: STRING
-        }
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
       }
     };
   }

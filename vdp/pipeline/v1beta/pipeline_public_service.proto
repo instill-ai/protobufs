@@ -264,6 +264,10 @@ service PipelinePublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -289,6 +293,10 @@ service PipelinePublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -317,6 +325,10 @@ service PipelinePublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -451,6 +463,10 @@ service PipelinePublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -477,6 +493,10 @@ service PipelinePublicService {
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -593,6 +613,10 @@ service PipelinePublicService {
     option (google.api.http) = {get: "/v1beta/operations/{operation_id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -1298,12 +1322,17 @@ service PipelinePublicService {
   //
   // Returns a paginated list of runs for a given pipeline. When the requester
   // is the owner of the pipeline, they will be able to all the pipeline runs,
-  // regardless the requester. Other requesters will only be able to see the
-  // runs requested by themselves.
+  // regardless who requested the trigger (the view will be partial to hide
+  // sensitive data like e.g. the trigger input and output). Other requesters
+  // will only be able to see the runs requested by themselves.
   rpc ListPipelineRuns(ListPipelineRunsRequest) returns (ListPipelineRunsResponse) {
     option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -1314,13 +1343,17 @@ service PipelinePublicService {
     };
   }
 
-  // List Component runs
+  // List Component Runs
   //
   // Returns the information of each component execution within a pipeline run.
   rpc ListComponentRuns(ListComponentRunsRequest) returns (ListComponentRunsResponse) {
     option (google.api.http) = {get: "/v1beta/pipeline-runs/{pipeline_run_id}/component-runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
       parameters: {
         headers: {
           name: "Instill-Requester-Uid"
@@ -1331,20 +1364,17 @@ service PipelinePublicService {
     };
   }
 
-  // List Pipeline Runs of a Namespace (user or organization)
+  // List Pipeline Runs By Requester
   //
-  // Returns a paginated list of runs for 1 or more pipelines. This is mainly used by dashboard.
-  // The requester can view all the runs by the requester across different pipelines.
+  // Returns a paginated list of runs for requested by a namespace. The
+  // response may contain runs from several pipelines.
   rpc ListPipelineRunsByRequester(ListPipelineRunsByRequesterRequest) returns (ListPipelineRunsByRequesterResponse) {
     option (google.api.http) = {get: "/v1beta/dashboard/pipelines/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "💧 VDP"
-      parameters: {
-        headers: {
-          name: "Instill-Requester-Uid"
-          description: "Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to"
-          type: STRING
-        }
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
       }
     };
   }

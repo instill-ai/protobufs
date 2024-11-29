@@ -2034,8 +2034,9 @@ message FileReference {
 
 // PipelineRun represents a single execution of a pipeline.
 message PipelineRun {
-  // Unique identifier for the pipeline.
-  string pipeline_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // 1 is reserved for the pipeline UUID. Public resources should be identified by
+  // their ID and parent resource.
+  reserved 1;
 
   // Unique identifier for each run.
   string pipeline_run_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -2055,7 +2056,8 @@ message PipelineRun {
     (google.api.field_behavior) = OPTIONAL
   ];
 
-  // Runner ID. If current viewing requester does not have enough permission, it will return null.
+  // Runner ID. The authenticated user that triggered the run. If current
+  // viewing requester does not have enough permission, it will return null.
   optional string runner_id = 7 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.field_behavior) = OPTIONAL
@@ -2110,12 +2112,12 @@ message PipelineRun {
     (google.api.field_behavior) = OPTIONAL
   ];
 
-  // Requester ID. This field might be empty if the pipeline run belongs to a
-  // deleted namespace.
+  // Requester ID. The namespace used to trigger the run. This field might be
+  // empty if the pipeline run belongs to a deleted namespace.
   string requester_id = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Namespace ID
-  string namespace_id = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // ID of the namespace that owns the pipeline.
+  string pipeline_namespace_id = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ComponentRun represents the execution details of a single component within a pipeline run.
