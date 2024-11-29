@@ -1001,7 +1001,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
     post:
       summary: Create a catalog
       description: Creates a catalog.
@@ -1031,7 +1031,7 @@ paths:
             $ref: '#/definitions/CreateCatalogBody'
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}:
     get:
       summary: Get file catalog
@@ -1072,7 +1072,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
     delete:
       summary: Delete a catalog
       description: Deletes a catalog.
@@ -1102,7 +1102,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
     put:
       summary: Update a catalog info
       description: Updates the information of a catalog.
@@ -1137,7 +1137,7 @@ paths:
             $ref: '#/definitions/UpdateCatalogBody'
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files:
     get:
       summary: List catalog files
@@ -1187,7 +1187,7 @@ paths:
           collectionFormat: multi
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
     post:
       summary: Create a file
       description: Creates a file.
@@ -1223,7 +1223,7 @@ paths:
             $ref: '#/definitions/File'
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/catalogs/files:
     delete:
       summary: Delete a file
@@ -1249,7 +1249,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/catalogs/files/processAsync:
     post:
       summary: Process catalog files
@@ -1280,6 +1280,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks:
     get:
       summary: List catalog chunks
@@ -1315,7 +1316,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/chunks:
     get:
       summary: Search catalog chunks
@@ -1385,7 +1386,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/source-files:
     get:
       summary: Search single-source-of-truth files
@@ -1450,7 +1451,7 @@ paths:
             $ref: '#/definitions/UpdateChunkBody'
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks/retrieve:
     post:
       summary: Retrieve similar chunks
@@ -1491,6 +1492,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/ask:
     post:
       summary: Ask a question
@@ -1531,7 +1533,8 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-  /v1beta/namespaces/{namespaceId}/catalogs/{catalogId}/runs:
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/runs:
     get:
       summary: List Catalog Runs
       description: Returns a paginated list of catalog runs.
@@ -1590,7 +1593,7 @@ paths:
           type: string
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/object-upload-url:
     get:
       summary: Get Object Upload URL
@@ -1647,7 +1650,7 @@ paths:
           format: int32
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/object-download-url:
     get:
       summary: Get Object Download URL
@@ -1686,7 +1689,7 @@ paths:
           format: int32
       tags:
         - "\U0001F4BE Artifact"
-      x-stage: beta
+      x-stage: alpha
   /v1beta/user:
     get:
       summary: Get the authenticated user
@@ -3377,6 +3380,7 @@ paths:
           type: string
       tags:
         - ⚗️ Model
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/trigger-async:
     post:
       summary: Trigger model inference asynchronously
@@ -3424,6 +3428,7 @@ paths:
           type: string
       tags:
         - ⚗️ Model
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/models/{modelId}/trigger:
     post:
       summary: Trigger model inference
@@ -3466,6 +3471,7 @@ paths:
           type: string
       tags:
         - ⚗️ Model
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/models/{modelId}/trigger-async:
     post:
       summary: Trigger model inference asynchronously
@@ -3508,6 +3514,7 @@ paths:
           type: string
       tags:
         - ⚗️ Model
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/operation:
     get:
       summary: |-
@@ -3647,8 +3654,13 @@ paths:
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/models/{modelId}/runs:
     get:
-      summary: List model runs
-      description: Returns a paginated list of model runs.
+      summary: List Model Runs
+      description: |-
+        Returns a paginated list of runs for a given model. When the requester is
+        the owner of the model, they will be able to all the model runs,
+        regardless who requested the trigger (the view will be partial to hide
+        sensitive data like e.g. the trigger input and output). Other requesters
+        will only be able to see the runs requested by themselves.
       operationId: ModelPublicService_ListModelRuns
       responses:
         "200":
@@ -3714,12 +3726,13 @@ paths:
           type: string
       tags:
         - ⚗️ Model
+      x-stage: alpha
   /v1alpha/dashboard/models/runs:
     get:
-      summary: List Model Runs of a Namespace (user or organization)
+      summary: List Model Runs By Requester
       description: |-
-        Returns a paginated list of runs for 1 or more models. This is mainly used by dashboard.
-        The requester can view all the runs by the requester across different models.
+        Returns a paginated list of runs requested by a namespace. The response
+        may contain runs from several models.
       operationId: ModelPublicService_ListModelRunsByRequester
       responses:
         "200":
@@ -3790,13 +3803,9 @@ paths:
           in: query
           required: true
           type: string
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
       tags:
         - ⚗️ Model
+      x-stage: alpha
   /v1beta/pipelines:
     get:
       summary: List accessible pipelines
@@ -4290,6 +4299,7 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-stream:
     post:
       summary: Trigger a pipeline via streaming
@@ -4342,6 +4352,7 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-async:
     post:
       summary: Trigger a pipeline asynchronously
@@ -4391,6 +4402,7 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases:
     get:
       summary: List the releases in a pipeline
@@ -4741,6 +4753,7 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger-async:
     post:
       summary: Trigger a pipeline release asynchronously
@@ -4793,6 +4806,7 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/secrets:
     get:
       summary: List secrets
@@ -5066,14 +5080,16 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/runs:
     get:
       summary: List Pipeline Runs
       description: |-
         Returns a paginated list of runs for a given pipeline. When the requester
         is the owner of the pipeline, they will be able to all the pipeline runs,
-        regardless the requester. Other requesters will only be able to see the
-        runs requested by themselves.
+        regardless who requested the trigger (the view will be partial to hide
+        sensitive data like e.g. the trigger input and output). Other requesters
+        will only be able to see the runs requested by themselves.
       operationId: PipelinePublicService_ListPipelineRuns
       responses:
         "200":
@@ -5134,9 +5150,10 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/pipeline-runs/{pipelineRunId}/component-runs:
     get:
-      summary: List Component runs
+      summary: List Component Runs
       description: Returns the information of each component execution within a pipeline run.
       operationId: PipelinePublicService_ListComponentRuns
       responses:
@@ -5208,12 +5225,13 @@ paths:
           type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/dashboard/pipelines/runs:
     get:
-      summary: List Pipeline Runs of a Namespace (user or organization)
+      summary: List Pipeline Runs By Requester
       description: |-
-        Returns a paginated list of runs for 1 or more pipelines. This is mainly used by dashboard.
-        The requester can view all the runs by the requester across different pipelines.
+        Returns a paginated list of runs for requested by a namespace. The
+        response may contain runs from several pipelines.
       operationId: PipelinePublicService_ListPipelineRunsByRequester
       responses:
         "200":
@@ -5282,13 +5300,9 @@ paths:
           in: query
           required: true
           type: string
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
       tags:
         - "\U0001F4A7 VDP"
+      x-stage: beta
   /v1beta/namespaces/{namespaceId}/connections:
     get:
       summary: List namespace connections
@@ -9051,10 +9065,6 @@ definitions:
         type: string
         description: Model Run UUID.
         readOnly: true
-      modelUid:
-        type: string
-        description: Model UUID.
-        readOnly: true
       status:
         description: Model run status.
         readOnly: true
@@ -9121,12 +9131,12 @@ definitions:
       requesterId:
         type: string
         description: |-
-          Requester ID. This field might be empty if the model run belongs to a
-          deleted namespace.
+          Requester ID. The namespace used to trigger the run. This field might be
+          empty if the model run belongs to a deleted namespace.
         readOnly: true
-      namespaceId:
+      modelNamespaceId:
         type: string
-        description: Namespace ID.
+        description: ID of the namespace that owns the model.
         readOnly: true
     description: ModelRun contains information about a run of models.
   ModelTriggerChartRecord:
@@ -9718,10 +9728,6 @@ definitions:
   PipelineRun:
     type: object
     properties:
-      pipelineUid:
-        type: string
-        description: Unique identifier for the pipeline.
-        readOnly: true
       pipelineRunUid:
         type: string
         description: Unique identifier for each run.
@@ -9747,7 +9753,9 @@ definitions:
         readOnly: true
       runnerId:
         type: string
-        description: Runner ID. If current viewing requester does not have enough permission, it will return null.
+        description: |-
+          Runner ID. The authenticated user that triggered the run. If current
+          viewing requester does not have enough permission, it will return null.
         readOnly: true
       inputs:
         type: array
@@ -9796,12 +9804,12 @@ definitions:
       requesterId:
         type: string
         description: |-
-          Requester ID. This field might be empty if the pipeline run belongs to a
-          deleted namespace.
+          Requester ID. The namespace used to trigger the run. This field might be
+          empty if the pipeline run belongs to a deleted namespace.
         readOnly: true
-      namespaceId:
+      pipelineNamespaceId:
         type: string
-        title: Namespace ID
+        description: ID of the namespace that owns the pipeline.
         readOnly: true
     description: PipelineRun represents a single execution of a pipeline.
   PipelineTriggerChartRecord:
