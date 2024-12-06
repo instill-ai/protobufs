@@ -44,6 +44,18 @@ message AIAgentAppMetadata {
   map<string, string> connections = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// AIAgentSettings represents the settings for the AI agent.
+message AIAgentSettings {
+  // instructions
+  string instructions = 1 [(google.api.field_behavior) = OPTIONAL];
+  // catalog uids
+  repeated string catalog_uids = 2 [(google.api.field_behavior) = OPTIONAL];
+  // connection key(used connection id in recipe) and value(connection uid from namespace).
+  map<string, string> connections = 3 [(google.api.field_behavior) = OPTIONAL];
+  // tool ids (pipeline ids) that this agent can use. e.g. "preset/web-search", "preset/google-search"
+  repeated string tool_ids = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
 // tool definitions
 message Tool {
   // The pipeline id of the tool. e.g. "preset/xxx-search"
@@ -67,7 +79,7 @@ message CreateAgentRequest {
   // agent tags
   repeated string tags = 4 [(google.api.field_behavior) = OPTIONAL];
   // agent metadata
-  AIAgentAppMetadata ai_agent_metadata = 5 [(google.api.field_behavior) = OPTIONAL];
+  AIAgentSettings ai_agent_settings = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // CreateAgentResponse represents a response for creating a agent.
@@ -100,8 +112,8 @@ message UpdateAgentRequest {
   string description = 4 [(google.api.field_behavior) = OPTIONAL];
   // agent tags
   repeated string tags = 5 [(google.api.field_behavior) = OPTIONAL];
-  // agent metadata
-  AIAgentAppMetadata ai_agent_metadata = 6 [(google.api.field_behavior) = OPTIONAL];
+  // agent settings
+  AIAgentSettings ai_agent_settings = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // UpdateAgentResponse represents a response for updating a agent.
