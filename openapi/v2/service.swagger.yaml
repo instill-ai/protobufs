@@ -1690,6 +1690,42 @@ paths:
       tags:
         - "\U0001F4BE Artifact"
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files:move:
+    post:
+      summary: Move file to another catalog
+      description: Moves a file to another catalog.
+      operationId: ArtifactPublicService_MoveFileToCatalog
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/MoveFileToCatalogResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: catalog id
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MoveFileToCatalogBody'
+      tags:
+        - "\U0001F4BE Artifact"
+      x-stage: alpha
   /v1beta/user:
     get:
       summary: Get the authenticated user
@@ -9225,6 +9261,26 @@ definitions:
         description: Version update time, i.e. timestamp of the last push.
         readOnly: true
     description: ModelVersion contains information about the version of a model.
+  MoveFileToCatalogBody:
+    type: object
+    properties:
+      fileUid:
+        type: string
+        description: The file uid.
+      toCatalogId:
+        type: string
+        description: The target catalog id.
+    description: MoveFileToCatalogRequest represents a request to move a file to another catalog.
+    required:
+      - fileUid
+      - toCatalogId
+  MoveFileToCatalogResponse:
+    type: object
+    properties:
+      fileUid:
+        type: string
+        description: The file uid.
+    description: MoveFileToCatalogResponse represents a response for moving a file to another catalog.
   NullValue:
     type: string
     description: |-
