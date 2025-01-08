@@ -22,6 +22,8 @@ tags:
     description: Data orchestration for unified unstructured data representation.
   - name: "\U0001F34E App"
     description: Ready-to-use AI applications.
+  - name: Table
+    description: Table resources for agents.
   - name: "\U0001F4CA Metrics"
     description: Resource usage metrics.
   - name: "\U0001F91D Subscription"
@@ -975,6 +977,510 @@ paths:
             $ref: '#/definitions/AppPublicService.ChatBody'
       tags:
         - "\U0001F34E App"
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables:
+    get:
+      summary: List tables
+      description: Returns a paginated list of tables.
+      operationId: AppPublicService_ListTables
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListTablesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the tables.
+          in: path
+          required: true
+          type: string
+        - name: pageToken
+          description: The page token for pagination.
+          in: query
+          required: false
+          type: string
+        - name: pageSize
+          description: The maximum number of tables to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Table
+      x-stage: alpha
+    post:
+      summary: Create a table
+      description: Creates a table.
+      operationId: AppPublicService_CreateTable
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/CreateTableResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace where the table will be created.
+          in: path
+          required: true
+          type: string
+        - name: table
+          description: The table resource to create.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Table'
+            required:
+              - table
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}:
+    get:
+      summary: Get table
+      description: Gets a table.
+      operationId: AppPublicService_GetTable
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetTableResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to fetch.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
+    delete:
+      summary: Delete table
+      description: Deletes a table.
+      operationId: AppPublicService_DeleteTable
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeleteTableResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to delete.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
+    patch:
+      summary: Update table
+      description: Updates a table.
+      operationId: AppPublicService_UpdateTable
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateTableResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to update.
+          in: path
+          required: true
+          type: string
+        - name: table
+          description: The table fields that will replace the existing ones.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Table'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/column-definitions:
+    get:
+      summary: Get column definitions
+      description: Gets column definitions for a table.
+      operationId: AppPublicService_GetColumnDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetColumnDefinitionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table whose columns to fetch.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
+    put:
+      summary: Update column definitions
+      description: Updates column definitions for a table.
+      operationId: AppPublicService_UpdateColumnDefinitions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateColumnDefinitionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table whose columns to update.
+          in: path
+          required: true
+          type: string
+        - name: columnDefinitions
+          description: Map of column names to their new definitions.
+          in: body
+          required: true
+          schema:
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/ColumnDefinition'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows:
+    get:
+      summary: List rows
+      description: Returns list of rows.
+      operationId: AppPublicService_ListRows
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListRowsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table whose rows to fetch.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: The maximum number of rows to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: The page token for pagination.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
+    delete:
+      summary: Delete rows
+      description: Deletes multiple rows from a table.
+      operationId: AppPublicService_DeleteRows
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeleteRowsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the rows.
+          in: path
+          required: true
+          type: string
+        - name: rowUids
+          description: The unique identifiers of the rows to delete.
+          in: query
+          required: true
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      tags:
+        - Table
+      x-stage: alpha
+    post:
+      summary: Insert row
+      description: Inserts a row into a table.
+      operationId: AppPublicService_InsertRow
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/InsertRowResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to insert rows into.
+          in: path
+          required: true
+          type: string
+        - name: row
+          description: The rows to insert.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Row'
+      tags:
+        - Table
+      x-stage: alpha
+    patch:
+      summary: Update rows
+      description: Updates multiple rows in a table.
+      operationId: AppPublicService_UpdateRows
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateRowsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the rows.
+          in: path
+          required: true
+          type: string
+        - name: rows
+          description: The rows to update.
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+              $ref: '#/definitions/Row'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}:
+    delete:
+      summary: Delete row
+      description: Deletes a row from a table.
+      operationId: AppPublicService_DeleteRow
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeleteRowResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row to delete.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
+    patch:
+      summary: Update row
+      description: Updates a row in a table.
+      operationId: AppPublicService_UpdateRow
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateRowResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row to update.
+          in: path
+          required: true
+          type: string
+        - name: row
+          description: The new row data.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Row'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/export:
+    get:
+      summary: Export table
+      description: Exports table data.
+      operationId: AppPublicService_Export
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ExportResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to export.
+          in: path
+          required: true
+          type: string
+        - name: type
+          description: The format to export the data in (csv, parquet).
+          in: query
+          required: true
+          type: string
+      tags:
+        - Table
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs:
     get:
@@ -6111,6 +6617,15 @@ definitions:
 
        - APP_TYPE_AI_ASSISTANT: AppType is a AI assistant app.
        - APP_TYPE_AI_AGENT: AppType is a AI agent app.
+  AudioCell:
+    type: object
+    properties:
+      url:
+        type: string
+        description: The URL of the audio resource.
+    description: AudioCell represents a cell with a url of an audio resource.
+    required:
+      - url
   AuthenticatedUser:
     type: object
     properties:
@@ -6187,6 +6702,15 @@ definitions:
       - id
       - email
       - newsletterSubscription
+  BooleanCell:
+    type: object
+    properties:
+      value:
+        type: boolean
+        description: The value of the cell as a boolean.
+    description: BooleanCell represents a cell with a boolean value.
+    required:
+      - value
   Catalog:
     type: object
     properties:
@@ -6345,6 +6869,62 @@ definitions:
       - CATALOG_TYPE_PERSISTENT: PERSISTENT
        - CATALOG_TYPE_EPHEMERAL: EPHEMERAL
     title: Catalog Type. e.g. "persistent" or "ephemeral"
+  Cell:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: The unique identifier of the cell.
+        readOnly: true
+      columnUid:
+        type: string
+        description: The unique identifier of the column this cell belongs to.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: The timestamp when the cell was last updated.
+        readOnly: true
+      type:
+        type: string
+        description: The type of the cell's value.
+        readOnly: true
+      stringValue:
+        description: The value of the cell as a string.
+        allOf:
+          - $ref: '#/definitions/StringCell'
+      numberValue:
+        description: The value of the cell as a number.
+        allOf:
+          - $ref: '#/definitions/NumberCell'
+      booleanValue:
+        description: The value of the cell as a boolean.
+        allOf:
+          - $ref: '#/definitions/BooleanCell'
+      fileValue:
+        description: The value of the cell as a url of a file resource.
+        allOf:
+          - $ref: '#/definitions/FileCell'
+      documentValue:
+        description: The value of the cell as a url of a document resource.
+        allOf:
+          - $ref: '#/definitions/DocumentCell'
+      imageValue:
+        description: The value of the cell as a url of an image resource.
+        allOf:
+          - $ref: '#/definitions/ImageCell'
+      videoValue:
+        description: The value of the cell as a url of a video resource.
+        allOf:
+          - $ref: '#/definitions/VideoCell'
+      audioValue:
+        description: The value of the cell as a url of an audio resource.
+        allOf:
+          - $ref: '#/definitions/AudioCell'
+      metadata:
+        type: object
+        description: Additional metadata for the cell.
+    description: Cell represents a cell in a table.
   ChatResponse:
     type: object
     properties:
@@ -6563,6 +7143,30 @@ definitions:
   CloneNamespacePipelineResponse:
     type: object
     description: CloneNamespacePipelineResponse contains a cloned pipeline.
+  ColumnDefinition:
+    type: object
+    properties:
+      columnUid:
+        type: string
+        description: The unique identifier of the column.
+        readOnly: true
+      name:
+        type: string
+        description: |-
+          The name of the column.
+          The name of the column. If this differs from the key in the ColumnDefinitions map,
+          the key will be updated to match this value.
+      type:
+        type: string
+        description: The type of the column.
+      order:
+        type: integer
+        format: int32
+        description: The order of the column in the table.
+    description: ColumnDefinition represents a column definition in a table.
+    required:
+      - type
+      - order
   ComponentDefinition:
     type: object
     properties:
@@ -7198,6 +7802,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/RepositoryTag'
     description: CreateRepositoryTagResponse contains the created tag.
+  CreateTableResponse:
+    type: object
+    properties:
+      table:
+        description: The created table resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table'
+    description: CreateTableResponse contains the created table.
   CreateTokenResponse:
     type: object
     properties:
@@ -7308,6 +7921,15 @@ definitions:
   DeleteRepositoryTagResponse:
     type: object
     description: DeleteRepositoryTagResponse represent an empty response.
+  DeleteRowResponse:
+    type: object
+    description: DeleteRowResponse is an empty response for deleting a row.
+  DeleteRowsResponse:
+    type: object
+    description: DeleteRowsResponse is an empty response for deleting multiple rows.
+  DeleteTableResponse:
+    type: object
+    description: DeleteTableResponse is an empty response for deleting a table.
   DeleteTokenResponse:
     type: object
     description: DeleteTokenResponse is an empty response.
@@ -7323,6 +7945,15 @@ definitions:
   DeployUserModelAdminResponse:
     type: object
     title: DeployUserModelAdminResponse represents a response for a deployed model
+  DocumentCell:
+    type: object
+    properties:
+      url:
+        type: string
+        description: The URL of the document resource.
+    description: DocumentCell represents a cell with a url of a document resource.
+    required:
+      - url
   Endpoints:
     type: object
     properties:
@@ -7371,6 +8002,15 @@ definitions:
         description: JSON schema describing the component event examples.
         readOnly: true
     description: EventSpecification describes the JSON schema of component event setup and examples.
+  ExportResponse:
+    type: object
+    properties:
+      data:
+        type: string
+        format: byte
+        description: The exported data.
+        readOnly: true
+    description: ExportResponse is an empty response for exporting table data.
   File:
     type: object
     properties:
@@ -7456,6 +8096,15 @@ definitions:
     required:
       - name
       - type
+  FileCell:
+    type: object
+    properties:
+      url:
+        type: string
+        description: The URL of the file resource.
+    description: FileCell represents a cell with a url of a file resource.
+    required:
+      - url
   FileProcessStatus:
     type: string
     enum:
@@ -7548,6 +8197,16 @@ definitions:
         allOf:
           - $ref: '#/definitions/UserSubscription'
     description: GetAuthenticatedUserSubscriptionResponse contains the requested subscription.
+  GetColumnDefinitionsResponse:
+    type: object
+    properties:
+      columnDefinitions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/ColumnDefinition'
+        description: Map of column names to their definitions.
+        readOnly: true
+    description: GetColumnDefinitionsResponse contains the column definitions.
   GetFileCatalogResponse:
     type: object
     properties:
@@ -7858,6 +8517,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/SourceFile'
     title: get source file response
+  GetTableResponse:
+    type: object
+    properties:
+      table:
+        description: The table resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table'
+    description: GetTableResponse contains the requested table.
   GetTokenResponse:
     type: object
     properties:
@@ -7911,6 +8579,24 @@ definitions:
         type: string
         title: Hardware name value
     description: Hardware describes the hardware title and string value that backend consumes.
+  ImageCell:
+    type: object
+    properties:
+      url:
+        type: string
+        description: The URL of the image resource.
+    description: ImageCell represents a cell with a url of an image resource.
+    required:
+      - url
+  InsertRowResponse:
+    type: object
+    properties:
+      row:
+        description: The inserted row resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Row'
+    description: InsertRowResponse contains the inserted row.
   Integration:
     type: object
     properties:
@@ -8740,6 +9426,46 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListRepositoryTagsResponse contains a list of container image tags.
+  ListRowsResponse:
+    type: object
+    properties:
+      rows:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Row'
+        description: The list of rows.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: The token for the next page of results.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: The total number of rows that match the request.
+        readOnly: true
+    description: ListRowsResponse contains the requested rows.
+  ListTablesResponse:
+    type: object
+    properties:
+      tables:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Table'
+        description: The list of tables.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: The token for the next page of results.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: The total number of tables.
+        readOnly: true
+    description: ListTablesResponse contains the list of tables.
   ListTokensResponse:
     type: object
     properties:
@@ -9307,6 +10033,16 @@ definitions:
       `Value` type union.
 
       The JSON representation for `NullValue` is JSON `null`.
+  NumberCell:
+    type: object
+    properties:
+      value:
+        type: number
+        format: double
+        description: The value of the cell as a number.
+    description: NumberCell represents a cell with a number value.
+    required:
+      - value
   OAuthConfig:
     type: object
     properties:
@@ -10096,6 +10832,26 @@ definitions:
 
        - ROLE_VIEWER: Viewers can see the resource properties.
        - ROLE_EXECUTOR: Executors can execute the resource (e.g. trigger a pipeline).
+  Row:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: The unique identifier of the row.
+        readOnly: true
+      cells:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/Cell'
+        description: Map of column names to their cell values.
+      createTime:
+        type: string
+        format: date-time
+        description: The timestamp when the row was created.
+        readOnly: true
+    description: Row represents a row in a table.
+    required:
+      - cells
   RunSource:
     type: string
     enum:
@@ -10321,6 +11077,15 @@ definitions:
           The key represents the event, and the value is the corresponding event_specification.
         readOnly: true
     description: Spec represents a specification data model.
+  StringCell:
+    type: object
+    properties:
+      value:
+        type: string
+        description: The value of the cell as a string.
+    description: StringCell represents a cell with a string value.
+    required:
+      - value
   StripeSubscriptionDetail:
     type: object
     properties:
@@ -10393,6 +11158,39 @@ definitions:
     description: |-
       SubtractCreditResponse contains the remaining credit of an account after the
       subtraction.
+  Table:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: The unique identifier of the table.
+        readOnly: true
+      id:
+        type: string
+        description: The ID of the table.
+      title:
+        type: string
+        description: The title of the table.
+      description:
+        type: string
+        description: A description of the table.
+      metadata:
+        type: object
+        description: Additional metadata associated with the table.
+      createTime:
+        type: string
+        format: date-time
+        description: The timestamp when the table was created.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: The timestamp when the table was last updated.
+        readOnly: true
+    description: Table represents a table resource.
+    required:
+      - id
+      - title
   Task:
     type: string
     enum:
@@ -10999,6 +11797,16 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alpha.Chunk'
     title: update chunk response
+  UpdateColumnDefinitionsResponse:
+    type: object
+    properties:
+      columnDefinitions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/ColumnDefinition'
+        description: The updated column definitions.
+        readOnly: true
+    description: UpdateColumnDefinitionsResponse contains the updated column definitions.
   UpdateConversationBody:
     type: object
     properties:
@@ -11110,6 +11918,35 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: UpdateOrganizationResponse contains the updated organization.
+  UpdateRowResponse:
+    type: object
+    properties:
+      row:
+        description: The updated row resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Row'
+    description: UpdateRowResponse contains the updated row.
+  UpdateRowsResponse:
+    type: object
+    properties:
+      rows:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Row'
+        description: The updated row resources.
+        readOnly: true
+    description: UpdateRowsResponse contains the updated rows.
+  UpdateTableResponse:
+    type: object
+    properties:
+      table:
+        description: The updated table resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table'
+    description: UpdateTableResponse contains the updated table.
   UpdateUserMembershipResponse:
     type: object
     properties:
@@ -11238,6 +12075,15 @@ definitions:
         description: If token is valid, UUID of the user that owns it.
         readOnly: true
     description: ValidateTokenResponse contains the validation of a token.
+  VideoCell:
+    type: object
+    properties:
+      url:
+        type: string
+        description: The URL of the video resource.
+    description: VideoCell represents a cell with a url of a video resource.
+    required:
+      - url
   WatchNamespaceLatestModelResponse:
     type: object
     properties:
