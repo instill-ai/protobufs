@@ -1,0 +1,413 @@
+syntax = "proto3";
+
+package app.app.v1alpha;
+
+// Google API
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// Table represents a table resource.
+message Table {
+  // The unique identifier of the table.
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The ID of the table.
+  string id = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The title of the table.
+  string title = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // A description of the table.
+  string description = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Additional metadata associated with the table.
+  google.protobuf.Struct metadata = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // The timestamp when the table was created.
+  google.protobuf.Timestamp create_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the table was last updated.
+  google.protobuf.Timestamp update_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListTablesRequest represents a request to list tables.
+message ListTablesRequest {
+  // The ID of the namespace that owns the tables.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The page token for pagination.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The maximum number of tables to return.
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListTablesResponse contains the list of tables.
+message ListTablesResponse {
+  // The list of tables.
+  repeated Table tables = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The token for the next page of results.
+  string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The total number of tables.
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// CreateTableRequest represents a request to create a table.
+message CreateTableRequest {
+  // The ID of the namespace where the table will be created.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The table resource to create.
+  Table table = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CreateTableResponse contains the created table.
+message CreateTableResponse {
+  // The created table resource.
+  Table table = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// GetTableRequest represents a request to fetch a table.
+message GetTableRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to fetch.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetTableResponse contains the requested table.
+message GetTableResponse {
+  // The table resource.
+  Table table = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UpdateTableRequest represents a request to update a table.
+message UpdateTableRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to update.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The table fields that will replace the existing ones.
+  Table table = 3;
+
+  // The update mask specifies the subset of fields that should be modified.
+  google.protobuf.FieldMask update_mask = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UpdateTableResponse contains the updated table.
+message UpdateTableResponse {
+  // The updated table resource.
+  Table table = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// DeleteTableRequest represents a request to delete a table.
+message DeleteTableRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to delete.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteTableResponse is an empty response for deleting a table.
+message DeleteTableResponse {}
+
+// ColumnDefinition represents a column definition in a table.
+message ColumnDefinition {
+  // The unique identifier of the column.
+  string column_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The name of the column.
+  // The name of the column. If this differs from the key in the ColumnDefinitions map,
+  // the key will be updated to match this value.
+  string name = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The type of the column.
+  string type = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The order of the column in the table.
+  int32 order = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetColumnDefinitionsRequest represents a request to fetch column definitions.
+message GetColumnDefinitionsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table whose columns to fetch.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetColumnDefinitionsResponse contains the column definitions.
+message GetColumnDefinitionsResponse {
+  // Map of column names to their definitions.
+  map<string, ColumnDefinition> column_definitions = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UpdateColumnDefinitionsRequest represents a request to update column definitions.
+message UpdateColumnDefinitionsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table whose columns to update.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Map of column names to their new definitions.
+  map<string, ColumnDefinition> column_definitions = 3;
+}
+
+// UpdateColumnDefinitionsResponse contains the updated column definitions.
+message UpdateColumnDefinitionsResponse {
+  // The updated column definitions.
+  map<string, ColumnDefinition> column_definitions = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Cell represents a cell in a table.
+message Cell {
+  // The unique identifier of the cell.
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The unique identifier of the column this cell belongs to.
+  string column_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the cell was last updated.
+  google.protobuf.Timestamp update_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The type of the cell's value.
+  string type = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The value of the cell as a string.
+  oneof value {
+    // The value of the cell as a string.
+    StringCell string_value = 5;
+
+    // The value of the cell as a number.
+    NumberCell number_value = 6;
+
+    // The value of the cell as a boolean.
+    BooleanCell boolean_value = 7;
+
+    // The value of the cell as a url of a file resource.
+    FileCell file_value = 8;
+
+    // The value of the cell as a url of a document resource.
+    DocumentCell document_value = 9;
+
+    // The value of the cell as a url of an image resource.
+    ImageCell image_value = 10;
+
+    // The value of the cell as a url of a video resource.
+    VideoCell video_value = 11;
+
+    // The value of the cell as a url of an audio resource.
+    AudioCell audio_value = 12;
+  }
+
+  // Additional metadata for the cell.
+  google.protobuf.Struct metadata = 13 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// StringCell represents a cell with a string value.
+message StringCell {
+  // The value of the cell as a string.
+  string value = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// NumberCell represents a cell with a number value.
+message NumberCell {
+  // The value of the cell as a number.
+  double value = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// BooleanCell represents a cell with a boolean value.
+message BooleanCell {
+  // The value of the cell as a boolean.
+  bool value = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// FileCell represents a cell with a url of a file resource.
+message FileCell {
+  // The URL of the file resource.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DocumentCell represents a cell with a url of a document resource.
+message DocumentCell {
+  // The URL of the document resource.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ImageCell represents a cell with a url of an image resource.
+message ImageCell {
+  // The URL of the image resource.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// VideoCell represents a cell with a url of a video resource.
+message VideoCell {
+  // The URL of the video resource.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// AudioCell represents a cell with a url of an audio resource.
+message AudioCell {
+  // The URL of the audio resource.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Row represents a row in a table.
+message Row {
+  // The unique identifier of the row.
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Map of column names to their cell values.
+  map<string, Cell> cells = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The timestamp when the row was created.
+  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListRowsRequest represents a request to fetch rows from a table.
+message ListRowsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table whose rows to fetch.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Filter expression for the rows to return.
+  reserved 3;
+
+  // Sort expression for ordering the rows.
+  reserved 4;
+
+  // The maximum number of rows to return.
+  int32 page_size = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // The page token for pagination.
+  string page_token = 6 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListRowsResponse contains the requested rows.
+message ListRowsResponse {
+  // The list of rows.
+  repeated Row rows = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The token for the next page of results.
+  string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The total number of rows that match the request.
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// InsertRowRequest represents a request to insert a row into a table.
+message InsertRowRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to insert rows into.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The rows to insert.
+  Row row = 3;
+}
+
+// InsertRowResponse contains the inserted row.
+message InsertRowResponse {
+  // The inserted row resource.
+  Row row = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UpdateRowRequest represents a request to update a row.
+message UpdateRowRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the row.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row to update.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The new row data.
+  Row row = 4;
+}
+
+// UpdateRowResponse contains the updated row.
+message UpdateRowResponse {
+  // The updated row resource.
+  Row row = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UpdateRowsRequest represents a request to update multiple rows.
+message UpdateRowsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the rows.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The rows to update.
+  repeated Row rows = 3;
+}
+
+// UpdateRowsResponse contains the updated rows.
+message UpdateRowsResponse {
+  // The updated row resources.
+  repeated Row rows = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// DeleteRowRequest represents a request to delete a row.
+message DeleteRowRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the row.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row to delete.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteRowResponse is an empty response for deleting a row.
+message DeleteRowResponse {}
+
+// DeleteRowsRequest represents a request to delete multiple rows.
+message DeleteRowsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the rows.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifiers of the rows to delete.
+  repeated string row_uids = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteRowsResponse is an empty response for deleting multiple rows.
+message DeleteRowsResponse {}
+
+// ExportRequest represents a request to export table data.
+message ExportRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to export.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The format to export the data in (csv, parquet).
+  string type = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ExportResponse is an empty response for exporting table data.
+message ExportResponse {
+  // The exported data.
+  bytes data = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
