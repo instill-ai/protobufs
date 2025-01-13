@@ -1321,12 +1321,11 @@ paths:
           in: path
           required: true
           type: string
-        - name: row
-          description: The rows to insert.
+        - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Row'
+            $ref: '#/definitions/InsertRowBody'
       tags:
         - Table
       x-stage: alpha
@@ -1357,15 +1356,11 @@ paths:
           in: path
           required: true
           type: string
-        - name: rows
-          description: The rows to update.
+        - name: body
           in: body
           required: true
           schema:
-            type: array
-            items:
-              type: object
-              $ref: '#/definitions/Row'
+            $ref: '#/definitions/UpdateRowsBody'
       tags:
         - Table
       x-stage: alpha
@@ -1437,12 +1432,47 @@ paths:
           in: path
           required: true
           type: string
-        - name: row
-          description: The new row data.
+        - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Row'
+            $ref: '#/definitions/UpdateRowBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/move-rows:
+    post:
+      summary: Move row
+      description: Moves a row to a new position in a table.
+      operationId: AppPublicService_MoveRows
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/MoveRowsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/MoveRowsBody'
       tags:
         - Table
       x-stage: alpha
@@ -8588,6 +8618,17 @@ definitions:
     description: ImageCell represents a cell with a url of an image resource.
     required:
       - url
+  InsertRowBody:
+    type: object
+    properties:
+      row:
+        description: The rows to insert.
+        allOf:
+          - $ref: '#/definitions/Row'
+      afterRowUid:
+        type: string
+        description: The unique identifier of the row to insert after.
+    description: InsertRowRequest represents a request to insert a row into a table.
   InsertRowResponse:
     type: object
     properties:
@@ -10026,6 +10067,23 @@ definitions:
         type: string
         description: The file uid.
     description: MoveFileToCatalogResponse represents a response for moving a file to another catalog.
+  MoveRowsBody:
+    type: object
+    properties:
+      rowUids:
+        type: array
+        items:
+          type: string
+        description: The unique identifiers of the rows to be moved.
+      afterRowUid:
+        type: string
+        description: The unique identifier of the row to move after.
+    description: MoveRowsRequest represents a request to move multiple rows.
+    required:
+      - rowUids
+  MoveRowsResponse:
+    type: object
+    description: MoveRowsResponse is an empty response for moving multiple rows.
   NullValue:
     type: string
     description: |-
@@ -10848,6 +10906,11 @@ definitions:
         type: string
         format: date-time
         description: The timestamp when the row was created.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: The timestamp when the row was last updated.
         readOnly: true
     description: Row represents a row in a table.
     required:
@@ -11918,6 +11981,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: UpdateOrganizationResponse contains the updated organization.
+  UpdateRowBody:
+    type: object
+    properties:
+      row:
+        description: The new row data.
+        allOf:
+          - $ref: '#/definitions/Row'
+    description: UpdateRowRequest represents a request to update a row.
   UpdateRowResponse:
     type: object
     properties:
@@ -11927,6 +11998,16 @@ definitions:
         allOf:
           - $ref: '#/definitions/Row'
     description: UpdateRowResponse contains the updated row.
+  UpdateRowsBody:
+    type: object
+    properties:
+      rows:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Row'
+        description: The rows to update.
+    description: UpdateRowsRequest represents a request to update multiple rows.
   UpdateRowsResponse:
     type: object
     properties:
