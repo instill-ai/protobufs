@@ -272,6 +272,9 @@ message Row {
 
   // The timestamp when the row was created.
   google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the row was last updated.
+  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListRowsRequest represents a request to fetch rows from a table.
@@ -317,6 +320,9 @@ message InsertRowRequest {
 
   // The rows to insert.
   Row row = 3;
+
+  // The unique identifier of the row to insert after.
+  optional string after_row_uid = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // InsertRowResponse contains the inserted row.
@@ -393,6 +399,24 @@ message DeleteRowsRequest {
 
 // DeleteRowsResponse is an empty response for deleting multiple rows.
 message DeleteRowsResponse {}
+
+// MoveRowsRequest represents a request to move multiple rows.
+message MoveRowsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the row.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifiers of the rows to be moved.
+  repeated string row_uids = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row to move after.
+  optional string after_row_uid = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// MoveRowsResponse is an empty response for moving multiple rows.
+message MoveRowsResponse {}
 
 // ExportRequest represents a request to export table data.
 message ExportRequest {

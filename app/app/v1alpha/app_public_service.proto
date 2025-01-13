@@ -555,7 +555,7 @@ service AppPublicService {
   rpc InsertRow(InsertRowRequest) returns (InsertRowResponse) {
     option (google.api.http) = {
       post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows"
-      body: "row"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Table"
@@ -572,7 +572,7 @@ service AppPublicService {
   rpc UpdateRow(UpdateRowRequest) returns (UpdateRowResponse) {
     option (google.api.http) = {
       patch: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}"
-      body: "row"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Table"
@@ -589,7 +589,7 @@ service AppPublicService {
   rpc UpdateRows(UpdateRowsRequest) returns (UpdateRowsResponse) {
     option (google.api.http) = {
       patch: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows"
-      body: "rows"
+      body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Table"
@@ -619,6 +619,23 @@ service AppPublicService {
   // Deletes multiple rows from a table.
   rpc DeleteRows(DeleteRowsRequest) returns (DeleteRowsResponse) {
     option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Move row
+  //
+  // Moves a row to a new position in a table.
+  rpc MoveRows(MoveRowsRequest) returns (MoveRowsResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/move-rows"
+      body: "*"
+    };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Table"
       extensions: {
