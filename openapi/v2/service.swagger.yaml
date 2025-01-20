@@ -37,432 +37,6 @@ consumes:
 produces:
   - application/json
 paths:
-  /v1alpha/namespaces/{namespaceId}/apps:
-    get:
-      summary: List all apps info
-      description: Returns a paginated list of apps.
-      operationId: AppPublicService_ListApps
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListAppsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: User ID for which to list the apps
-          in: path
-          required: true
-          type: string
-        - name: appType
-          description: |-
-            app type(default is APP_TYPE_AI_ASSISTANT)
-
-             - APP_TYPE_AI_ASSISTANT: AppType is a AI assistant app.
-             - APP_TYPE_AI_AGENT: AppType is a AI agent app.
-          in: query
-          required: false
-          type: string
-          enum:
-            - APP_TYPE_AI_ASSISTANT
-            - APP_TYPE_AI_AGENT
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    post:
-      summary: Create an app
-      description: Creates an app.
-      operationId: AppPublicService_CreateApp
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/CreateAppResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: The app's owner(namespaces).
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateAppBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}:
-    delete:
-      summary: Delete an app
-      description: Deletes an app.
-      operationId: AppPublicService_DeleteApp
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteAppResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: The owner's id. i.e. namespace.
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: The app id.
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    put:
-      summary: Update an app's information
-      description: Updates the information of an app.
-      operationId: AppPublicService_UpdateApp
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateAppResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: Namespace id.
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: App id.
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateAppBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations:
-    get:
-      summary: List conversations
-      description: Returns a paginated list of conversations.
-      operationId: AppPublicService_ListConversations
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListConversationsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: pageSize
-          description: page size
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: page token
-          in: query
-          required: false
-          type: string
-        - name: conversationUid
-          description: |-
-            conversation_uid this is optional, if provided, only the conversation with the given conversation_uid will be returned
-            first check conversation_uid, then check conversation_id, then check if_all
-          in: query
-          required: false
-          type: string
-        - name: conversationId
-          description: conversation_id this is optional, if provided, only the conversation with the given conversation_id will be returned
-          in: query
-          required: false
-          type: string
-        - name: ifAll
-          description: If true, all conversations will be returned. This has higher priority over conversation_id, page_size, and page_token.
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    post:
-      summary: Create a conversation
-      description: Creates a conversation.
-      operationId: AppPublicService_CreateConversation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/CreateConversationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateConversationBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}:
-    delete:
-      summary: Delete a conversation
-      description: Deletes a conversation.
-      operationId: AppPublicService_DeleteConversation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteConversationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: conversationId
-          description: conversation id
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    put:
-      summary: Update a conversation
-      description: Updates a conversation.
-      operationId: AppPublicService_UpdateConversation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateConversationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: conversationId
-          description: conversation id
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateConversationBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/agents:
-    get:
-      summary: List all agents info
-      description: Returns a paginated list of agents.
-      operationId: AppPublicService_ListAgents
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListAgentsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    post:
-      summary: Create an agent
-      description: Creates an agent.
-      operationId: AppPublicService_CreateAgent
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/CreateAgentResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateAgentBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/agents/{agentUid}:
-    delete:
-      summary: Delete an agent
-      description: Deletes an agent.
-      operationId: AppPublicService_DeleteAgent
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteAgentResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: agentUid
-          description: agent uid
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    put:
-      summary: Update an agent
-      description: Updates the information of an agent.
-      operationId: AppPublicService_UpdateAgent
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateAgentResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: agentUid
-          description: agent uid
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateAgentBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/chats:
     get:
       summary: List chats
@@ -608,7 +182,7 @@ paths:
       tags:
         - "\U0001F34E App"
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}/messages:
+  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/messages:
     get:
       summary: List messages
       description: Returns a paginated list of messages.
@@ -618,257 +192,6 @@ paths:
           description: A successful response.
           schema:
             $ref: '#/definitions/ListMessagesResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: conversationId
-          description: conversation id
-          in: path
-          required: true
-          type: string
-        - name: latestK
-          description: latest k messages
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageSize
-          description: page size
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: page token
-          in: query
-          required: false
-          type: string
-        - name: includeSystemMessages
-          description: include system messages
-          in: query
-          required: false
-          type: boolean
-        - name: ifAll
-          description: If true, all messages will be returned. This has higher priority over latest_k, page_size, and page_token.
-          in: query
-          required: false
-          type: boolean
-        - name: messageUid
-          description: message_uid this is optional, if provided, only the message with the given message_uid will be returned
-          in: query
-          required: false
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    post:
-      summary: Create a message
-      description: Creates a message.
-      operationId: AppPublicService_CreateMessage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/CreateMessageResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: conversationId
-          description: conversation id
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateMessageBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}/conversations/{conversationId}/messages/{messageUid}:
-    delete:
-      summary: Delete a message
-      description: Deletes a message.
-      operationId: AppPublicService_DeleteMessage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteMessageResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: conversationId
-          description: conversation id
-          in: path
-          required: true
-          type: string
-        - name: messageUid
-          description: message uid
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-    put:
-      summary: Update a message
-      description: Updates a message.
-      operationId: AppPublicService_UpdateMessage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateMessageResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: app id
-          in: path
-          required: true
-          type: string
-        - name: conversationId
-          description: conversation id
-          in: path
-          required: true
-          type: string
-        - name: messageUid
-          description: message uid
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateMessageBody'
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}/ai_assistant_playground/conversation:
-    get:
-      summary: Get Playground Conversation
-      description: Returns the latest conversation for the authenticated user (e.g., logged-in user or API key user).
-      operationId: AppPublicService_GetPlaygroundConversation
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetPlaygroundConversationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: The namespace id.
-          in: path
-          required: true
-          type: string
-        - name: appId
-          description: The app id.
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/tools:
-    get:
-      summary: List all tools
-      description: Returns a list of tools.
-      operationId: AppPublicService_ListTools
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListToolsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E App"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/messages:
-    get:
-      summary: List chat messages
-      description: Returns a paginated list of messages.
-      operationId: AppPublicService_ListChatMessages
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListChatMessagesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -906,18 +229,15 @@ paths:
       tags:
         - "\U0001F34E App"
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}/ai_assistant_playground/restart:
     post:
-      summary: Restart Playground Conversation
-      description: |-
-        Creates a new conversation using the authenticated user's UID as creator and
-        auto-generates a new conversation ID on behalf of the authenticated user.
-      operationId: AppPublicService_RestartPlaygroundConversation
+      summary: Create a message
+      description: Creates a message.
+      operationId: AppPublicService_CreateMessage
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/RestartPlaygroundConversationResponse'
+            $ref: '#/definitions/CreateMessageResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -927,19 +247,100 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The namespace id.
+          description: namespace id
           in: path
           required: true
           type: string
-        - name: appId
-          description: The app id.
+        - name: chatUid
+          description: app id
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateMessageBody'
+      tags:
+        - "\U0001F34E App"
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/messages/{messageUid}:
+    delete:
+      summary: Delete a message
+      description: Deletes a message.
+      operationId: AppPublicService_DeleteMessage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeleteMessageResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: chatUid
+          description: chat uid
+          in: path
+          required: true
+          type: string
+        - name: messageUid
+          description: message uid
           in: path
           required: true
           type: string
       tags:
         - "\U0001F34E App"
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/apps/{appId}/chat:
+    put:
+      summary: Update a message
+      description: Updates a message.
+      operationId: AppPublicService_UpdateMessage
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateMessageResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: chatUid
+          description: chat uid
+          in: path
+          required: true
+          type: string
+        - name: messageUid
+          description: message uid
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateMessageBody'
+      tags:
+        - "\U0001F34E App"
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/chat:
     post:
       summary: Chat
       description: |-
@@ -961,12 +362,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: Namespace ID
+          description: namespace id
           in: path
           required: true
           type: string
-        - name: appId
-          description: App ID
+        - name: chatUid
+          description: chat uid
           in: path
           required: true
           type: string
@@ -6245,117 +5646,18 @@ paths:
         - "\U0001F4A7 VDP"
       x-stage: beta
 definitions:
-  AIAgentAppMetadata:
+  AgentConfig:
     type: object
     properties:
       instructions:
         type: string
         title: instructions
-      tools:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Tool'
-        title: tools(pipelines)
-      catalogUids:
-        type: array
-        items:
-          type: string
-        title: catalog uids
-      chunkTopK:
-        type: integer
-        format: int32
-        title: AI agent app top k
-      chunkWeight:
-        type: number
-        format: float
-        title: AI agent chunk weight
       connections:
         type: object
         additionalProperties:
           type: string
         description: connection key(used connection id in recipe) and value(connection uid from namespace).
-    description: AIAgentAppMetadata represents the metadata for the AI agent app.
-  AIAgentSettings:
-    type: object
-    properties:
-      instructions:
-        type: string
-        title: instructions
-      catalogUids:
-        type: array
-        items:
-          type: string
-        title: catalog uids
-      connections:
-        type: object
-        additionalProperties:
-          type: string
-        description: connection key(used connection id in recipe) and value(connection uid from namespace).
-      toolIds:
-        type: array
-        items:
-          type: string
-        title: tool ids (pipeline ids) that this agent can use. e.g. "preset/web-search", "preset/google-search"
-    description: AIAgentSettings represents the settings for the AI agent.
-  AIAssistantAppMetadata:
-    type: object
-    properties:
-      catalogUid:
-        type: string
-        description: The AI assistant app catalog uid.
-      topK:
-        type: integer
-        format: int32
-        description: The AI assistant app top k.
-    description: AIAssistantAppMetadata represents the metadata for the AI assistant app.
-    required:
-      - catalogUid
-      - topK
-  Agent:
-    type: object
-    properties:
-      agentUid:
-        type: string
-        title: agent uid
-        readOnly: true
-      displayName:
-        type: string
-        title: agent display name
-      description:
-        type: string
-        title: agent description
-      namespaceUid:
-        type: string
-        title: namespace uid
-        readOnly: true
-      tags:
-        type: array
-        items:
-          type: string
-        title: agent tags
-      aiAgentMetadata:
-        title: agent metadata
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/AIAgentAppMetadata'
-      creatorUid:
-        type: string
-        title: creator uid
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        title: creation time
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        title: last update time
-        readOnly: true
-    description: Agent represents a agent.
-    required:
-      - displayName
+    description: AgentConfig represents the config for the chat agent.
   Any:
     type: object
     properties:
@@ -6554,99 +5856,17 @@ definitions:
        - STATE_INACTIVE: Inactive.
        - STATE_ACTIVE: Active.
        - STATE_EXPIRED: Expired.
-  App:
-    type: object
-    properties:
-      appId:
-        type: string
-        description: The app id.
-      description:
-        type: string
-        description: The app description.
-      createTime:
-        type: string
-        format: date-time
-        description: The creation time of the app.
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: The last update time of the app.
-        readOnly: true
-      ownerUid:
-        type: string
-        description: The owner/namespace of the app.
-        readOnly: true
-      tags:
-        type: array
-        items:
-          type: string
-        description: The app tags.
-      aiAssistantApp:
-        description: The AI assistant app metadata.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/AIAssistantAppMetadata'
-      aiAgentApp:
-        description: The AI agent app metadata.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/AIAgentAppMetadata'
-      appType:
-        description: The app type.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/AppType'
-      appUid:
-        type: string
-        title: app uid
-        readOnly: true
-      creatorUid:
-        type: string
-        title: creator uid
-        readOnly: true
-    description: App represents a app.
-    required:
-      - appId
   AppPublicService.ChatBody:
     type: object
     properties:
-      catalogId:
-        type: string
-        title: Catalog ID
-      conversationUid:
-        type: string
-        title: Conversation UID
       message:
         type: string
         title: User message
-      topK:
-        type: integer
-        format: int64
-        title: top k, defaults to 5
-      llmModel:
-        type: string
-        title: LLM model name, defaults to `gpt-4o`
-      userInstruction:
-        type: string
-        title: Instruction for the model to follow, defaults to `Please answer user question accurately and in the same language as the Follow-up Question.`
     description: |-
       ChatRequest represents a request to send a message
       to a chatbot synchronously and streams back the results.
     required:
-      - catalogId
-      - conversationUid
       - message
-  AppType:
-    type: string
-    enum:
-      - APP_TYPE_AI_ASSISTANT
-      - APP_TYPE_AI_AGENT
-    description: |-
-      AppType represents the type of the app.
-
-       - APP_TYPE_AI_ASSISTANT: AppType is a AI assistant app.
-       - APP_TYPE_AI_AGENT: AppType is a AI agent app.
   AudioCell:
     type: object
     properties:
@@ -6964,13 +6184,6 @@ definitions:
           type: object
         description: Conversation responses.
         readOnly: true
-      chunks:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/SimilarityChunk'
-        title: Reference chunks
-        readOnly: true
     description: ChatResponse contains the chatbot response.
   CheckNamespaceAdminResponse:
     type: object
@@ -7096,7 +6309,7 @@ definitions:
       type:
         title: Type of citation
         allOf:
-          - $ref: '#/definitions/CitationsType'
+          - $ref: '#/definitions/CitationType'
       name:
         type: string
         title: Name of the citation
@@ -7114,14 +6327,14 @@ definitions:
         title: File UID (only applicable for chunk-type citations)
         readOnly: true
     title: Citation message
-  CitationsType:
+  CitationType:
     type: string
     enum:
-      - CITATIONS_TYPE_CHUNK
-      - CITATIONS_TYPE_URL
+      - CITATION_TYPE_CHUNK
+      - CITATION_TYPE_URL
     description: |-
-      - CITATIONS_TYPE_CHUNK: Chunk-based citation
-       - CITATIONS_TYPE_URL: URL-based citation
+      - CITATION_TYPE_CHUNK: Chunk-based citation
+       - CITATION_TYPE_URL: URL-based citation
     title: type of the citations message
   CloneNamespacePipelineBody:
     type: object
@@ -7571,114 +6784,6 @@ definitions:
       - integrationId
       - method
       - setup
-  Conversation:
-    type: object
-    properties:
-      uid:
-        type: string
-        title: unique identifier of the conversation created by the system
-        readOnly: true
-      namespaceId:
-        type: string
-        title: namespace id
-      appId:
-        type: string
-        title: app id
-      id:
-        type: string
-        title: conversation id/name
-      lastUsedCatalogUid:
-        type: string
-        title: last used catalog uid
-      lastUsedTopK:
-        type: integer
-        format: int64
-        title: last used top k
-      createTime:
-        type: string
-        format: date-time
-        title: creation time of the conversation
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        title: update time of the conversation
-        readOnly: true
-    title: Conversation represents a chat conversation
-    required:
-      - namespaceId
-      - appId
-      - id
-  CreateAgentBody:
-    type: object
-    properties:
-      displayName:
-        type: string
-        title: agent display name
-      description:
-        type: string
-        title: agent description
-      tags:
-        type: array
-        items:
-          type: string
-        title: agent tags
-      aiAgentSettings:
-        title: agent metadata
-        allOf:
-          - $ref: '#/definitions/AIAgentSettings'
-    description: CreateAgentRequest represents a request to create a agent.
-  CreateAgentResponse:
-    type: object
-    properties:
-      agent:
-        title: created agent
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Agent'
-    description: CreateAgentResponse represents a response for creating a agent.
-  CreateAppBody:
-    type: object
-    properties:
-      id:
-        type: string
-        description: |-
-          The app id.
-          the app id should be lowercase without any space or special character besides the hyphen,
-          it can not start with number or hyphen, and should be less than 32 characters.
-      description:
-        type: string
-        description: The app description.
-      tags:
-        type: array
-        items:
-          type: string
-        description: The app tags.
-      appType:
-        title: app type(default is APP_TYPE_AI_ASSISTANT)
-        allOf:
-          - $ref: '#/definitions/AppType'
-      aiAssistantApp:
-        title: ai assistant app metadata
-        allOf:
-          - $ref: '#/definitions/AIAssistantAppMetadata'
-      aiAgentApp:
-        title: ai agent app metadata
-        allOf:
-          - $ref: '#/definitions/AIAgentAppMetadata'
-    description: CreateAppRequest represents a request to create a app.
-    required:
-      - id
-      - appType
-  CreateAppResponse:
-    type: object
-    properties:
-      app:
-        description: The created app.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/App'
-    description: CreateAppResponse represents a response for creating a app.
   CreateCatalogBody:
     type: object
     properties:
@@ -7712,10 +6817,10 @@ definitions:
       chatDisplayName:
         type: string
         title: chat display name
-      aiAgentSettings:
-        title: agent settings
+      agentConfig:
+        title: agent config
         allOf:
-          - $ref: '#/definitions/AIAgentSettings'
+          - $ref: '#/definitions/AgentConfig'
     title: CreateChatRequest is used to create a new chat
   CreateChatResponse:
     type: object
@@ -7726,24 +6831,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alpha.Chat'
     title: CreateChatResponse returns the created chat
-  CreateConversationBody:
-    type: object
-    properties:
-      conversationId:
-        type: string
-        title: conversation id. only allow kebab case
-    title: CreateConversationRequest is used to create a new conversation
-    required:
-      - conversationId
-  CreateConversationResponse:
-    type: object
-    properties:
-      conversation:
-        title: conversation
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Conversation'
-    title: CreateConversationResponse returns the created conversation
   CreateMessageBody:
     type: object
     properties:
@@ -7765,6 +6852,9 @@ definitions:
   CreateMessageResponse:
     type: object
     properties:
+      chatUid:
+        type: string
+        title: chat uid
       message:
         title: message
         allOf:
@@ -7894,12 +6984,6 @@ definitions:
     description: |-
       DataSpecification describes the JSON schema of component input and output.
       Note: This message will be renamed to TaskSpecifications in the future.
-  DeleteAgentResponse:
-    type: object
-    description: DeleteAgentResponse represents a response for deleting a agent.
-  DeleteAppResponse:
-    type: object
-    description: DeleteAppResponse represents a response for deleting a app.
   DeleteCatalogFileResponse:
     type: object
     properties:
@@ -7918,9 +7002,6 @@ definitions:
   DeleteChatResponse:
     type: object
     title: DeleteChatResponse is empty as no content needs to be returned
-  DeleteConversationResponse:
-    type: object
-    title: DeleteConversationResponse is empty as no content needs to be returned
   DeleteMessageResponse:
     type: object
     title: DeleteMessageResponse is empty as no content needs to be returned
@@ -8489,15 +7570,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/OrganizationSubscription'
     description: GetOrganizationSubscriptionResponse contains the requested subscription.
-  GetPlaygroundConversationResponse:
-    type: object
-    properties:
-      conversation:
-        title: conversation
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Conversation'
-    description: GetPlaygroundConversationResponse represents a response for getting a playground conversation.
   GetRemainingCreditAdminResponse:
     type: object
     properties:
@@ -8715,27 +7787,6 @@ definitions:
         description: URL contains the reference the link will redirect to.
         readOnly: true
     description: Link contains the information to display an reference to an external URL.
-  ListAgentsResponse:
-    type: object
-    properties:
-      agents:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Agent'
-        title: agents
-    description: ListAgentsResponse represents a response for listing agents.
-  ListAppsResponse:
-    type: object
-    properties:
-      apps:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/App'
-        description: The apps container.
-        readOnly: true
-    description: GetAppsResponse represents a response for getting all apps from users.
   ListAvailableRegionsResponse:
     type: object
     properties:
@@ -8821,26 +7872,6 @@ definitions:
           $ref: '#/definitions/Catalog'
         description: The catalogs container.
     description: GetCatalogsResponse represents a response for getting all catalogs from users.
-  ListChatMessagesResponse:
-    type: object
-    properties:
-      messages:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/app.v1alpha.Message'
-        title: messages
-        readOnly: true
-      nextPageToken:
-        type: string
-        title: next page token
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        title: total size
-        readOnly: true
-    title: ListChatMessagesResponse returns a list of messages
   ListChatsResponse:
     type: object
     properties:
@@ -8919,26 +7950,6 @@ definitions:
         description: The number of items per page.
         readOnly: true
     description: ListComponentRunsResponse is the response message for ListComponentRuns.
-  ListConversationsResponse:
-    type: object
-    properties:
-      conversations:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Conversation'
-        title: conversations
-        readOnly: true
-      nextPageToken:
-        type: string
-        title: next page token
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        title: total size
-        readOnly: true
-    title: ListConversationsResponse returns a list of conversations
   ListCreditConsumptionChartRecordsResponse:
     type: object
     properties:
@@ -9524,16 +8535,6 @@ definitions:
         format: int32
         description: Total number of API token resources.
     description: ListTokensResponse contains a list of API tokens.
-  ListToolsResponse:
-    type: object
-    properties:
-      tools:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Tool'
-        title: tools
-    description: ListToolsResponse represents a response for listing tools.
   ListUserMembershipsResponse:
     type: object
     properties:
@@ -10871,15 +9872,6 @@ definitions:
     description: |-
       RepositoryTag contains information about the version of some content in a
       repository.
-  RestartPlaygroundConversationResponse:
-    type: object
-    properties:
-      conversation:
-        title: conversation
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Conversation'
-    description: RestartPlaygroundConversationResponse represents a response for restarting a playground conversation.
   Role:
     type: string
     enum:
@@ -11313,25 +10305,6 @@ definitions:
         format: date-time
         title: transformed content update time
     title: text message
-  Tool:
-    type: object
-    properties:
-      pipelineId:
-        type: string
-        title: The pipeline id of the tool. e.g. "preset/xxx-search"
-      name:
-        type: string
-        description: The tool name.
-      connections:
-        type: object
-        additionalProperties:
-          type: string
-        description: The tool connection key(used connection id in recipe) and value(connection uid from namespace).
-      description:
-        type: string
-        description: The tool description.
-        readOnly: true
-    title: tool definitions
   Trace:
     type: object
     properties:
@@ -11728,83 +10701,6 @@ definitions:
   UndeployUserModelAdminResponse:
     type: object
     title: UndeployUserModelAdminResponse represents a response for a undeployed model
-  UpdateAgentBody:
-    type: object
-    properties:
-      displayName:
-        type: string
-        title: agent display name
-      description:
-        type: string
-        title: agent description
-      tags:
-        type: array
-        items:
-          type: string
-        title: agent tags
-      aiAgentSettings:
-        title: agent settings
-        allOf:
-          - $ref: '#/definitions/AIAgentSettings'
-    description: UpdateAgentRequest represents a request to update a agent.
-  UpdateAgentResponse:
-    type: object
-    properties:
-      agent:
-        title: updated agent
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Agent'
-    description: UpdateAgentResponse represents a response for updating a agent.
-  UpdateAppBody:
-    type: object
-    properties:
-      newAppId:
-        type: string
-        description: |-
-          The app id needs to follow the kebab case format.
-          if the new app id is not provided, the app id will not be updated.
-      newDescription:
-        type: string
-        description: |-
-          The app description.
-          If the new description is empty, the description will be set to empty.
-      newTags:
-        type: array
-        items:
-          type: string
-        description: |-
-          The app tags.
-          If the new tags is empty, the tags will be set to empty.
-      lastAiAssistantAppCatalogUid:
-        type: string
-        description: |-
-          last AI assistant app catalog uid
-          If the last AI assistant app catalog uid is empty, the last AI assistant app catalog uid will be set to empty.
-      lastAiAssistantAppTopK:
-        type: integer
-        format: int32
-        description: |-
-          last AI assistant app top k
-          If the last AI assistant app top k is empty, the last AI assistant app top k will be set to empty.
-      aiAssistantApp:
-        title: ai assistant app metadata
-        allOf:
-          - $ref: '#/definitions/AIAssistantAppMetadata'
-      aiAgentApp:
-        title: ai agent app metadata
-        allOf:
-          - $ref: '#/definitions/AIAgentAppMetadata'
-    description: UpdateAppRequest represents a request to update a app.
-  UpdateAppResponse:
-    type: object
-    properties:
-      app:
-        description: The updated app.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/App'
-    description: UpdateAppResponse represents a response for updating a app.
   UpdateCatalogBody:
     type: object
     properties:
@@ -11831,10 +10727,10 @@ definitions:
       chatDisplayName:
         type: string
         title: chat display name
-      aiAgentSettings:
+      agentConfig:
         title: ai agent settings
         allOf:
-          - $ref: '#/definitions/AIAgentSettings'
+          - $ref: '#/definitions/AgentConfig'
     title: UpdateChatRequest is used to update a chat
   UpdateChatResponse:
     type: object
@@ -11870,29 +10766,6 @@ definitions:
         description: The updated column definitions.
         readOnly: true
     description: UpdateColumnDefinitionsResponse contains the updated column definitions.
-  UpdateConversationBody:
-    type: object
-    properties:
-      newConversationId:
-        type: string
-        title: new conversation id
-      lastUsedCatalogUid:
-        type: string
-        title: last used catalog uid(only for ai assistant app)
-      lastUsedTopK:
-        type: integer
-        format: int64
-        title: last used top k(only for ai assistant app)
-    title: UpdateConversationRequest is used to update a conversation
-  UpdateConversationResponse:
-    type: object
-    properties:
-      conversation:
-        title: conversation
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Conversation'
-    title: UpdateConversationResponse returns the updated conversation
   UpdateMessageBody:
     type: object
     properties:
@@ -12210,13 +11083,9 @@ definitions:
         type: string
         title: message uid
         readOnly: true
-      appUid:
+      chatUid:
         type: string
-        title: app uid(deprecated)
-        readOnly: true
-      conversationUid:
-        type: string
-        title: conversation uid
+        title: chat uid
         readOnly: true
       content:
         type: string
@@ -12241,10 +11110,6 @@ definitions:
       msgSenderUid:
         type: string
         title: message sender uid(only for user messages)
-        readOnly: true
-      standaloneQuestion:
-        type: string
-        title: standalone question(only for user messages)
         readOnly: true
       citations:
         type: array
@@ -12383,42 +11248,33 @@ definitions:
     properties:
       uid:
         type: string
-        title: unique identifier of the conversation created by the system
+        description: unique identifier of the conversation created by the system.
         readOnly: true
       namespaceId:
         type: string
-        title: namespace id
-      lastUsedCatalogUid:
+        description: namespace id.
+      chatDisplayName:
         type: string
-        title: last used catalog uid
-      lastUsedTopK:
-        type: integer
-        format: int64
-        title: last used top k
+        description: conversation display name.
+      agentConfig:
+        description: agent config.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/AgentConfig'
       createTime:
         type: string
         format: date-time
-        title: creation time of the chat
+        description: chat create time.
         readOnly: true
       updateTime:
         type: string
         format: date-time
-        title: update time of the chat
+        description: chat update time.
         readOnly: true
-      aiAgentMetadata:
-        title: agent metadata
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/AIAgentAppMetadata'
-      tempCatalogId:
+      deleteTime:
         type: string
-        title: temp catalog id automatically created for ai agent app
-      chatDisplayName:
-        type: string
-        title: conversation display name
-      breakpoint:
-        type: string
-        title: breakpoint. allow to continue the chat from breakpoint
+        format: date-time
+        description: chat delete time.
         readOnly: true
     title: Chat represents a chat
     required:
