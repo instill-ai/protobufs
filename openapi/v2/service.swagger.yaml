@@ -4806,12 +4806,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: Namespace ID
+          description: Source namespace ID containing the pipeline to clone
           in: path
           required: true
           type: string
         - name: pipelineId
-          description: Pipeline ID
+          description: Source pipeline ID to clone
           in: path
           required: true
           type: string
@@ -5251,17 +5251,17 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: Namespace ID
+          description: Source namespace ID containing the pipeline to clone
           in: path
           required: true
           type: string
         - name: pipelineId
-          description: Pipeline ID
+          description: Source pipeline ID to clone
           in: path
           required: true
           type: string
         - name: releaseId
-          description: Release ID
+          description: Source release ID to clone
           in: path
           required: true
           type: string
@@ -7128,20 +7128,30 @@ definitions:
     properties:
       description:
         type: string
-        description: Pipeline description.
+        title: Description for the cloned pipeline
       sharing:
-        description: Pipeline sharing information.
+        title: Sharing settings for the cloned pipeline
         allOf:
           - $ref: '#/definitions/Sharing'
       targetNamespaceId:
         type: string
-        description: Target Namespace ID.
+        title: Target namespace ID where the pipeline will be cloned to
       targetPipelineId:
         type: string
-        description: Target Pipeline ID.
+        title: Target pipeline ID for the cloned pipeline
+      asTemplate:
+        type: boolean
+        title: |-
+          When true, treats the source pipeline as a template and allows overriding
+          sensitive values through template_overrides
+      templateOverrides:
+        title: Template overrides for sensitive values, only used when as_template is true
+        allOf:
+          - $ref: '#/definitions/TemplateOverrides'
     description: |-
       CloneNamespacePipelineRequest represents a request to clone a pipeline owned by a
-      user.
+      namespace into another namespace. The cloned pipeline can either be an exact copy
+      or a template-based copy with overridden values.
     required:
       - targetNamespaceId
       - targetPipelineId
@@ -7150,20 +7160,30 @@ definitions:
     properties:
       description:
         type: string
-        description: Pipeline description.
+        title: Description for the cloned pipeline
       sharing:
-        description: Pipeline sharing information.
+        title: Sharing settings for the cloned pipeline
         allOf:
           - $ref: '#/definitions/Sharing'
       targetNamespaceId:
         type: string
-        description: Target Namespace ID.
+        title: Target namespace ID where the pipeline will be cloned to
       targetPipelineId:
         type: string
-        description: Target Pipeline ID.
+        title: Target pipeline ID for the cloned pipeline
+      asTemplate:
+        type: boolean
+        title: |-
+          When true, treats the source pipeline as a template and allows overriding
+          sensitive values through template_overrides
+      templateOverrides:
+        title: Template overrides for sensitive values, only used when as_template is true
+        allOf:
+          - $ref: '#/definitions/TemplateOverrides'
     description: |-
-      CloneNamespacePipelineReleaseRequest represents a request to clone a pipeline
-      release owned by a user.
+      CloneNamespacePipelineReleaseRequest represents a request to clone a pipeline release owned by a
+      namespace into another namespace. The cloned pipeline can either be an exact copy
+      or a template-based copy with overridden values.
     required:
       - targetNamespaceId
       - targetPipelineId
@@ -11286,6 +11306,30 @@ definitions:
        - TASK_CHAT: Conversational Text Generation - generate text as responses to a dialog input.
        - TASK_COMPLETION: Completion Text Generation - generate text following the input prompt.
        - TASK_CUSTOM: Custom - custom task type for free form input/output.
+  TemplateOverrides:
+    type: object
+    properties:
+      connectionReferences:
+        type: object
+        additionalProperties:
+          type: string
+        description: |-
+          A collection of connection references. By default, connection references
+          (`${connection.<id>}`) in a pipeline will be resolved by fetching the
+          value from the requester's connections. Connections contain sensitive data
+          and can't be shared across namespaces, so this means that, in order to
+          successfully run a pipeline owned by another namespace, the requester will
+          need to have a connection with the same ID.
+          This object provides a way to override the connection references with
+          connections that the requester owns. Each element in the object maps a
+          connection ID present in the pipeline (key) to the ID of a connection
+          owned by the requester (value).
+          Note that, since only references are accepted (this object shouldn't
+          contain connection **values**), the reference syntax shouldn't be used
+          here.
+    description: |-
+      TemplateOverrides allows customizing values when cloning a pipeline
+      as a template.
   TestNamespaceConnectionResponse:
     type: object
     description: TestNamespaceConnectionResponse is an empty response.
