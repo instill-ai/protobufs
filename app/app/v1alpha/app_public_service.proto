@@ -401,6 +401,20 @@ service AppPublicService {
     };
   }
 
+  // Get table events
+  //
+  // Returns a list of events for a table.
+  rpc GetTableEvents(GetTableEventsRequest) returns (stream GetTableEventsResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/events"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
   // Export table
   //
   // Exports table data.
@@ -413,5 +427,15 @@ service AppPublicService {
         value: {string_value: "alpha"}
       }
     };
+  }
+
+  // Generate mock table
+  //
+  // Generates mock table data.
+  // This API is only available for internal use to generate mock row data for testing purposes.
+  // It should not be used in production environments.
+  rpc GenerateMockTable(GenerateMockTableRequest) returns (GenerateMockTableResponse) {
+    option (google.api.http) = {post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/generate-mock"};
+    option (google.api.method_visibility).restriction = "INTERNAL";
   }
 }
