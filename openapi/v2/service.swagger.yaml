@@ -877,6 +877,43 @@ paths:
       tags:
         - Table
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/events:
+    get:
+      summary: Get table events
+      description: Returns a list of events for a table.
+      operationId: AppPublicService_GetTableEvents
+      responses:
+        "200":
+          description: A successful response.(streaming responses)
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/GetTableEventsResponse'
+              error:
+                $ref: '#/definitions/rpc.Status'
+            title: Stream result of GetTableEventsResponse
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to fetch events for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/export:
     get:
       summary: Export table
@@ -6130,6 +6167,10 @@ definitions:
         type: string
         description: The unique identifier of the column this cell belongs to.
         readOnly: true
+      rowUid:
+        type: string
+        description: The row that this cell belongs to.
+        readOnly: true
       updateTime:
         type: string
         format: date-time
@@ -6178,7 +6219,44 @@ definitions:
       metadata:
         type: object
         description: Additional metadata for the cell.
+      status:
+        description: The status of the cell.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/CellStatus'
     description: Cell represents a cell in a table.
+  CellStatus:
+    type: string
+    enum:
+      - CELL_STATUS_IDLE
+      - CELL_STATUS_PENDING
+      - CELL_STATUS_PROCESSING
+      - CELL_STATUS_FAILED
+      - CELL_STATUS_COMPLETED
+    description: |-
+      CellStatus represents the status of a cell.
+
+       - CELL_STATUS_IDLE: The cell is idle.
+       - CELL_STATUS_PENDING: The cell is pending.
+       - CELL_STATUS_PROCESSING: The cell is processing.
+       - CELL_STATUS_FAILED: The cell is failed.
+       - CELL_STATUS_COMPLETED: The cell is completed.
+  CellUpdatedEvent:
+    type: object
+    properties:
+      cell:
+        description: The cell that was updated.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+      deltaMode:
+        type: boolean
+        description: |-
+          Whether the event is a delta update.
+          Only cells with string type can be returned in delta mode. Delta mode returns
+          only the changes made to the cell value rather than the full value.
+        readOnly: true
+    description: CellUpdatedEvent represents an event for a cell being updated.
   ChatResponse:
     type: object
     properties:
@@ -6414,6 +6492,16 @@ definitions:
     required:
       - type
       - order
+  ColumnDefinitionsUpdatedEvent:
+    type: object
+    properties:
+      columnDefinitions:
+        type: object
+        additionalProperties:
+          $ref: '#/definitions/ColumnDefinition'
+        description: The column definitions that were updated.
+        readOnly: true
+    description: ColumnDefinitionsUpdatedEvent represents an event for column definitions being updated.
   ComponentDefinition:
     type: object
     properties:
@@ -7623,6 +7711,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/SourceFile'
     title: get source file response
+  GetTableEventsResponse:
+    type: object
+    properties:
+      event:
+        description: The events for the table.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/TableEvent'
+    description: GetTableEventsResponse contains the events for a table.
   GetTableResponse:
     type: object
     properties:
@@ -9914,6 +10011,54 @@ definitions:
     description: Row represents a row in a table.
     required:
       - cells
+  RowDeletedEvent:
+    type: object
+    properties:
+      rowUid:
+        type: string
+        description: The unique identifier of the row that was deleted.
+        readOnly: true
+    description: RowDeletedEvent represents an event for a row being deleted.
+  RowInsertedEvent:
+    type: object
+    properties:
+      row:
+        description: |-
+          The row that was inserted.
+          Note: Only the row metadata is returned, not the cell data.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Row'
+      beforeRowUid:
+        type: string
+        description: The unique identifier of the row that was inserted before.
+        readOnly: true
+    description: RowInsertedEvent represents an event for a row being inserted.
+  RowUpdatedEvent:
+    type: object
+    properties:
+      row:
+        description: |-
+          The row that was updated.
+          Note: Only the row metadata is returned, not the cell data.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Row'
+    description: RowUpdatedEvent represents an event for a row being updated.
+  RowsMovedEvent:
+    type: object
+    properties:
+      rowUids:
+        type: array
+        items:
+          type: string
+        description: The unique identifiers of the rows that were moved.
+        readOnly: true
+      beforeRowUid:
+        type: string
+        description: The unique identifier of the row that was moved before.
+        readOnly: true
+    description: RowsMovedEvent represents an event for multiple rows being moved.
   RunSource:
     type: string
     enum:
@@ -10253,6 +10398,66 @@ definitions:
     required:
       - id
       - title
+  TableDeletedEvent:
+    type: object
+    description: TableDeletedEvent represents an event for a table being deleted.
+  TableEvent:
+    type: object
+    properties:
+      event:
+        type: string
+        description: |-
+          The event type.
+          In text/event-stream format, this maps to the `event` field.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          The ID of the event.
+          In text/event-stream format, this maps to the `id` field.
+        readOnly: true
+      tableUpdatedEvent:
+        description: The table that was updated.
+        allOf:
+          - $ref: '#/definitions/TableUpdatedEvent'
+      tableDeletedEvent:
+        description: The table that was deleted.
+        allOf:
+          - $ref: '#/definitions/TableDeletedEvent'
+      columnDefinitionsUpdatedEvent:
+        description: The column definitions that were updated.
+        allOf:
+          - $ref: '#/definitions/ColumnDefinitionsUpdatedEvent'
+      rowInsertedEvent:
+        description: The row that was inserted.
+        allOf:
+          - $ref: '#/definitions/RowInsertedEvent'
+      rowUpdatedEvent:
+        description: The row that was updated.
+        allOf:
+          - $ref: '#/definitions/RowUpdatedEvent'
+      rowDeletedEvent:
+        description: The row that was deleted.
+        allOf:
+          - $ref: '#/definitions/RowDeletedEvent'
+      rowsMovedEvent:
+        description: The rows that were moved.
+        allOf:
+          - $ref: '#/definitions/RowsMovedEvent'
+      cellUpdatedEvent:
+        description: The cell that was updated.
+        allOf:
+          - $ref: '#/definitions/CellUpdatedEvent'
+    description: TableEvent represents an event for a table.
+  TableUpdatedEvent:
+    type: object
+    properties:
+      table:
+        description: The table that was updated.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table'
+    description: TableUpdatedEvent represents an event for a table being updated.
   Task:
     type: string
     enum:

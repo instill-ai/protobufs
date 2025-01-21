@@ -169,6 +169,27 @@ message UpdateColumnDefinitionsResponse {
   map<string, ColumnDefinition> column_definitions = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// CellStatus represents the status of a cell.
+enum CellStatus {
+  // The cell status is not specified.
+  CELL_STATUS_UNSPECIFIED = 0;
+
+  // The cell is idle.
+  CELL_STATUS_IDLE = 1;
+
+  // The cell is pending.
+  CELL_STATUS_PENDING = 2;
+
+  // The cell is processing.
+  CELL_STATUS_PROCESSING = 3;
+
+  // The cell is failed.
+  CELL_STATUS_FAILED = 4;
+
+  // The cell is completed.
+  CELL_STATUS_COMPLETED = 5;
+}
+
 // Cell represents a cell in a table.
 message Cell {
   // The unique identifier of the cell.
@@ -177,44 +198,50 @@ message Cell {
   // The unique identifier of the column this cell belongs to.
   string column_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 
+  // The row that this cell belongs to.
+  string row_uid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // The timestamp when the cell was last updated.
-  google.protobuf.Timestamp update_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  google.protobuf.Timestamp update_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The type of the cell's value.
-  string type = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string type = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The value of the cell as a string.
   oneof value {
     // The value of the cell as a string.
-    StringCell string_value = 5;
+    StringCell string_value = 6;
 
     // The value of the cell as a number.
-    NumberCell number_value = 6;
+    NumberCell number_value = 7;
 
     // The value of the cell as a boolean.
-    BooleanCell boolean_value = 7;
+    BooleanCell boolean_value = 8;
 
     // The value of the cell as a url of a file resource.
-    FileCell file_value = 8;
+    FileCell file_value = 9;
 
     // The value of the cell as a url of a document resource.
-    DocumentCell document_value = 9;
+    DocumentCell document_value = 10;
 
     // The value of the cell as a url of an image resource.
-    ImageCell image_value = 10;
+    ImageCell image_value = 11;
 
     // The value of the cell as a url of a video resource.
-    VideoCell video_value = 11;
+    VideoCell video_value = 12;
 
     // The value of the cell as a url of an audio resource.
-    AudioCell audio_value = 12;
+    AudioCell audio_value = 13;
 
     // The value of the cell as a null cell.
-    NullCell null_value = 13;
+    NullCell null_value = 14;
   }
 
   // Additional metadata for the cell.
   google.protobuf.Struct metadata = 15 [(google.api.field_behavior) = OPTIONAL];
+
+  // The status of the cell.
+  CellStatus status = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // NullCell represents a null cell.
@@ -441,3 +468,127 @@ message ExportResponse {
   // The exported data.
   bytes data = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
+
+// GetTableEventsRequest represents a request to fetch events for a table.
+message GetTableEventsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to fetch events for.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetTableEventsResponse contains the events for a table.
+message GetTableEventsResponse {
+  // The events for the table.
+  TableEvent event = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// TableEvent represents an event for a table.
+message TableEvent {
+  // The event type.
+  // In text/event-stream format, this maps to the `event` field.
+  string event = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The ID of the event.
+  // In text/event-stream format, this maps to the `id` field.
+  string id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The data of the event.
+  // In text/event-stream format, this maps to the `data` field.
+  oneof data {
+    // The table that was updated.
+    TableUpdatedEvent table_updated_event = 3;
+
+    // The table that was deleted.
+    TableDeletedEvent table_deleted_event = 4;
+
+    // The column definitions that were updated.
+    ColumnDefinitionsUpdatedEvent column_definitions_updated_event = 5;
+
+    // The row that was inserted.
+    RowInsertedEvent row_inserted_event = 6;
+
+    // The row that was updated.
+    RowUpdatedEvent row_updated_event = 7;
+
+    // The row that was deleted.
+    RowDeletedEvent row_deleted_event = 8;
+
+    // The rows that were moved.
+    RowsMovedEvent rows_moved_event = 9;
+
+    // The cell that was updated.
+    CellUpdatedEvent cell_updated_event = 10;
+  }
+}
+
+// TableUpdatedEvent represents an event for a table being updated.
+message TableUpdatedEvent {
+  // The table that was updated.
+  Table table = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// TableDeletedEvent represents an event for a table being deleted.
+message TableDeletedEvent {}
+
+// ColumnDefinitionsUpdatedEvent represents an event for column definitions being updated.
+message ColumnDefinitionsUpdatedEvent {
+  // The column definitions that were updated.
+  map<string, ColumnDefinition> column_definitions = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// RowInsertedEvent represents an event for a row being inserted.
+message RowInsertedEvent {
+  // The row that was inserted.
+  // Note: Only the row metadata is returned, not the cell data.
+  Row row = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The unique identifier of the row that was inserted before.
+  string before_row_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// RowUpdatedEvent represents an event for a row being updated.
+message RowUpdatedEvent {
+  // The row that was updated.
+  // Note: Only the row metadata is returned, not the cell data.
+  Row row = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// RowDeletedEvent represents an event for a row being deleted.
+message RowDeletedEvent {
+  // The unique identifier of the row that was deleted.
+  string row_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// RowsMovedEvent represents an event for multiple rows being moved.
+message RowsMovedEvent {
+  // The unique identifiers of the rows that were moved.
+  repeated string row_uids = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The unique identifier of the row that was moved before.
+  optional string before_row_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// CellUpdatedEvent represents an event for a cell being updated.
+message CellUpdatedEvent {
+  // The cell that was updated.
+  Cell cell = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Whether the event is a delta update.
+  // Only cells with string type can be returned in delta mode. Delta mode returns
+  // only the changes made to the cell value rather than the full value.
+  bool delta_mode = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// GenerateMockTableRequest represents a request to generate mock table data.
+message GenerateMockTableRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to generate mock data for.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GenerateMockTableResponse is an empty response for generating mock table data.
+message GenerateMockTableResponse {}
