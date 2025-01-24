@@ -915,15 +915,15 @@ paths:
         - Table
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/export:
-    get:
+    post:
       summary: Export table
       description: Exports table data.
-      operationId: AgentPublicService_Export
+      operationId: AgentPublicService_ExportTable
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ExportResponse'
+            $ref: '#/definitions/ExportTableResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -942,11 +942,11 @@ paths:
           in: path
           required: true
           type: string
-        - name: type
-          description: The format to export the data in (csv, parquet).
-          in: query
+        - name: body
+          in: body
           required: true
-          type: string
+          schema:
+            $ref: '#/definitions/ExportTableBody'
       tags:
         - Table
       x-stage: alpha
@@ -7207,7 +7207,17 @@ definitions:
         description: JSON schema describing the component event examples.
         readOnly: true
     description: EventSpecification describes the JSON schema of component event setup and examples.
-  ExportResponse:
+  ExportTableBody:
+    type: object
+    properties:
+      type:
+        description: The type to export the data in.
+        allOf:
+          - $ref: '#/definitions/ExportType'
+    description: ExportTableRequest represents a request to export table data.
+    required:
+      - type
+  ExportTableResponse:
     type: object
     properties:
       data:
@@ -7215,7 +7225,17 @@ definitions:
         format: byte
         description: The exported data.
         readOnly: true
-    description: ExportResponse is an empty response for exporting table data.
+    description: ExportTableResponse is an empty response for exporting table data.
+  ExportType:
+    type: string
+    enum:
+      - EXPORT_TYPE_CSV
+      - EXPORT_TYPE_PARQUET
+    description: |-
+      ExportType represents the type to export the data in.
+
+       - EXPORT_TYPE_CSV: The type is CSV.
+       - EXPORT_TYPE_PARQUET: The type is Parquet.
   File:
     type: object
     properties:

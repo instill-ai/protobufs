@@ -456,20 +456,32 @@ message MoveRowsRequest {
 // MoveRowsResponse is an empty response for moving multiple rows.
 message MoveRowsResponse {}
 
-// ExportRequest represents a request to export table data.
-message ExportRequest {
+// ExportType represents the type to export the data in.
+enum ExportType {
+  // The type is not specified.
+  EXPORT_TYPE_UNSPECIFIED = 0;
+
+  // The type is CSV.
+  EXPORT_TYPE_CSV = 1;
+
+  // The type is Parquet.
+  EXPORT_TYPE_PARQUET = 2;
+}
+
+// ExportTableRequest represents a request to export table data.
+message ExportTableRequest {
   // The ID of the namespace that owns the table.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
 
   // The UID of the table to export.
   string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
 
-  // The format to export the data in (csv, parquet).
-  string type = 3 [(google.api.field_behavior) = REQUIRED];
+  // The type to export the data in.
+  ExportType type = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
-// ExportResponse is an empty response for exporting table data.
-message ExportResponse {
+// ExportTableResponse is an empty response for exporting table data.
+message ExportTableResponse {
   // The exported data.
   bytes data = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
