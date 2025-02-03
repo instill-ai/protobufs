@@ -64,7 +64,7 @@ tag can be added with `grpc-gateway`'s `tags` operation option:
 // Returns the details of a pipeline.
 rpc GetNamespacePipeline(GetNamespacePipelineRequest) returns (GetNamespacePipelineResponse) {
     option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "💧 VDP"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "💧 Pipeline"};
 }
 ```
 
@@ -121,7 +121,7 @@ _alpha_ or _beta_ stage. This extension can be added with the
 rpc GetNamespacePipeline(GetNamespacePipelineRequest) returns (GetNamespacePipelineResponse) {
     option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    tags: "💧 VDP"
+    tags: "💧 Pipeline"
     extensions: {
         key: "x-stage"
             value {string_value: "beta"}
