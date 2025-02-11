@@ -379,6 +379,109 @@ paths:
       tags:
         - "\U0001F34E Agent"
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/bind-table:
+    post:
+      summary: Bind table to chat
+      description: Binds a table to a chat.
+      operationId: AgentPublicService_BindChatTable
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/BindChatTableResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: chatUid
+          description: The UID of the chat to bind the table to.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/BindChatTableBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/unbind-table:
+    post:
+      summary: Unbind table from chat
+      description: Unbinds a table from a chat.
+      operationId: AgentPublicService_UnbindChatTable
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UnbindChatTableResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: chatUid
+          description: The UID of the chat to unbind the table from.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnbindChatTableBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/tables:
+    get:
+      summary: List chat tables
+      description: Returns a list of tables bound to a chat.
+      operationId: AgentPublicService_ListChatTables
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListChatTablesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: chatUid
+          description: The UID of the chat to list tables for.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables:
     get:
       summary: List tables
@@ -5683,18 +5786,6 @@ paths:
         - "\U0001F4A7 Pipeline"
       x-stage: beta
 definitions:
-  AgentConfig:
-    type: object
-    properties:
-      instructions:
-        type: string
-        title: instructions
-      connections:
-        type: object
-        additionalProperties:
-          type: string
-        description: connection key(used connection id in recipe) and value(connection uid from namespace).
-    description: AgentConfig represents the config for the chat agent.
   AgentPublicService.ChatBody:
     type: object
     properties:
@@ -5989,6 +6080,18 @@ definitions:
       - id
       - email
       - newsletterSubscription
+  BindChatTableBody:
+    type: object
+    properties:
+      tableUid:
+        type: string
+        description: The UID of the table to bind to the chat.
+    description: BindChatTableRequest represents a request to bind a table to a chat.
+    required:
+      - tableUid
+  BindChatTableResponse:
+    type: object
+    description: BindChatTableResponse is an empty response for binding a table to a chat.
   BooleanCell:
     type: object
     properties:
@@ -6224,6 +6327,11 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/CellStatus'
+      faithfulnessCheckingResult:
+        description: The faithfulness checking result for the cell.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FaithfulnessCheckingResult'
     description: Cell represents a cell in a table.
   CellStatus:
     type: string
@@ -6490,10 +6598,28 @@ definitions:
         description: |-
           The order of the column in the table, starting at 1. This determines the column's position
           when displaying or processing table data.
+      agentConfig:
+        description: The configuration for the agent.
+        allOf:
+          - $ref: '#/definitions/ColumnDefinition.AgentConfig'
+      sort:
+        description: The sort of the column.
+        allOf:
+          - $ref: '#/definitions/Sort'
     description: ColumnDefinition represents a column definition in a table.
     required:
       - type
       - order
+  ColumnDefinition.AgentConfig:
+    type: object
+    properties:
+      instructions:
+        type: string
+        description: The instructions for the agent.
+      enableWebSearch:
+        type: boolean
+        description: Whether to enable web search for the agent.
+    description: The configuration for the agent.
   ColumnDefinitionsUpdatedEvent:
     type: object
     properties:
@@ -6914,7 +7040,7 @@ definitions:
       agentConfig:
         title: agent config
         allOf:
-          - $ref: '#/definitions/AgentConfig'
+          - $ref: '#/definitions/v1alpha.AgentConfig'
     title: CreateChatRequest is used to create a new chat
   CreateChatResponse:
     type: object
@@ -7236,6 +7362,19 @@ definitions:
         description: The exported data.
         readOnly: true
     description: ExportTableResponse is an empty response for exporting table data.
+  FaithfulnessCheckingResult:
+    type: object
+    properties:
+      result:
+        type: string
+        description: The text of the faithfulness checking result.
+        readOnly: true
+      confidenceScore:
+        type: number
+        format: double
+        description: The confidence score for the faithfulness checking result.
+        readOnly: true
+    description: The faithfulness checking result for the cell.
   File:
     type: object
     properties:
@@ -7995,6 +8134,17 @@ definitions:
           $ref: '#/definitions/Catalog'
         description: The catalogs container.
     description: GetCatalogsResponse represents a response for getting all catalogs from users.
+  ListChatTablesResponse:
+    type: object
+    properties:
+      tables:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Table'
+        description: The tables bound to the chat.
+        readOnly: true
+    description: ListChatTablesResponse contains the list of tables bound to a chat.
   ListChatsResponse:
     type: object
     properties:
@@ -10267,6 +10417,16 @@ definitions:
           $ref: '#/definitions/SimilarityChunk'
         title: chunks
     title: Similar chunk search response
+  Sort:
+    type: string
+    enum:
+      - SORT_ASCENDING
+      - SORT_DESCENDING
+    description: |-
+      The sort of the column.
+
+       - SORT_ASCENDING: The sort is ascending.
+       - SORT_DESCENDING: The sort is descending.
   SourceFile:
     type: object
     properties:
@@ -10423,10 +10583,21 @@ definitions:
         format: date-time
         description: The timestamp when the table was last updated.
         readOnly: true
+      agentConfig:
+        description: The configuration for the agent.
+        allOf:
+          - $ref: '#/definitions/Table.AgentConfig'
     description: Table represents a table resource.
     required:
       - id
       - title
+  Table.AgentConfig:
+    type: object
+    properties:
+      enableFaithfulnessChecking:
+        type: boolean
+        description: Whether to enable faithfulness checking for the table.
+    description: The configuration for the agent.
   TableDeletedEvent:
     type: object
     description: TableDeletedEvent represents an event for a table being deleted.
@@ -10933,6 +11104,18 @@ definitions:
     description: |-
       TriggerNamespacePipelineWithStreamResponse contains the pipeline execution results, i.e.,
       the multiple model inference outputs.
+  UnbindChatTableBody:
+    type: object
+    properties:
+      tableUid:
+        type: string
+        description: The UID of the table to unbind from the chat.
+    description: UnbindChatTableRequest represents a request to unbind a table from a chat.
+    required:
+      - tableUid
+  UnbindChatTableResponse:
+    type: object
+    description: UnbindChatTableResponse is an empty response for unbinding a table from a chat.
   UndeployNamespaceModelAdminResponse:
     type: object
     title: UndeployNamespaceModelAdminResponse represents a response for a undeployed model
@@ -10971,7 +11154,7 @@ definitions:
       agentConfig:
         title: ai agent settings
         allOf:
-          - $ref: '#/definitions/AgentConfig'
+          - $ref: '#/definitions/v1alpha.AgentConfig'
     title: UpdateChatRequest is used to update a chat
   UpdateChatResponse:
     type: object
@@ -11484,6 +11667,18 @@ definitions:
 
       You can find out more about this error model and how to work with it in the
       [API Design Guide](https://cloud.google.com/apis/design/errors).
+  v1alpha.AgentConfig:
+    type: object
+    properties:
+      instructions:
+        type: string
+        title: instructions
+      connections:
+        type: object
+        additionalProperties:
+          type: string
+        description: connection key(used connection id in recipe) and value(connection uid from namespace).
+    description: AgentConfig represents the config for the chat agent.
   v1alpha.Chat:
     type: object
     properties:
@@ -11501,7 +11696,7 @@ definitions:
         description: agent config.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/AgentConfig'
+          - $ref: '#/definitions/v1alpha.AgentConfig'
       createTime:
         type: string
         format: date-time

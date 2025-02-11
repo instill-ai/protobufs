@@ -30,6 +30,15 @@ message Table {
 
   // The timestamp when the table was last updated.
   google.protobuf.Timestamp update_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The configuration for the agent.
+  message AgentConfig {
+    // Whether to enable faithfulness checking for the table.
+    bool enable_faithfulness_checking = 1;
+  }
+
+  // The configuration for the agent.
+  AgentConfig agent_config = 8;
 }
 
 // ListTablesRequest represents a request to list tables.
@@ -135,6 +144,33 @@ message ColumnDefinition {
   // The order of the column in the table, starting at 1. This determines the column's position
   // when displaying or processing table data.
   int32 order = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // The configuration for the agent.
+  message AgentConfig {
+    // The instructions for the agent.
+    string instructions = 1;
+
+    // Whether to enable web search for the agent.
+    bool enable_web_search = 2;
+  }
+
+  // The configuration for the agent.
+  AgentConfig agent_config = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // The sort of the column.
+  enum Sort {
+    // The sort is not specified.
+    SORT_UNSPECIFIED = 0;
+
+    // The sort is ascending.
+    SORT_ASCENDING = 1;
+
+    // The sort is descending.
+    SORT_DESCENDING = 2;
+  }
+
+  // The sort of the column.
+  Sort sort = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetColumnDefinitionsRequest represents a request to fetch column definitions.
@@ -243,6 +279,18 @@ message Cell {
 
   // The status of the cell.
   CellStatus status = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The faithfulness checking result for the cell.
+  message FaithfulnessCheckingResult {
+    // The text of the faithfulness checking result.
+    string result = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // The confidence score for the faithfulness checking result.
+    double confidence_score = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
+  // The faithfulness checking result for the cell.
+  FaithfulnessCheckingResult faithfulness_checking_result = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // NullCell represents a null cell.
@@ -608,7 +656,70 @@ message GenerateMockTableRequest {
 
   // The number of rows to generate.
   optional int32 num_rows = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Whether to enable faithfulness checking for the mock data.
+  optional bool enable_faithfulness_checking = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // The mode to generate mock data.
+  enum Mode {
+    // The mode is not specified.
+    MODE_UNSPECIFIED = 0;
+
+    // The mode is to generate mock data for a file-type table.
+    MODE_FILE = 1;
+
+    // The mode is to generate mock data for a sheet-type table.
+    MODE_SHEET = 2;
+  }
+
+  // The mode to generate mock data.
+  Mode mode = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GenerateMockTableResponse is an empty response for generating mock table data.
 message GenerateMockTableResponse {}
+
+// BindChatTableRequest represents a request to bind a table to a chat.
+message BindChatTableRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the chat to bind the table to.
+  string chat_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to bind to the chat.
+  string table_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// BindChatTableResponse is an empty response for binding a table to a chat.
+message BindChatTableResponse {}
+
+// UnbindChatTableRequest represents a request to unbind a table from a chat.
+message UnbindChatTableRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the chat to unbind the table from.
+  string chat_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to unbind from the chat.
+  string table_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UnbindChatTableResponse is an empty response for unbinding a table from a chat.
+message UnbindChatTableResponse {}
+
+// ListChatTablesRequest represents a request to list tables bound to a chat.
+message ListChatTablesRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the chat to list tables for.
+  string chat_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ListChatTablesResponse contains the list of tables bound to a chat.
+message ListChatTablesResponse {
+  // The tables bound to the chat.
+  repeated Table tables = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
