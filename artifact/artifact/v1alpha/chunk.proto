@@ -3,24 +3,53 @@ syntax = "proto3";
 package artifact.artifact.v1alpha;
 
 // Protocol Buffers Well-Known Types
+import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
+
+// FileMediaType describes the type of a catalog file.
+enum FileMediaType {
+  // Unspecified.
+  FILE_MEDIA_TYPE_UNSPECIFIED = 0;
+  // Document.
+  FILE_MEDIA_TYPE_DOCUMENT = 1;
+  // Image.
+  FILE_MEDIA_TYPE_IMAGE = 2;
+  // Audio.
+  FILE_MEDIA_TYPE_AUDIO = 3;
+  // Video.
+  FILE_MEDIA_TYPE_VIDEO = 4;
+}
+
+// ContentType describes the type of a chunk content.
+enum ContentType {
+  // Unspecified.
+  CONTENT_TYPE_UNSPECIFIED = 0;
+  // Chunk.
+  CONTENT_TYPE_CHUNK = 1;
+  // Summary.
+  CONTENT_TYPE_SUMMARY = 2;
+  // Augmented.
+  CONTENT_TYPE_AUGMENTED = 3;
+}
 
 // The Chunk message represents a chunk of data in the artifact system.
 message Chunk {
   // unique identifier of the chunk
-  string chunk_uid = 1;
+  string chunk_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // whether the chunk is retrievable
-  bool retrievable = 2;
+  bool retrievable = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // start position of the chunk in the source file
-  uint32 start_pos = 4;
+  uint32 start_pos = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // end position of the chunk in the source file
-  uint32 end_pos = 5;
+  uint32 end_pos = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   // tokens of the chunk
-  uint32 tokens = 6;
+  uint32 tokens = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   // creation time of the chunk
-  google.protobuf.Timestamp create_time = 7;
+  google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // original file unique identifier
-  string original_file_uid = 8;
+  string original_file_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // content type
+  ContentType content_type = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // The ListChunksRequest message represents a request to list chunks in the artifact system.
@@ -28,119 +57,125 @@ message Chunk {
 // have chunks of the file with file_uid and chunks specified in chunk_uids.
 message ListChunksRequest {
   // owner/namespace id (not uid)
-  string namespace_id = 1;
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // catalog id (not uid)
-  string catalog_id = 2;
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
   // unique identifier of the file
-  string file_uid = 3;
+  string file_uid = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
 message ListChunksResponse {
   // repeated chunks
-  repeated Chunk chunks = 1;
+  repeated Chunk chunks = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Search chunks request
 message SearchChunksRequest {
   // owner/namespace id (not uid)
-  string namespace_id = 1;
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // chunk uids
-  repeated string chunk_uids = 2;
+  repeated string chunk_uids = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // Search chunks response
 message SearchChunksResponse {
   // repeated chunks
-  repeated Chunk chunks = 1;
+  repeated Chunk chunks = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // The SourceFile message represents a source file in the artifact system.
 message SourceFile {
   // original file unique identifier
-  string original_file_uid = 1;
+  string original_file_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // content
-  string content = 3;
+  string content = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // creation time of the source file
-  google.protobuf.Timestamp create_time = 5;
+  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   // update time of the source file
-  google.protobuf.Timestamp update_time = 6;
+  google.protobuf.Timestamp update_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   // original file name
-  string original_file_name = 7;
+  string original_file_name = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // get source file request
 message GetSourceFileRequest {
   // owner/namespace id
-  string namespace_id = 1;
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // catalog id
-  string catalog_id = 2;
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
   // unique identifier of the original uploaded file
-  string file_uid = 3;
+  string file_uid = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // get source file response
 message GetSourceFileResponse {
   // source file(either original file or converted file)
-  SourceFile source_file = 1;
+  SourceFile source_file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // search source file request
 message SearchSourceFilesRequest {
   // owner/namespace id
-  string namespace_id = 1;
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // search file uid
-  repeated string file_uids = 2;
+  repeated string file_uids = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // search source file response
 message SearchSourceFilesResponse {
   // source files
-  repeated SourceFile source_files = 1;
+  repeated SourceFile source_files = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Create chunk response
 message UpdateChunkRequest {
   // chunk uid
-  string chunk_uid = 1;
+  string chunk_uid = 1 [(google.api.field_behavior) = REQUIRED];
   // whether the chunk is retrievable
-  bool retrievable = 2;
+  bool retrievable = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // update chunk response
 message UpdateChunkResponse {
   // chunk
-  Chunk chunk = 1;
+  Chunk chunk = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Similar chunk search request
 message SimilarityChunksSearchRequest {
   // owner/namespace id
-  string namespace_id = 1;
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
   // catalog id
-  string catalog_id = 2;
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
   // text prompt
-  string text_prompt = 3;
+  string text_prompt = 3 [(google.api.field_behavior) = REQUIRED];
   // top k
-  uint32 top_k = 4;
+  uint32 top_k = 4 [(google.api.field_behavior) = OPTIONAL];
+  // file name
+  string file_name = 5 [(google.api.field_behavior) = OPTIONAL];
+  // content type
+  ContentType content_type = 6 [(google.api.field_behavior) = OPTIONAL];
+  // file type
+  FileMediaType file_media_type = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Similar chunk search response
 message SimilarityChunksSearchResponse {
   // chunks
-  repeated SimilarityChunk similar_chunks = 1;
+  repeated SimilarityChunk similar_chunks = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // similarity chunks
 message SimilarityChunk {
   // chunk uid
-  string chunk_uid = 1;
+  string chunk_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // similarity score
-  float similarity_score = 2;
+  float similarity_score = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // content
-  string text_content = 3;
+  string text_content = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // source file's name
-  string source_file = 4;
+  string source_file = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // chunk
-  Chunk chunk_metadata = 5;
+  Chunk chunk_metadata = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
