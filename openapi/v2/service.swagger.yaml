@@ -1389,7 +1389,7 @@ paths:
         - name: fileUid
           description: unique identifier of the file
           in: query
-          required: false
+          required: true
           type: string
       tags:
         - "\U0001F4BE Artifact"
@@ -1420,7 +1420,7 @@ paths:
         - name: chunkUids
           description: chunk uids
           in: query
-          required: false
+          required: true
           type: array
           items:
             type: string
@@ -1490,7 +1490,7 @@ paths:
         - name: fileUids
           description: search file uid
           in: query
-          required: false
+          required: true
           type: array
           items:
             type: string
@@ -6162,6 +6162,11 @@ definitions:
         type: string
         format: uint64
         description: The current used storage in catalog.
+      summarizingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog summarizing pipelines.
     description: Catalog represents a catalog.
   CatalogRun:
     type: object
@@ -7004,6 +7009,18 @@ definitions:
       - integrationId
       - method
       - setup
+  ContentType:
+    type: string
+    enum:
+      - CONTENT_TYPE_CHUNK
+      - CONTENT_TYPE_SUMMARY
+      - CONTENT_TYPE_AUGMENTED
+    description: |-
+      ContentType describes the type of a chunk content.
+
+       - CONTENT_TYPE_CHUNK: Chunk.
+       - CONTENT_TYPE_SUMMARY: Summary.
+       - CONTENT_TYPE_AUGMENTED: Augmented.
   CreateCatalogBody:
     type: object
     properties:
@@ -7455,11 +7472,7 @@ definitions:
         description: |-
           objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
           then no need the base64 encoding for the file content.
-        readOnly: true
     title: file
-    required:
-      - name
-      - type
   FileCell:
     type: object
     properties:
@@ -7469,6 +7482,20 @@ definitions:
     description: FileCell represents a cell with a url of a file resource.
     required:
       - url
+  FileMediaType:
+    type: string
+    enum:
+      - FILE_MEDIA_TYPE_DOCUMENT
+      - FILE_MEDIA_TYPE_IMAGE
+      - FILE_MEDIA_TYPE_AUDIO
+      - FILE_MEDIA_TYPE_VIDEO
+    description: |-
+      FileMediaType describes the type of a catalog file.
+
+       - FILE_MEDIA_TYPE_DOCUMENT: Document.
+       - FILE_MEDIA_TYPE_IMAGE: Image.
+       - FILE_MEDIA_TYPE_AUDIO: Audio.
+       - FILE_MEDIA_TYPE_VIDEO: Video.
   FileProcessStatus:
     type: string
     enum:
@@ -7871,6 +7898,7 @@ definitions:
     properties:
       sourceFile:
         title: source file(either original file or converted file)
+        readOnly: true
         allOf:
           - $ref: '#/definitions/SourceFile'
     title: get source file response
@@ -8176,6 +8204,7 @@ definitions:
           type: object
           $ref: '#/definitions/v1alpha.Chunk'
         title: repeated chunks
+        readOnly: true
     description: The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
   ListComponentDefinitionsResponse:
     type: object
@@ -10273,6 +10302,7 @@ definitions:
           type: object
           $ref: '#/definitions/v1alpha.Chunk'
         title: repeated chunks
+        readOnly: true
     title: Search chunks response
   SearchSourceFilesResponse:
     type: object
@@ -10283,6 +10313,7 @@ definitions:
           type: object
           $ref: '#/definitions/SourceFile'
         title: source files
+        readOnly: true
     title: search source file response
   Secret:
     type: object
@@ -10383,18 +10414,23 @@ definitions:
       chunkUid:
         type: string
         title: chunk uid
+        readOnly: true
       similarityScore:
         type: number
         format: float
         title: similarity score
+        readOnly: true
       textContent:
         type: string
         title: content
+        readOnly: true
       sourceFile:
         type: string
         title: source file's name
+        readOnly: true
       chunkMetadata:
         title: chunk
+        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alpha.Chunk'
     title: similarity chunks
@@ -10408,7 +10444,20 @@ definitions:
         type: integer
         format: int64
         title: top k
+      fileName:
+        type: string
+        title: file name
+      contentType:
+        title: content type
+        allOf:
+          - $ref: '#/definitions/ContentType'
+      fileMediaType:
+        title: file type
+        allOf:
+          - $ref: '#/definitions/FileMediaType'
     title: Similar chunk search request
+    required:
+      - textPrompt
   SimilarityChunksSearchResponse:
     type: object
     properties:
@@ -10418,6 +10467,7 @@ definitions:
           type: object
           $ref: '#/definitions/SimilarityChunk'
         title: chunks
+        readOnly: true
     title: Similar chunk search response
   Sort:
     type: string
@@ -10435,20 +10485,25 @@ definitions:
       originalFileUid:
         type: string
         title: original file unique identifier
+        readOnly: true
       content:
         type: string
         title: content
+        readOnly: true
       createTime:
         type: string
         format: date-time
         title: creation time of the source file
+        readOnly: true
       updateTime:
         type: string
         format: date-time
         title: update time of the source file
+        readOnly: true
       originalFileName:
         type: string
         title: original file name
+        readOnly: true
     description: The SourceFile message represents a source file in the artifact system.
   Spec:
     type: object
@@ -11174,11 +11229,14 @@ definitions:
         type: boolean
         title: whether the chunk is retrievable
     title: Create chunk response
+    required:
+      - retrievable
   UpdateChunkResponse:
     type: object
     properties:
       chunk:
         title: chunk
+        readOnly: true
         allOf:
           - $ref: '#/definitions/v1alpha.Chunk'
     title: update chunk response
@@ -11723,28 +11781,40 @@ definitions:
       chunkUid:
         type: string
         title: unique identifier of the chunk
+        readOnly: true
       retrievable:
         type: boolean
         title: whether the chunk is retrievable
+        readOnly: true
       startPos:
         type: integer
         format: int64
         title: start position of the chunk in the source file
+        readOnly: true
       endPos:
         type: integer
         format: int64
         title: end position of the chunk in the source file
+        readOnly: true
       tokens:
         type: integer
         format: int64
         title: tokens of the chunk
+        readOnly: true
       createTime:
         type: string
         format: date-time
         title: creation time of the chunk
+        readOnly: true
       originalFileUid:
         type: string
         title: original file unique identifier
+        readOnly: true
+      contentType:
+        title: content type
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ContentType'
     description: The Chunk message represents a chunk of data in the artifact system.
   v1alpha.Permission:
     type: object
