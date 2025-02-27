@@ -5995,15 +5995,6 @@ definitions:
        - STATE_INACTIVE: Inactive.
        - STATE_ACTIVE: Active.
        - STATE_EXPIRED: Expired.
-  AudioCell:
-    type: object
-    properties:
-      url:
-        type: string
-        description: The URL of the audio resource.
-    description: AudioCell represents a cell with a url of an audio resource.
-    required:
-      - url
   AuthenticatedUser:
     type: object
     properties:
@@ -6285,9 +6276,10 @@ definitions:
         description: The timestamp when the cell was last updated.
         readOnly: true
       type:
-        type: string
         description: The type of the cell's value.
         readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alpha.Type'
       stringValue:
         description: The value of the cell as a string.
         allOf:
@@ -6304,26 +6296,6 @@ definitions:
         description: The value of the cell as a url of a file resource.
         allOf:
           - $ref: '#/definitions/FileCell'
-      documentValue:
-        description: The value of the cell as a url of a document resource.
-        allOf:
-          - $ref: '#/definitions/DocumentCell'
-      imageValue:
-        description: The value of the cell as a url of an image resource.
-        allOf:
-          - $ref: '#/definitions/ImageCell'
-      videoValue:
-        description: The value of the cell as a url of a video resource.
-        allOf:
-          - $ref: '#/definitions/VideoCell'
-      audioValue:
-        description: The value of the cell as a url of an audio resource.
-        allOf:
-          - $ref: '#/definitions/AudioCell'
-      nullValue:
-        description: The value of the cell as a null cell.
-        allOf:
-          - $ref: '#/definitions/NullCell'
       metadata:
         type: object
         description: Additional metadata for the cell.
@@ -6332,16 +6304,45 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/CellStatus'
-      faithfulnessCheckingResult:
-        description: The faithfulness checking result for the cell.
+      citations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Cell.Citation'
+        description: The citations for the cell.
+        readOnly: true
+      transparency:
+        description: The transparency of the cell.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/FaithfulnessCheckingResult'
+          - $ref: '#/definitions/Transparency'
     description: Cell represents a cell in a table.
+  Cell.Citation:
+    type: object
+    properties:
+      type:
+        description: The type of the citation.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Citation.Type'
+      url:
+        type: string
+        description: The url of the citation.
+        readOnly: true
+      title:
+        type: string
+        description: The title of the citation.
+        readOnly: true
+      summary:
+        type: string
+        description: The summary of the citation.
+        readOnly: true
+    description: The citations for the cell.
   CellStatus:
     type: string
     enum:
       - CELL_STATUS_IDLE
+      - CELL_STATUS_UPLOADING
       - CELL_STATUS_PENDING
       - CELL_STATUS_PROCESSING
       - CELL_STATUS_FAILED
@@ -6350,6 +6351,7 @@ definitions:
       CellStatus represents the status of a cell.
 
        - CELL_STATUS_IDLE: The cell is idle.
+       - CELL_STATUS_UPLOADING: The cell is uploading (only for file cells).
        - CELL_STATUS_PENDING: The cell is pending.
        - CELL_STATUS_PROCESSING: The cell is processing.
        - CELL_STATUS_FAILED: The cell is failed.
@@ -6498,30 +6500,18 @@ definitions:
        - CHUNK_TYPE_AUDIO: audio
        - CHUNK_TYPE_VIDEO: video
     title: chunk type
-  Citation:
-    type: object
-    properties:
-      type:
-        title: Type of citation
-        allOf:
-          - $ref: '#/definitions/CitationType'
-      name:
-        type: string
-        title: Name of the citation
-        readOnly: true
-      url:
-        type: string
-        title: URL of the citation (only applicable for URL-type citations)
-        readOnly: true
-      chunkUid:
-        type: string
-        title: Chunk UID (only applicable for chunk-type citations)
-        readOnly: true
-      fileUid:
-        type: string
-        title: File UID (only applicable for chunk-type citations)
-        readOnly: true
-    title: Citation message
+  Citation.Type:
+    type: string
+    enum:
+      - TYPE_WEB
+      - TYPE_FILE
+      - TYPE_TABLE
+    description: |-
+      The type of the citation.
+
+       - TYPE_WEB: The type is a url of a web page.
+       - TYPE_FILE: The type is a url of a file resource.
+       - TYPE_TABLE: The type is a url of a table resource.
   CitationType:
     type: string
     enum:
@@ -6595,8 +6585,9 @@ definitions:
           The name of the column. If this differs from the key in the ColumnDefinitions map,
           the key will be updated to match this value.
       type:
-        type: string
         description: The type of the column.
+        allOf:
+          - $ref: '#/definitions/v1alpha.Type'
       order:
         type: integer
         format: int32
@@ -6621,9 +6612,6 @@ definitions:
       instructions:
         type: string
         description: The instructions for the agent.
-      enableWebSearch:
-        type: boolean
-        description: Whether to enable web search for the agent.
     description: The configuration for the agent.
   ColumnDefinitionsUpdatedEvent:
     type: object
@@ -7293,15 +7281,6 @@ definitions:
   DeployUserModelAdminResponse:
     type: object
     title: DeployUserModelAdminResponse represents a response for a deployed model
-  DocumentCell:
-    type: object
-    properties:
-      url:
-        type: string
-        description: The URL of the document resource.
-    description: DocumentCell represents a cell with a url of a document resource.
-    required:
-      - url
   Endpoints:
     type: object
     properties:
@@ -7379,19 +7358,6 @@ definitions:
         description: The exported data.
         readOnly: true
     description: ExportTableResponse is an empty response for exporting table data.
-  FaithfulnessCheckingResult:
-    type: object
-    properties:
-      result:
-        type: string
-        description: The text of the faithfulness checking result.
-        readOnly: true
-      confidenceScore:
-        type: number
-        format: double
-        description: The confidence score for the faithfulness checking result.
-        readOnly: true
-    description: The faithfulness checking result for the cell.
   File:
     type: object
     properties:
@@ -7479,9 +7445,17 @@ definitions:
       url:
         type: string
         description: The URL of the file resource.
+      name:
+        type: string
+        title: File Name
+      mimeType:
+        type: string
+        description: MIME type of the file.
     description: FileCell represents a cell with a url of a file resource.
     required:
       - url
+      - name
+      - mimeType
   FileMediaType:
     type: string
     enum:
@@ -7973,15 +7947,6 @@ definitions:
         type: string
         title: Hardware name value
     description: Hardware describes the hardware title and string value that backend consumes.
-  ImageCell:
-    type: object
-    properties:
-      url:
-        type: string
-        description: The URL of the image resource.
-    description: ImageCell represents a cell with a url of an image resource.
-    required:
-      - url
   InsertRowBody:
     type: object
     properties:
@@ -9389,9 +9354,6 @@ definitions:
   MoveRowsResponse:
     type: object
     description: MoveRowsResponse is an empty response for moving multiple rows.
-  NullCell:
-    type: object
-    description: NullCell represents a null cell.
   NullValue:
     type: string
     description: |-
@@ -10817,6 +10779,14 @@ definitions:
        - STATUS_COMPLETED: Successfully completed.
        - STATUS_SKIPPED: Skipped.
        - STATUS_ERROR: Aborted with error.
+  Transparency:
+    type: object
+    properties:
+      text:
+        type: string
+        description: The text of the transparency.
+        readOnly: true
+    description: The transparency of the cell.
   TriggerAsyncNamespaceLatestModelBody:
     type: object
     properties:
@@ -11513,15 +11483,6 @@ definitions:
         description: If token is valid, UUID of the user that owns it.
         readOnly: true
     description: ValidateTokenResponse contains the validation of a token.
-  VideoCell:
-    type: object
-    properties:
-      url:
-        type: string
-        description: The URL of the video resource.
-    description: VideoCell represents a cell with a url of a video resource.
-    required:
-      - url
   WatchNamespaceLatestModelResponse:
     type: object
     properties:
@@ -11599,7 +11560,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/Citation'
+          $ref: '#/definitions/v1alpha.Citation'
         title: citations(only for agent messages)
         readOnly: true
     title: Message represents a single message in a conversation
@@ -11816,6 +11777,30 @@ definitions:
         allOf:
           - $ref: '#/definitions/ContentType'
     description: The Chunk message represents a chunk of data in the artifact system.
+  v1alpha.Citation:
+    type: object
+    properties:
+      type:
+        title: Type of citation
+        allOf:
+          - $ref: '#/definitions/CitationType'
+      name:
+        type: string
+        title: Name of the citation
+        readOnly: true
+      url:
+        type: string
+        title: URL of the citation (only applicable for URL-type citations)
+        readOnly: true
+      chunkUid:
+        type: string
+        title: Chunk UID (only applicable for chunk-type citations)
+        readOnly: true
+      fileUid:
+        type: string
+        title: File UID (only applicable for chunk-type citations)
+        readOnly: true
+    title: Citation message
   v1alpha.Permission:
     type: object
     properties:
@@ -11863,6 +11848,20 @@ definitions:
       resources for the model
        - STATE_SCALING_UP: Scaling Up is the transition state when the system is provisioning compute resource for this model instance.
        - STATE_SCALING_DOWN: Scaling is the transition state when the system is releasing compute resource for this model instance.
+  v1alpha.Type:
+    type: string
+    enum:
+      - TYPE_STRING
+      - TYPE_NUMBER
+      - TYPE_BOOLEAN
+      - TYPE_FILE
+    description: |-
+      The type of the column.
+
+       - TYPE_STRING: The type is a string.
+       - TYPE_NUMBER: The type is a number.
+       - TYPE_BOOLEAN: The type is a boolean.
+       - TYPE_FILE: The type is a url of a file resource.
   v1alpha.View:
     type: string
     enum:
