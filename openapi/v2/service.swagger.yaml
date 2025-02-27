@@ -117,6 +117,36 @@ paths:
         - "\U0001F34E Agent"
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/chats/{chatUid}:
+    get:
+      summary: Get a chat
+      description: Gets a chat.
+      operationId: AgentPublicService_GetChat
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetChatResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: chatUid
+          description: chat uid
+          in: path
+          required: true
+          type: string
+      tags:
+        - "\U0001F34E Agent"
+      x-stage: alpha
     delete:
       summary: Delete a chat
       description: Deletes a chat.
@@ -7046,6 +7076,9 @@ definitions:
         title: agent config
         allOf:
           - $ref: '#/definitions/v1alpha.AgentConfig'
+      catalogId:
+        type: string
+        title: catalog id
     title: CreateChatRequest is used to create a new chat
   CreateChatResponse:
     type: object
@@ -7564,6 +7597,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/UserSubscription'
     description: GetAuthenticatedUserSubscriptionResponse contains the requested subscription.
+  GetChatResponse:
+    type: object
+    properties:
+      chat:
+        title: chat
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alpha.Chat'
+    title: GetChatResponse returns the chat
   GetColumnDefinitionsResponse:
     type: object
     properties:
@@ -11732,6 +11774,10 @@ definitions:
         type: string
         format: date-time
         description: chat delete time.
+        readOnly: true
+      catalogId:
+        type: string
+        title: catalog id
         readOnly: true
     title: Chat represents a chat
     required:
