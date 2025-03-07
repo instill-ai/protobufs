@@ -40,10 +40,12 @@ message Chat {
 enum CitationType {
   // Unspecified citation type
   CITATION_TYPE_UNSPECIFIED = 0;
-  // Chunk-based citation
-  CITATION_TYPE_CHUNK = 1;
+  // file citation
+  CITATION_TYPE_FILE = 1;
   // URL-based citation
   CITATION_TYPE_URL = 2;
+  // cell-based citation
+  CITATION_TYPE_CELL = 3;
 }
 
 // Citation message
@@ -52,12 +54,16 @@ message Citation {
   CitationType type = 1;
   // Name of the citation
   string name = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // URL of the citation (only applicable for URL-type citations)
+  // URL of the citation (only applicable for URL and cell type citations)
   optional string url = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Chunk UID (only applicable for chunk-type citations)
-  optional string chunk_uid = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // File UID (only applicable for chunk-type citations)
+  // Chunk UID (only applicable for file type citations)
+  repeated string chunk_uid = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // File UID (only applicable for file type citations)
   optional string file_uid = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Object UID for download (only applicable for file type citations)
+  optional string object_uid = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // File summary (only applicable for file type citations)
+  optional string summary = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Message represents a single message in a conversation
@@ -68,8 +74,6 @@ message Message {
     MESSAGE_TYPE_UNSPECIFIED = 0;
     // text
     MESSAGE_TYPE_TEXT = 1;
-    // citation
-    MESSAGE_TYPE_CITATION = 2;
   }
   // message uid
   string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
