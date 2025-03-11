@@ -6379,7 +6379,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/Cell.Citation'
+          $ref: '#/definitions/Citation'
         description: The citations for the cell.
         readOnly: true
       transparency:
@@ -6388,27 +6388,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Transparency'
     description: Cell represents a cell in a table.
-  Cell.Citation:
-    type: object
-    properties:
-      type:
-        description: The type of the citation.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Citation.Type'
-      url:
-        type: string
-        description: The url of the citation.
-        readOnly: true
-      title:
-        type: string
-        description: The title of the citation.
-        readOnly: true
-      summary:
-        type: string
-        description: The summary of the citation.
-        readOnly: true
-    description: The citations for the cell.
   CellStatus:
     type: string
     enum:
@@ -6571,18 +6550,31 @@ definitions:
        - CHUNK_TYPE_AUDIO: audio
        - CHUNK_TYPE_VIDEO: video
     title: chunk type
-  Citation.Type:
-    type: string
-    enum:
-      - TYPE_WEB
-      - TYPE_FILE
-      - TYPE_TABLE
-    description: |-
-      The type of the citation.
-
-       - TYPE_WEB: The type is a url of a web page.
-       - TYPE_FILE: The type is a url of a file resource.
-       - TYPE_TABLE: The type is a url of a table resource.
+  Citation:
+    type: object
+    properties:
+      type:
+        title: Type of citation
+        allOf:
+          - $ref: '#/definitions/CitationType'
+      name:
+        type: string
+        title: Name of the citation
+        readOnly: true
+      url:
+        type: string
+        title: URL of the citation, can be web url, cell url or object-uid
+        readOnly: true
+      number:
+        type: integer
+        format: int64
+        title: Citation number
+        readOnly: true
+      summary:
+        type: string
+        title: File summary (only applicable for file type citations)
+        readOnly: true
+    title: Citation message
   CitationType:
     type: string
     enum:
@@ -11653,7 +11645,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alpha.Citation'
+          $ref: '#/definitions/Citation'
         title: citations(only for agent messages)
         readOnly: true
     title: Message represents a single message in a conversation
@@ -11874,31 +11866,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/ContentType'
     description: The Chunk message represents a chunk of data in the artifact system.
-  v1alpha.Citation:
-    type: object
-    properties:
-      type:
-        title: Type of citation
-        allOf:
-          - $ref: '#/definitions/CitationType'
-      name:
-        type: string
-        title: Name of the citation
-        readOnly: true
-      url:
-        type: string
-        title: URL of the citation, can be web url, cell url or object-uid
-        readOnly: true
-      number:
-        type: integer
-        format: int64
-        title: Citation number
-        readOnly: true
-      summary:
-        type: string
-        title: File summary (only applicable for file type citations)
-        readOnly: true
-    title: Citation message
   v1alpha.Permission:
     type: object
     properties:
