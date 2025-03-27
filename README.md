@@ -32,4 +32,4 @@ of the API, which can be accessed over different wire protocols:
    codes to the corresponding `protogen-*` repository.
 1. Merging to `main` an update in the [API
    version](./common/openapi/v1beta/api_info.conf) will upload the OpenAPI docs
-   to [openapi.instill.tech](https://openapi.instill.tech/).
+   to [openapi.instill-ai.dev](https://openapi.instill-ai.dev/).
