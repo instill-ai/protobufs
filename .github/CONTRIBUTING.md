@@ -24,7 +24,7 @@ All the public endpoints are exposed in a single service
 ([`api-gateway`](https://github.com/instill-ai/api-gateway)]). These
 endpoints are documented [in OpenAPI V2
 format](../openapi/v2/service.swagger.yaml) and publicly available at
-[openapi.instill.tech](https://openapi.instill.tech/) through
+[openapi.instill-ai.dev](https://openapi.instill-ai.dev/) through
 (readme.com)[https://readme.com/]. The OpenAPI specification is
 auto-generated via [`grpc-gateway`](https://grpc-ecosystem.github.io/grpc-gateway/)
 and it only reflects the protobuf specification.
@@ -71,7 +71,7 @@ rpc GetNamespacePipeline(GetNamespacePipelineRequest) returns (GetNamespacePipel
 We tend to group our endpoints by service (i.e., use a single tag for all
 the endpoints in a service), though this isn't a hard requirement.
 
-[openapi.instill.tech](https://openapi.instill.tech) groups the endpoints
+[openapi.instill-ai.dev](https://openapi.instill-ai.dev) groups the endpoints
 under the first tag defined in their specification and supports exactly one
 tag. If more tags are defined, it will result in empty sections at the end
 of the sidebar.
@@ -102,7 +102,7 @@ rpc UpdateNamespacePipeline(UpdateNamespacePipelineRequest) returns (UpdateNames
 }
 ```
 
-[openapi.instill.tech](https://openapi.instill.tech) will render each part
+[openapi.instill-ai.dev](https://openapi.instill-ai.dev) will render each part
 as the endpoint title (which can also used in the search engine) and the
 description in the endpoint's view.
 
