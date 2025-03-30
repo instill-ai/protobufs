@@ -1388,6 +1388,42 @@ paths:
       tags:
         - "\U0001F4BE Artifact"
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}:
+    get:
+      summary: Get catalog file
+      description: Gets the file of a catalog.
+      operationId: ArtifactPublicService_GetCatalogFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetCatalogFileResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The namespace id.
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: The catalog id.
+          in: path
+          required: true
+          type: string
+        - name: fileUid
+          description: The file uid.
+          in: path
+          required: true
+          type: string
+      tags:
+        - "\U0001F4BE Artifact"
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks:
     get:
       summary: List catalog chunks
@@ -7535,6 +7571,14 @@ definitions:
         description: |-
           objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
           then no need the base64 encoding for the file content.
+      summary:
+        type: string
+        title: summary of the file
+        readOnly: true
+      downloadUrl:
+        type: string
+        title: download url of the file
+        readOnly: true
     title: file
   FileCell:
     type: object
@@ -7669,6 +7713,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/UserSubscription'
     description: GetAuthenticatedUserSubscriptionResponse contains the requested subscription.
+  GetCatalogFileResponse:
+    type: object
+    properties:
+      file:
+        description: The file.
+        allOf:
+          - $ref: '#/definitions/File'
+    description: GetCatalogFileResponse represents a response for getting a catalog file.
   GetChatFileResponse:
     type: object
     properties:
