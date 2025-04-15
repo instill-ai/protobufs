@@ -338,12 +338,43 @@ service AgentPublicService {
 
   // Update column definitions
   //
-  // Updates column definitions for a table.
+  // Updates column definitions for a table. When updating the column
+  // definitions, if the column's agent instructions are updated, the existing
+  // cells in that column will be cleared and recomputed. This ensures that all
+  // data reflects the latest instructions.
   rpc UpdateColumnDefinitions(UpdateColumnDefinitionsRequest) returns (UpdateColumnDefinitionsResponse) {
     option (google.api.http) = {
       put: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/column-definitions"
       body: "column_definitions"
     };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Get column definition
+  //
+  // Gets a column definition for a table.
+  rpc GetColumnDefinition(GetColumnDefinitionRequest) returns (GetColumnDefinitionResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/column-definitions/{column_name}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Recompute column
+  //
+  // Recomputes all the cells in a column.
+  rpc RecomputeColumn(RecomputeColumnRequest) returns (RecomputeColumnResponse) {
+    option (google.api.http) = {post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/column-definitions/{column_name}/recompute"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Table"
       extensions: {
@@ -452,6 +483,76 @@ service AgentPublicService {
   rpc MoveRows(MoveRowsRequest) returns (MoveRowsResponse) {
     option (google.api.http) = {
       post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/move-rows"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Update cell
+  //
+  // Updates a cell in a table.
+  rpc UpdateCell(UpdateCellRequest) returns (UpdateCellResponse) {
+    option (google.api.http) = {
+      patch: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Reset cell
+  //
+  // Resets a cell in a table. Resetting a cell clears its user input and
+  // reverts to using the computed value if available. This operation only
+  // affects cells that have a user input set.
+  rpc ResetCell(ResetCellRequest) returns (ResetCellResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}/reset"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Recompute cell
+  //
+  // Recomputes a cell in a table.
+  rpc RecomputeCell(RecomputeCellRequest) returns (RecomputeCellResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}/recompute"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Set cell lock state
+  //
+  // Sets the lock state of a cell in a table.
+  rpc SetCellLockState(SetCellLockStateRequest) returns (SetCellLockStateResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}/lock-state"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
