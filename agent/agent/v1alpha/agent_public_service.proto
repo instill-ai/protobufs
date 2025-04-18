@@ -398,6 +398,20 @@ service AgentPublicService {
     };
   }
 
+  // Get row
+  //
+  // Gets a row from a table.
+  rpc GetRow(GetRowRequest) returns (GetRowResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
   // Insert row
   //
   // Inserts a row into a table.
@@ -494,6 +508,20 @@ service AgentPublicService {
     };
   }
 
+  // Get cell
+  //
+  // Gets a cell from a table.
+  rpc GetCell(GetCellRequest) returns (GetCellResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
   // Update cell
   //
   // Updates a cell in a table.
@@ -547,12 +575,29 @@ service AgentPublicService {
     };
   }
 
-  // Set cell lock state
+  // Lock cell
   //
-  // Sets the lock state of a cell in a table.
-  rpc SetCellLockState(SetCellLockStateRequest) returns (SetCellLockStateResponse) {
+  // Locks a cell in a table.
+  rpc LockCell(LockCellRequest) returns (LockCellResponse) {
     option (google.api.http) = {
-      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}/lock-state"
+      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}/lock"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Unlock cell
+  //
+  // Unlocks a cell in a table.
+  rpc UnlockCell(UnlockCellRequest) returns (UnlockCellResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/rows/{row_uid}/cells/{cell_uid}/unlock"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {

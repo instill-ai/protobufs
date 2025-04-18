@@ -975,6 +975,41 @@ paths:
         - Table
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}:
+    get:
+      summary: Get row
+      description: Gets a row from a table.
+      operationId: AgentPublicService_GetRow
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetRowResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row to get.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
     delete:
       summary: Delete row
       description: Deletes a row from a table.
@@ -1087,6 +1122,46 @@ paths:
         - Table
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}:
+    get:
+      summary: Get cell
+      description: Gets a cell from a table.
+      operationId: AgentPublicService_GetCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to get.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
     patch:
       summary: Update cell
       description: Updates a cell in a table.
@@ -1227,16 +1302,16 @@ paths:
       tags:
         - Table
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/lock-state:
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/lock:
     post:
-      summary: Set cell lock state
-      description: Sets the lock state of a cell in a table.
-      operationId: AgentPublicService_SetCellLockState
+      summary: Lock cell
+      description: Locks a cell in a table.
+      operationId: AgentPublicService_LockCell
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/SetCellLockStateResponse'
+            $ref: '#/definitions/LockCellResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1261,7 +1336,7 @@ paths:
           required: true
           type: string
         - name: cellUid
-          description: The unique identifier of the cell to set lock state for.
+          description: The unique identifier of the cell to lock.
           in: path
           required: true
           type: string
@@ -1269,7 +1344,53 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/SetCellLockStateBody'
+            $ref: '#/definitions/LockCellBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/unlock:
+    post:
+      summary: Unlock cell
+      description: Unlocks a cell in a table.
+      operationId: AgentPublicService_UnlockCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UnlockCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to unlock.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnlockCellBody'
       tags:
         - Table
       x-stage: alpha
@@ -6472,6 +6593,7 @@ definitions:
       computedValue:
         type: boolean
         description: The value of the cell that was computed by the automatic computation.
+        readOnly: true
     description: BooleanCell represents a cell with a boolean value.
     required:
       - value
@@ -7049,7 +7171,6 @@ definitions:
     required:
       - instructions
       - enableWebSearch
-      - enableAutomaticComputation
   ColumnDefinitionsUpdatedEvent:
     type: object
     properties:
@@ -8070,6 +8191,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/File'
     description: GetCatalogFileResponse represents a response for getting a catalog file.
+  GetCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: GetCellResponse contains the requested cell.
   GetChatFileResponse:
     type: object
     properties:
@@ -8407,6 +8537,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/RepositoryTag'
     description: GetRepositoryTagResponse contains the created tag.
+  GetRowResponse:
+    type: object
+    properties:
+      row:
+        description: The row resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Row'
+    description: GetRowResponse contains the requested row.
   GetSourceFileResponse:
     type: object
     properties:
@@ -9406,6 +9545,18 @@ definitions:
         description: Total number of users.
         readOnly: true
     description: ListUsersResponse contains a list of users.
+  LockCellBody:
+    type: object
+    description: LockCellRequest represents a request to lock a cell.
+  LockCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The updated cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: LockCellResponse is an empty response for locking a cell.
   LockState:
     type: string
     enum:
@@ -9950,6 +10101,7 @@ definitions:
         type: number
         format: float
         description: The value of the cell that was computed by the automatic computation.
+        readOnly: true
     description: NumberCell represents a cell with a number value.
     required:
       - value
@@ -10923,25 +11075,6 @@ definitions:
         type: string
         title: Description
     description: API secrets allow users to make requests to the Instill AI API.
-  SetCellLockStateBody:
-    type: object
-    properties:
-      lockState:
-        description: The lock state to set.
-        allOf:
-          - $ref: '#/definitions/LockState'
-    description: SetCellLockStateRequest represents a request to set the lock state of a cell.
-    required:
-      - lockState
-  SetCellLockStateResponse:
-    type: object
-    properties:
-      cell:
-        description: The updated cell resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Cell'
-    description: SetCellLockStateResponse contains the updated cell.
   ShareCode:
     type: object
     properties:
@@ -11796,6 +11929,18 @@ definitions:
   UndeployUserModelAdminResponse:
     type: object
     title: UndeployUserModelAdminResponse represents a response for a undeployed model
+  UnlockCellBody:
+    type: object
+    description: UnlockCellRequest represents a request to unlock a cell.
+  UnlockCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The updated cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: UnlockCellResponse is an empty response for unlocking a cell.
   UpdateCatalogBody:
     type: object
     properties:
