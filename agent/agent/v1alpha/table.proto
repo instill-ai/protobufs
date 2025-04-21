@@ -143,8 +143,11 @@ enum Type {
   // The type is a boolean.
   TYPE_BOOLEAN = 3;
 
-  // The type is a url of a file resource.
+  // The type is a file resource.
   TYPE_FILE = 4;
+
+  // The type is a document resource.
+  TYPE_DOCUMENT = 5;
 }
 
 // ColumnDefinition represents a column definition in a table.
@@ -167,10 +170,22 @@ message ColumnDefinition {
   // The configuration for the agent.
   message AgentConfig {
     // The instructions for the agent.
-    string instructions = 1;
+    string instructions = 1 [(google.api.field_behavior) = REQUIRED];
 
     // Whether to enable web search for the column.
-    bool enable_web_search = 2;
+    bool enable_web_search = 2 [(google.api.field_behavior) = REQUIRED];
+
+    // Whether to enable automatic computation for the column.
+    optional bool enable_automatic_computation = 3 [(google.api.field_behavior) = OPTIONAL];
+
+    // The context for the agent.
+    message Context {
+      // The column names to include in the context.
+      repeated string columns = 1 [(google.api.field_behavior) = OPTIONAL];
+    }
+
+    // The context for the agent. This setting is only used if enable_automatic_computation is true.
+    Context context = 4 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // The configuration for the agent.
@@ -203,7 +218,7 @@ message GetColumnDefinitionsRequest {
 
 // GetColumnDefinitionsResponse contains the column definitions.
 message GetColumnDefinitionsResponse {
-  // Map of column names to their definitions.
+  // Map of column UID to their definitions.
   map<string, ColumnDefinition> column_definitions = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
@@ -215,15 +230,48 @@ message UpdateColumnDefinitionsRequest {
   // The UID of the table whose columns to update.
   string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
 
-  // Map of column names to their new definitions.
+  // Map of column UID to their new definitions.
   map<string, ColumnDefinition> column_definitions = 3;
 }
 
 // UpdateColumnDefinitionsResponse contains the updated column definitions.
 message UpdateColumnDefinitionsResponse {
-  // The updated column definitions.
+  // Map of column UID to the updated definitions.
   map<string, ColumnDefinition> column_definitions = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
+
+// GetColumnDefinitionRequest represents a request to fetch a column definition.
+message GetColumnDefinitionRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table whose column definition to fetch.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the column whose definition to fetch.
+  string column_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetColumnDefinitionResponse contains the requested column definition.
+message GetColumnDefinitionResponse {
+  // The column definition.
+  ColumnDefinition column_definition = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// RecomputeColumnRequest represents a request to recompute a column.
+message RecomputeColumnRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table whose column to recompute.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the column to recompute.
+  string column_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// RecomputeColumnResponse is an empty response for recomputing a column.
+message RecomputeColumnResponse {}
 
 // CellStatus represents the processing state of a cell.
 enum CellStatus {
@@ -284,8 +332,14 @@ message Cell {
     // The value of the cell as a boolean.
     BooleanCell boolean_value = 8 [(google.api.field_behavior) = OPTIONAL];
 
-    // The value of the cell as a url of a file resource.
+    // The value of the cell as a file resource. This can represent various file types
+    // such as images, documents, audio, or other binary data.
     FileCell file_value = 9 [(google.api.field_behavior) = OPTIONAL];
+
+    // The value of the cell as a document resource. The document resource is a
+    // file resource that is specifically designed for document types, such as
+    // TXT, Markdown, PDF, DOC, and PPT.
+    DocumentCell document_value = 10 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // Additional metadata for the cell.
@@ -305,6 +359,9 @@ message Cell {
 
   // The transparency of the cell.
   Transparency transparency = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The lock state of the cell.
+  LockState lock_state = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // NullCell represents a null cell.
@@ -313,27 +370,54 @@ message NullCell {}
 // StringCell represents a cell with a string value.
 message StringCell {
   // The value of the cell as a string.
-  string value = 1 [(google.api.field_behavior) = REQUIRED];
+  string value = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    deprecated = true
+  ];
+
+  // The value of the cell that directly set by the user.
+  optional string user_input = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The value of the cell that was computed by the automatic computation.
+  optional string computed_value = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // NumberCell represents a cell with a number value.
 message NumberCell {
   // The value of the cell as a number.
-  float value = 1 [(google.api.field_behavior) = REQUIRED];
+  float value = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    deprecated = true
+  ];
+
+  // The value of the cell that directly set by the user.
+  optional float user_input = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The value of the cell that was computed by the automatic computation.
+  optional float computed_value = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // BooleanCell represents a cell with a boolean value.
 message BooleanCell {
   // The value of the cell as a boolean.
-  bool value = 1 [(google.api.field_behavior) = REQUIRED];
+  bool value = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    deprecated = true
+  ];
+
+  // The value of the cell that directly set by the user.
+  optional bool user_input = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The value of the cell that was computed by the automatic computation.
+  optional bool computed_value = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// FileCell represents a cell with a url of a file resource.
+// FileCell represents a cell with a file resource.
 message FileCell {
   // The namespace of the file resource.
   string namespace = 1 [(google.api.field_behavior) = REQUIRED];
 
-  // The UID of the file resource.
+  // The File UID of the file resource.
   string file_uid = 2 [(google.api.field_behavior) = REQUIRED];
 
   // The UID of the raw object that the file resource belongs to.
@@ -346,12 +430,30 @@ message FileCell {
   string mime_type = 5 [(google.api.field_behavior) = REQUIRED];
 }
 
+// DocumentCell represents a cell with a document resource.
+message DocumentCell {
+  // The namespace of the document resource.
+  string namespace = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The File UID of the document resource.
+  string file_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the raw object that the document resource belongs to.
+  string object_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // File name
+  string name = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // MIME type of the document.
+  string mime_type = 5 [(google.api.field_behavior) = REQUIRED];
+}
+
 // Row represents a row in a table.
 message Row {
   // The unique identifier of the row.
   string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Map of column names to their cell values.
+  // Map of column UID to their cell values.
   map<string, Cell> cells = 2 [(google.api.field_behavior) = REQUIRED];
 
   // The order of the row in the table, starting at 1. This determines the row's position
@@ -440,6 +542,24 @@ message UpdateRowResponse {
   Row row = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// GetRowRequest represents a request to get a row.
+message GetRowRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the row.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row to get.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetRowResponse contains the requested row.
+message GetRowResponse {
+  // The row resource.
+  Row row = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // UpdateRowsRequest represents a request to update multiple rows.
 message UpdateRowsRequest {
   // The ID of the namespace that owns the table.
@@ -505,6 +625,147 @@ message MoveRowsRequest {
 
 // MoveRowsResponse is an empty response for moving multiple rows.
 message MoveRowsResponse {}
+
+// GetCellRequest represents a request to get a cell.
+message GetCellRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the row.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row containing the cell.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the cell to get.
+  string cell_uid = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetCellResponse contains the requested cell.
+message GetCellResponse {
+  // The cell resource.
+  Cell cell = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UpdateCellRequest represents a request to update a cell.
+message UpdateCellRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the row.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row containing the cell.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the cell to update.
+  string cell_uid = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // The new cell data.
+  Cell cell = 5;
+}
+
+// UpdateCellResponse contains the updated cell.
+message UpdateCellResponse {
+  // The updated cell resource.
+  Cell cell = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// RecomputeCellRequest represents a request to recompute a cell.
+message RecomputeCellRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the cell.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row containing the cell.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the cell to recompute.
+  string cell_uid = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// RecomputeCellResponse contains the updated cell.
+message RecomputeCellResponse {
+  // The updated cell resource.
+  Cell cell = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ResetCellRequest represents a request to reset a cell.
+message ResetCellRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the cell.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row containing the cell.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the cell to reset.
+  string cell_uid = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ResetCellResponse is an empty response for resetting a cell.
+message ResetCellResponse {
+  // The updated cell resource.
+  Cell cell = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// The lock state of a cell.
+enum LockState {
+  // The lock state is not specified.
+  LOCK_STATE_UNSPECIFIED = 0;
+
+  // The cell is locked.
+  LOCK_STATE_LOCKED = 1;
+
+  // The cell is unlocked.
+  LOCK_STATE_UNLOCKED = 2;
+}
+
+// LockCellRequest represents a request to lock a cell.
+message LockCellRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the cell.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row containing the cell.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the cell to lock.
+  string cell_uid = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// LockCellResponse is an empty response for locking a cell.
+message LockCellResponse {
+  // The updated cell resource.
+  Cell cell = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UnlockCellRequest represents a request to unlock a cell.
+message UnlockCellRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table containing the cell.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the row containing the cell.
+  string row_uid = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The unique identifier of the cell to unlock.
+  string cell_uid = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UnlockCellResponse is an empty response for unlocking a cell.
+message UnlockCellResponse {
+  // The updated cell resource.
+  Cell cell = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
 
 // ExportFormat represents the format to export the data in.
 enum ExportFormat {

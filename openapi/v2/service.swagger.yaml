@@ -712,7 +712,11 @@ paths:
       x-stage: alpha
     put:
       summary: Update column definitions
-      description: Updates column definitions for a table.
+      description: |-
+        Updates column definitions for a table. When updating the column
+        definitions, if the column's agent instructions are updated, the existing
+        cells in that column will be cleared and recomputed. This ensures that all
+        data reflects the latest instructions.
       operationId: AgentPublicService_UpdateColumnDefinitions
       responses:
         "200":
@@ -738,13 +742,85 @@ paths:
           required: true
           type: string
         - name: columnDefinitions
-          description: Map of column names to their new definitions.
+          description: Map of column UID to their new definitions.
           in: body
           required: true
           schema:
             type: object
             additionalProperties:
               $ref: '#/definitions/ColumnDefinition'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/column-definitions/{columnUid}:
+    get:
+      summary: Get column definition
+      description: Gets a column definition for a table.
+      operationId: AgentPublicService_GetColumnDefinition
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetColumnDefinitionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table whose column definition to fetch.
+          in: path
+          required: true
+          type: string
+        - name: columnUid
+          description: The UID of the column whose definition to fetch.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/column-definitions/{columnUid}/recompute:
+    post:
+      summary: Recompute column
+      description: Recomputes all the cells in a column.
+      operationId: AgentPublicService_RecomputeColumn
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/RecomputeColumnResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table whose column to recompute.
+          in: path
+          required: true
+          type: string
+        - name: columnUid
+          description: The UID of the column to recompute.
+          in: path
+          required: true
+          type: string
       tags:
         - Table
       x-stage: alpha
@@ -899,6 +975,41 @@ paths:
         - Table
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}:
+    get:
+      summary: Get row
+      description: Gets a row from a table.
+      operationId: AgentPublicService_GetRow
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetRowResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row to get.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
     delete:
       summary: Delete row
       description: Deletes a row from a table.
@@ -1007,6 +1118,279 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/MoveRowsBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}:
+    get:
+      summary: Get cell
+      description: Gets a cell from a table.
+      operationId: AgentPublicService_GetCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to get.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
+    patch:
+      summary: Update cell
+      description: Updates a cell in a table.
+      operationId: AgentPublicService_UpdateCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the row.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to update.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateCellBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/reset:
+    post:
+      summary: Reset cell
+      description: |-
+        Resets a cell in a table. Resetting a cell clears its user input and
+        reverts to using the computed value if available. This operation only
+        affects cells that have a user input set.
+      operationId: AgentPublicService_ResetCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ResetCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to reset.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ResetCellBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/recompute:
+    post:
+      summary: Recompute cell
+      description: Recomputes a cell in a table.
+      operationId: AgentPublicService_RecomputeCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/RecomputeCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to recompute.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/RecomputeCellBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/lock:
+    post:
+      summary: Lock cell
+      description: Locks a cell in a table.
+      operationId: AgentPublicService_LockCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/LockCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to lock.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LockCellBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/unlock:
+    post:
+      summary: Unlock cell
+      description: Unlocks a cell in a table.
+      operationId: AgentPublicService_UnlockCell
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UnlockCellResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to unlock.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnlockCellBody'
       tags:
         - Table
       x-stage: alpha
@@ -6203,6 +6587,13 @@ definitions:
       value:
         type: boolean
         description: The value of the cell as a boolean.
+      userInput:
+        type: boolean
+        description: The value of the cell that directly set by the user.
+      computedValue:
+        type: boolean
+        description: The value of the cell that was computed by the automatic computation.
+        readOnly: true
     description: BooleanCell represents a cell with a boolean value.
     required:
       - value
@@ -6416,9 +6807,18 @@ definitions:
         allOf:
           - $ref: '#/definitions/BooleanCell'
       fileValue:
-        description: The value of the cell as a url of a file resource.
+        description: |-
+          The value of the cell as a file resource. This can represent various file types
+          such as images, documents, audio, or other binary data.
         allOf:
           - $ref: '#/definitions/FileCell'
+      documentValue:
+        description: |-
+          The value of the cell as a document resource. The document resource is a
+          file resource that is specifically designed for document types, such as
+          TXT, Markdown, PDF, DOC, and PPT.
+        allOf:
+          - $ref: '#/definitions/DocumentCell'
       metadata:
         type: object
         description: Additional metadata for the cell.
@@ -6439,6 +6839,11 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Transparency'
+      lockState:
+        description: The lock state of the cell.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/LockState'
     description: Cell represents a cell in a table.
   CellStatus:
     type: string
@@ -6755,7 +7160,17 @@ definitions:
       enableWebSearch:
         type: boolean
         description: Whether to enable web search for the column.
+      enableAutomaticComputation:
+        type: boolean
+        description: Whether to enable automatic computation for the column.
+      context:
+        description: The context for the agent. This setting is only used if enable_automatic_computation is true.
+        allOf:
+          - $ref: '#/definitions/Context'
     description: The configuration for the agent.
+    required:
+      - instructions
+      - enableWebSearch
   ColumnDefinitionsUpdatedEvent:
     type: object
     properties:
@@ -7152,6 +7567,15 @@ definitions:
        - CONTENT_TYPE_CHUNK: Chunk.
        - CONTENT_TYPE_SUMMARY: Summary.
        - CONTENT_TYPE_AUGMENTED: Augmented.
+  Context:
+    type: object
+    properties:
+      columns:
+        type: array
+        items:
+          type: string
+        description: The column names to include in the context.
+    description: The context for the agent.
   CreateCatalogBody:
     type: object
     properties:
@@ -7429,6 +7853,31 @@ definitions:
   DeployUserModelAdminResponse:
     type: object
     title: DeployUserModelAdminResponse represents a response for a deployed model
+  DocumentCell:
+    type: object
+    properties:
+      namespace:
+        type: string
+        description: The namespace of the document resource.
+      fileUid:
+        type: string
+        description: The File UID of the document resource.
+      objectUid:
+        type: string
+        description: The UID of the raw object that the document resource belongs to.
+      name:
+        type: string
+        title: File name
+      mimeType:
+        type: string
+        description: MIME type of the document.
+    description: DocumentCell represents a cell with a document resource.
+    required:
+      - namespace
+      - fileUid
+      - objectUid
+      - name
+      - mimeType
   Endpoints:
     type: object
     properties:
@@ -7603,7 +8052,7 @@ definitions:
         description: The namespace of the file resource.
       fileUid:
         type: string
-        description: The UID of the file resource.
+        description: The File UID of the file resource.
       objectUid:
         type: string
         description: The UID of the raw object that the file resource belongs to.
@@ -7613,7 +8062,7 @@ definitions:
       mimeType:
         type: string
         description: MIME type of the file.
-    description: FileCell represents a cell with a url of a file resource.
+    description: FileCell represents a cell with a file resource.
     required:
       - namespace
       - fileUid
@@ -7742,6 +8191,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/File'
     description: GetCatalogFileResponse represents a response for getting a catalog file.
+  GetCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: GetCellResponse contains the requested cell.
   GetChatFileResponse:
     type: object
     properties:
@@ -7759,6 +8217,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1alpha.Chat'
     title: GetChatResponse returns the chat
+  GetColumnDefinitionResponse:
+    type: object
+    properties:
+      columnDefinition:
+        description: The column definition.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ColumnDefinition'
+    description: GetColumnDefinitionResponse contains the requested column definition.
   GetColumnDefinitionsResponse:
     type: object
     properties:
@@ -7766,7 +8233,7 @@ definitions:
         type: object
         additionalProperties:
           $ref: '#/definitions/ColumnDefinition'
-        description: Map of column names to their definitions.
+        description: Map of column UID to their definitions.
         readOnly: true
     description: GetColumnDefinitionsResponse contains the column definitions.
   GetFileCatalogResponse:
@@ -8070,6 +8537,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/RepositoryTag'
     description: GetRepositoryTagResponse contains the created tag.
+  GetRowResponse:
+    type: object
+    properties:
+      row:
+        description: The row resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Row'
+    description: GetRowResponse contains the requested row.
   GetSourceFileResponse:
     type: object
     properties:
@@ -9069,6 +9545,28 @@ definitions:
         description: Total number of users.
         readOnly: true
     description: ListUsersResponse contains a list of users.
+  LockCellBody:
+    type: object
+    description: LockCellRequest represents a request to lock a cell.
+  LockCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The updated cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: LockCellResponse is an empty response for locking a cell.
+  LockState:
+    type: string
+    enum:
+      - LOCK_STATE_LOCKED
+      - LOCK_STATE_UNLOCKED
+    description: |-
+      The lock state of a cell.
+
+       - LOCK_STATE_LOCKED: The cell is locked.
+       - LOCK_STATE_UNLOCKED: The cell is unlocked.
   LookUpConnectionAdminResponse:
     type: object
     properties:
@@ -9595,6 +10093,15 @@ definitions:
         type: number
         format: float
         description: The value of the cell as a number.
+      userInput:
+        type: number
+        format: float
+        description: The value of the cell that directly set by the user.
+      computedValue:
+        type: number
+        format: float
+        description: The value of the cell that was computed by the automatic computation.
+        readOnly: true
     description: NumberCell represents a cell with a number value.
     required:
       - value
@@ -10289,6 +10796,21 @@ definitions:
           $ref: '#/definitions/SimilarityChunk'
         title: chunks
     title: QuestionAnsweringResponse
+  RecomputeCellBody:
+    type: object
+    description: RecomputeCellRequest represents a request to recompute a cell.
+  RecomputeCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The updated cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: RecomputeCellResponse contains the updated cell.
+  RecomputeColumnResponse:
+    type: object
+    description: RecomputeColumnResponse is an empty response for recomputing a column.
   Region:
     type: object
     properties:
@@ -10368,6 +10890,18 @@ definitions:
     description: |-
       RepositoryTag contains information about the version of some content in a
       repository.
+  ResetCellBody:
+    type: object
+    description: ResetCellRequest represents a request to reset a cell.
+  ResetCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The updated cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: ResetCellResponse is an empty response for resetting a cell.
   Role:
     type: string
     enum:
@@ -10389,7 +10923,7 @@ definitions:
         type: object
         additionalProperties:
           $ref: '#/definitions/Cell'
-        description: Map of column names to their cell values.
+        description: Map of column UID to their cell values.
       order:
         type: integer
         format: int32
@@ -10725,6 +11259,12 @@ definitions:
       value:
         type: string
         description: The value of the cell as a string.
+      userInput:
+        type: string
+        description: The value of the cell that directly set by the user.
+      computedValue:
+        type: string
+        description: The value of the cell that was computed by the automatic computation.
     description: StringCell represents a cell with a string value.
     required:
       - value
@@ -11389,6 +11929,18 @@ definitions:
   UndeployUserModelAdminResponse:
     type: object
     title: UndeployUserModelAdminResponse represents a response for a undeployed model
+  UnlockCellBody:
+    type: object
+    description: UnlockCellRequest represents a request to unlock a cell.
+  UnlockCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The updated cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: UnlockCellResponse is an empty response for unlocking a cell.
   UpdateCatalogBody:
     type: object
     properties:
@@ -11409,6 +11961,23 @@ definitions:
         allOf:
           - $ref: '#/definitions/Catalog'
     description: UpdateCatalogResponse represents a response for updating a catalog.
+  UpdateCellBody:
+    type: object
+    properties:
+      cell:
+        description: The new cell data.
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: UpdateCellRequest represents a request to update a cell.
+  UpdateCellResponse:
+    type: object
+    properties:
+      cell:
+        description: The updated cell resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Cell'
+    description: UpdateCellResponse contains the updated cell.
   UpdateChatBody:
     type: object
     properties:
@@ -11454,7 +12023,7 @@ definitions:
         type: object
         additionalProperties:
           $ref: '#/definitions/ColumnDefinition'
-        description: The updated column definitions.
+        description: Map of column UID to the updated definitions.
         readOnly: true
     description: UpdateColumnDefinitionsResponse contains the updated column definitions.
   UpdateMessageBody:
@@ -12089,13 +12658,15 @@ definitions:
       - TYPE_NUMBER
       - TYPE_BOOLEAN
       - TYPE_FILE
+      - TYPE_DOCUMENT
     description: |-
       The type of the column.
 
        - TYPE_STRING: The type is a string.
        - TYPE_NUMBER: The type is a number.
        - TYPE_BOOLEAN: The type is a boolean.
-       - TYPE_FILE: The type is a url of a file resource.
+       - TYPE_FILE: The type is a file resource.
+       - TYPE_DOCUMENT: The type is a document resource.
   v1alpha.View:
     type: string
     enum:
