@@ -117,23 +117,6 @@ service AgentPublicService {
     };
   }
 
-  // Create a message
-  //
-  // Creates a message.
-  rpc CreateMessage(CreateMessageRequest) returns (CreateMessageResponse) {
-    option (google.api.http) = {
-      post: "/v1alpha/namespaces/{namespace_id}/chats/{chat_uid}/messages"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "🍎 Agent"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
   // List messages
   //
   // Returns a paginated list of messages.
@@ -148,45 +131,12 @@ service AgentPublicService {
     };
   }
 
-  // Update a message
+  // Chat with agent
   //
-  // Updates a message.
-  rpc UpdateMessage(UpdateMessageRequest) returns (UpdateMessageResponse) {
+  // Chat with the agent.
+  rpc ChatWithAgent(ChatWithAgentRequest) returns (stream ChatWithAgentResponse) {
     option (google.api.http) = {
-      put: "/v1alpha/namespaces/{namespace_id}/chats/{chat_uid}/messages/{message_uid}"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "🍎 Agent"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // Delete a message
-  //
-  // Deletes a message.
-  rpc DeleteMessage(DeleteMessageRequest) returns (DeleteMessageResponse) {
-    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/chats/{chat_uid}/messages/{message_uid}"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "🍎 Agent"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // Chat
-  //
-  // Chat sends a message asynchronously and streams back the response.
-  // This method is intended for real-time conversation with a chatbot
-  // and the response needs to be processed incrementally.
-  rpc Chat(ChatRequest) returns (ChatResponse) {
-    option (google.api.http) = {
-      post: "/v1alpha/namespaces/{namespace_id}/chats/{chat_uid}/chat"
+      post: "/v1alpha/namespaces/{namespace_id}/chats/{chat_uid}/chat-with-agent"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -313,6 +263,37 @@ service AgentPublicService {
   // Deletes a table.
   rpc DeleteTable(DeleteTableRequest) returns (DeleteTableResponse) {
     option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Chat with table builder agent
+  //
+  // Chat with the table builder agent.
+  rpc ChatWithTableBuilderAgent(ChatWithTableBuilderAgentRequest) returns (stream ChatWithTableBuilderAgentResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/builder/chat-with-agent"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Table"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // List table builder agent messages
+  //
+  // Lists the messages from the table builder agent.
+  rpc ListTableBuilderAgentMessages(ListTableBuilderAgentMessagesRequest) returns (ListTableBuilderAgentMessagesResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/builder/messages"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Table"
       extensions: {
@@ -638,18 +619,5 @@ service AgentPublicService {
         value: {string_value: "alpha"}
       }
     };
-  }
-
-  // Generate mock table
-  //
-  // Generates mock table data.
-  // This API is only available for internal use to generate mock row data for testing purposes.
-  // It should not be used in production environments.
-  rpc GenerateMockTable(GenerateMockTableRequest) returns (GenerateMockTableResponse) {
-    option (google.api.http) = {
-      post: "/v1alpha/namespaces/{namespace_id}/tables/{table_uid}/generate-mock"
-      body: "*"
-    };
-    option (google.api.method_visibility).restriction = "INTERNAL";
   }
 }

@@ -259,130 +259,22 @@ paths:
       tags:
         - "\U0001F34E Agent"
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/chat-with-agent:
     post:
-      summary: Create a message
-      description: Creates a message.
-      operationId: AgentPublicService_CreateMessage
+      summary: Chat with agent
+      description: Chat with the agent.
+      operationId: AgentPublicService_ChatWithAgent
       responses:
         "200":
-          description: A successful response.
+          description: A successful response.(streaming responses)
           schema:
-            $ref: '#/definitions/CreateMessageResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: chatUid
-          description: chag uid
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/CreateMessageBody'
-      tags:
-        - "\U0001F34E Agent"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/messages/{messageUid}:
-    delete:
-      summary: Delete a message
-      description: Deletes a message.
-      operationId: AgentPublicService_DeleteMessage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteMessageResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: chatUid
-          description: chat uid
-          in: path
-          required: true
-          type: string
-        - name: messageUid
-          description: message uid
-          in: path
-          required: true
-          type: string
-      tags:
-        - "\U0001F34E Agent"
-      x-stage: alpha
-    put:
-      summary: Update a message
-      description: Updates a message.
-      operationId: AgentPublicService_UpdateMessage
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateMessageResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: chatUid
-          description: chat uid
-          in: path
-          required: true
-          type: string
-        - name: messageUid
-          description: message uid
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateMessageBody'
-      tags:
-        - "\U0001F34E Agent"
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/chat:
-    post:
-      summary: Chat
-      description: |-
-        Chat sends a message asynchronously and streams back the response.
-        This method is intended for real-time conversation with a chatbot
-        and the response needs to be processed incrementally.
-      operationId: AgentPublicService_Chat
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ChatResponse'
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/ChatWithAgentResponse'
+              error:
+                $ref: '#/definitions/rpc.Status'
+            title: Stream result of ChatWithAgentResponse
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -405,7 +297,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/AgentPublicService.ChatBody'
+            $ref: '#/definitions/ChatWithAgentBody'
       tags:
         - "\U0001F34E Agent"
       x-stage: alpha
@@ -676,6 +568,95 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/Table'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/builder/chat-with-agent:
+    post:
+      summary: Chat with table builder agent
+      description: Chat with the table builder agent.
+      operationId: AgentPublicService_ChatWithTableBuilderAgent
+      responses:
+        "200":
+          description: A successful response.(streaming responses)
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/ChatWithTableBuilderAgentResponse'
+              error:
+                $ref: '#/definitions/rpc.Status'
+            title: Stream result of ChatWithTableBuilderAgentResponse
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to send a message to.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ChatWithTableBuilderAgentBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/builder/messages:
+    get:
+      summary: List table builder agent messages
+      description: Lists the messages from the table builder agent.
+      operationId: AgentPublicService_ListTableBuilderAgentMessages
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListTableBuilderAgentMessagesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: namespace id
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: table uid
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: page size
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: page token
+          in: query
+          required: false
+          type: string
+        - name: ifAll
+          description: If true, all messages will be returned. This has higher priority over page_size and page_token.
+          in: query
+          required: false
+          type: boolean
       tags:
         - Table
       x-stage: alpha
@@ -6276,30 +6257,6 @@ paths:
         - "\U0001F4A7 Pipeline"
       x-stage: beta
 definitions:
-  AgentPublicService.ChatBody:
-    type: object
-    properties:
-      message:
-        type: string
-        title: User message
-      fileUids:
-        type: array
-        items:
-          type: string
-        title: file UIDs
-      enableWebSearch:
-        type: boolean
-        description: Whether to enable web search for the chat.
-      objectUids:
-        type: array
-        items:
-          type: string
-        title: object UIDs
-    description: |-
-      ChatRequest represents a request to send a message
-      to a chatbot synchronously and streams back the results.
-    required:
-      - message
   Any:
     type: object
     properties:
@@ -6889,7 +6846,261 @@ definitions:
           only the changes made to the cell value rather than the full value.
         readOnly: true
     description: CellUpdatedEvent represents an event for a cell being updated.
-  ChatResponse:
+  Chat:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: unique identifier of the conversation created by the system.
+        readOnly: true
+      namespaceId:
+        type: string
+        description: namespace id.
+      chatDisplayName:
+        type: string
+        description: conversation display name.
+      agentConfig:
+        description: agent config.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1alpha.AgentConfig'
+      createTime:
+        type: string
+        format: date-time
+        description: chat create time.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: chat update time.
+        readOnly: true
+      deleteTime:
+        type: string
+        format: date-time
+        description: chat delete time.
+        readOnly: true
+      catalogId:
+        type: string
+        title: catalog id
+        readOnly: true
+    title: Chat represents a chat
+    required:
+      - namespaceId
+  ChatCitationListUpdatedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when citation list output
+        readOnly: true
+      citations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Citation'
+        title: The citation list
+        readOnly: true
+    title: ChatCitationListUpdatedEvent represents an event for a citation list output
+    required:
+      - citations
+  ChatDebugOutputUpdatedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when debug log output
+        readOnly: true
+      debugOutput:
+        type: string
+        title: The debug output
+        readOnly: true
+    title: ChatDebugOutputUpdatedEvent represents an event for debug log
+  ChatEndedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when chat ends
+        readOnly: true
+    title: ChatEndedEvent represents an event when chat ends
+  ChatErrorUpdatedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when error triggered
+        readOnly: true
+      errorType:
+        type: string
+        title: The error type
+        readOnly: true
+      error:
+        type: string
+        title: The error message
+        readOnly: true
+    title: ChatErrorUpdatedEvent represents an event for an error
+  ChatEvent:
+    type: object
+    properties:
+      event:
+        type: string
+        description: |-
+          The event type.
+          In text/event-stream format, this maps to the `event` field.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          The ID of the event.
+          In text/event-stream format, this maps to the `id` field.
+        readOnly: true
+      chatStartedEvent:
+        description: The chat was started.
+        allOf:
+          - $ref: '#/definitions/ChatStartedEvent'
+      chatStatusUpdatedEvent:
+        description: The chat status was updated.
+        allOf:
+          - $ref: '#/definitions/ChatStatusUpdatedEvent'
+      chatOutputUpdatedEvent:
+        description: The chat output was updated.
+        allOf:
+          - $ref: '#/definitions/ChatOutputUpdatedEvent'
+      chatNameUpdatedEvent:
+        description: The chat name was updated.
+        allOf:
+          - $ref: '#/definitions/ChatNameUpdatedEvent'
+      chatReplanTriggeredEvent:
+        description: The chat replan was triggered.
+        allOf:
+          - $ref: '#/definitions/ChatReplanTriggeredEvent'
+      chatCitationListUpdatedEvent:
+        description: The chat citation list was updated.
+        allOf:
+          - $ref: '#/definitions/ChatCitationListUpdatedEvent'
+      chatTableCreatedEvent:
+        description: The table was created.
+        allOf:
+          - $ref: '#/definitions/ChatTableCreatedEvent'
+      chatErrorUpdatedEvent:
+        description: The error was updated.
+        allOf:
+          - $ref: '#/definitions/ChatErrorUpdatedEvent'
+      chatDebugOutputUpdatedEvent:
+        description: The debug output was updated.
+        allOf:
+          - $ref: '#/definitions/ChatDebugOutputUpdatedEvent'
+      chatEndedEvent:
+        description: The chat ended.
+        allOf:
+          - $ref: '#/definitions/ChatEndedEvent'
+    description: ChatEvent represents an event for a chat.
+  ChatNameUpdatedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when chat name change
+        readOnly: true
+      name:
+        type: string
+        title: The updated chat name
+        readOnly: true
+    title: ChatNameUpdatedEvent represents an event for chat name change
+  ChatOutputUpdatedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when chat has new output
+        readOnly: true
+      outputChunkDelta:
+        type: string
+        title: The output chunk delta
+        readOnly: true
+    title: ChatOutputUpdatedEvent represents an event for chat has new output
+    required:
+      - outputChunkDelta
+  ChatReplanTriggeredEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when replan trigger
+        readOnly: true
+      numberOfReplan:
+        type: integer
+        format: int64
+        title: The current number of replan
+        readOnly: true
+    title: ChatReplanTriggeredEvent represents an event for a triggered replan
+  ChatStartedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when chat start
+        readOnly: true
+    title: ChatStartedEvent represents an event for a chat started
+  ChatStatusUpdatedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when chat status change
+        readOnly: true
+      chatStatus:
+        type: string
+        title: The updated chat status
+        readOnly: true
+    title: ChatStatusUpdatedEvent represents an event for a chat status change
+  ChatTableCreatedEvent:
+    type: object
+    properties:
+      createTime:
+        type: string
+        format: date-time
+        title: The time when table is created
+        readOnly: true
+      tableUid:
+        type: string
+        title: The created table uid
+        readOnly: true
+    title: ChatTableCreatedEvent represents an event for a table creation
+  ChatWithAgentBody:
+    type: object
+    properties:
+      message:
+        type: string
+        title: User message
+      fileUids:
+        type: array
+        items:
+          type: string
+        title: file UIDs
+      enableWebSearch:
+        type: boolean
+        description: Whether to enable web search for the chat.
+      objectUids:
+        type: array
+        items:
+          type: string
+        title: object UIDs
+    description: |-
+      ChatWithAgentRequest represents a request to send a message
+      to a chatbot synchronously and streams back the results.
+    required:
+      - message
+  ChatWithAgentResponse:
     type: object
     properties:
       outputs:
@@ -6898,7 +7109,25 @@ definitions:
           type: object
         description: Conversation responses.
         readOnly: true
-    description: ChatResponse contains the chatbot response.
+    description: ChatWithAgentResponse contains the chatbot response.
+  ChatWithTableBuilderAgentBody:
+    type: object
+    properties:
+      message:
+        type: string
+        title: User message
+    description: ChatWithTableBuilderAgentRequest represents a request to chat with the table builder agent.
+    required:
+      - message
+  ChatWithTableBuilderAgentResponse:
+    type: object
+    properties:
+      event:
+        description: The response from the table builder agent.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ChatEvent'
+    description: ChatWithTableBuilderAgentResponse contains the response from the table builder agent.
   CheckNamespaceAdminResponse:
     type: object
     properties:
@@ -7629,37 +7858,8 @@ definitions:
         title: chat
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1alpha.Chat'
+          - $ref: '#/definitions/Chat'
     title: CreateChatResponse returns the created chat
-  CreateMessageBody:
-    type: object
-    properties:
-      content:
-        type: string
-        title: message content
-      role:
-        type: string
-        title: message role
-      type:
-        title: message type
-        allOf:
-          - $ref: '#/definitions/MessageType'
-    title: CreateMessageRequest is used to create a new message
-    required:
-      - content
-      - role
-      - type
-  CreateMessageResponse:
-    type: object
-    properties:
-      chatUid:
-        type: string
-        title: chat uid
-      message:
-        title: message
-        allOf:
-          - $ref: '#/definitions/agent.v1alpha.Message'
-    title: CreateMessageResponse returns the created message
   CreateNamespaceConnectionResponse:
     type: object
     properties:
@@ -7802,9 +8002,6 @@ definitions:
   DeleteChatResponse:
     type: object
     title: DeleteChatResponse is empty as no content needs to be returned
-  DeleteMessageResponse:
-    type: object
-    title: DeleteMessageResponse is empty as no content needs to be returned
   DeleteNamespaceConnectionResponse:
     type: object
     description: DeleteNamespaceConnectionResponse is an empty response.
@@ -8220,7 +8417,7 @@ definitions:
         title: chat
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1alpha.Chat'
+          - $ref: '#/definitions/Chat'
     title: GetChatResponse returns the chat
   GetColumnDefinitionResponse:
     type: object
@@ -8843,7 +9040,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alpha.Chat'
+          $ref: '#/definitions/Chat'
         title: chats
         readOnly: true
       nextPageToken:
@@ -9465,6 +9662,33 @@ definitions:
         description: The total number of rows that match the request.
         readOnly: true
     description: ListRowsResponse contains the requested rows.
+  ListTableBuilderAgentMessagesResponse:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/agent.v1alpha.Message'
+        title: messages
+        readOnly: true
+      nextPageToken:
+        type: string
+        title: next page token
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        title: total size
+        readOnly: true
+      senderProfiles:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/MessageSenderProfile'
+        title: message sender profiles
+        readOnly: true
+    title: ListTableBuilderAgentMessagesResponse returns a list of messages
   ListTablesResponse:
     type: object
     properties:
@@ -12001,7 +12225,7 @@ definitions:
         title: chat
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1alpha.Chat'
+          - $ref: '#/definitions/Chat'
     title: UpdateChatResponse returns the updated chat
   UpdateChunkBody:
     type: object
@@ -12031,24 +12255,6 @@ definitions:
         description: Map of column UID to the updated definitions.
         readOnly: true
     description: UpdateColumnDefinitionsResponse contains the updated column definitions.
-  UpdateMessageBody:
-    type: object
-    properties:
-      content:
-        type: string
-        title: new message content
-    title: UpdateMessageRequest is used to update a message
-    required:
-      - content
-  UpdateMessageResponse:
-    type: object
-    properties:
-      message:
-        title: message
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/agent.v1alpha.Message'
-    title: UpdateMessageResponse returns the updated message
   UpdateNamespaceConnectionResponse:
     type: object
     properties:
@@ -12526,46 +12732,6 @@ definitions:
           type: string
         description: connection key(used connection id in recipe) and value(connection uid from namespace).
     description: AgentConfig represents the config for the chat agent.
-  v1alpha.Chat:
-    type: object
-    properties:
-      uid:
-        type: string
-        description: unique identifier of the conversation created by the system.
-        readOnly: true
-      namespaceId:
-        type: string
-        description: namespace id.
-      chatDisplayName:
-        type: string
-        description: conversation display name.
-      agentConfig:
-        description: agent config.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1alpha.AgentConfig'
-      createTime:
-        type: string
-        format: date-time
-        description: chat create time.
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: chat update time.
-        readOnly: true
-      deleteTime:
-        type: string
-        format: date-time
-        description: chat delete time.
-        readOnly: true
-      catalogId:
-        type: string
-        title: catalog id
-        readOnly: true
-    title: Chat represents a chat
-    required:
-      - namespaceId
   v1alpha.Chunk:
     type: object
     properties:

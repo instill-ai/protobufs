@@ -986,3 +986,53 @@ message ListChatTablesResponse {
   // The tables bound to the chat.
   repeated Table tables = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
+
+// TableBuilderAgentMessage represents a message from the table builder agent.
+message TableBuilderAgentMessage {
+  // The message.
+  string message = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ListTableBuilderAgentMessagesRequest is used to list messages in a conversation
+message ListTableBuilderAgentMessagesRequest {
+  // namespace id
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // table uid
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+  // page size
+  int32 page_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // page token
+  string page_token = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // If true, all messages will be returned. This has higher priority over page_size and page_token.
+  bool if_all = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListTableBuilderAgentMessagesResponse returns a list of messages
+message ListTableBuilderAgentMessagesResponse {
+  // messages
+  repeated Message messages = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // next page token
+  string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // total size
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // message sender profiles
+  repeated MessageSenderProfile sender_profiles = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ChatWithTableBuilderAgentRequest represents a request to chat with the table builder agent.
+message ChatWithTableBuilderAgentRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to send a message to.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // User message
+  string message = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ChatWithTableBuilderAgentResponse contains the response from the table builder agent.
+message ChatWithTableBuilderAgentResponse {
+  // The response from the table builder agent.
+  ChatEvent event = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
