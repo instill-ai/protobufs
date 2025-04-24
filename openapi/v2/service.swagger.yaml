@@ -6257,6 +6257,15 @@ paths:
         - "\U0001F4A7 Pipeline"
       x-stage: beta
 definitions:
+  AgentConfig.Context:
+    type: object
+    properties:
+      columnUids:
+        type: array
+        items:
+          type: string
+        description: The column uids to include in the context.
+    description: The context for the agent.
   Any:
     type: object
     properties:
@@ -7095,11 +7104,24 @@ definitions:
         items:
           type: string
         title: object UIDs
+      context:
+        description: The context for the agent.
+        allOf:
+          - $ref: '#/definitions/ChatWithAgentRequest.Context'
     description: |-
       ChatWithAgentRequest represents a request to send a message
       to a chatbot synchronously and streams back the results.
     required:
       - message
+  ChatWithAgentRequest.Context:
+    type: object
+    properties:
+      tableUids:
+        type: array
+        items:
+          type: string
+        description: The table uids to include in the context.
+    description: The context for the chat.
   ChatWithAgentResponse:
     type: object
     properties:
@@ -7400,7 +7422,7 @@ definitions:
       context:
         description: The context for the agent. This setting is only used if enable_automatic_computation is true.
         allOf:
-          - $ref: '#/definitions/Context'
+          - $ref: '#/definitions/AgentConfig.Context'
     description: The configuration for the agent.
     required:
       - instructions
@@ -7801,15 +7823,6 @@ definitions:
        - CONTENT_TYPE_CHUNK: Chunk.
        - CONTENT_TYPE_SUMMARY: Summary.
        - CONTENT_TYPE_AUGMENTED: Augmented.
-  Context:
-    type: object
-    properties:
-      columnUids:
-        type: array
-        items:
-          type: string
-        description: The column uids to include in the context.
-    description: The context for the agent.
   CreateCatalogBody:
     type: object
     properties:
