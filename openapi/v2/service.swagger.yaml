@@ -6257,15 +6257,6 @@ paths:
         - "\U0001F4A7 Pipeline"
       x-stage: beta
 definitions:
-  AgentConfig.Context:
-    type: object
-    properties:
-      columnUids:
-        type: array
-        items:
-          type: string
-        description: The column uids to include in the context.
-    description: The context for the agent.
   Any:
     type: object
     properties:
@@ -6895,6 +6886,16 @@ definitions:
     title: Chat represents a chat
     required:
       - namespaceId
+  ChatAttachments:
+    type: object
+    properties:
+      fileUrls:
+        type: array
+        items:
+          type: string
+        title: file urls (only for user messages)
+        readOnly: true
+    title: ChatAttachments represents the attachment for the message
   ChatCitationListUpdatedEvent:
     type: object
     properties:
@@ -6913,6 +6914,15 @@ definitions:
     title: ChatCitationListUpdatedEvent represents an event for a citation list output
     required:
       - citations
+  ChatContext:
+    type: object
+    properties:
+      tableUids:
+        type: array
+        items:
+          type: string
+        description: The table uids to include in the context.
+    description: The context for the message.
   ChatDebugOutputUpdatedEvent:
     type: object
     properties:
@@ -7105,23 +7115,14 @@ definitions:
           type: string
         title: object UIDs
       context:
-        description: The context for the agent.
+        description: The context for the chat.
         allOf:
-          - $ref: '#/definitions/ChatWithAgentRequest.Context'
+          - $ref: '#/definitions/ChatContext'
     description: |-
       ChatWithAgentRequest represents a request to send a message
       to a chatbot synchronously and streams back the results.
     required:
       - message
-  ChatWithAgentRequest.Context:
-    type: object
-    properties:
-      tableUids:
-        type: array
-        items:
-          type: string
-        description: The table uids to include in the context.
-    description: The context for the chat.
   ChatWithAgentResponse:
     type: object
     properties:
@@ -7422,7 +7423,7 @@ definitions:
       context:
         description: The context for the agent. This setting is only used if enable_automatic_computation is true.
         allOf:
-          - $ref: '#/definitions/AgentConfig.Context'
+          - $ref: '#/definitions/Context'
     description: The configuration for the agent.
     required:
       - instructions
@@ -7823,6 +7824,15 @@ definitions:
        - CONTENT_TYPE_CHUNK: Chunk.
        - CONTENT_TYPE_SUMMARY: Summary.
        - CONTENT_TYPE_AUGMENTED: Augmented.
+  Context:
+    type: object
+    properties:
+      columnUids:
+        type: array
+        items:
+          type: string
+        description: The column uids to include in the context.
+    description: The context for the agent.
   CreateCatalogBody:
     type: object
     properties:
@@ -12613,7 +12623,21 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/Citation'
-        title: citations(only for agent messages)
+        title: citations (only for agent messages)
+        readOnly: true
+      context:
+        title: context for the message
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ChatContext'
+      attachments:
+        title: attachments for the message
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ChatAttachments'
+      enableWebSearch:
+        type: boolean
+        title: enable web search (only for user messages)
         readOnly: true
     title: Message represents a single message in a conversation
     required:
