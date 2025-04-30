@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package agent.agent.v1alpha;
 
+import "agent/agent/v1alpha/common.proto";
+import "agent/agent/v1alpha/table.proto";
 // Google API
 import "google/api/field_behavior.proto";
 // Protocol Buffers Well-Known Types
@@ -37,48 +39,6 @@ message Chat {
     (google.api.field_behavior) = OUTPUT_ONLY,
     deprecated = true
   ];
-}
-
-// type of the citations message
-enum CitationType {
-  // Unspecified citation type
-  CITATION_TYPE_UNSPECIFIED = 0;
-  // file-based citation
-  CITATION_TYPE_FILE = 1;
-  // web-based citation
-  CITATION_TYPE_WEB = 2;
-  // table-based citation
-  CITATION_TYPE_TABLE = 3;
-}
-
-// type of the citations message extract method
-enum CitationExtractMethodType {
-  // Unspecified citation extract method
-  CITATION_EXTRACT_METHOD_TYPE_UNSPECIFIED = 0;
-  // self generated
-  CITATION_EXTRACT_METHOD_TYPE_SELF = 1;
-  // extract from web search tool
-  CITATION_EXTRACT_METHOD_TYPE_WEB = 2;
-  // extract from RAG tool
-  CITATION_EXTRACT_METHOD_TYPE_RAG = 3;
-  // extract from deep analysis tool
-  CITATION_EXTRACT_METHOD_TYPE_DEEP_ANALYSIS = 4;
-}
-
-// Citation message
-message Citation {
-  // Type of citation
-  CitationType type = 1;
-  // Name of the citation
-  string name = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // URL of the citation, can be web url, cell url or object-uid
-  string url = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Citation number
-  uint32 number = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // File summary (only applicable for file type citations)
-  optional string summary = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Citation extract method type
-  CitationExtractMethodType extract_method = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Message represents a single message in a conversation
@@ -288,6 +248,56 @@ message ChatWithAgentResponse {
   repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// TableBuilderAgentMessage represents a message from the table builder agent.
+message TableBuilderAgentMessage {
+  // The message.
+  string message = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ListTableBuilderAgentMessagesRequest is used to list messages in a conversation
+message ListTableBuilderAgentMessagesRequest {
+  // namespace id
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // table uid
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+  // page size
+  int32 page_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // page token
+  string page_token = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // If true, all messages will be returned. This has higher priority over page_size and page_token.
+  bool if_all = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListTableBuilderAgentMessagesResponse returns a list of messages
+message ListTableBuilderAgentMessagesResponse {
+  // messages
+  repeated Message messages = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // next page token
+  string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // total size
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // message sender profiles
+  repeated MessageSenderProfile sender_profiles = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ChatWithTableBuilderAgentRequest represents a request to chat with the table builder agent.
+message ChatWithTableBuilderAgentRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to send a message to.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // User message
+  string message = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ChatWithTableBuilderAgentResponse contains the response from the table builder agent.
+message ChatWithTableBuilderAgentResponse {
+  // The response from the table builder agent.
+  ChatEvent event = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // ChatEvent represents an event for a chat.
 message ChatEvent {
   // The event type.
@@ -413,6 +423,22 @@ message ChatTableCreatedEvent {
   google.protobuf.Timestamp create_time = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The created table uid
   string table_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The created table
+  Table table = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The created column definitions
+  map<string, ColumnDefinition> cumn_definitions = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ChatTableUpdatedEvent represents an event for a table update
+message ChatTableUpdatedEvent {
+  // The time when table updated
+  google.protobuf.Timestamp create_time = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The updated table uid
+  string table_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The updated table
+  Table table = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The updated column definitions
+  map<string, ColumnDefinition> column_definitions = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ChatErrorUpdatedEvent represents an event for an error
