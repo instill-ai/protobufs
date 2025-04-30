@@ -1,0 +1,46 @@
+syntax = "proto3";
+package agent.agent.v1alpha;
+
+import "google/api/field_behavior.proto";
+
+// type of the citations message
+enum CitationType {
+  // Unspecified citation type
+  CITATION_TYPE_UNSPECIFIED = 0;
+  // file-based citation
+  CITATION_TYPE_FILE = 1;
+  // web-based citation
+  CITATION_TYPE_WEB = 2;
+  // table-based citation
+  CITATION_TYPE_TABLE = 3;
+}
+
+// type of the citations message extract method
+enum CitationExtractMethodType {
+  // Unspecified citation extract method
+  CITATION_EXTRACT_METHOD_TYPE_UNSPECIFIED = 0;
+  // self generated
+  CITATION_EXTRACT_METHOD_TYPE_SELF = 1;
+  // extract from web search tool
+  CITATION_EXTRACT_METHOD_TYPE_WEB = 2;
+  // extract from RAG tool
+  CITATION_EXTRACT_METHOD_TYPE_RAG = 3;
+  // extract from deep analysis tool
+  CITATION_EXTRACT_METHOD_TYPE_DEEP_ANALYSIS = 4;
+}
+
+// Citation message
+message Citation {
+  // Type of citation
+  CitationType type = 1;
+  // Name of the citation
+  string name = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // URL of the citation, can be web url, cell url or object-uid
+  string url = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Citation number
+  uint32 number = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // File summary (only applicable for file type citations)
+  optional string summary = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Citation extract method type
+  CitationExtractMethodType extract_method = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
