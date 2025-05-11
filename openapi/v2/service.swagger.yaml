@@ -7482,6 +7482,10 @@ definitions:
       description:
         type: string
         description: The description for the column.
+      numberFormat:
+        description: Format for number type columns.
+        allOf:
+          - $ref: '#/definitions/NumberFormat'
     description: ColumnDefinition represents a column definition in a table.
     required:
       - type
@@ -8462,6 +8466,20 @@ definitions:
        - FILE_TYPE_XLSX: XLSX
        - FILE_TYPE_CSV: CSV
     title: file type
+  Format:
+    type: string
+    enum:
+      - FORMAT_PLAIN
+      - FORMAT_COMMAS
+      - FORMAT_CURRENCY
+      - FORMAT_PERCENTAGE
+    description: |-
+      Format specifies the visual representation of numbers in the column.
+
+       - FORMAT_PLAIN: Plain number format without any separators or special formatting.
+       - FORMAT_COMMAS: Number format with commas as thousand separators (e.g., 1,234,567).
+       - FORMAT_CURRENCY: Currency format that displays values with a currency symbol.
+       - FORMAT_PERCENTAGE: Percentage format that displays values with a percent symbol.
   FruitCosts:
     type: object
     properties:
@@ -10435,6 +10453,27 @@ definitions:
     description: NumberCell represents a cell with a number value.
     required:
       - value
+  NumberFormat:
+    type: object
+    properties:
+      format:
+        description: The specific format to apply to numbers in this column.
+        allOf:
+          - $ref: '#/definitions/Format'
+      decimalPlaces:
+        type: integer
+        format: int32
+        description: |-
+          Number of decimal places to display (e.g., 2 would show 1.23).
+          If not specified, a default appropriate to the format will be used.
+      currencyCode:
+        type: string
+        description: |-
+          ISO 4217 currency code (e.g., "USD", "EUR", "JPY") for currency format.
+          Required when format is FORMAT_CURRENCY, ignored for other formats.
+    description: NumberFormat defines the display format for number type columns.
+    required:
+      - format
   OAuthConfig:
     type: object
     properties:

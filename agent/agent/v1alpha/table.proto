@@ -153,6 +153,38 @@ enum Type {
   TYPE_DOCUMENT = 5;
 }
 
+// NumberFormat defines the display format for number type columns.
+message NumberFormat {
+  // Format specifies the visual representation of numbers in the column.
+  enum Format {
+    // Default number format with no specific formatting applied.
+    FORMAT_UNSPECIFIED = 0;
+
+    // Plain number format without any separators or special formatting.
+    FORMAT_PLAIN = 1;
+
+    // Number format with commas as thousand separators (e.g., 1,234,567).
+    FORMAT_COMMAS = 2;
+
+    // Currency format that displays values with a currency symbol.
+    FORMAT_CURRENCY = 3;
+
+    // Percentage format that displays values with a percent symbol.
+    FORMAT_PERCENTAGE = 4;
+  }
+
+  // The specific format to apply to numbers in this column.
+  Format format = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Number of decimal places to display (e.g., 2 would show 1.23).
+  // If not specified, a default appropriate to the format will be used.
+  int32 decimal_places = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // ISO 4217 currency code (e.g., "USD", "EUR", "JPY") for currency format.
+  // Required when format is FORMAT_CURRENCY, ignored for other formats.
+  string currency_code = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
 // ColumnDefinition represents a column definition in a table.
 message ColumnDefinition {
   // The unique identifier of the column.
@@ -211,6 +243,12 @@ message ColumnDefinition {
 
   // The description for the column.
   string description = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Format options for different column types.
+  oneof format {
+    // Format for number type columns.
+    NumberFormat number_format = 8 [(google.api.field_behavior) = OPTIONAL];
+  }
 }
 
 // GetColumnDefinitionsRequest represents a request to fetch column definitions.
