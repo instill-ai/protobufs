@@ -7486,6 +7486,10 @@ definitions:
         description: Format for number type columns.
         allOf:
           - $ref: '#/definitions/NumberFormat'
+      selection:
+        description: The selection settings of the column.
+        allOf:
+          - $ref: '#/definitions/Selection'
     description: ColumnDefinition represents a column definition in a table.
     required:
       - type
@@ -10598,6 +10602,20 @@ definitions:
        - ONBOARDING_STATUS_IN_PROGRESS: In progress, i.e., the user has initiated the onboarding process
       but has not yet completed it.
        - ONBOARDING_STATUS_COMPLETED: Completed.
+  Option:
+    type: object
+    properties:
+      stringValue:
+        type: string
+        description: The value of the cell as a string.
+      numberValue:
+        type: number
+        format: float
+        description: The value of the cell as a number.
+      color:
+        type: string
+        description: Display color of the option.
+    description: An option for the selection.
   Organization:
     type: object
     properties:
@@ -11444,6 +11462,32 @@ definitions:
         type: string
         title: Description
     description: API secrets allow users to make requests to the Instill AI API.
+  Selection:
+    type: object
+    properties:
+      type:
+        description: The selection of the column.
+        allOf:
+          - $ref: '#/definitions/SelectionType'
+      options:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Option'
+        description: The options for the selection.
+    description: The selection settings of the column.
+    required:
+      - type
+  SelectionType:
+    type: string
+    enum:
+      - SELECTION_TYPE_NONE
+      - SELECTION_TYPE_SINGLE
+    description: |-
+      The type of the selection.
+
+       - SELECTION_TYPE_NONE: No selection.
+       - SELECTION_TYPE_SINGLE: The selection is a single value.
   ShareCode:
     type: object
     properties:

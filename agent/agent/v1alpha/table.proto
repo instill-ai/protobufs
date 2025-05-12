@@ -249,6 +249,45 @@ message ColumnDefinition {
     // Format for number type columns.
     NumberFormat number_format = 8 [(google.api.field_behavior) = OPTIONAL];
   }
+
+  // The selection settings of the column.
+  message Selection {
+    // The type of the selection.
+    enum SelectionType {
+      // The selection is not specified.
+      SELECTION_TYPE_UNSPECIFIED = 0;
+
+      // No selection.
+      SELECTION_TYPE_NONE = 1;
+
+      // The selection is a single value.
+      SELECTION_TYPE_SINGLE = 2;
+    }
+
+    // An option for the selection.
+    message Option {
+      // The value of the cell as a string.
+      oneof value {
+        // The value of the cell as a string.
+        string string_value = 1 [(google.api.field_behavior) = OPTIONAL];
+
+        // The value of the cell as a number.
+        float number_value = 2 [(google.api.field_behavior) = OPTIONAL];
+      }
+
+      // Display color of the option.
+      string color = 3 [(google.api.field_behavior) = OPTIONAL];
+    }
+
+    // The selection of the column.
+    SelectionType type = 1 [(google.api.field_behavior) = REQUIRED];
+
+    // The options for the selection.
+    repeated Option options = 2 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // The selection settings of the column.
+  Selection selection = 9 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetColumnDefinitionsRequest represents a request to fetch column definitions.
