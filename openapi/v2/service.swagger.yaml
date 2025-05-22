@@ -404,6 +404,64 @@ paths:
       tags:
         - Table
       x-stage: alpha
+  /v1alpha/table-templates:
+    get:
+      summary: List table templates
+      description: Returns a paginated list of table templates.
+      operationId: AgentPublicService_ListTableTemplates
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListTableTemplatesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: pageToken
+          description: The page token for pagination.
+          in: query
+          required: false
+          type: string
+        - name: pageSize
+          description: The maximum number of table templates to return.
+          in: query
+          required: false
+          type: integer
+          format: int32
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/table-templates/{tableTemplateUid}:
+    get:
+      summary: Get table template
+      description: Returns a table template.
+      operationId: AgentPublicService_GetTableTemplate
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetTableTemplateResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: tableTemplateUid
+          description: The UID of the table template to get.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Table
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables:
     get:
       summary: List tables
@@ -471,6 +529,37 @@ paths:
             $ref: '#/definitions/Table'
             required:
               - table
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/from-template:
+    post:
+      summary: Create a table from a table template
+      description: Creates a table from a table template.
+      operationId: AgentPublicService_CreateTableFromTemplate
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/CreateTableFromTemplateResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTableFromTemplateBody'
       tags:
         - Table
       x-stage: alpha
@@ -8031,6 +8120,28 @@ definitions:
         allOf:
           - $ref: '#/definitions/RepositoryTag'
     description: CreateRepositoryTagResponse contains the created tag.
+  CreateTableFromTemplateBody:
+    type: object
+    properties:
+      tableTemplateUid:
+        type: string
+        description: The UID of the table template to create the table from.
+      title:
+        type: string
+        description: The title of the table.
+    description: CreateTableFromTemplateRequest represents a request to create a table from a table template.
+    required:
+      - tableTemplateUid
+      - title
+  CreateTableFromTemplateResponse:
+    type: object
+    properties:
+      table:
+        description: The created table.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table'
+    description: CreateTableFromTemplateResponse contains the created table.
   CreateTableResponse:
     type: object
     properties:
@@ -8906,6 +9017,17 @@ definitions:
         allOf:
           - $ref: '#/definitions/Table'
     description: GetTableResponse contains the requested table.
+  GetTableTemplateResponse:
+    type: object
+    properties:
+      tableTemplate:
+        description: The table template.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table'
+    description: |-
+      TableTemplate represents a table template.
+      GetTableTemplateResponse contains the requested table template.
   GetTokenResponse:
     type: object
     properties:
@@ -9820,6 +9942,17 @@ definitions:
         title: message sender profiles
         readOnly: true
     title: ListTableBuilderAgentMessagesResponse returns a list of messages
+  ListTableTemplatesResponse:
+    type: object
+    properties:
+      tableTemplates:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Table'
+        description: The list of table templates.
+        readOnly: true
+    description: ListTableTemplatesResponse contains the list of table templates.
   ListTablesResponse:
     type: object
     properties:
