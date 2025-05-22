@@ -532,6 +532,37 @@ paths:
       tags:
         - Table
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/from-template:
+    post:
+      summary: Create a table from a table template
+      description: Creates a table from a table template.
+      operationId: AgentPublicService_CreateTableFromTemplate
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/CreateTableFromTemplateResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTableFromTemplateBody'
+      tags:
+        - Table
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}:
     get:
       summary: Get table
@@ -8089,6 +8120,28 @@ definitions:
         allOf:
           - $ref: '#/definitions/RepositoryTag'
     description: CreateRepositoryTagResponse contains the created tag.
+  CreateTableFromTemplateBody:
+    type: object
+    properties:
+      tableTemplateUid:
+        type: string
+        description: The UID of the table template to create the table from.
+      title:
+        type: string
+        description: The title of the table.
+    description: CreateTableFromTemplateRequest represents a request to create a table from a table template.
+    required:
+      - tableTemplateUid
+      - title
+  CreateTableFromTemplateResponse:
+    type: object
+    properties:
+      table:
+        description: The created table.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table'
+    description: CreateTableFromTemplateResponse contains the created table.
   CreateTableResponse:
     type: object
     properties:
