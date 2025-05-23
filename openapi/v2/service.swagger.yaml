@@ -404,64 +404,6 @@ paths:
       tags:
         - Table
       x-stage: alpha
-  /v1alpha/table-templates:
-    get:
-      summary: List table templates
-      description: Returns a paginated list of table templates.
-      operationId: AgentPublicService_ListTableTemplates
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListTableTemplatesResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: pageToken
-          description: The page token for pagination.
-          in: query
-          required: false
-          type: string
-        - name: pageSize
-          description: The maximum number of table templates to return.
-          in: query
-          required: false
-          type: integer
-          format: int32
-      tags:
-        - Table
-      x-stage: alpha
-  /v1alpha/table-templates/{tableTemplateUid}:
-    get:
-      summary: Get table template
-      description: Returns a table template.
-      operationId: AgentPublicService_GetTableTemplate
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetTableTemplateResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: tableTemplateUid
-          description: The UID of the table template to get.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Table
-      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables:
     get:
       summary: List tables
@@ -8123,16 +8065,21 @@ definitions:
   CreateTableFromTemplateBody:
     type: object
     properties:
-      tableTemplateUid:
+      table:
+        description: The table resource to create.
+        allOf:
+          - $ref: '#/definitions/Table'
+      templateNamespaceId:
         type: string
-        description: The UID of the table template to create the table from.
-      title:
+        description: The ID of the table namespace to create the table from.
+      templateTableUid:
         type: string
-        description: The title of the table.
+        description: The ID of the table to create the table from.
     description: CreateTableFromTemplateRequest represents a request to create a table from a table template.
     required:
-      - tableTemplateUid
-      - title
+      - table
+      - templateNamespaceId
+      - templateTableUid
   CreateTableFromTemplateResponse:
     type: object
     properties:
@@ -9017,17 +8964,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Table'
     description: GetTableResponse contains the requested table.
-  GetTableTemplateResponse:
-    type: object
-    properties:
-      tableTemplate:
-        description: The table template.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Table'
-    description: |-
-      TableTemplate represents a table template.
-      GetTableTemplateResponse contains the requested table template.
   GetTokenResponse:
     type: object
     properties:
@@ -9942,17 +9878,6 @@ definitions:
         title: message sender profiles
         readOnly: true
     title: ListTableBuilderAgentMessagesResponse returns a list of messages
-  ListTableTemplatesResponse:
-    type: object
-    properties:
-      tableTemplates:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Table'
-        description: The list of table templates.
-        readOnly: true
-    description: ListTableTemplatesResponse contains the list of table templates.
   ListTablesResponse:
     type: object
     properties:
@@ -11930,6 +11855,11 @@ definitions:
       draftMode:
         type: boolean
         description: Whether to enable draft mode for the table.
+      permission:
+        description: Permission defines how a table can be used.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Table.Permission'
     description: Table represents a table resource.
     required:
       - agentConfig
@@ -11943,6 +11873,13 @@ definitions:
     description: The configuration for the agent.
     required:
       - enableTransparency
+  Table.Permission:
+    type: object
+    properties:
+      canEdit:
+        type: boolean
+        description: Defines whether the table can be modified.
+    description: Permission defines how a table can be used.
   TableDeletedEvent:
     type: object
     description: TableDeletedEvent represents an event for a table being deleted.
