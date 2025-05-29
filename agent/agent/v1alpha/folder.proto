@@ -1,0 +1,129 @@
+syntax = "proto3";
+
+package agent.agent.v1alpha;
+
+// Google API
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// Folder represents a folder resource.
+message Folder {
+  // The unique identifier of the folder.
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The name of the folder.
+  string name = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // A description of the folder.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Additional metadata associated with the folder.
+  google.protobuf.Struct metadata = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // The timestamp when the folder was created.
+  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The timestamp when the folder was last updated.
+  google.protobuf.Timestamp update_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Permission defines how a folder can be used.
+  message Permission {
+    // Defines whether the folder can be modified.
+    bool can_edit = 1;
+  }
+
+  // The ID of the catalog that this folder is bound to.
+  string catalog_id = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Permission defines how a folder can be used.
+  Permission permission = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListFoldersRequest represents a request to list folders.
+message ListFoldersRequest {
+  // The ID of the namespace that owns the folders.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The page token for pagination.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The maximum number of folders to return.
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListFoldersResponse contains the list of folders.
+message ListFoldersResponse {
+  // The list of folders.
+  repeated Folder folders = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The token for the next page of results.
+  string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The total number of tables.
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// CreateFolderRequest represents a request to create a folder.
+message CreateFolderRequest {
+  // The ID of the namespace where the folder will be created.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The folder resource to create.
+  Folder folder = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CreateFolderResponse contains the created folder.
+message CreateFolderResponse {
+  // The created folder resource.
+  Folder folder = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// GetFolderRequest represents a request to fetch a folder.
+message GetFolderRequest {
+  // The ID of the namespace that owns the folder.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the folder to fetch.
+  string folder_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetFolderResponse contains the requested folder.
+message GetFolderResponse {
+  // The folder resource.
+  Folder folder = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UpdateFolderRequest represents a request to update a folder.
+message UpdateFolderRequest {
+  // The ID of the namespace that owns the folder.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the folder to update.
+  string folder_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The folder fields that will replace the existing ones.
+  Folder folder = 3;
+
+  // The update mask specifies the subset of fields that should be modified.
+  google.protobuf.FieldMask update_mask = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UpdateFolderResponse contains the updated folder.
+message UpdateFolderResponse {
+  // The updated folder resource.
+  Folder folder = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// DeleteFolderRequest represents a request to delete a folder.
+message DeleteFolderRequest {
+  // The ID of the namespace that owns the folder.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the folder to delete.
+  string folder_uid = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteFolderResponse is an empty response for deleting a folder.
+message DeleteFolderResponse {}
