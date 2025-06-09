@@ -71,16 +71,7 @@ jobs:
       - name: Check out repo 📚
         uses: actions/checkout@v3
 
-      - name: Create new version 🚀
+      - name: Sync OpenAPI docs 📜
         uses: readmeio/rdme@v10
-        env:
-          Release: ${{ needs.sync-openapi-private-staging.outputs.new_release }}
         with:
-          rdme: versions:create ${{ env.Release }} --fork 0-beta-staging --codename=${{ env.Release}} --main true --beta true --isPublic true --key=${{ secrets.README_API_KEY }}
-
-      - name: Delete old version 🧹
-        uses: readmeio/rdme@v10
-        env:
-          OldRelease: ${{ needs.sync-openapi-private-staging.outputs.old_release }}
-        with:
-          rdme: versions:delete ${{ env.OldRelease }} --key=${{ secrets.README_API_KEY }}
+          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --branch=v0-beta
