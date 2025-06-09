@@ -20,9 +20,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Sync OpenAPI docs 📜
-        uses: readmeio/rdme@v8
+        uses: readmeio/rdme@v10
         with:
-          rdme: openapi openapi/v2/service.swagger.yaml --title "🔮 Instill AI API (PR ${{ github.ref_name }})" --key=${{ secrets.README_API_KEY }} --id=671f3ec63ce9be54bc25adb8
+          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --branch=v0-beta-dev
 
   sync-openapi-private-staging:
     name: Keep private (staging) docs in sync with `main`
@@ -39,9 +39,9 @@ jobs:
           fetch-depth: 0
 
       - name: Sync OpenAPI docs 📜
-        uses: readmeio/rdme@v8
+        uses: readmeio/rdme@v10
         with:
-          rdme: openapi openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --id=671f3f971dc007003da17bbc
+          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --branch=v0-beta-staging
 
       - name: Check new release 🔍
         id: check-new-release
@@ -71,16 +71,7 @@ jobs:
       - name: Check out repo 📚
         uses: actions/checkout@v3
 
-      - name: Create new version 🚀
-        uses: readmeio/rdme@v8
-        env:
-          Release: ${{ needs.sync-openapi-private-staging.outputs.new_release }}
+      - name: Sync OpenAPI docs 📜
+        uses: readmeio/rdme@v10
         with:
-          rdme: versions:create ${{ env.Release }} --fork 0-beta-staging --codename=${{ env.Release}} --main true --beta true --isPublic true --key=${{ secrets.README_API_KEY }}
-
-      - name: Delete old version 🧹
-        uses: readmeio/rdme@v8
-        env:
-          OldRelease: ${{ needs.sync-openapi-private-staging.outputs.old_release }}
-        with:
-          rdme: versions:delete ${{ env.OldRelease }} --key=${{ secrets.README_API_KEY }}
+          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --branch=v0-beta
