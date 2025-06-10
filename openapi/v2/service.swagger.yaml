@@ -258,6 +258,11 @@ paths:
           in: query
           required: false
           type: boolean
+        - name: returnRawMessages
+          description: If true, the raw messages will be returned.
+          in: query
+          required: false
+          type: boolean
       tags:
         - "\U0001F34E Agent"
       x-stage: alpha
@@ -687,6 +692,11 @@ paths:
           type: string
         - name: ifAll
           description: If true, all messages will be returned. This has higher priority over page_size and page_token.
+          in: query
+          required: false
+          type: boolean
+        - name: returnRawMessages
+          description: If true, the raw messages will be returned.
           in: query
           required: false
           type: boolean
@@ -1313,6 +1323,68 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/RecomputeCellBody'
+      tags:
+        - Table
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/rows/{rowUid}/cells/{cellUid}/autofill-agent/messages:
+    get:
+      summary: List cell messages
+      description: Lists the internal LLM messages that used to generate the cell value.
+      operationId: AgentPublicService_ListCellAutofillAgentMessages
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListCellAutofillAgentMessagesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: rowUid
+          description: The unique identifier of the row containing the cell.
+          in: path
+          required: true
+          type: string
+        - name: cellUid
+          description: The unique identifier of the cell to reset.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: page size
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: page token
+          in: query
+          required: false
+          type: string
+        - name: ifAll
+          description: If true, all messages will be returned. This has higher priority over page_size and page_token.
+          in: query
+          required: false
+          type: boolean
+        - name: returnRawMessages
+          description: If true, the raw messages will be returned.
+          in: query
+          required: false
+          type: boolean
       tags:
         - Table
       x-stage: alpha
@@ -9450,6 +9522,26 @@ definitions:
           $ref: '#/definitions/Catalog'
         description: The catalogs container.
     description: GetCatalogsResponse represents a response for getting all catalogs from users.
+  ListCellAutofillAgentMessagesResponse:
+    type: object
+    properties:
+      messages:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/agent.v1alpha.Message'
+        description: The messages in the cell.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: The token for the next page of results.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: The total number of messages.
+        readOnly: true
+    description: ListCellAutofillAgentMessagesResponse is a response to a request to list messages in a cell.
   ListChatTablesResponse:
     type: object
     properties:
@@ -13148,6 +13240,14 @@ definitions:
       enableWebSearch:
         type: boolean
         title: enable web search (only for user messages)
+        readOnly: true
+      internal:
+        type: boolean
+        description: internal flag for the message, if true, the message is the intermediate message happened in the LLM flow.
+        readOnly: true
+      rawMessage:
+        type: object
+        title: raw message for the message
         readOnly: true
     title: Message represents a single message in a conversation
     required:

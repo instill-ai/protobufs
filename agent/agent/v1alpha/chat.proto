@@ -38,56 +38,6 @@ message Chat {
   string catalog_id = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// Message represents a single message in a conversation
-message Message {
-  // message type
-  enum MessageType {
-    // unspecified
-    MESSAGE_TYPE_UNSPECIFIED = 0;
-    // text
-    MESSAGE_TYPE_TEXT = 1;
-  }
-  // message uid
-  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // chat uid
-  string chat_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // message content
-  string content = 3 [(google.api.field_behavior) = REQUIRED];
-  // message role e.g., "user" or "assistant" or "agent"
-  string role = 4 [(google.api.field_behavior) = REQUIRED];
-  // message type
-  MessageType type = 5 [(google.api.field_behavior) = REQUIRED];
-  // creation time of the message
-  google.protobuf.Timestamp create_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // update time of the message
-  google.protobuf.Timestamp update_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // message sender uid(only for user messages)
-  string msg_sender_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // citations (only for agent messages)
-  repeated Citation citations = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // context for the message
-  ChatContext context = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // attachments for the message
-  ChatAttachments attachments = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // enable web search (only for user messages)
-  bool enable_web_search = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-// The context for the message.
-message ChatContext {
-  // The table uids to include in the context.
-  repeated string table_uids = 1 [(google.api.field_behavior) = OPTIONAL];
-}
-
-// ChatAttachments represents the attachment for the message
-message ChatAttachments {
-  // file urls (only for user messages)
-  repeated string file_urls = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // CreateChatRequest is used to create a new chat
 message CreateChatRequest {
   // namespace id
@@ -202,6 +152,8 @@ message ListMessagesRequest {
   string page_token = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // If true, all messages will be returned. This has higher priority over page_size and page_token.
   bool if_all = 5 [(google.api.field_behavior) = OPTIONAL];
+  // If true, the raw messages will be returned.
+  bool return_raw_messages = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListMessagesResponse returns a list of messages
@@ -263,6 +215,8 @@ message ListTableBuilderAgentMessagesRequest {
   string page_token = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // If true, all messages will be returned. This has higher priority over page_size and page_token.
   bool if_all = 5 [(google.api.field_behavior) = OPTIONAL];
+  // If true, the raw messages will be returned.
+  bool return_raw_messages = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListTableBuilderAgentMessagesResponse returns a list of messages
