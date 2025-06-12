@@ -8217,6 +8217,36 @@ definitions:
         title: The catalog type. default is PERSISTENT
         allOf:
           - $ref: '#/definitions/CatalogType'
+      convertingPipelines:
+        type: array
+        items:
+          type: string
+        description: |-
+          Pipelines used for converting documents (i.e., files with pdf, doc* or
+          ppt* extension) to Markdown. The pipelines must have the following
+          variable and output fields:
+          ```
+          variable:
+            document_input:
+              title: document-input
+              description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
+              type: file
+          ```
+          ```
+          output:
+           convert_result:
+             title: convert-result
+             value: ${merge-markdown-refinement.output.results[0]}
+          ```
+          Other variable and output fields will be ignored.
+
+          The pipelines will be executed in order until one produces a successful,
+          non-empty result.
+
+          If no pipelines are provided, a default pipeline will be used. For
+          non-document catalog files, the conversion pipeline is deterministic (such
+          files are typically trivial to convert and don't require a dedicated
+          pipeline to improve the conversion performance).
     description: CreateCatalogRequest represents a request to create a catalog.
   CreateCatalogResponse:
     type: object
