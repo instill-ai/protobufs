@@ -6831,73 +6831,6 @@ definitions:
           type: object
         description: Model inference outputs.
     title: CallResponse represents a response for model inference
-  Catalog:
-    type: object
-    properties:
-      catalogUid:
-        type: string
-        description: The catalog uid.
-      catalogId:
-        type: string
-        description: The catalog id.
-      name:
-        type: string
-        description: The catalog name.
-      description:
-        type: string
-        description: The catalog description.
-      createTime:
-        type: string
-        description: The creation time of the catalog.
-      updateTime:
-        type: string
-        description: The last update time of the catalog.
-      ownerName:
-        type: string
-        description: The owner/namespace of the catalog.
-      tags:
-        type: array
-        items:
-          type: string
-        description: The catalog tags.
-      convertingPipelines:
-        type: array
-        items:
-          type: string
-        description: The catalog converting pipelines.
-      splittingPipelines:
-        type: array
-        items:
-          type: string
-        description: The catalog splitting pipelines.
-      embeddingPipelines:
-        type: array
-        items:
-          type: string
-        description: The catalog embedding pipelines.
-      downstreamApps:
-        type: array
-        items:
-          type: string
-        title: The downstream apps
-      totalFiles:
-        type: integer
-        format: int64
-        description: The total files in catalog.
-      totalTokens:
-        type: integer
-        format: int64
-        description: The total tokens in catalog.
-      usedStorage:
-        type: string
-        format: uint64
-        description: The current used storage in catalog.
-      summarizingPipelines:
-        type: array
-        items:
-          type: string
-        description: The catalog summarizing pipelines.
-    description: Catalog represents a catalog.
   CatalogInfo:
     type: object
     properties:
@@ -7214,13 +7147,47 @@ definitions:
         items:
           type: string
         description: The table uids to include in the context.
-      folderFiles:
+      folders:
         type: array
         items:
           type: object
-          $ref: '#/definitions/FolderFiles'
-        description: The folders and files to include in the context.
+          $ref: '#/definitions/ChatContext.Folder'
+        description: The folders to include in the context.
+      catalogs:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/ChatContext.Catalog'
+        description: The catalogs to include in the context.
     description: The context for the message.
+  ChatContext.Catalog:
+    type: object
+    properties:
+      catalogId:
+        type: string
+        title: The catalog containing the files
+      fileUids:
+        type: array
+        items:
+          type: string
+        title: Specific file UIDs within the catalog, leave empty to include all files in the catalog
+    description: Represents a catalog.
+    required:
+      - catalogId
+  ChatContext.Folder:
+    type: object
+    properties:
+      folderUid:
+        type: string
+        title: The folder containing the files
+      fileUids:
+        type: array
+        items:
+          type: string
+        title: Specific file UIDs within the folder, leave empty to include all files in the folder
+    description: Represents a folder.
+    required:
+      - folderUid
   ChatContextUpdatedEvent:
     type: object
     properties:
@@ -8262,7 +8229,7 @@ definitions:
       catalog:
         description: The created catalog.
         allOf:
-          - $ref: '#/definitions/Catalog'
+          - $ref: '#/definitions/v1alpha.Catalog'
     description: CreateCatalogResponse represents a response for creating a catalog.
   CreateChatBody:
     type: object
@@ -8293,7 +8260,7 @@ definitions:
       folder:
         description: The folder resource to create.
         allOf:
-          - $ref: '#/definitions/Folder'
+          - $ref: '#/definitions/v1alpha.Folder'
     description: CreateFolderRequest represents a request to create a folder.
     required:
       - folder
@@ -8304,7 +8271,7 @@ definitions:
         description: The created folder resource.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/Folder'
+          - $ref: '#/definitions/v1alpha.Folder'
     description: CreateFolderResponse contains the created folder.
   CreateNamespaceConnectionResponse:
     type: object
@@ -8470,7 +8437,7 @@ definitions:
       catalog:
         description: The catalog identifier.
         allOf:
-          - $ref: '#/definitions/Catalog'
+          - $ref: '#/definitions/v1alpha.Catalog'
     description: DeleteCatalogResponse represents a response for deleting a catalog.
   DeleteChatResponse:
     type: object
@@ -8870,49 +8837,6 @@ definitions:
        - FILE_TYPE_XLSX: XLSX
        - FILE_TYPE_CSV: CSV
     title: file type
-  Folder:
-    type: object
-    properties:
-      uid:
-        type: string
-        description: The unique identifier of the folder.
-        readOnly: true
-      name:
-        type: string
-        description: The name of the folder.
-      description:
-        type: string
-        description: A description of the folder.
-      metadata:
-        type: object
-        description: Additional metadata associated with the folder.
-      createTime:
-        type: string
-        format: date-time
-        description: The timestamp when the folder was created.
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: The timestamp when the folder was last updated.
-        readOnly: true
-      catalogId:
-        type: string
-        description: The ID of the catalog that this folder is bound to.
-        readOnly: true
-      permission:
-        description: Permission defines how a folder can be used.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Folder.Permission'
-      catalogInfo:
-        description: The information about the catalog.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/CatalogInfo'
-    description: Folder represents a folder resource.
-    required:
-      - name
   Folder.Permission:
     type: object
     properties:
@@ -8920,20 +8844,6 @@ definitions:
         type: boolean
         description: Defines whether the folder can be modified.
     description: Permission defines how a folder can be used.
-  FolderFiles:
-    type: object
-    properties:
-      folderUid:
-        type: string
-        title: The folder containing the files
-      fileUids:
-        type: array
-        items:
-          type: string
-        title: Specific file UIDs within the folder, leave empty to include all files in the folder
-    description: Represents specific files within a folder.
-    required:
-      - folderUid
   Format:
     type: string
     enum:
@@ -9100,7 +9010,7 @@ definitions:
         description: The folder resource.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/Folder'
+          - $ref: '#/definitions/v1alpha.Folder'
     description: GetFolderResponse contains the requested folder.
   GetIntegrationResponse:
     type: object
@@ -9615,7 +9525,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/Catalog'
+          $ref: '#/definitions/v1alpha.Catalog'
         description: The catalogs container.
     description: GetCatalogsResponse represents a response for getting all catalogs from users.
   ListCellAutofillAgentMessagesResponse:
@@ -9747,7 +9657,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/Folder'
+          $ref: '#/definitions/v1alpha.Folder'
         description: The list of folders.
         readOnly: true
       nextPageToken:
@@ -12894,7 +12804,7 @@ definitions:
       catalog:
         description: The updated catalog.
         allOf:
-          - $ref: '#/definitions/Catalog'
+          - $ref: '#/definitions/v1alpha.Catalog'
     description: UpdateCatalogResponse represents a response for updating a catalog.
   UpdateCellBody:
     type: object
@@ -12967,7 +12877,7 @@ definitions:
       folder:
         description: The folder fields that will replace the existing ones.
         allOf:
-          - $ref: '#/definitions/Folder'
+          - $ref: '#/definitions/v1alpha.Folder'
       updateMask:
         type: string
         description: The update mask specifies the subset of fields that should be modified.
@@ -12981,7 +12891,7 @@ definitions:
         description: The updated folder resource.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/Folder'
+          - $ref: '#/definitions/v1alpha.Folder'
     description: UpdateFolderResponse contains the updated folder.
   UpdateNamespaceConnectionResponse:
     type: object
@@ -13482,6 +13392,73 @@ definitions:
           type: string
         description: connection key(used connection id in recipe) and value(connection uid from namespace).
     description: AgentConfig represents the config for the chat agent.
+  v1alpha.Catalog:
+    type: object
+    properties:
+      catalogUid:
+        type: string
+        description: The catalog uid.
+      catalogId:
+        type: string
+        description: The catalog id.
+      name:
+        type: string
+        description: The catalog name.
+      description:
+        type: string
+        description: The catalog description.
+      createTime:
+        type: string
+        description: The creation time of the catalog.
+      updateTime:
+        type: string
+        description: The last update time of the catalog.
+      ownerName:
+        type: string
+        description: The owner/namespace of the catalog.
+      tags:
+        type: array
+        items:
+          type: string
+        description: The catalog tags.
+      convertingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog converting pipelines.
+      splittingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog splitting pipelines.
+      embeddingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog embedding pipelines.
+      downstreamApps:
+        type: array
+        items:
+          type: string
+        title: The downstream apps
+      totalFiles:
+        type: integer
+        format: int64
+        description: The total files in catalog.
+      totalTokens:
+        type: integer
+        format: int64
+        description: The total tokens in catalog.
+      usedStorage:
+        type: string
+        format: uint64
+        description: The current used storage in catalog.
+      summarizingPipelines:
+        type: array
+        items:
+          type: string
+        description: The catalog summarizing pipelines.
+    description: Catalog represents a catalog.
   v1alpha.Chunk:
     type: object
     properties:
@@ -13523,6 +13500,49 @@ definitions:
         allOf:
           - $ref: '#/definitions/ContentType'
     description: The Chunk message represents a chunk of data in the artifact system.
+  v1alpha.Folder:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: The unique identifier of the folder.
+        readOnly: true
+      name:
+        type: string
+        description: The name of the folder.
+      description:
+        type: string
+        description: A description of the folder.
+      metadata:
+        type: object
+        description: Additional metadata associated with the folder.
+      createTime:
+        type: string
+        format: date-time
+        description: The timestamp when the folder was created.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: The timestamp when the folder was last updated.
+        readOnly: true
+      catalogId:
+        type: string
+        description: The ID of the catalog that this folder is bound to.
+        readOnly: true
+      permission:
+        description: Permission defines how a folder can be used.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Folder.Permission'
+      catalogInfo:
+        description: The information about the catalog.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/CatalogInfo'
+    description: Folder represents a folder resource.
+    required:
+      - name
   v1alpha.Permission:
     type: object
     properties:
