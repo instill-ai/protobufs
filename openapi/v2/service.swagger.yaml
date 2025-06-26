@@ -776,6 +776,70 @@ paths:
       tags:
         - Table
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/column-definitions-helper/suggest:
+    post:
+      summary: Suggest column definition
+      description: Suggests a column definition based on existing table columns and user input.
+      operationId: AgentPublicService_SuggestColumnDefinition
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/SuggestColumnDefinitionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to suggest a column definition for.
+          in: path
+          required: true
+          type: string
+        - name: name
+          description: The name of the column.
+          in: query
+          required: true
+          type: string
+        - name: type
+          description: |-
+            The type of the column.
+            If not provided, the agent will suggest the type.
+            If provided, the agent will use this value as the type setting.
+
+             - TYPE_STRING: The type is a string.
+             - TYPE_NUMBER: The type is a number.
+             - TYPE_BOOLEAN: The type is a boolean.
+             - TYPE_FILE: The type is a file resource.
+             - TYPE_DOCUMENT: The type is a document resource.
+          in: query
+          required: false
+          type: string
+          enum:
+            - TYPE_STRING
+            - TYPE_NUMBER
+            - TYPE_BOOLEAN
+            - TYPE_FILE
+            - TYPE_DOCUMENT
+        - name: enableAutomaticComputation
+          description: |-
+            Whether to enable automatic computation for the column.
+            If not provided, the agent will suggest whether to enable it or not.
+            If provided, the agent will use this value as the enable_automatic_computation setting.
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Table
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/column-definitions/{columnUid}:
     get:
       summary: Get column definition
@@ -12165,6 +12229,15 @@ definitions:
     description: |-
       SubtractCreditResponse contains the remaining credit of an account after the
       subtraction.
+  SuggestColumnDefinitionResponse:
+    type: object
+    properties:
+      columnDefinition:
+        description: The suggested column definition.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/ColumnDefinition'
+    description: SuggestColumnDefinitionResponse represents a response to a request to suggest a column definition.
   Table:
     type: object
     properties:
