@@ -804,39 +804,11 @@ paths:
           in: path
           required: true
           type: string
-        - name: name
-          description: The name of the column.
-          in: query
+        - name: body
+          in: body
           required: true
-          type: string
-        - name: type
-          description: |-
-            The type of the column.
-            If not provided, the agent will suggest the type.
-            If provided, the agent will use this value as the type setting.
-
-             - TYPE_STRING: The type is a string.
-             - TYPE_NUMBER: The type is a number.
-             - TYPE_BOOLEAN: The type is a boolean.
-             - TYPE_FILE: The type is a file resource.
-             - TYPE_DOCUMENT: The type is a document resource.
-          in: query
-          required: false
-          type: string
-          enum:
-            - TYPE_STRING
-            - TYPE_NUMBER
-            - TYPE_BOOLEAN
-            - TYPE_FILE
-            - TYPE_DOCUMENT
-        - name: enableAutomaticComputation
-          description: |-
-            Whether to enable automatic computation for the column.
-            If not provided, the agent will suggest whether to enable it or not.
-            If provided, the agent will use this value as the enable_automatic_computation setting.
-          in: query
-          required: false
-          type: boolean
+          schema:
+            $ref: '#/definitions/SuggestColumnDefinitionBody'
       tags:
         - Table
       x-stage: alpha
@@ -12229,6 +12201,28 @@ definitions:
     description: |-
       SubtractCreditResponse contains the remaining credit of an account after the
       subtraction.
+  SuggestColumnDefinitionBody:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of the column.
+      type:
+        description: |-
+          The type of the column.
+          If not provided, the agent will suggest the type.
+          If provided, the agent will use this value as the type setting.
+        allOf:
+          - $ref: '#/definitions/v1alpha.Type'
+      enableAutomaticComputation:
+        type: boolean
+        description: |-
+          Whether to enable automatic computation for the column.
+          If not provided, the agent will suggest whether to enable it or not.
+          If provided, the agent will use this value as the enable_automatic_computation setting.
+    description: SuggestColumnDefinitionRequest represents a request to suggest a column definition.
+    required:
+      - name
   SuggestColumnDefinitionResponse:
     type: object
     properties:
