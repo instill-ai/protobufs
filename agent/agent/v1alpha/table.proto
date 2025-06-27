@@ -220,6 +220,42 @@ message NumberFormat {
   string currency_code = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// The selection settings of the column.
+message Selection {
+  // The type of the selection.
+  enum SelectionType {
+    // The selection is not specified.
+    SELECTION_TYPE_UNSPECIFIED = 0;
+
+    // No selection.
+    SELECTION_TYPE_NONE = 1;
+
+    // The selection is a single value.
+    SELECTION_TYPE_SINGLE = 2;
+  }
+
+  // An option for the selection.
+  message Option {
+    // The value of the cell as a string.
+    oneof value {
+      // The value of the cell as a string.
+      string string_value = 1 [(google.api.field_behavior) = OPTIONAL];
+
+      // The value of the cell as a number.
+      double number_value = 2 [(google.api.field_behavior) = OPTIONAL];
+    }
+
+    // Display color of the option.
+    string color = 3 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // The selection of the column.
+  SelectionType type = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The options for the selection.
+  repeated Option options = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
 // ColumnDefinition represents a column definition in a table.
 message ColumnDefinition {
   // The unique identifier of the column.
@@ -283,42 +319,6 @@ message ColumnDefinition {
   oneof format {
     // Format for number type columns.
     NumberFormat number_format = 8 [(google.api.field_behavior) = OPTIONAL];
-  }
-
-  // The selection settings of the column.
-  message Selection {
-    // The type of the selection.
-    enum SelectionType {
-      // The selection is not specified.
-      SELECTION_TYPE_UNSPECIFIED = 0;
-
-      // No selection.
-      SELECTION_TYPE_NONE = 1;
-
-      // The selection is a single value.
-      SELECTION_TYPE_SINGLE = 2;
-    }
-
-    // An option for the selection.
-    message Option {
-      // The value of the cell as a string.
-      oneof value {
-        // The value of the cell as a string.
-        string string_value = 1 [(google.api.field_behavior) = OPTIONAL];
-
-        // The value of the cell as a number.
-        double number_value = 2 [(google.api.field_behavior) = OPTIONAL];
-      }
-
-      // Display color of the option.
-      string color = 3 [(google.api.field_behavior) = OPTIONAL];
-    }
-
-    // The selection of the column.
-    SelectionType type = 1 [(google.api.field_behavior) = REQUIRED];
-
-    // The options for the selection.
-    repeated Option options = 2 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // The selection settings of the column.
@@ -1154,14 +1154,54 @@ message SuggestColumnDefinitionRequest {
   // If provided, the agent will use this value as the type setting.
   optional Type type = 4 [(google.api.field_behavior) = OPTIONAL];
 
+  // The selection settings of the column.
+  // If not provided, the agent will suggest the selection.
+  // If provided, the agent will use this value as the selection setting.
+  optional Selection selection = 5 [(google.api.field_behavior) = OPTIONAL];
+
   // Whether to enable automatic computation for the column.
   // If not provided, the agent will suggest whether to enable it or not.
   // If provided, the agent will use this value as the enable_automatic_computation setting.
-  optional bool enable_automatic_computation = 5 [(google.api.field_behavior) = OPTIONAL];
+  optional bool enable_automatic_computation = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // SuggestColumnDefinitionResponse represents a response to a request to suggest a column definition.
 message SuggestColumnDefinitionResponse {
+  // Whether the suggestion is successful.
+  bool success = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // The suggested column definition.
-  ColumnDefinition column_definition = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  ColumnDefinition column_definition = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The error message of the suggestion.
+  string error_message = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// EnhanceColumnDefinitionInstructionsRequest represents a request to enhance the instruction of a column definition.
+message EnhanceColumnDefinitionInstructionsRequest {
+  // The ID of the namespace that owns the table.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the table to enhance a column definition for.
+  string table_uid = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The UID of the column to be enhanced.
+  // Please provide this field if you want to enhance the instruction of an existing column definition.
+  // Ignore it if you want to enhance the instruction of a non-created column in the new column creation flow.
+  optional string column_uid = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // The column definition to be enhanced.
+  ColumnDefinition column_definition = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// EnhanceColumnDefinitionInstructionsResponse represents a response to a request to enhance the instruction of a column definition.
+message EnhanceColumnDefinitionInstructionsResponse {
+  // Whether the enhancement is successful.
+  bool success = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The enhanced instructions.
+  string instructions = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The error message of the enhancement.
+  string error_message = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

@@ -812,6 +812,42 @@ paths:
       tags:
         - Table
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/column-definitions-helper/enhance-instructions:
+    post:
+      summary: Enhance column definition instructions
+      description: Enhances the instructions of a column definition.
+      operationId: AgentPublicService_EnhanceColumnDefinitionInstructions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/EnhanceColumnDefinitionInstructionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The ID of the namespace that owns the table.
+          in: path
+          required: true
+          type: string
+        - name: tableUid
+          description: The UID of the table to enhance a column definition for.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnhanceColumnDefinitionInstructionsBody'
+      tags:
+        - Table
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/tables/{tableUid}/column-definitions/{columnUid}:
     get:
       summary: Get column definition
@@ -8573,6 +8609,38 @@ definitions:
         description: Webhook endpoints.
         readOnly: true
     description: Endpoints describe the endpoints of a pipeline.
+  EnhanceColumnDefinitionInstructionsBody:
+    type: object
+    properties:
+      columnUid:
+        type: string
+        description: |-
+          The UID of the column to be enhanced.
+          Please provide this field if you want to enhance the instruction of an existing column definition.
+          Ignore it if you want to enhance the instruction of a non-created column in the new column creation flow.
+      columnDefinition:
+        description: The column definition to be enhanced.
+        allOf:
+          - $ref: '#/definitions/ColumnDefinition'
+    description: EnhanceColumnDefinitionInstructionsRequest represents a request to enhance the instruction of a column definition.
+    required:
+      - columnDefinition
+  EnhanceColumnDefinitionInstructionsResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: Whether the enhancement is successful.
+        readOnly: true
+      instructions:
+        type: string
+        description: The enhanced instructions.
+        readOnly: true
+      errorMessage:
+        type: string
+        description: The error message of the enhancement.
+        readOnly: true
+    description: EnhanceColumnDefinitionInstructionsResponse represents a response to a request to enhance the instruction of a column definition.
   ErrPipelineValidation:
     type: object
     properties:
@@ -12218,6 +12286,13 @@ definitions:
           If provided, the agent will use this value as the type setting.
         allOf:
           - $ref: '#/definitions/v1alpha.Type'
+      selection:
+        description: |-
+          The selection settings of the column.
+          If not provided, the agent will suggest the selection.
+          If provided, the agent will use this value as the selection setting.
+        allOf:
+          - $ref: '#/definitions/Selection'
       enableAutomaticComputation:
         type: boolean
         description: |-
@@ -12230,11 +12305,19 @@ definitions:
   SuggestColumnDefinitionResponse:
     type: object
     properties:
+      success:
+        type: boolean
+        description: Whether the suggestion is successful.
+        readOnly: true
       columnDefinition:
         description: The suggested column definition.
         readOnly: true
         allOf:
           - $ref: '#/definitions/ColumnDefinition'
+      errorMessage:
+        type: string
+        description: The error message of the suggestion.
+        readOnly: true
     description: SuggestColumnDefinitionResponse represents a response to a request to suggest a column definition.
   Table:
     type: object
