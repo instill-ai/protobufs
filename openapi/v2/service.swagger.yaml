@@ -308,6 +308,32 @@ paths:
       tags:
         - "\U0001F34E Agent"
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/context-options:
+    get:
+      summary: List context options
+      description: This is a helper endpoint to list context options for chat.
+      operationId: AgentPublicService_ListContextOptions
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListContextOptionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The namespace ID.
+          in: path
+          required: true
+          type: string
+      tags:
+        - "\U0001F34E Agent"
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/chats/{chatUid}/bind-table:
     post:
       summary: Bind table to chat
@@ -6917,6 +6943,29 @@ definitions:
         description: The total size of all files in the catalog in bytes.
         readOnly: true
     description: CatalogInfo contains the information about the catalog.
+  CatalogOption:
+    type: object
+    properties:
+      catalogUid:
+        type: string
+        description: The UID of the catalog.
+        readOnly: true
+      catalogId:
+        type: string
+        description: The ID of the catalog.
+        readOnly: true
+      description:
+        type: string
+        description: The catalog description.
+        readOnly: true
+      fileOptions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/FileOption'
+        description: The UIDs of the files in the catalog.
+        readOnly: true
+    description: CatalogOption represents a catalog option.
   CatalogRun:
     type: object
     properties:
@@ -8897,6 +8946,26 @@ definitions:
        - FILE_MEDIA_TYPE_IMAGE: Image.
        - FILE_MEDIA_TYPE_AUDIO: Audio.
        - FILE_MEDIA_TYPE_VIDEO: Video.
+  FileOption:
+    type: object
+    properties:
+      fileUid:
+        type: string
+        description: The UID of the file.
+        readOnly: true
+      name:
+        type: string
+        description: The name of the file.
+        readOnly: true
+      contentType:
+        type: string
+        description: The file content type.
+        readOnly: true
+      summary:
+        type: string
+        description: The file summary.
+        readOnly: true
+    description: FileOption represents a file option.
   FileProcessStatus:
     type: string
     enum:
@@ -8980,6 +9049,29 @@ definitions:
         type: boolean
         description: Defines whether the folder can be modified.
     description: Permission defines how a folder can be used.
+  FolderOption:
+    type: object
+    properties:
+      folderUid:
+        type: string
+        description: The UID of the folder.
+        readOnly: true
+      name:
+        type: string
+        description: The name of the folder.
+        readOnly: true
+      description:
+        type: string
+        description: The folder description.
+        readOnly: true
+      fileOptions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/FileOption'
+        description: The UIDs of the files in the folder.
+        readOnly: true
+    description: FolderOption represents a folder option.
   Format:
     type: string
     enum:
@@ -9774,6 +9866,31 @@ definitions:
         description: The number of items per page.
         readOnly: true
     description: ListComponentRunsResponse is the response message for ListComponentRuns.
+  ListContextOptionsResponse:
+    type: object
+    properties:
+      folderOptions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/FolderOption'
+        description: The folder options.
+        readOnly: true
+      catalogOptions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/CatalogOption'
+        description: The catalog options.
+        readOnly: true
+      tableOptions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/TableOption'
+        description: The table options.
+        readOnly: true
+    description: ListContextOptionsResponse represents a response to a request to list context options.
   ListCreditConsumptionChartRecordsResponse:
     type: object
     properties:
@@ -12463,6 +12580,18 @@ definitions:
         allOf:
           - $ref: '#/definitions/CellUpdatedEvent'
     description: TableEvent represents an event for a table.
+  TableOption:
+    type: object
+    properties:
+      tableUid:
+        type: string
+        description: The UID of the table.
+        readOnly: true
+      description:
+        type: string
+        description: The table description.
+        readOnly: true
+    description: TableOption represents a table option.
   TableUpdatedEvent:
     type: object
     properties:
