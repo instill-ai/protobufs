@@ -1,6 +1,7 @@
 # Contributing Guidelines
 
 We appreciate your contribution to this amazing project! Any form of engagement is welcome, including but not limiting to
+
 - feature request
 - documentation wording
 - bug report
@@ -25,7 +26,7 @@ All the public endpoints are exposed in a single service
 endpoints are documented [in OpenAPI V2
 format](../openapi/v2/service.swagger.yaml) and publicly available at
 [openapi.instill-ai.dev](https://openapi.instill-ai.dev/) through
-(readme.com)[https://readme.com/]. The OpenAPI specification is
+(readme.com)[https://readme.com]. The OpenAPI specification is
 auto-generated via [`grpc-gateway`](https://grpc-ecosystem.github.io/grpc-gateway/)
 and it only reflects the protobuf specification.
 
@@ -64,7 +65,7 @@ tag can be added with `grpc-gateway`'s `tags` operation option:
 // Returns the details of a pipeline.
 rpc GetNamespacePipeline(GetNamespacePipelineRequest) returns (GetNamespacePipelineResponse) {
     option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "💧 Pipeline"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {tags: "Pipeline"};
 }
 ```
 
@@ -121,7 +122,7 @@ _alpha_ or _beta_ stage. This extension can be added with the
 rpc GetNamespacePipeline(GetNamespacePipelineRequest) returns (GetNamespacePipelineResponse) {
     option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/pipelines/{pipeline_id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-    tags: "💧 Pipeline"
+    tags: "Pipeline"
     extensions: {
         key: "x-stage"
             value {string_value: "beta"}
