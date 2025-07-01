@@ -8,7 +8,7 @@ on:
       # pushed to the `main` branch.
       - main
     paths:
-      - 'openapi/v2/**'
+      - "openapi/v2/**"
 
 jobs:
   sync-openapi-private-dev:
@@ -17,12 +17,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo 📚
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Sync OpenAPI docs 📜
         uses: readmeio/rdme@v10
         with:
-          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --branch=v0-dev
+          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.readmeAPIKey }} --branch=v0-dev
 
   sync-openapi-private-staging:
     name: Keep private (staging) docs in sync with `main`
@@ -33,7 +33,7 @@ jobs:
       new_release: ${{ steps.check-new-release.outputs.new_release }}
     steps:
       - name: Check out repo 📚
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Needed in check-new-release to compare with the previous commit.
           fetch-depth: 0
@@ -41,7 +41,7 @@ jobs:
       - name: Sync OpenAPI docs 📜
         uses: readmeio/rdme@v10
         with:
-          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --branch=v0-rc
+          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.readmeAPIKey }} --branch=v0-rc
 
       - name: Check new release 🔍
         id: check-new-release
@@ -69,9 +69,9 @@ jobs:
     if: needs.sync-openapi-private-staging.outputs.new_release != ''
     steps:
       - name: Check out repo 📚
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Sync OpenAPI docs 📜
         uses: readmeio/rdme@v10
         with:
-          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.README_API_KEY }} --branch=v0-beta
+          rdme: openapi upload openapi/v2/service.swagger.yaml --key=${{ secrets.readmeAPIKey }} --branch=v0
