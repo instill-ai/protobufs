@@ -50,7 +50,10 @@ message Citation {
 // The context for the message.
 message ChatContext {
   // The table uids to include in the context.
-  repeated string table_uids = 1 [(google.api.field_behavior) = OPTIONAL];
+  repeated string table_uids = 1 [
+    (google.api.field_behavior) = OPTIONAL,
+    deprecated = true
+  ];
 
   // Represents a folder.
   message Folder {
@@ -68,11 +71,22 @@ message ChatContext {
     repeated string file_uids = 2 [(google.api.field_behavior) = OPTIONAL];
   }
 
+  // Represents a table.
+  message Table {
+    // The table containing the files
+    string table_uid = 1 [(google.api.field_behavior) = REQUIRED];
+    // Specific file UIDs within the table, leave empty to include all files in the table
+    repeated string file_uids = 2 [(google.api.field_behavior) = OPTIONAL];
+  }
+
   // The folders to include in the context.
   repeated Folder folders = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // The catalogs to include in the context.
   repeated Catalog catalogs = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // The tables to include in the context.
+  repeated Table tables = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ChatAttachments represents the attachment for the message
