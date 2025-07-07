@@ -1872,8 +1872,10 @@ paths:
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}:
     get:
-      summary: Get file catalog
-      description: Get the catalog file.
+      summary: Get the catalog file.
+      description: |-
+        Returns a view of the file within the catalog, with the text and chunks it
+        generated after being processed.
       operationId: ArtifactPublicService_GetFileCatalog
       responses:
         "200":
@@ -1889,24 +1891,19 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: id of the namespace
+          description: Namespace ID.
           in: path
           required: true
           type: string
         - name: catalogId
-          description: id of the catalog
+          description: Catalog ID.
           in: path
           required: true
           type: string
-        - name: fileId
-          description: id of the file(i.e. file name)
-          in: query
-          required: false
-          type: string
         - name: fileUid
-          description: Uid of the file
+          description: File UID.
           in: query
-          required: false
+          required: true
           type: string
       tags:
         - Artifact
@@ -7741,11 +7738,12 @@ definitions:
       - CHUNK_TYPE_AUDIO
       - CHUNK_TYPE_VIDEO
     description: |-
-      - CHUNK_TYPE_TEXT: text
-       - CHUNK_TYPE_IMAGE: image
-       - CHUNK_TYPE_AUDIO: audio
-       - CHUNK_TYPE_VIDEO: video
-    title: chunk type
+      ChunkType contains the different types of a chunk.
+
+       - CHUNK_TYPE_TEXT: Text.
+       - CHUNK_TYPE_IMAGE: Image.
+       - CHUNK_TYPE_AUDIO: Audio.
+       - CHUNK_TYPE_VIDEO: Video.
   Citation:
     type: object
     properties:
@@ -8972,6 +8970,38 @@ definitions:
        - FILE_MEDIA_TYPE_IMAGE: Image.
        - FILE_MEDIA_TYPE_AUDIO: Audio.
        - FILE_MEDIA_TYPE_VIDEO: Video.
+  FileMetadata:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: File UID.
+        readOnly: true
+      filename:
+        type: string
+        title: Filename
+        readOnly: true
+      fileType:
+        description: File Type.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FileType'
+      size:
+        type: string
+        format: int64
+        description: Size.
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        title: Creation timestamp
+        readOnly: true
+      processStatus:
+        description: Processing status of the file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FileProcessStatus'
+    description: FileMetadata contains information about the file.
   FileOption:
     type: object
     properties:
@@ -9160,7 +9190,7 @@ definitions:
         type: string
         format: byte
         title: converted markdown content
-    title: GetChatFileResponse
+    description: GetChatFileResponse ...
   GetChatResponse:
     type: object
     properties:
@@ -9189,18 +9219,31 @@ definitions:
         description: Map of column UID to their definitions.
         readOnly: true
     description: GetColumnDefinitionsResponse contains the column definitions.
+  GetFileAsMarkdownResponse:
+    type: object
+    properties:
+      markdown:
+        type: string
+        description: The Markdown representation of a file.
+        readOnly: true
+    description: |-
+      GetFileAsMarkdownResponse contains a blob with the Markdown representation
+      of a file.
   GetFileCatalogResponse:
     type: object
     properties:
       originalData:
         type: string
-        title: original data is encoded in base64
-      metadata:
-        title: file catalog
+        description: Base-64 representation of the original file contents.
+        readOnly: true
+      fileMetadata:
+        description: File metadata.
+        readOnly: true
         allOf:
-          - $ref: '#/definitions/Metadata'
+          - $ref: '#/definitions/FileMetadata'
       text:
-        title: text
+        description: Converted text.
+        readOnly: true
         allOf:
           - $ref: '#/definitions/Text'
       chunks:
@@ -9208,47 +9251,59 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/GetFileCatalogResponse.Chunk'
-        title: chunks
-    title: GetFileCatalogResponse
+        description: Chunks.
+        readOnly: true
+    description: |-
+      GetFileCatalogResponse contains the processing outputs of a file in a
+      catalog.
   GetFileCatalogResponse.Chunk:
     type: object
     properties:
       uid:
         type: string
-        title: chunk uid
+        description: Chunk UID.
+        readOnly: true
       type:
-        title: chunk type. i.e. text, image, audio, and video
+        description: 'Chunk type. I.e: text, image, audio, video.'
+        readOnly: true
         allOf:
           - $ref: '#/definitions/ChunkType'
-      startPos:
+      startPosition:
         type: integer
         format: int32
-        title: chunk start position
-      endPos:
+        description: Start position in the text.
+        readOnly: true
+      endPosition:
         type: integer
         format: int32
-        title: chunk end position
+        description: End position in the text.
+        readOnly: true
       content:
         type: string
-        title: chunk content
-      tokensNum:
+        description: Content.
+        readOnly: true
+      tokenCount:
         type: integer
         format: int32
-        title: chunk tokens num
+        description: Token count in the chunk.
+        readOnly: true
       embedding:
         type: array
         items:
           type: number
           format: float
-        title: embedding. float32 array
+        description: Chunk embedding.
+        readOnly: true
       createTime:
         type: string
         format: date-time
-        title: chunk create time
+        description: Creation time of the chunk.
+        readOnly: true
       retrievable:
         type: boolean
-        title: chunk retrievable
-    title: chunk message
+        description: Retrievability of the chunk.
+        readOnly: true
+    description: Chunk is a delimited part of the converted text.
   GetFileSummaryResponse:
     type: object
     properties:
@@ -10701,32 +10756,6 @@ definitions:
       - MESSAGE_TYPE_TEXT
     description: '- MESSAGE_TYPE_TEXT: text'
     title: message type
-  Metadata:
-    type: object
-    properties:
-      fileUid:
-        type: string
-        title: file uid
-      fileId:
-        type: string
-        title: file id
-      fileType:
-        title: file type
-        allOf:
-          - $ref: '#/definitions/FileType'
-      fileSize:
-        type: string
-        format: int64
-        title: file size in bytes
-      fileUploadTime:
-        type: string
-        format: date-time
-        title: upload time
-      fileProcessStatus:
-        title: file process status
-        allOf:
-          - $ref: '#/definitions/FileProcessStatus'
-    title: metadata
   Method:
     type: string
     enum:
@@ -12628,27 +12657,32 @@ definitions:
   Text:
     type: object
     properties:
-      pipelineIds:
+      pipelines:
         type: array
         items:
           type: string
-        title: pipelines
-      transformedContent:
+        description: Pipelines used to process the file.
+        readOnly: true
+      content:
         type: string
-        title: transformed content
-      transformedContentChunkNum:
+        description: Text representation of the file.
+        readOnly: true
+      chunkCount:
         type: integer
         format: int32
-        title: transformed content chunk number
-      transformedContentTokenNum:
+        description: Chunk count in the text.
+        readOnly: true
+      tokenCount:
         type: integer
         format: int32
-        title: transformed content token number
-      transformedContentUpdateTime:
+        title: Token count in the text
+        readOnly: true
+      updateTime:
         type: string
         format: date-time
-        title: transformed content update time
-    title: text message
+        description: Last update timestamp for the text.
+        readOnly: true
+    description: Text contains the text representation of the file.
   Trace:
     type: object
     properties:
