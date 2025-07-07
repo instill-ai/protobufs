@@ -2362,7 +2362,7 @@ paths:
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks/retrieve:
     post:
       summary: Retrieve similar chunks
-      description: Returns the similar chunks.
+      description: Returns the top-K most similar chunks to a text prompt.
       operationId: ArtifactPublicService_SimilarityChunksSearch
       responses:
         "200":
@@ -2378,12 +2378,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: owner/namespace id
+          description: ID of the namespace owning the catalog.
           in: path
           required: true
           type: string
         - name: catalogId
-          description: catalog id
+          description: ID of the catalog.
           in: path
           required: true
           type: string
@@ -12301,22 +12301,27 @@ definitions:
     properties:
       textPrompt:
         type: string
-        title: text prompt
+        description: Text prompt to look for similarities.
       topK:
         type: integer
         format: int64
-        title: top k
+        description: 'Top K. Default value: 5.'
       fileName:
         type: string
-        title: file name
+        description: |-
+          File name. This field is deprecated as the file ID isn't a unique
+          identifier within a catalog. The file UID should be used, instead.
       contentType:
-        title: content type
+        description: Content type.
         allOf:
           - $ref: '#/definitions/ContentType'
       fileMediaType:
-        title: file type
+        description: File type.
         allOf:
           - $ref: '#/definitions/FileMediaType'
+      fileUid:
+        type: string
+        description: File UID.
     title: Similar chunk search request
     required:
       - textPrompt
