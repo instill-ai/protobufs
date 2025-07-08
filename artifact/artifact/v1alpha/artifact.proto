@@ -193,64 +193,32 @@ message UpdateObjectResponse {
   Object object = 1;
 }
 
-// Catalog represents a catalog.
+// A Catalog is a unified AI-ready format that serves as a knowledge base,
+// processing files and preparing them for Retrieval-Augmented Generation
+// (RAG).
 message Catalog {
-  // The catalog uid.
-  string catalog_uid = 1;
-  // The catalog id.
-  string catalog_id = 2;
-  // The catalog name.
-  string name = 3;
-  // The catalog description.
-  string description = 4;
-  // The creation time of the catalog.
-  string create_time = 5;
-  // The last update time of the catalog.
-  string update_time = 6;
-  // The owner/namespace of the catalog.
-  string owner_name = 7;
-  // The catalog tags.
-  repeated string tags = 8;
-  // The catalog converting pipelines.
-  repeated string converting_pipelines = 9;
-  // The catalog splitting pipelines.
-  repeated string splitting_pipelines = 10;
-  // The catalog embedding pipelines.
-  repeated string embedding_pipelines = 11;
-  // The downstream apps
-  repeated string downstream_apps = 12;
-  // The total files in catalog.
-  uint32 total_files = 13;
-  // The total tokens in catalog.
-  uint32 total_tokens = 14;
-  // The current used storage in catalog.
-  uint64 used_storage = 15;
-  // The catalog summarizing pipelines.
-  repeated string summarizing_pipelines = 16;
-}
-
-// Catalog Type. e.g. "persistent" or "ephemeral"
-enum CatalogType {
-  // UNSPECIFIED
-  CATALOG_TYPE_UNSPECIFIED = 0;
-  // PERSISTENT
-  CATALOG_TYPE_PERSISTENT = 1;
-  // EPHEMERAL
-  CATALOG_TYPE_EPHEMERAL = 2;
-}
-
-// CreateCatalogRequest represents a request to create a catalog.
-message CreateCatalogRequest {
-  // The catalog's owner(namespaces).
-  string namespace_id = 1;
-  // The catalog name.
-  string name = 2;
-  // The catalog description.
-  string description = 3;
-  // The catalog tags.
-  repeated string tags = 4;
-  // The catalog type. default is PERSISTENT
-  CatalogType type = 5;
+  // Catalog UID.
+  string uid = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Catalog resource ID (used in `name` as the last segment). This conforms
+  // to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+  // first character a letter, the last a letter or a number, and a 63
+  // character maximum.
+  string id = 18 [(google.api.field_behavior) = IMMUTABLE];
+  // ID of the namespace owning the catalog.
+  string namespace_id = 19 [(google.api.field_behavior) = REQUIRED];
+  // The name of the catalog, defined by its parent namespace and its ID.
+  // - Format: `namespaces/{namespace.id}/catalogs/{catalog.id}`.
+  string name = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Type (by default, persistent).
+  CatalogType type = 20 [(google.api.field_behavior) = OPTIONAL];
+  // Catalog description.
+  string description = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Creation timestamp.
+  google.protobuf.Timestamp create_time = 5;
+  // Timestamp of the last update
+  google.protobuf.Timestamp update_time = 6;
+  // Tags.
+  repeated string tags = 8 [(google.api.field_behavior) = OPTIONAL];
   // Pipelines used for converting documents (i.e., files with pdf, doc[x] or
   // ppt[x] extension) to Markdown. The strings in the list identify the
   // pipelines and MUST have the format `{namespaceID}/{pipelineID}@{version}`.
@@ -277,13 +245,57 @@ message CreateCatalogRequest {
   // non-document catalog files, the conversion pipeline is deterministic (such
   // files are typically trivial to convert and don't require a dedicated
   // pipeline to improve the conversion performance).
-  repeated string converting_pipelines = 6;
+  repeated string converting_pipelines = 9 [(google.api.field_behavior) = OPTIONAL];
+  // Pipelines used for text splitting within the catalog.
+  repeated string splitting_pipelines = 10 [(google.api.field_behavior) = OPTIONAL];
+  // Pipelines used for text embedding within the catalog.
+  repeated string embedding_pipelines = 11 [(google.api.field_behavior) = OPTIONAL];
+  // Pipelines used for summarization within the catalog.
+  repeated string summarizing_pipelines = 16 [(google.api.field_behavior) = OPTIONAL];
+  // File count.
+  uint32 total_files = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Token count.
+  uint32 total_tokens = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Current storage use, in bytes.
+  uint64 used_storage = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  /* Deprecated fields, maintained until clients no longer use them. */
+
+  // Catalog UID.
+  // Deprecated. Use uid instead.
+  string catalog_uid = 1 [deprecated = true];
+  // Catalog ID.
+  // Deprecated. Use id instead.
+  string catalog_id = 2 [deprecated = true];
+  // The owner/namespace of the catalog.
+  // Deprecated. Use namespace_id instead.
+  string owner_name = 7 [deprecated = true];
+  // The downstream apps
+  repeated string downstream_apps = 12 [deprecated = true];
 }
 
-// CreateCatalogResponse represents a response for creating a catalog.
+// CatalogType defines the lifecycle of the catalog.
+enum CatalogType {
+  // Unspecified.
+  CATALOG_TYPE_UNSPECIFIED = 0;
+  // Persistent.
+  CATALOG_TYPE_PERSISTENT = 1;
+  // Ephemeral.
+  CATALOG_TYPE_EPHEMERAL = 2;
+}
+
+// CreateCatalogRequest represents a request to create a catalog.
+message CreateCatalogRequest {
+  // The namespace that will own the catalog.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The properties of the catalog to be created.
+  Catalog catalog = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CreateCatalogResponse contains the created catalog.
 message CreateCatalogResponse {
   // The created catalog.
-  Catalog catalog = 1;
+  Catalog catalog = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Request message for ListCatalogs(not include the ephemeral catalogs)
@@ -298,7 +310,8 @@ message ListCatalogsResponse {
   repeated Catalog catalogs = 1;
 }
 
-// UpdateCatalogRequest represents a request to update a catalog.
+// UpdateCatalogRequest represents a request to update a catalog, identified by
+// its owner and ID.
 message UpdateCatalogRequest {
   // The catalog id.
   string catalog_id = 1;
@@ -719,4 +732,55 @@ message MoveFileToCatalogRequest {
 message MoveFileToCatalogResponse {
   // The file uid.
   string file_uid = 1;
+}
+
+/* Deprecated */
+
+// CreateNamespaceCatalogRequest represents a request to create a catalog.
+// This method is deprecated and CreateCatalog should be used instead.
+message CreateNamespaceCatalogRequest {
+  // The catalog's owner(namespaces).
+  string namespace_id = 1;
+  // The catalog name.
+  string name = 2;
+  // The catalog description.
+  string description = 3;
+  // The catalog tags.
+  repeated string tags = 4;
+  // The catalog type. default is PERSISTENT
+  CatalogType type = 5;
+  // Pipelines used for converting documents (i.e., files with pdf, doc[x] or
+  // ppt[x] extension) to Markdown. The strings in the list identify the
+  // pipelines and MUST have the format `{namespaceID}/{pipelineID}@{version}`.
+  // The pipeline recipes MUST have the following variable and output fields:
+  // ```yaml variable
+  // variable:
+  //   document_input:
+  //     title: document-input
+  //     description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
+  //     type: file
+  // ```
+  // ```yaml output
+  // output:
+  //  convert_result:
+  //    title: convert-result
+  //    value: ${merge-markdown-refinement.output.results[0]}
+  // ```
+  // Other variable and output fields will be ignored.
+  //
+  // The pipelines will be executed in order until one produces a successful,
+  // non-empty result.
+  //
+  // If no pipelines are provided, a default pipeline will be used. For
+  // non-document catalog files, the conversion pipeline is deterministic (such
+  // files are typically trivial to convert and don't require a dedicated
+  // pipeline to improve the conversion performance).
+  repeated string converting_pipelines = 6;
+}
+
+// CreateNamespaceCatalogResponse represents a response for creating a catalog.
+// This method is deprecated and CreateCatalog should be used instead.
+message CreateNamespaceCatalogResponse {
+  // The created catalog.
+  Catalog catalog = 1;
 }
