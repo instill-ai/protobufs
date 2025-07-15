@@ -1046,27 +1046,35 @@ message DeleteOrganizationMembershipRequest {
 // DeleteOrganizationMembershipResponse is an empty response.
 message DeleteOrganizationMembershipResponse {}
 
-// StripeSubscriptionDetail describes the details of a subscription in Stripe.
+// StripeSubscriptionDetail ontains the details of a subscription in Stripe.
 message StripeSubscriptionDetail {
-  // Enumerates the status types for the user's subscription.
+  // Enumerates the status types for the user's subscription. Please refer to
+  // the [Stripe
+  // documentation](https://docs.stripe.com/billing/subscriptions/overview#subscription-statuses)
+  // for more details.
   enum Status {
     // Unspecified status.
     STATUS_UNSPECIFIED = 0;
-    // Incomplete.
+    // The customer must do a payment-related action to activate the
+    // subscription.
     STATUS_INCOMPLETE = 1;
-    // Incomplete Expired.
+    // The subscription failed to activate because no successful payments were
+    // registered in time.
     STATUS_INCOMPLETE_EXPIRED = 2;
-    // Trialing.
+    // The subscription is currently in a trial period.
     STATUS_TRIALING = 3;
-    // Active.
+    // The subscription is in good standing.
     STATUS_ACTIVE = 4;
-    // Past due.
+    // Payment on the latest finalised invoice either failed or wasn’t
+    // attempted.
     STATUS_PAST_DUE = 5;
-    // Canceled.
+    // The subscription was cancelled by either the user or the admins.
     STATUS_CANCELED = 6;
-    // Unpaid.
+    // The latest invoice hasn’t been paid but the subscription remains in
+    // place.
     STATUS_UNPAID = 7;
-    // Paused.
+    // The subscription has ended its trial period without a default payment
+    // method.
     STATUS_PAUSED = 8;
   }
 
@@ -1088,17 +1096,23 @@ message StripeSubscriptionDetail {
   string description = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// UserSubscription details describe the plan (i.e., features) a user has access to.
+// UserSubscription details describe the plan of an individual user (i.e., the
+// features they have access to).
 message UserSubscription {
   // Enumerates the plan types for the user subscription.
   enum Plan {
-    // Unspecified plan.
+    // Empty value for Plan, it means that the user has no recorded
+    // subscriptions.
     PLAN_UNSPECIFIED = 0;
-    // Free plan.
-    PLAN_FREE = 1;
+    // 1 is reserved for the PLAN_FREE value, deprecated now that PLAN_STARTER
+    // offers a free trial.
+    reserved 1;
     // 2 is reserved for the deprecated PLAN_PRO value.
     reserved 2;
-    // Starter plan.
+    // The starter plan is an individual plan for developers and early-stage
+    // projects. This plan offers a free trial period that deoesn't require the
+    // customer to have a default payment method. After the free trial period
+    // is over, the subscription state will transition from trialing to paused.
     PLAN_STARTER = 3;
   }
 
@@ -1108,17 +1122,22 @@ message UserSubscription {
   StripeSubscriptionDetail detail = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// OrganizationSubscription details describe the plan (i.e., features) an organization has access to.
+// OrganizationSubscription details describe the plan of an organization (i.e.
+// the features and purchased seats it has access to).
 message OrganizationSubscription {
   // Enumerates the plan types for the organization subscription.
   enum Plan {
     // Unspecified plan.
     PLAN_UNSPECIFIED = 0;
-    // Free plan.
-    PLAN_FREE = 1;
-    // Team plan.
+    // 1 is reserved for the PLAN_FREE value, deprecated nnow that PLAN_TEAM
+    // offers a free trial.
+    reserved 1;
+    // The team plan is a subscription that offers collaboration features for
+    // small teams.
     PLAN_TEAM = 2;
-    // Enterprise plan.
+    // The enterprise plan is a subscription for large teams and/or high-volume
+    // deployments. This kind of subscription doesn't contain Stripe
+    // subscription details.
     PLAN_ENTERPRISE = 3;
   }
 
@@ -1132,11 +1151,12 @@ message OrganizationSubscription {
   int32 used_seats = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// GetAuthenticatedUserSubscriptionRequest represents a query to fetch the subscription
-// details of the authenticated user.
+// GetAuthenticatedUserSubscriptionRequest represents a query to fetch the
+// subscription details of the authenticated user.
 message GetAuthenticatedUserSubscriptionRequest {}
 
-// GetAuthenticatedUserSubscriptionResponse contains the requested subscription.
+// GetAuthenticatedUserSubscriptionResponse contains the requested
+// subscription.
 message GetAuthenticatedUserSubscriptionResponse {
   // The subscription resource.
   UserSubscription subscription = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -1157,30 +1177,33 @@ message GetOrganizationSubscriptionResponse {
   OrganizationSubscription subscription = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// GetUserSubscriptionAdminRequest
+// GetUserSubscriptionAdminRequest represents a query to fetch the subscription
+// details of a user.
 message GetUserSubscriptionAdminRequest {
-  // Resever for `parant`
+  // Resever for `parent`
   reserved 1;
   // User ID
   string user_id = 2;
 }
 
-// GetUserSubscriptionAdminResponse
+// GetUserSubscriptionAdminResponse contains the requested subscription.
 message GetUserSubscriptionAdminResponse {
-  // Subscription
+  // The subscription resource.
   UserSubscription subscription = 1;
 }
 
-// GetOrganizationSubscriptionAdminRequest
+// GetOrganizationSubscriptionAdminRequest represents a query to fetch the
+// subscription details of an organization.
 message GetOrganizationSubscriptionAdminRequest {
-  // Resever for `parant`
+  // Resever for `parent`
   reserved 1;
   // Oragnization ID
   string organization_id = 2;
 }
 
-// GetOrganizationSubscriptionAdminResponse
+// GetOrganizationSubscriptionAdminResponse contains the requested
+// subscription.
 message GetOrganizationSubscriptionAdminResponse {
-  // Subscription
+  // The subscription resource.
   OrganizationSubscription subscription = 1;
 }
