@@ -3254,7 +3254,11 @@ paths:
   /v1beta/user/subscription:
     get:
       summary: Get the subscription of the authenticated user
-      description: Returns the subscription details of the authenticated user.
+      description: |-
+        Returns the subscription details for the authenticated user's individual
+        plan. If several subscriptions exist (e.g. if the user upgraded to and
+        downgraded from a plan several times), the most recent subscription is
+        returned.
       operationId: MgmtPublicService_GetAuthenticatedUserSubscription
       responses:
         "200":
@@ -3274,7 +3278,11 @@ paths:
   /v1beta/organizations/{organizationId}/subscription:
     get:
       summary: Get the subscription of an organization
-      description: Returns the subscription details of an organization.
+      description: |-
+        Returns the subscription details for an organization's team plan. If
+        several subscriptions exist (e.g. if the organization has upgraded to and
+        downgraded from a plan several times), the most recent subscription is
+        returned.
       operationId: MgmtPublicService_GetOrganizationSubscription
       responses:
         "200":
@@ -9167,7 +9175,9 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/UserSubscription'
-    description: GetAuthenticatedUserSubscriptionResponse contains the requested subscription.
+    description: |-
+      GetAuthenticatedUserSubscriptionResponse contains the requested
+      subscription.
   GetCatalogFileResponse:
     type: object
     properties:
@@ -9502,10 +9512,12 @@ definitions:
     type: object
     properties:
       subscription:
-        title: Subscription
+        description: The subscription resource.
         allOf:
           - $ref: '#/definitions/OrganizationSubscription'
-    title: GetOrganizationSubscriptionAdminResponse
+    description: |-
+      GetOrganizationSubscriptionAdminResponse contains the requested
+      subscription.
   GetOrganizationSubscriptionResponse:
     type: object
     properties:
@@ -9631,10 +9643,10 @@ definitions:
     type: object
     properties:
       subscription:
-        title: Subscription
+        description: The subscription resource.
         allOf:
           - $ref: '#/definitions/UserSubscription'
-    title: GetUserSubscriptionAdminResponse
+    description: GetUserSubscriptionAdminResponse contains the requested subscription.
   Hardware:
     type: object
     properties:
@@ -11469,19 +11481,22 @@ definitions:
         format: int32
         description: Number of used seats within the organization subscription.
         readOnly: true
-    description: OrganizationSubscription details describe the plan (i.e., features) an organization has access to.
+    description: |-
+      OrganizationSubscription details describe the plan of an organization (i.e.
+      the features and purchased seats it has access to).
   OrganizationSubscription.Plan:
     type: string
     enum:
-      - PLAN_FREE
       - PLAN_TEAM
       - PLAN_ENTERPRISE
     description: |-
       Enumerates the plan types for the organization subscription.
 
-       - PLAN_FREE: Free plan.
-       - PLAN_TEAM: Team plan.
-       - PLAN_ENTERPRISE: Enterprise plan.
+       - PLAN_TEAM: The team plan is a subscription that offers collaboration features for
+      small teams.
+       - PLAN_ENTERPRISE: The enterprise plan is a subscription for large teams and/or high-volume
+      deployments. This kind of subscription doesn't contain Stripe
+      subscription details.
   Owner:
     type: object
     properties:
@@ -12448,7 +12463,7 @@ definitions:
         type: string
         description: Description of the subscription.
         readOnly: true
-    description: StripeSubscriptionDetail describes the details of a subscription in Stripe.
+    description: StripeSubscriptionDetail ontains the details of a subscription in Stripe.
   StripeSubscriptionDetail.Status:
     type: string
     enum:
@@ -12461,16 +12476,24 @@ definitions:
       - STATUS_UNPAID
       - STATUS_PAUSED
     description: |-
-      Enumerates the status types for the user's subscription.
+      Enumerates the status types for the user's subscription. Please refer to
+      the [Stripe
+      documentation](https://docs.stripe.com/billing/subscriptions/overview#subscription-statuses)
+      for more details.
 
-       - STATUS_INCOMPLETE: Incomplete.
-       - STATUS_INCOMPLETE_EXPIRED: Incomplete Expired.
-       - STATUS_TRIALING: Trialing.
-       - STATUS_ACTIVE: Active.
-       - STATUS_PAST_DUE: Past due.
-       - STATUS_CANCELED: Canceled.
-       - STATUS_UNPAID: Unpaid.
-       - STATUS_PAUSED: Paused.
+       - STATUS_INCOMPLETE: The customer must do a payment-related action to activate the
+      subscription.
+       - STATUS_INCOMPLETE_EXPIRED: The subscription failed to activate because no successful payments were
+      registered in time.
+       - STATUS_TRIALING: The subscription is currently in a trial period.
+       - STATUS_ACTIVE: The subscription is in good standing.
+       - STATUS_PAST_DUE: Payment on the latest finalised invoice either failed or wasn’t
+      attempted.
+       - STATUS_CANCELED: The subscription was cancelled by either the user or the admins.
+       - STATUS_UNPAID: The latest invoice hasn’t been paid but the subscription remains in
+      place.
+       - STATUS_PAUSED: The subscription has ended its trial period without a default payment
+      method.
   SubtractCreditAdminResponse:
     type: object
     properties:
@@ -13485,17 +13508,20 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/StripeSubscriptionDetail'
-    description: UserSubscription details describe the plan (i.e., features) a user has access to.
+    description: |-
+      UserSubscription details describe the plan of an individual user (i.e., the
+      features they have access to).
   UserSubscription.Plan:
     type: string
     enum:
-      - PLAN_FREE
       - PLAN_STARTER
     description: |-
       Enumerates the plan types for the user subscription.
 
-       - PLAN_FREE: Free plan.
-       - PLAN_STARTER: Starter plan.
+       - PLAN_STARTER: The starter plan is an individual plan for developers and early-stage
+      projects. This plan offers a free trial period that deoesn't require the
+      customer to have a default payment method. After the free trial period
+      is over, the subscription state will transition from trialing to paused.
   ValidateNamespacePipelineBody:
     type: object
     description: |-
