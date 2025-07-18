@@ -3133,7 +3133,7 @@ paths:
       x-stage: beta
   /v1beta/organizations/{organizationId}/memberships/{userId}:
     get:
-      summary: Get a an organization membership
+      summary: Get an organization membership
       description: Returns the details of a user membership within an organization.
       operationId: MgmtPublicService_GetOrganizationMembership
       responses:
@@ -3205,7 +3205,7 @@ paths:
         - Namespace
       x-stage: beta
     put:
-      summary: Uppdate an organization membership
+      summary: Update an organization membership
       description: Updates a user membership within an organization.
       operationId: MgmtPublicService_UpdateOrganizationMembership
       responses:
@@ -3298,10 +3298,33 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: organizationId
-          description: Oragnization ID
+          description: Organization ID
           in: path
           required: true
           type: string
+      tags:
+        - Subscription
+      x-stage: beta
+  /v1beta/user/subscription-free-trials:
+    get:
+      summary: List subscription free trials
+      description: |-
+        Returns a list of the free trials of the authenticated user. The trials
+        might apply to different plans, including organization plans purchased by
+        the user.
+      operationId: MgmtPublicService_ListSubscriptionFreeTrials
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListSubscriptionFreeTrialsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
       tags:
         - Subscription
       x-stage: beta
@@ -3504,7 +3527,7 @@ paths:
     get:
       summary: List pipeline trigger time charts
       description: |-
-        Returns a timeline of pipline trigger counts for a given requester. The
+        Returns a timeline of pipeline trigger counts for a given requester. The
         response will contain one set of records (datapoints), representing the
         amount of triggers in a time bucket.
       operationId: MgmtPublicService_ListPipelineTriggerChartRecords
@@ -9486,10 +9509,10 @@ definitions:
     type: object
     properties:
       organization:
-        title: A organization resource
+        title: An organization resource
         allOf:
           - $ref: '#/definitions/Organization'
-    title: GetOrganizationAdminResponse represents a response for a organization resource
+    title: GetOrganizationAdminResponse represents a response for an organization resource
   GetOrganizationMembershipResponse:
     type: object
     properties:
@@ -10556,6 +10579,17 @@ definitions:
         description: The total number of rows that match the request.
         readOnly: true
     description: ListRowsResponse contains the requested rows.
+  ListSubscriptionFreeTrialsResponse:
+    type: object
+    properties:
+      freeTrials:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/SubscriptionFreeTrial'
+        description: A list of subscription free trials.
+        readOnly: true
+    description: ListSubscriptionFreeTrialsResponse contains the requested free trials.
   ListTableBuilderAgentMessagesResponse:
     type: object
     properties:
@@ -10711,10 +10745,10 @@ definitions:
     type: object
     properties:
       organization:
-        title: A organization resource
+        title: An organization resource
         allOf:
           - $ref: '#/definitions/Organization'
-    title: LookUpOrganizationAdminResponse represents a response for a organization resource by admin
+    title: LookUpOrganizationAdminResponse represents a response for an organization resource by admin
   LookUpPipelineAdminResponse:
     type: object
     properties:
@@ -11085,7 +11119,7 @@ definitions:
     properties:
       modelId:
         type: string
-        description: This field will be present present when the information is grouped by model.
+        description: This field will be present when the information is grouped by model.
         readOnly: true
       timeBuckets:
         type: array
@@ -11481,6 +11515,11 @@ definitions:
         format: int32
         description: Number of used seats within the organization subscription.
         readOnly: true
+      availableSeats:
+        type: integer
+        format: int32
+        description: Number of available seats within the organization subscription.
+        readOnly: true
     description: |-
       OrganizationSubscription details describe the plan of an organization (i.e.
       the features and purchased seats it has access to).
@@ -11856,7 +11895,7 @@ definitions:
     properties:
       pipelineId:
         type: string
-        description: This field will be present present when the information is grouped by pipeline.
+        description: This field will be present when the information is grouped by pipeline.
         readOnly: true
       timeBuckets:
         type: array
@@ -11880,7 +11919,6 @@ definitions:
       PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
       contains a collection of (timestamp, count) pairs that represent the total
       pipeline triggers in a given time bucket.
-      pipeline ID and time frame.
   ProcessCatalogFilesRequest:
     type: object
     properties:
@@ -12463,7 +12501,12 @@ definitions:
         type: string
         description: Description of the subscription.
         readOnly: true
-    description: StripeSubscriptionDetail ontains the details of a subscription in Stripe.
+      currentPeriodEnd:
+        type: integer
+        format: int32
+        description: Timestamp indicating when the end of the current subscription period.
+        readOnly: true
+    description: StripeSubscriptionDetail contains the details of a subscription in Stripe.
   StripeSubscriptionDetail.Status:
     type: string
     enum:
@@ -12494,6 +12537,37 @@ definitions:
       place.
        - STATUS_PAUSED: The subscription has ended its trial period without a default payment
       method.
+  SubscriptionFreeTrial:
+    type: object
+    properties:
+      userPlan:
+        title: User subscription details
+        allOf:
+          - $ref: '#/definitions/UserSubscription.Plan'
+      organizationPlan:
+        title: Organization subscription details
+        allOf:
+          - $ref: '#/definitions/OrganizationSubscription.Plan'
+      ownerUid:
+        type: string
+        description: |-
+          The owner's unique identifier. This is the user (customer) that ordered
+          the subscription.
+        readOnly: true
+      organizationUid:
+        type: string
+        description: |-
+          If the subscription is a team plan, the value of this field will be set to
+          the organization UID that the subscription is linked to.
+        readOnly: true
+      trialEnd:
+        type: string
+        format: date-time
+        description: When the trial ends.
+        readOnly: true
+    title: |-
+      SubscriptionFreeTrial represents a free trial for either a user or
+      organization subscription
   SubtractCreditAdminResponse:
     type: object
     properties:
@@ -13519,7 +13593,7 @@ definitions:
       Enumerates the plan types for the user subscription.
 
        - PLAN_STARTER: The starter plan is an individual plan for developers and early-stage
-      projects. This plan offers a free trial period that deoesn't require the
+      projects. This plan offers a free trial period that doesn't require the
       customer to have a default payment method. After the free trial period
       is over, the subscription state will transition from trialing to paused.
   ValidateNamespacePipelineBody:
