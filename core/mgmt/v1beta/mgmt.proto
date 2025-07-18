@@ -929,7 +929,7 @@ message GetUserMembershipRequest {
   // User ID
   string user_id = 3 [(google.api.field_behavior) = REQUIRED];
   // Organization ID
-  string organization_id = 4 [(google.api.field_behavior) = REQUIRED];
+  string organization_id = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // GetUserMembershipResponse contains the user membership.
@@ -1164,6 +1164,37 @@ message GetAuthenticatedUserSubscriptionRequest {}
 message GetAuthenticatedUserSubscriptionResponse {
   // The subscription resource.
   UserSubscription subscription = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListSubscriptionFreeTrialsRequest represents a query to fetch the free
+// trials of the authenticated user.
+message ListSubscriptionFreeTrialsRequest {}
+
+// SubscriptionFreeTrial represents a free trial for either a user or
+// organization subscription
+message SubscriptionFreeTrial {
+  // The type of subscription this free trial applies to
+  oneof plan {
+    // User subscription details
+    UserSubscription.Plan user_plan = 1;
+    // Organization subscription details
+    OrganizationSubscription.Plan organization_plan = 2;
+  }
+
+  // The owner's unique identifier. This is the user (customer) that ordered
+  // the subscription.
+  string owner_uid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // If the subscription is a team plan, the value of this field will be set to
+  // the organization UID that the subscription is linked to.
+  optional string organization_uid = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // When the trial ends.
+  google.protobuf.Timestamp trial_end = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListSubscriptionFreeTrialsResponse contains the requested free trials.
+message ListSubscriptionFreeTrialsResponse {
+  // A list of subscription free trials.
+  repeated SubscriptionFreeTrial free_trials = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // GetOrganizationSubscriptionRequest represents a query to fetch the
