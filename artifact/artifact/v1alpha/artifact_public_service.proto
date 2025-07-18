@@ -43,10 +43,38 @@ service ArtifactPublicService {
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
+  // Create a new catalog
+  //
+  // Creates a catalog under the parenthood of a namespace.
+  rpc CreateNamespaceCatalog(CreateNamespaceCatalogRequest) returns (CreateNamespaceCatalogResponse) {
+    option (google.api.http) = {
+      // TODO when clients stop using CreateCatalog, update the path
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs:create"
+      body: "catalog"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Artifact"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
   // Create a catalog
   //
-  // Creates a catalog.
+  // Creates a catalog. This method is deprecated and CreateNamespaceCatalog
+  // should be used instead.
+  // TODO:
+  // 1. Deploy CreateNamespaceCatalog.
+  // 2. Update clients (HTTP and gRPC) to CreateNamespaceCatalog.
+  // 3. Delete CreateCatalog and update CreateNamespaceCatalog's HTTP path,
+  //    mapping it temporarily to the one clients are currently using.
+  // 4. Update HTTP clients to RESTful path.
+  // 5. Remove temporary HTTP path mapping.
   rpc CreateCatalog(CreateCatalogRequest) returns (CreateCatalogResponse) {
+    option deprecated = true;
+
     option (google.api.http) = {
       post: "/v1alpha/namespaces/{namespace_id}/catalogs"
       body: "*"
