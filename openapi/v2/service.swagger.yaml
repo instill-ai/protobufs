@@ -3251,6 +3251,37 @@ paths:
       tags:
         - Namespace
       x-stage: beta
+  /v1beta/organizations/{organizationId}/invite-members:
+    post:
+      summary: Invite members to an organization
+      description: Invites members to an organization.
+      operationId: MgmtPublicService_InviteOrganizationMembers
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/InviteOrganizationMembersResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: organizationId
+          description: The organization ID.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/InviteOrganizationMembersBody'
+      tags:
+        - Namespace
+      x-stage: beta
   /v1beta/user/subscription:
     get:
       summary: Get the subscription of the authenticated user
@@ -9770,6 +9801,24 @@ definitions:
     description: |-
       Integration contains the parameters to create a connection between
       components and 3rd party apps.
+  InviteOrganizationMembersBody:
+    type: object
+    properties:
+      emails:
+        type: array
+        items:
+          type: string
+        description: The members to invite.
+    description: |-
+      InviteOrganizationMembersRequest represents a request to invite members to an
+      organization.
+    required:
+      - emails
+  InviteOrganizationMembersResponse:
+    type: object
+    description: |-
+      InviteOrganizationMembersResponse represents a response to a request to invite
+      members to an organization.
   Link:
     type: object
     properties:
