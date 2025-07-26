@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package agent.agent.v1alpha;
 
+import "artifact/artifact/v1alpha/artifact.proto";
 // Google API
 import "google/api/field_behavior.proto";
 import "google/protobuf/field_mask.proto";
@@ -139,3 +140,79 @@ message DeleteFolderRequest {
 
 // DeleteFolderResponse is an empty response for deleting a folder.
 message DeleteFolderResponse {}
+
+// create folder file request
+message CreateFolderFileRequest {
+  // owner/namespace uid
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // folder uid
+  string folder_uid = 2 [(google.api.field_behavior) = REQUIRED];
+  // file
+  artifact.artifact.v1alpha.File file = 3;
+}
+
+// create folder file response
+message CreateFolderFileResponse {
+  // file
+  artifact.artifact.v1alpha.File file = 1;
+}
+
+// delete folder file request
+message DeleteFolderFileRequest {
+  // The namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The folder uid.
+  string folder_uid = 2 [(google.api.field_behavior) = REQUIRED];
+  // The file uid.
+  string file_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// delete folder file response
+message DeleteFolderFileResponse {
+  // The file uid.
+  string file_uid = 1;
+}
+
+// list folder files request
+message ListFolderFilesRequest {
+  // The owner/namespace uid id.
+  string namespace_id = 1;
+  // The folder uid.
+  string folder_uid = 2;
+  // The page size (default:10; max 100).
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+  // The next page token(default from first file's token).
+  string page_token = 4 [(google.api.field_behavior) = OPTIONAL];
+  // The filter.
+  artifact.artifact.v1alpha.ListCatalogFilesFilter filter = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// list folder files response
+message ListFolderFilesResponse {
+  // The list of files.
+  repeated artifact.artifact.v1alpha.File files = 1;
+  // The total number of files.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // next page token
+  string next_page_token = 4;
+  // The filter.
+  artifact.artifact.v1alpha.ListCatalogFilesFilter filter = 5;
+}
+
+// GetFolderFileRequest represents a request to get a folder file.
+message GetFolderFileRequest {
+  // The namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The folder uid.
+  string folder_uid = 2 [(google.api.field_behavior) = REQUIRED];
+  // The file uid.
+  string file_uid = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetFolderFileResponse represents a response for getting a folder file.
+message GetFolderFileResponse {
+  // The file.
+  artifact.artifact.v1alpha.File file = 1;
+}

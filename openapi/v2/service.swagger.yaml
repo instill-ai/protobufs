@@ -1814,6 +1814,163 @@ paths:
       tags:
         - Folder
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/folders/{folderUid}/files:
+    get:
+      summary: List folder files
+      description: Returns a paginated list of folder files.
+      operationId: AgentPublicService_ListFolderFiles
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListFolderFilesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The owner/namespace uid id.
+          in: path
+          required: true
+          type: string
+        - name: folderUid
+          description: The folder uid.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: The page size (default:10; max 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: The next page token(default from first file's token).
+          in: query
+          required: false
+          type: string
+        - name: filter.fileUids
+          description: The file uids.
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
+      tags:
+        - Artifact
+      x-stage: alpha
+    post:
+      summary: Create a file
+      description: Creates a file.
+      operationId: AgentPublicService_CreateFolderFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/CreateFolderFileResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: owner/namespace uid
+          in: path
+          required: true
+          type: string
+        - name: folderUid
+          description: folder uid
+          in: path
+          required: true
+          type: string
+        - name: file
+          description: file
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/File'
+      tags:
+        - Artifact
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/folders/{folderUid}/files/{fileUid}:
+    get:
+      summary: Get catalog file
+      description: Gets the file of a catalog.
+      operationId: AgentPublicService_GetFolderFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetFolderFileResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The namespace id.
+          in: path
+          required: true
+          type: string
+        - name: folderUid
+          description: The folder uid.
+          in: path
+          required: true
+          type: string
+        - name: fileUid
+          description: The file uid.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Artifact
+      x-stage: alpha
+    delete:
+      summary: Delete a file
+      description: Deletes a file.
+      operationId: AgentPublicService_DeleteFolderFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeleteFolderFileResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The namespace id.
+          in: path
+          required: true
+          type: string
+        - name: folderUid
+          description: The folder uid.
+          in: path
+          required: true
+          type: string
+        - name: fileUid
+          description: The file uid.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Artifact
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs:
     get:
       summary: Get all catalogs info
@@ -8505,6 +8662,14 @@ definitions:
     description: CreateFolderRequest represents a request to create a folder.
     required:
       - folder
+  CreateFolderFileResponse:
+    type: object
+    properties:
+      file:
+        title: file
+        allOf:
+          - $ref: '#/definitions/File'
+    title: create folder file response
   CreateFolderResponse:
     type: object
     properties:
@@ -8683,6 +8848,13 @@ definitions:
   DeleteChatResponse:
     type: object
     title: DeleteChatResponse is empty as no content needs to be returned
+  DeleteFolderFileResponse:
+    type: object
+    properties:
+      fileUid:
+        type: string
+        description: The file uid.
+    title: delete folder file response
   DeleteFolderResponse:
     type: object
     description: DeleteFolderResponse is an empty response for deleting a folder.
@@ -9378,6 +9550,14 @@ definitions:
         title: summary of the file
         readOnly: true
     title: get file summary response
+  GetFolderFileResponse:
+    type: object
+    properties:
+      file:
+        description: The file.
+        allOf:
+          - $ref: '#/definitions/File'
+    description: GetFolderFileResponse represents a response for getting a folder file.
   GetFolderResponse:
     type: object
     properties:
@@ -10070,6 +10250,31 @@ definitions:
     description: |-
       ListCreditConsumptionChartRecordsResponse contains a list of credit consumption
       chart records.
+  ListFolderFilesResponse:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/File'
+        description: The list of files.
+      totalSize:
+        type: integer
+        format: int32
+        description: The total number of files.
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+      nextPageToken:
+        type: string
+        title: next page token
+      filter:
+        description: The filter.
+        allOf:
+          - $ref: '#/definitions/ListCatalogFilesFilter'
+    title: list folder files response
   ListFoldersResponse:
     type: object
     properties:
