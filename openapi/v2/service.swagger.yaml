@@ -3463,6 +3463,26 @@ paths:
       tags:
         - Subscription
       x-stage: beta
+  /v1beta/user/subscription/sync:
+    post:
+      summary: Sync the subscription of the authenticated user
+      description: Syncs the subscription of the authenticated user with Stripe.
+      operationId: MgmtPublicService_SyncAuthenticatedUserSubscription
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/SyncAuthenticatedUserSubscriptionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      tags:
+        - Subscription
+      x-stage: beta
   /v1beta/organizations/{organizationId}/subscription:
     get:
       summary: Get the subscription of an organization
@@ -3487,6 +3507,32 @@ paths:
       parameters:
         - name: organizationId
           description: Organization ID
+          in: path
+          required: true
+          type: string
+      tags:
+        - Subscription
+      x-stage: beta
+  /v1beta/organizations/{organizationId}/subscription/sync:
+    post:
+      summary: Sync the subscription of an organization
+      description: Syncs the subscription of an organization with Stripe.
+      operationId: MgmtPublicService_SyncOrganizationSubscription
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/SyncOrganizationSubscriptionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: organizationId
+          description: The organization ID.
           in: path
           required: true
           type: string
@@ -12891,6 +12937,16 @@ definitions:
         description: The error message of the suggestion.
         readOnly: true
     description: SuggestColumnDefinitionResponse represents a response to a request to suggest a column definition.
+  SyncAuthenticatedUserSubscriptionResponse:
+    type: object
+    description: |-
+      SyncAuthenticatedUserSubscriptionResponse represents a response to a request
+      to sync the subscription of the authenticated user.
+  SyncOrganizationSubscriptionResponse:
+    type: object
+    description: |-
+      SyncOrganizationSubscriptionResponse represents a response to a request to
+      sync the subscription of an organization.
   Table.AgentConfig:
     type: object
     properties:
