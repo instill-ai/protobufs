@@ -2213,6 +2213,43 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/File'
+        - name: convertingPipelines
+          description: |-
+            Pipelines used for converting the document file (i.e., files with pdf,
+            doc[x] or ppt[x] extension) to Markdown. The strings in the list identify
+            the pipelines and MUST have the format
+            `{namespaceID}/{pipelineID}@{version}`.
+            The pipeline recipes MUST have the following variable and output fields:
+            ```yaml variable
+            variable:
+              document_input:
+                title: document-input
+                description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
+                type: file
+            ```
+            ```yaml output
+            output:
+             convert_result:
+               title: convert-result
+               value: ${merge-markdown-refinement.output.results[0]}
+            ```
+            Other variable and output fields will be ignored.
+
+            The pipelines will be executed in order until one produces a successful,
+            non-empty result.
+
+            If no pipelines are provided, the catalog's conversion pipelines will be
+            used (see the catalog creation request).
+
+            For non-document catalog files, the conversion pipeline is deterministic
+            (such files are typically trivial to convert and don't require a dedicated
+            pipeline to improve the conversion performance).
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+          collectionFormat: multi
       tags:
         - Artifact
       x-stage: alpha
@@ -12683,6 +12720,8 @@ definitions:
         description: |-
           File name. This field is deprecated as the file ID isn't a unique
           identifier within a catalog. The file UID should be used, instead.
+          When this file is provided, the service will search a file by UID and
+          it'll use the UID in the first match.
       contentType:
         description: Content type.
         allOf:
@@ -12693,7 +12732,14 @@ definitions:
           - $ref: '#/definitions/FileMediaType'
       fileUid:
         type: string
-        description: File UID.
+        description: File UID. This field is deprecated, the file_uids should be used instead.
+      fileUids:
+        type: array
+        items:
+          type: string
+        description: |-
+          File UIDs. When this field is provided, the response will return only
+          chunks that belong to the specified file UIDs.
     title: Similar chunk search request
     required:
       - textPrompt
