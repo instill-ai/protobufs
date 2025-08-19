@@ -2596,8 +2596,10 @@ paths:
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/ask:
     post:
-      summary: Ask a question
-      description: Asks a question.
+      summary: Answer a question
+      description: |-
+        Provides the response to the prompted question, returning contextual
+        information like the chunks used to build the answer.
       operationId: ArtifactPublicService_QuestionAnswering
       responses:
         "200":
@@ -2613,12 +2615,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: id of the namespace
+          description: ID of the namespace owning the catalog.
           in: path
           required: true
           type: string
         - name: catalogId
-          description: id of the catalog
+          description: ID of the catalog.
           in: path
           required: true
           type: string
@@ -12299,11 +12301,19 @@ definitions:
     properties:
       question:
         type: string
-        title: question to be answered
+        description: Text prompt with the question.
       topK:
         type: integer
         format: int32
-        title: top k default to 5
+        description: 'Top K. Default value: 5.'
+      fileUids:
+        type: array
+        items:
+          type: string
+        description: |-
+          File UIDs. When this field is provided, the response will only use the
+          specified files to build the answer. The UIDs must be UUID-formatted
+          strings.
     title: QuestionAnsweringRequest
   QuestionAnsweringResponse:
     type: object
