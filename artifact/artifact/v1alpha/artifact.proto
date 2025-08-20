@@ -466,11 +466,11 @@ message UploadCatalogFileRequest {
   string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
   // file
   File file = 3;
-  // Pipelines used for converting the document file (i.e., files with pdf,
-  // doc[x] or ppt[x] extension) to Markdown. The strings in the list identify
-  // the pipelines and MUST have the format
+  // Pipeline used for converting the file to Markdown if the file is a
+  // document (i.e., a file with pdf, doc[x] or ppt[x] extension). The value
+  // identifies the pipeline release and and MUST have the format
   // `{namespaceID}/{pipelineID}@{version}`.
-  // The pipeline recipes MUST have the following variable and output fields:
+  // The pipeline recipe MUST have the following variable and output fields:
   // ```yaml variable
   // variable:
   //   document_input:
@@ -486,16 +486,14 @@ message UploadCatalogFileRequest {
   // ```
   // Other variable and output fields will be ignored.
   //
-  // The pipelines will be executed in order until one produces a successful,
-  // non-empty result.
-  //
-  // If no pipelines are provided, the catalog's conversion pipelines will be
-  // used (see the catalog creation request).
+  // The pipeline will be executed first, falling back to the catalog's
+  // conversion pipelines if the conversion doesn't yield a non-empty result
+  // (see the catalog creation endpoint documentation).
   //
   // For non-document catalog files, the conversion pipeline is deterministic
   // (such files are typically trivial to convert and don't require a dedicated
   // pipeline to improve the conversion performance).
-  repeated string converting_pipelines = 6;
+  string converting_pipeline = 4;
 }
 
 // upload file response
