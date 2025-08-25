@@ -1,12 +1,7 @@
 # Instill AI Protobufs
 
-This repository is the interface definitions of the APIs of [Instill
-Core](https://github.com/instill-ai/mgmt-backend), [Instill
-Model](https://github.com/instill-ai/model-backend) and [Instill
-Pipeline](https://github.com/instill-ai/pipeline-backend) and [Instill
-Artifact](https://github.com/instill-ai/artifact-backend) that support both REST
-and gRPC protocols. You can also use these definitions with open source tools to
-generate client libraries, documentation, and other artifacts.
+This repository is the API definitions of [Instill Core](https://github.com/instill-ai/instill-core) that support both REST
+and gRPC protocols.
 
 ## Overview
 
