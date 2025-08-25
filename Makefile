@@ -19,6 +19,7 @@ openapi:
 	@buf generate --template buf.gen.openapi.yaml --output openapi/v2
 	@echo \# This file is auto-generated. DO NOT EDIT. | cat - openapi/v2/service.swagger.yaml > openapi/v2/service.swagger.tmp.yaml
 	@mv openapi/v2/service.swagger.tmp.yaml openapi/v2/service.swagger.yaml
+
 .PHONY: openapi-lint
 openapi-lint:
 	@# The spectral ruleset adds extra validation rules that allow us to
