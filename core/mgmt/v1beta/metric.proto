@@ -160,50 +160,6 @@ message ListModelTriggerChartRecordsResponse {
   repeated ModelTriggerChartRecord model_trigger_chart_records = 1;
 }
 
-// CreditConsumptionChartRecord represents a timeline of Instill Credit
-// consumption. It contains a collection of (timestamp, amount) pairs that
-// represent the total credit consumption in a given time bucket.
-message CreditConsumptionChartRecord {
-  // The ID of the namespace that owns the credit.
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Time buckets.
-  repeated google.protobuf.Timestamp time_buckets = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Total credit consumed in each time bucket.
-  repeated float amount = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Credit consumption source (e.g. "pipeline", "model").
-  string source = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
-// ListCreditConsumptionChartRecordsRequest represents a request to list credit
-// consumption chart records for a given owner, grouped by time buckets and
-// consumption sources.
-message ListCreditConsumptionChartRecordsRequest {
-  // The ID of the namespace that owns the credit.
-  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Aggregation window. The value is a positive duration string, i.e. a
-  // sequence of decimal numbers, each with optional fraction and a unit
-  // suffix, such as "300ms", "1.5h" or "2h45m".
-  // The minimum (and default) window is 1h.
-  optional string aggregation_window = 2;
-  // Beginning of the time range from which the records will be fetched.
-  // The default value is the beginning of the current day, in UTC.
-  optional google.protobuf.Timestamp start = 3;
-  // End of the time range from which the records will be fetched.
-  // The default value is the current timestamp.
-  optional google.protobuf.Timestamp stop = 4;
-}
-
-// ListCreditConsumptionChartRecordsResponse contains a list of credit consumption
-// chart records.
-message ListCreditConsumptionChartRecordsResponse {
-  // Credit consumption timelines, aggregated by source.
-  repeated CreditConsumptionChartRecord credit_consumption_chart_records = 1;
-  // 2 is reserved for the total amount consumed in the time range specified in
-  // the request. This won't be returned anymore as we need to aggregate the
-  // consumption by source.
-  reserved 2;
-}
-
 // =============================================================================
 // Deprecated messages, to be removed with the new dashboard implementation.
 // =============================================================================

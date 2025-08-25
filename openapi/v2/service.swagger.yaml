@@ -22,8 +22,6 @@ tags:
     description: AI Model orchestration
   - name: Metrics
     description: Resource usage metrics.
-  - name: Subscription
-    description: Pricing plans on Instill Cloud.
 host: api.instill-ai.com
 schemes:
   - https
@@ -1503,129 +1501,6 @@ paths:
       tags:
         - Namespace
       x-stage: beta
-  /v1beta/user/subscription:
-    get:
-      summary: Get the subscription of the authenticated user
-      description: |-
-        Returns the subscription details for the authenticated user's individual
-        plan. If several subscriptions exist (e.g. if the user upgraded to and
-        downgraded from a plan several times), the most recent subscription is
-        returned.
-      operationId: MgmtPublicService_GetAuthenticatedUserSubscription
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetAuthenticatedUserSubscriptionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      tags:
-        - Subscription
-      x-stage: beta
-  /v1beta/user/subscription/sync:
-    post:
-      summary: Sync the subscription of the authenticated user
-      description: Syncs the subscription of the authenticated user with Stripe.
-      operationId: MgmtPublicService_SyncAuthenticatedUserSubscription
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/SyncAuthenticatedUserSubscriptionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      tags:
-        - Subscription
-      x-stage: beta
-  /v1beta/organizations/{organizationId}/subscription:
-    get:
-      summary: Get the subscription of an organization
-      description: |-
-        Returns the subscription details for an organization's team plan. If
-        several subscriptions exist (e.g. if the organization has upgraded to and
-        downgraded from a plan several times), the most recent subscription is
-        returned.
-      operationId: MgmtPublicService_GetOrganizationSubscription
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetOrganizationSubscriptionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-      tags:
-        - Subscription
-      x-stage: beta
-  /v1beta/organizations/{organizationId}/subscription/sync:
-    post:
-      summary: Sync the subscription of an organization
-      description: Syncs the subscription of an organization with Stripe.
-      operationId: MgmtPublicService_SyncOrganizationSubscription
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/SyncOrganizationSubscriptionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: The organization ID.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Subscription
-      x-stage: beta
-  /v1beta/user/subscription-free-trials:
-    get:
-      summary: List subscription free trials
-      description: |-
-        Returns a list of the free trials of the authenticated user. The trials
-        might apply to different plans, including organization plans purchased by
-        the user.
-      operationId: MgmtPublicService_ListSubscriptionFreeTrials
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListSubscriptionFreeTrialsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      tags:
-        - Subscription
-      x-stage: beta
   /v1beta/tokens:
     get:
       summary: List API tokens
@@ -1758,38 +1633,6 @@ paths:
       tags:
         - Namespace
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/credit:
-    get:
-      summary: Get the remaining Instill Credit
-      description: |-
-        This endpoint returns the remaining [Instill
-        Credit](https://instill-ai.dev/docs/cloud/credit) of a given user or
-        organization. The requested credit owner must be either the authenticated
-        user or an organization they belong to.
-
-        On Instill Core, this endpoint will return a 404 Not Found status.
-      operationId: MgmtPublicService_GetRemainingCredit
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetRemainingCreditResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: Namespace ID
-          in: path
-          required: true
-          type: string
-      tags:
-        - Subscription
-      x-stage: beta
   /v1beta/check-namespace:
     post:
       summary: Check if a namespace is in use
@@ -1898,63 +1741,6 @@ paths:
       parameters:
         - name: requesterId
           description: The ID of the namespace that requested the model triggers.
-          in: query
-          required: true
-          type: string
-        - name: aggregationWindow
-          description: |-
-            Aggregation window. The value is a positive duration string, i.e. a
-            sequence of decimal numbers, each with optional fraction and a unit
-            suffix, such as "300ms", "1.5h" or "2h45m".
-            The minimum (and default) window is 1h.
-          in: query
-          required: false
-          type: string
-        - name: start
-          description: |-
-            Beginning of the time range from which the records will be fetched.
-            The default value is the beginning of the current day, in UTC.
-          in: query
-          required: false
-          type: string
-          format: date-time
-        - name: stop
-          description: |-
-            End of the time range from which the records will be fetched.
-            The default value is the current timestamp.
-          in: query
-          required: false
-          type: string
-          format: date-time
-      tags:
-        - Metrics
-      x-stage: beta
-  /v1beta/credit/query-charts:
-    get:
-      summary: List Instill Credit consumption time charts
-      description: |-
-        Returns a timeline of Instill Credit consumption for a given owner. The
-        response will contain one set of records (datapoints) per consumption
-        source (e.g. "pipeline", "model"). Each datapoint represents the amount
-        consumed in a time bucket.
-
-        This endpoint is only exposed on Instill Cloud.
-      operationId: MgmtPublicService_ListCreditConsumptionChartRecords
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListCreditConsumptionChartRecordsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: The ID of the namespace that owns the credit.
           in: query
           required: true
           type: string
@@ -6089,36 +5875,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/ApiToken'
     description: CreateTokenResponse contains the created token.
-  CreditConsumptionChartRecord:
-    type: object
-    properties:
-      namespaceId:
-        type: string
-        description: The ID of the namespace that owns the credit.
-      timeBuckets:
-        type: array
-        items:
-          type: string
-          format: date-time
-        description: Time buckets.
-        readOnly: true
-      amount:
-        type: array
-        items:
-          type: number
-          format: float
-        description: Total credit consumed in each time bucket.
-        readOnly: true
-      source:
-        type: string
-        description: Credit consumption source (e.g. "pipeline", "model").
-        readOnly: true
-    description: |-
-      CreditConsumptionChartRecord represents a timeline of Instill Credit
-      consumption. It contains a collection of (timestamp, amount) pairs that
-      represent the total credit consumption in a given time bucket.
-    required:
-      - namespaceId
   DataSpecification:
     type: object
     properties:
@@ -6496,17 +6252,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/AuthenticatedUser'
     description: GetAuthenticatedUserResponse contains the requested authenticated user.
-  GetAuthenticatedUserSubscriptionResponse:
-    type: object
-    properties:
-      subscription:
-        description: The subscription resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/UserSubscription'
-    description: |-
-      GetAuthenticatedUserSubscriptionResponse contains the requested
-      subscription.
   GetCatalogFileResponse:
     type: object
     properties:
@@ -6791,58 +6536,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: GetOrganizationResponse contains the requested organization.
-  GetOrganizationSubscriptionAdminResponse:
-    type: object
-    properties:
-      subscription:
-        description: The subscription resource.
-        allOf:
-          - $ref: '#/definitions/OrganizationSubscription'
-    description: |-
-      GetOrganizationSubscriptionAdminResponse contains the requested
-      subscription.
-  GetOrganizationSubscriptionResponse:
-    type: object
-    properties:
-      subscription:
-        description: The subscription resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/OrganizationSubscription'
-    description: GetOrganizationSubscriptionResponse contains the requested subscription.
-  GetRemainingCreditAdminResponse:
-    type: object
-    properties:
-      amount:
-        type: number
-        format: float
-        description: The requested credit.
-    description: |-
-      GetRemainingCreditAdminResponse contains the remaining credit of a user or
-      organization.
-  GetRemainingCreditResponse:
-    type: object
-    properties:
-      perishable:
-        type: number
-        format: float
-        description: Amount of perishable credit, i.e. credit with an expiration date.
-        readOnly: true
-      imperishable:
-        type: number
-        format: float
-        description: |-
-          Amount of imperishable credit, e.g. purchased credit, which doesn't
-          expire.
-        readOnly: true
-      total:
-        type: number
-        format: float
-        description: Total remaining credit.
-        readOnly: true
-    description: |-
-      GetRemainingCreditResponse contains the remaining credit of a user or
-      organization.
   GetRepositoryTagResponse:
     type: object
     properties:
@@ -6895,14 +6588,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1beta.User'
     description: GetUserResponse contains the requested user.
-  GetUserSubscriptionAdminResponse:
-    type: object
-    properties:
-      subscription:
-        description: The subscription resource.
-        allOf:
-          - $ref: '#/definitions/UserSubscription'
-    description: GetUserSubscriptionAdminResponse contains the requested subscription.
   Hardware:
     type: object
     properties:
@@ -7164,18 +6849,6 @@ definitions:
         description: The number of items per page.
         readOnly: true
     description: ListComponentRunsResponse is the response message for ListComponentRuns.
-  ListCreditConsumptionChartRecordsResponse:
-    type: object
-    properties:
-      creditConsumptionChartRecords:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/CreditConsumptionChartRecord'
-        description: Credit consumption timelines, aggregated by source.
-    description: |-
-      ListCreditConsumptionChartRecordsResponse contains a list of credit consumption
-      chart records.
   ListIntegrationsResponse:
     type: object
     properties:
@@ -7667,17 +7340,6 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListRepositoryTagsResponse contains a list of container image tags.
-  ListSubscriptionFreeTrialsResponse:
-    type: object
-    properties:
-      freeTrials:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/SubscriptionFreeTrial'
-        description: A list of subscription free trials.
-        readOnly: true
-    description: ListSubscriptionFreeTrialsResponse contains the requested free trials.
   ListTokensResponse:
     type: object
     properties:
@@ -8435,45 +8097,6 @@ definitions:
           Social profile links list the links to the organization's social profiles.
           The key represents the provider, and the value is the corresponding URL.
     description: OrganizationProfile describes the public data of an organization.
-  OrganizationSubscription:
-    type: object
-    properties:
-      plan:
-        description: Plan identifier.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/OrganizationSubscription.Plan'
-      detail:
-        description: Details of the associated Stripe subscription.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/StripeSubscriptionDetail'
-      usedSeats:
-        type: integer
-        format: int32
-        description: Number of used seats within the organization subscription.
-        readOnly: true
-      availableSeats:
-        type: integer
-        format: int32
-        description: Number of available seats within the organization subscription.
-        readOnly: true
-    description: |-
-      OrganizationSubscription details describe the plan of an organization (i.e.
-      the features and purchased seats it has access to).
-  OrganizationSubscription.Plan:
-    type: string
-    enum:
-      - PLAN_TEAM
-      - PLAN_ENTERPRISE
-    description: |-
-      Enumerates the plan types for the organization subscription.
-
-       - PLAN_TEAM: The team plan is a subscription that offers collaboration features for
-      small teams.
-       - PLAN_ENTERPRISE: The enterprise plan is a subscription for large teams and/or high-volume
-      deployments. This kind of subscription doesn't contain Stripe
-      subscription details.
   Owner:
     type: object
     properties:
@@ -9254,132 +8877,6 @@ definitions:
           The key represents the event, and the value is the corresponding event_specification.
         readOnly: true
     description: Spec represents a specification data model.
-  StripeSubscriptionDetail:
-    type: object
-    properties:
-      productName:
-        type: string
-        description: Product name associated with the subscription in Stripe.
-        readOnly: true
-      id:
-        type: string
-        description: Unique identifier for the subscription.
-        readOnly: true
-      itemId:
-        type: string
-        description: Identifier for the specific item within the subscription.
-        readOnly: true
-      price:
-        type: number
-        format: float
-        description: Price of the subscription.
-        readOnly: true
-      canceledAt:
-        type: integer
-        format: int32
-        description: Optional timestamp indicating when the subscription was canceled, if applicable.
-        readOnly: true
-      trialEnd:
-        type: integer
-        format: int32
-        description: Optional timestamp indicating when the trial ended, if applicable.
-        readOnly: true
-      status:
-        description: Status of the subscription.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/StripeSubscriptionDetail.Status'
-      description:
-        type: string
-        description: Description of the subscription.
-        readOnly: true
-      currentPeriodEnd:
-        type: integer
-        format: int32
-        description: Timestamp indicating when the end of the current subscription period.
-        readOnly: true
-    description: StripeSubscriptionDetail contains the details of a subscription in Stripe.
-  StripeSubscriptionDetail.Status:
-    type: string
-    enum:
-      - STATUS_INCOMPLETE
-      - STATUS_INCOMPLETE_EXPIRED
-      - STATUS_TRIALING
-      - STATUS_ACTIVE
-      - STATUS_PAST_DUE
-      - STATUS_CANCELED
-      - STATUS_UNPAID
-      - STATUS_PAUSED
-    description: |-
-      Enumerates the status types for the user's subscription. Please refer to
-      the [Stripe
-      documentation](https://docs.stripe.com/billing/subscriptions/overview#subscription-statuses)
-      for more details.
-
-       - STATUS_INCOMPLETE: The customer must do a payment-related action to activate the
-      subscription.
-       - STATUS_INCOMPLETE_EXPIRED: The subscription failed to activate because no successful payments were
-      registered in time.
-       - STATUS_TRIALING: The subscription is currently in a trial period.
-       - STATUS_ACTIVE: The subscription is in good standing.
-       - STATUS_PAST_DUE: Payment on the latest finalised invoice either failed or wasn’t
-      attempted.
-       - STATUS_CANCELED: The subscription was cancelled by either the user or the admins.
-       - STATUS_UNPAID: The latest invoice hasn’t been paid but the subscription remains in
-      place.
-       - STATUS_PAUSED: The subscription has ended its trial period without a default payment
-      method.
-  SubscriptionFreeTrial:
-    type: object
-    properties:
-      userPlan:
-        title: User subscription details
-        allOf:
-          - $ref: '#/definitions/UserSubscription.Plan'
-      organizationPlan:
-        title: Organization subscription details
-        allOf:
-          - $ref: '#/definitions/OrganizationSubscription.Plan'
-      ownerUid:
-        type: string
-        description: |-
-          The owner's unique identifier. This is the user (customer) that ordered
-          the subscription.
-        readOnly: true
-      organizationUid:
-        type: string
-        description: |-
-          If the subscription is a team plan, the value of this field will be set to
-          the organization UID that the subscription is linked to.
-        readOnly: true
-      trialEnd:
-        type: string
-        format: date-time
-        description: When the trial ends.
-        readOnly: true
-    title: |-
-      SubscriptionFreeTrial represents a free trial for either a user or
-      organization subscription
-  SubtractCreditAdminResponse:
-    type: object
-    properties:
-      amount:
-        type: number
-        format: float
-        description: The remaining credit.
-    description: |-
-      SubtractCreditResponse contains the remaining credit of an account after the
-      subtraction.
-  SyncAuthenticatedUserSubscriptionResponse:
-    type: object
-    description: |-
-      SyncAuthenticatedUserSubscriptionResponse represents a response to a request
-      to sync the subscription of the authenticated user.
-  SyncOrganizationSubscriptionResponse:
-    type: object
-    description: |-
-      SyncOrganizationSubscriptionResponse represents a response to a request to
-      sync the subscription of an organization.
   Task:
     type: string
     enum:
@@ -10078,33 +9575,6 @@ definitions:
           Social profile links list the links to the user's social profiles.
           The key represents the provider, and the value is the corresponding URL.
     description: UserProfile describes the public data of a user.
-  UserSubscription:
-    type: object
-    properties:
-      plan:
-        description: Plan identifier.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/UserSubscription.Plan'
-      detail:
-        description: Details of the associated Stripe subscription.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/StripeSubscriptionDetail'
-    description: |-
-      UserSubscription details describe the plan of an individual user (i.e., the
-      features they have access to).
-  UserSubscription.Plan:
-    type: string
-    enum:
-      - PLAN_STARTER
-    description: |-
-      Enumerates the plan types for the user subscription.
-
-       - PLAN_STARTER: The starter plan is an individual plan for developers and early-stage
-      projects. This plan offers a free trial period that doesn't require the
-      customer to have a default payment method. After the free trial period
-      is over, the subscription state will transition from trialing to paused.
   ValidateNamespacePipelineBody:
     type: object
     description: |-
