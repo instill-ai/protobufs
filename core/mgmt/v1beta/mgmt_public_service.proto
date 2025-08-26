@@ -16,7 +16,7 @@ import "protoc-gen-openapiv2/options/annotations.proto";
 // MgmtPublicService exposes the public Core endpoints that allow clients to
 // manage user resources.
 service MgmtPublicService {
-  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {description: "Public Core endpoints"};
+  option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_tag) = {description: "Public Mgmt endpoints"};
 
   // Check if the MGMT server is alive
   //
@@ -319,84 +319,6 @@ service MgmtPublicService {
     };
   }
 
-  // Get the subscription of the authenticated user
-  //
-  // Returns the subscription details for the authenticated user's individual
-  // plan. If several subscriptions exist (e.g. if the user upgraded to and
-  // downgraded from a plan several times), the most recent subscription is
-  // returned.
-  rpc GetAuthenticatedUserSubscription(GetAuthenticatedUserSubscriptionRequest) returns (GetAuthenticatedUserSubscriptionResponse) {
-    option (google.api.http) = {get: "/v1beta/user/subscription"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Subscription"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
-  // Sync the subscription of the authenticated user
-  //
-  // Syncs the subscription of the authenticated user with Stripe.
-  rpc SyncAuthenticatedUserSubscription(SyncAuthenticatedUserSubscriptionRequest) returns (SyncAuthenticatedUserSubscriptionResponse) {
-    option (google.api.http) = {post: "/v1beta/user/subscription/sync"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Subscription"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
-  // Get the subscription of an organization
-  //
-  // Returns the subscription details for an organization's team plan. If
-  // several subscriptions exist (e.g. if the organization has upgraded to and
-  // downgraded from a plan several times), the most recent subscription is
-  // returned.
-  rpc GetOrganizationSubscription(GetOrganizationSubscriptionRequest) returns (GetOrganizationSubscriptionResponse) {
-    option (google.api.http) = {get: "/v1beta/organizations/{organization_id}/subscription"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Subscription"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
-  // Sync the subscription of an organization
-  //
-  // Syncs the subscription of an organization with Stripe.
-  rpc SyncOrganizationSubscription(SyncOrganizationSubscriptionRequest) returns (SyncOrganizationSubscriptionResponse) {
-    option (google.api.http) = {post: "/v1beta/organizations/{organization_id}/subscription/sync"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Subscription"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
-  // List subscription free trials
-  //
-  // Returns a list of the free trials of the authenticated user. The trials
-  // might apply to different plans, including organization plans purchased by
-  // the user.
-  rpc ListSubscriptionFreeTrials(ListSubscriptionFreeTrialsRequest) returns (ListSubscriptionFreeTrialsResponse) {
-    option (google.api.http) = {get: "/v1beta/user/subscription-free-trials"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Subscription"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
   // Create an API token
   //
   // Creates an API token for the authenticated user.
@@ -463,25 +385,6 @@ service MgmtPublicService {
     option (google.api.http) = {post: "/v1beta/validate_token"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Namespace"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
-  // Get the remaining Instill Credit
-  //
-  // This endpoint returns the remaining [Instill
-  // Credit](https://instill-ai.dev/docs/cloud/credit) of a given user or
-  // organization. The requested credit owner must be either the authenticated
-  // user or an organization they belong to.
-  //
-  // On Instill Core, this endpoint will return a 404 Not Found status.
-  rpc GetRemainingCredit(GetRemainingCreditRequest) returns (GetRemainingCreditResponse) {
-    option (google.api.http) = {get: "/v1beta/namespaces/{namespace_id}/credit"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Subscription"
       extensions: {
         key: "x-stage"
         value: {string_value: "beta"}
@@ -566,25 +469,6 @@ service MgmtPublicService {
   // amount of triggers in a time bucket.
   rpc ListModelTriggerChartRecords(ListModelTriggerChartRecordsRequest) returns (ListModelTriggerChartRecordsResponse) {
     option (google.api.http) = {get: "/v1beta/model-runs/query-charts"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Metrics"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
-  // List Instill Credit consumption time charts
-  //
-  // Returns a timeline of Instill Credit consumption for a given owner. The
-  // response will contain one set of records (datapoints) per consumption
-  // source (e.g. "pipeline", "model"). Each datapoint represents the amount
-  // consumed in a time bucket.
-  //
-  // This endpoint is only exposed on Instill Cloud.
-  rpc ListCreditConsumptionChartRecords(ListCreditConsumptionChartRecordsRequest) returns (ListCreditConsumptionChartRecordsResponse) {
-    option (google.api.http) = {get: "/v1beta/credit/query-charts"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Metrics"
       extensions: {
