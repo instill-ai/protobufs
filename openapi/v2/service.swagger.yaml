@@ -230,13 +230,37 @@ paths:
           required: false
           type: string
         - name: filter.fileUids
-          description: The file uids.
+          description: File UIDs.
           in: query
           required: false
           type: array
           items:
             type: string
           collectionFormat: multi
+        - name: filter.processStatus
+          description: |-
+            Processing status of the files.
+
+             - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
+             - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process
+             - FILE_PROCESS_STATUS_CONVERTING: file is converting
+             - FILE_PROCESS_STATUS_CHUNKING: file is chunking
+             - FILE_PROCESS_STATUS_EMBEDDING: file is embedding
+             - FILE_PROCESS_STATUS_COMPLETED: completed
+             - FILE_PROCESS_STATUS_FAILED: failed
+             - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing
+          in: query
+          required: false
+          type: string
+          enum:
+            - FILE_PROCESS_STATUS_NOTSTARTED
+            - FILE_PROCESS_STATUS_WAITING
+            - FILE_PROCESS_STATUS_CONVERTING
+            - FILE_PROCESS_STATUS_CHUNKING
+            - FILE_PROCESS_STATUS_EMBEDDING
+            - FILE_PROCESS_STATUS_COMPLETED
+            - FILE_PROCESS_STATUS_FAILED
+            - FILE_PROCESS_STATUS_SUMMARIZING
       tags:
         - Artifact
       x-stage: alpha
@@ -6725,10 +6749,14 @@ definitions:
         type: array
         items:
           type: string
-        description: The file uids.
-    title: |-
-      list file filter
-      todo: support more parameters
+        description: File UIDs.
+      processStatus:
+        description: Processing status of the files.
+        allOf:
+          - $ref: '#/definitions/FileProcessStatus'
+    description: |-
+      ListCatalogFilesFilter contains a set of properties to filter a catalog file
+      list by.
   ListCatalogFilesResponse:
     type: object
     properties:
