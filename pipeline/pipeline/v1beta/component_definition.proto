@@ -6,6 +6,8 @@ package pipeline.pipeline.v1beta;
 import "google/api/field_behavior.proto";
 // Protocol Buffers Well-Known Types
 import "google/protobuf/struct.proto";
+// Common definitions
+import "common/view/v1beta/view.proto";
 // Pipeline definitions
 import "pipeline/pipeline/v1beta/common.proto";
 
@@ -15,17 +17,6 @@ import "pipeline/pipeline/v1beta/common.proto";
 
 // ComponentDefinition describes a certain type of Component.
 message ComponentDefinition {
-  // View defines how a component definition is presented.
-  enum View {
-    // Unspecified, equivalent to BASIC.
-    VIEW_UNSPECIFIED = 0;
-    // Default view, only includes basic information (removes the `spec`
-    // field).
-    VIEW_BASIC = 1;
-    // Full representation.
-    VIEW_FULL = 2;
-  }
-
   // ReleaseStage defines the release stage of a component. This is used to
   // group components with the same pre-relase groups (e.g. `0.1.0-beta`,
   // `0.1.0-beta.1` -> `RELEASE_STAGE_BETA`) and to include other "in progress"
@@ -172,7 +163,7 @@ message ListComponentDefinitionsRequest {
   // cursor information from the server.
   reserved 2;
   // View allows clients to specify the desired resource view in the response.
-  optional ComponentDefinition.View view = 3 [(google.api.field_behavior) = OPTIONAL];
+  optional common.view.v1beta.View view = 3 [(google.api.field_behavior) = OPTIONAL];
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
   // expression.
   // - Example: `component_type="COMPONENT_TYPE_AI"`.
