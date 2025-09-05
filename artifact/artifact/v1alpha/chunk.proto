@@ -6,6 +6,9 @@ package artifact.artifact.v1alpha;
 import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
 
+// Common definitions
+import "common/view/v1beta/view.proto";
+
 // FileMediaType describes the type of a catalog file.
 enum FileMediaType {
   // Unspecified.
@@ -85,6 +88,15 @@ message Chunk {
   Reference reference = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
   // reference to the position of the chunk within the markdown (source) file.
   optional Reference md_reference = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // View defines how the chunk is presented. The following fields are
+  // only shown in the FULL view:
+  // - content
+  // - embedding
+  common.view.v1beta.View view = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // String representation of the chunk.
+  string content = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Vector representation of the chunk.
+  repeated float embedding = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // start position of the chunk in the source file
   // Deprecated: use reference instead
@@ -94,22 +106,40 @@ message Chunk {
   uint32 end_pos = 5 [deprecated = true, (google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// The ListChunksRequest message represents a request to list chunks in the artifact system.
-// The response will be a list of chunks based on the request, i.e., response will
-// have chunks of the file with file_uid and chunks specified in chunk_uids.
+// ListChunksRequest represents a request to list the chunks of a catalog file.
 message ListChunksRequest {
-  // owner/namespace id (not uid)
+  // ID of the catalog owner.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // catalog id (not uid)
+  // Catalog ID.
   string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // unique identifier of the file
+  // Unique file identifier.
   string file_uid = 3 [(google.api.field_behavior) = REQUIRED];
+  // The maximum number of items to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Page token. By default, the first page will be returned.
+  optional string page_token = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // View allows clients to specify the desired view in the response.
+  optional common.view.v1beta.View view = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
+  // The following filters are supported:
+  // - `contentType`
+  //
+  // **Examples**:
+  // - List chunks with a "chunk" content type: `contentType="CONTENT_TYPE_CHUNK"`.
+  optional string filter = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
+// ListChunksResponse contains a paginated list of chunks.
 message ListChunksResponse {
-  // repeated chunks
+  // A list of chunks matching the request parameters.
   repeated Chunk chunks = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Next page token.
+  string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Total number of items.
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Search chunks request
