@@ -24,32 +24,74 @@ enum FileMediaType {
 enum ContentType {
   // Unspecified.
   CONTENT_TYPE_UNSPECIFIED = 0;
-  // Chunk.
+  // Chunks represent a part of the original file.
   CONTENT_TYPE_CHUNK = 1;
-  // Summary.
+  // Summary of the original file.
   CONTENT_TYPE_SUMMARY = 2;
-  // Augmented.
+  // Original chunk content enhanced with additional information.
   CONTENT_TYPE_AUGMENTED = 3;
 }
 
-// The Chunk message represents a chunk of data in the artifact system.
+// ReferenceType describes the type of position reference in a file.
+enum ReferenceType {
+  // Unspecified.
+  REFERENCE_TYPE_UNSPECIFIED = 0;
+  // Character positions (for Markdown and other text files).
+  REFERENCE_TYPE_CHARACTER = 1;
+  // Page positions (for documents).
+  REFERENCE_TYPE_PAGE = 2;
+  // Time positions in milliseconds (for audio/video files).
+  REFERENCE_TYPE_TIME_MS = 3;
+  // Pixel positions (for images and other 2D content).
+  REFERENCE_TYPE_PIXEL = 4;
+}
+
+// Reference represents the position of a chunk within its source file.
+// The position arrays can have different dimensions based on the reference type:
+// - 1 element for 1D references (characters, pages, time)
+// - 2 elements for 2D references (pixels: [x, y])
+// - N elements for N-dimensional references
+message Reference {
+  // type of reference (characters, pages, milliseconds, or pixels)
+  ReferenceType type = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // start position coordinates as an array
+  // For 1D: [position]
+  // For 2D: [x, y]
+  // For 3D: [x, y, z], etc.
+  repeated uint32 start_position = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // end position coordinates as an array
+  // For 1D: [position]
+  // For 2D: [x, y]
+  // For 3D: [x, y, z], etc.
+  repeated uint32 end_position = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Chunk represents a part of the original file, which will be used for
+// embedding and, later, retrieval.
 message Chunk {
-  // unique identifier of the chunk
+  // Unique identifier of the chunk
   string chunk_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // whether the chunk is retrievable
+  // Chunk searchability
   bool retrievable = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // start position of the chunk in the source file
-  uint32 start_pos = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // end position of the chunk in the source file
-  uint32 end_pos = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // tokens of the chunk
+  // Token count for the chunk
   uint32 tokens = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // creation time of the chunk
+  // Chunk creation time
   google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // original file unique identifier
+  // Unique identifier of the original file
   string original_file_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // content type
+  // Content type
   ContentType content_type = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // reference to the position of the chunk within the original file
+  Reference reference = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // reference to the position of the chunk within the markdown (source) file.
+  optional Reference md_reference = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // start position of the chunk in the source file
+  // Deprecated: use reference instead
+  uint32 start_pos = 4 [deprecated = true, (google.api.field_behavior) = OUTPUT_ONLY];
+  // end position of the chunk in the source file
+  // Deprecated: use reference instead
+  uint32 end_pos = 5 [deprecated = true, (google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // The ListChunksRequest message represents a request to list chunks in the artifact system.
