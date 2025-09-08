@@ -31,6 +31,40 @@ consumes:
 produces:
   - application/json
 paths:
+  /v1alpha/namespaces/{namespaceId}/catalogs/create:
+    post:
+      summary: Create a new catalog
+      description: Creates a catalog under the parenthood of a namespace.
+      operationId: ArtifactPublicService_CreateCatalog
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/CreateCatalogResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The namespace that will own the catalog.
+          in: path
+          required: true
+          type: string
+        - name: catalog
+          description: The properties of the catalog to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Catalog'
+            required:
+              - catalog
+      tags:
+        - Artifact
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs:
     get:
       summary: Get all catalogs info
@@ -59,13 +93,22 @@ paths:
       x-stage: alpha
     post:
       summary: Create a catalog
-      description: Creates a catalog.
-      operationId: ArtifactPublicService_CreateCatalog
+      description: |-
+        Creates a catalog. This method is deprecated and CreateCatalog
+        should be used instead.
+        TODO:
+        1. Deploy CreateCatalog.
+        2. Update clients (HTTP and gRPC) to CreateCatalog.
+        3. Delete CreateNamespaceCatalog and update CreateCatalog's HTTP path,
+           mapping it temporarily to the one clients are currently using.
+        4. Update HTTP clients to RESTful path.
+        5. Remove temporary HTTP path mapping.
+      operationId: ArtifactPublicService_CreateNamespaceCatalog
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/CreateCatalogResponse'
+            $ref: '#/definitions/CreateNamespaceCatalogResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -83,7 +126,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CreateCatalogBody'
+            $ref: '#/definitions/CreateNamespaceCatalogBody'
       tags:
         - Artifact
       x-stage: alpha
@@ -5114,70 +5157,129 @@ definitions:
   Catalog:
     type: object
     properties:
-      catalogUid:
+      id:
         type: string
-        description: The catalog uid.
-      catalogId:
+        description: |-
+          Catalog resource ID (used in `name` as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
+      namespaceId:
         type: string
-        description: The catalog id.
+        description: ID of the namespace owning the catalog.
       name:
         type: string
-        description: The catalog name.
+        description: |-
+          The name and unique identifier of the catalog.
+          - Format: `namespaces/{namespace.id}/catalogs/{catalog.id}`.
+        readOnly: true
+      type:
+        description: Type (by default, persistent).
+        allOf:
+          - $ref: '#/definitions/CatalogType'
       description:
         type: string
-        description: The catalog description.
+        description: Catalog description.
       createTime:
         type: string
-        description: The creation time of the catalog.
+        format: date-time
+        description: Creation timestamp.
       updateTime:
         type: string
-        description: The last update time of the catalog.
-      ownerName:
-        type: string
-        description: The owner/namespace of the catalog.
+        format: date-time
+        title: Timestamp of the last update
       tags:
         type: array
         items:
           type: string
-        description: The catalog tags.
+        description: Tags.
       convertingPipelines:
         type: array
         items:
           type: string
-        description: The catalog converting pipelines.
+        description: |-
+          Pipelines used for converting documents (i.e., files with pdf, doc[x] or
+          ppt[x] extension) to Markdown. The strings in the list identify the
+          pipelines and MUST have the format `{namespaceID}/{pipelineID}@{version}`.
+          The pipeline recipes MUST have the following variable and output fields:
+          ```yaml variable
+          variable:
+            document_input:
+              title: document-input
+              description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
+              type: file
+          ```
+          ```yaml output
+          output:
+           convert_result:
+             title: convert-result
+             value: ${merge-markdown-refinement.output.results[0]}
+          ```
+          Other variable and output fields will be ignored.
+
+          The pipelines will be executed in order until one produces a successful,
+          non-empty result.
+
+          If no pipelines are provided, a default pipeline will be used. For
+          non-document catalog files, the conversion pipeline is deterministic (such
+          files are typically trivial to convert and don't require a dedicated
+          pipeline to improve the conversion performance).
       splittingPipelines:
         type: array
         items:
           type: string
-        description: The catalog splitting pipelines.
+        description: Pipelines used for text splitting within the catalog.
       embeddingPipelines:
         type: array
         items:
           type: string
-        description: The catalog embedding pipelines.
+        description: Pipelines used for text embedding within the catalog.
+      summarizingPipelines:
+        type: array
+        items:
+          type: string
+        description: Pipelines used for summarization within the catalog.
+      totalFiles:
+        type: integer
+        format: int64
+        description: File count.
+        readOnly: true
+      totalTokens:
+        type: integer
+        format: int64
+        description: Token count.
+        readOnly: true
+      usedStorage:
+        type: string
+        format: uint64
+        description: Current storage use, in bytes.
+        readOnly: true
+      catalogUid:
+        type: string
+        description: |-
+          Catalog UID.
+          Deprecated. Use resource ID instead.
+      catalogId:
+        type: string
+        description: |-
+          Catalog ID.
+          Deprecated. Use id instead.
+      ownerName:
+        type: string
+        description: |-
+          The owner/namespace of the catalog.
+          Deprecated. Use namespace_id instead.
       downstreamApps:
         type: array
         items:
           type: string
         title: The downstream apps
-      totalFiles:
-        type: integer
-        format: int64
-        description: The total files in catalog.
-      totalTokens:
-        type: integer
-        format: int64
-        description: The total tokens in catalog.
-      usedStorage:
-        type: string
-        format: uint64
-        description: The current used storage in catalog.
-      summarizingPipelines:
-        type: array
-        items:
-          type: string
-        description: The catalog summarizing pipelines.
-    description: Catalog represents a catalog.
+    description: |-
+      A Catalog is a unified AI-ready format that serves as a knowledge base,
+      processing files and preparing them for Retrieval-Augmented Generation
+      (RAG).
+    required:
+      - namespaceId
   CatalogRun:
     type: object
     properties:
@@ -5818,7 +5920,15 @@ definitions:
        - CONTENT_TYPE_CHUNK: Chunks represent a part of the original file.
        - CONTENT_TYPE_SUMMARY: Summary of the original file.
        - CONTENT_TYPE_AUGMENTED: Original chunk content enhanced with additional information.
-  CreateCatalogBody:
+  CreateCatalogResponse:
+    type: object
+    properties:
+      catalog:
+        description: The created catalog.
+        allOf:
+          - $ref: '#/definitions/Catalog'
+    description: CreateCatalogResponse contains the created catalog.
+  CreateNamespaceCatalogBody:
     type: object
     properties:
       name:
@@ -5867,15 +5977,19 @@ definitions:
           non-document catalog files, the conversion pipeline is deterministic (such
           files are typically trivial to convert and don't require a dedicated
           pipeline to improve the conversion performance).
-    description: CreateCatalogRequest represents a request to create a catalog.
-  CreateCatalogResponse:
+    description: |-
+      CreateNamespaceCatalogRequest represents a request to create a catalog.
+      This method is deprecated and CreateCatalog should be used instead.
+  CreateNamespaceCatalogResponse:
     type: object
     properties:
       catalog:
         description: The created catalog.
         allOf:
           - $ref: '#/definitions/Catalog'
-    description: CreateCatalogResponse represents a response for creating a catalog.
+    description: |-
+      CreateNamespaceCatalogResponse represents a response for creating a catalog.
+      This method is deprecated and CreateCatalog should be used instead.
   CreateNamespaceConnectionResponse:
     type: object
     properties:
@@ -6071,11 +6185,20 @@ definitions:
   File:
     type: object
     properties:
-      fileUid:
-        type: string
-        description: Unique identifier of the file.
-        readOnly: true
       name:
+        type: string
+        description: |-
+          The name and unique identifier of the file.
+          - Format: `namespaces/{namespace.id}/catalogs/{catalog.id}/files/{file.id}`.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          File resource ID (used in `name` as the last segment). This field is
+          generated by the server.
+          TODO: references to file_uid still need to be migrated to file.id.
+        readOnly: true
+      filename:
         type: string
         description: Filename. Note that this field isn't unique.
       type:
@@ -6103,10 +6226,6 @@ definitions:
         description: |-
           UID of the file creator, i.e., the authenticated user who uploaded the
           file.
-        readOnly: true
-      catalogUid:
-        type: string
-        description: UID of the catalog to which the file belongs.
         readOnly: true
       createTime:
         type: string
@@ -6201,6 +6320,19 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/v1beta.View'
+      fileUid:
+        type: string
+        description: |-
+          Unique identifier of the file.
+          Deprecated: use id instead.
+        readOnly: true
+      catalogUid:
+        type: string
+        description: |-
+          UID of the catalog to which the file belongs.
+          Deprecated, use catalog resource ID, which can be extracted from the name
+          field.
+        readOnly: true
     description: |-
       File represents an object ingested by a catalog, which will later be
       processed (converted to text, broken down into chunks and embedded) in order
@@ -6288,7 +6420,10 @@ definitions:
       - FILE_PROCESS_STATUS_FAILED
       - FILE_PROCESS_STATUS_SUMMARIZING
     description: |-
-      - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
+      FileProcessStatus describes the last step in the processing flow that a
+      catalog file has completed.
+
+       - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
        - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process
        - FILE_PROCESS_STATUS_CONVERTING: file is converting
        - FILE_PROCESS_STATUS_CHUNKING: file is chunking
@@ -6296,7 +6431,6 @@ definitions:
        - FILE_PROCESS_STATUS_COMPLETED: completed
        - FILE_PROCESS_STATUS_FAILED: failed
        - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing
-    title: file embedding process status
   FileReference:
     type: object
     properties:
@@ -6376,14 +6510,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/File'
     description: GetCatalogFileResponse represents a response for getting a catalog file.
-  GetChatFileResponse:
-    type: object
-    properties:
-      markdown:
-        type: string
-        format: byte
-        title: converted markdown content
-    description: GetChatFileResponse ...
   GetFileAsMarkdownResponse:
     type: object
     properties:
@@ -8669,12 +8795,12 @@ definitions:
     type: object
     properties:
       start:
-        title: Start position of the chunk within the file
+        description: Start position of the chunk within the file.
         readOnly: true
         allOf:
           - $ref: '#/definitions/FilePosition'
       end:
-        title: End position of the chunk within the file
+        description: End position of the chunk within the file.
         readOnly: true
         allOf:
           - $ref: '#/definitions/FilePosition'
@@ -8912,27 +9038,31 @@ definitions:
     properties:
       chunkUid:
         type: string
-        title: chunk uid
+        description: Chunk UID.
         readOnly: true
       similarityScore:
         type: number
         format: float
-        title: similarity score
+        description: Similarity score (distance to the text provided in the search).
         readOnly: true
       textContent:
         type: string
-        title: content
+        description: Chunk content.
         readOnly: true
       sourceFile:
         type: string
-        title: source file's name
+        description: Filename of the file the chunk was extracted from.
         readOnly: true
       chunkMetadata:
-        title: chunk
+        description: Chunk resource.
         readOnly: true
         allOf:
           - $ref: '#/definitions/v1alpha.Chunk'
-    title: similarity chunks
+    description: |-
+      SimilarityChunk contains information about a chunk retrieved in a similarity
+      search.
+
+      TODO: reference chunk by resource name.
   SimilarityChunksSearchBody:
     type: object
     properties:
@@ -8944,11 +9074,11 @@ definitions:
         format: int64
         description: 'Top K. Default value: 5.'
       contentType:
-        description: Content type.
+        description: Content type filter.
         allOf:
           - $ref: '#/definitions/ContentType'
       fileMediaType:
-        description: File type.
+        description: File type filter.
         allOf:
           - $ref: '#/definitions/FileMediaType'
       fileUids:
@@ -8958,7 +9088,9 @@ definitions:
         description: |-
           File UIDs. When this field is provided, the response will return only
           chunks that belong to the specified file UIDs.
-    title: Similar chunk search request
+    description: |-
+      SimilarityChunksSearchRequest represents a request to retrieve the K most
+      similar chunks to a prompt.
     required:
       - textPrompt
   SimilarityChunksSearchResponse:
@@ -8969,15 +9101,15 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/SimilarityChunk'
-        title: chunks
+        description: A list of chunks and their distance to the original prompt.
         readOnly: true
-    title: Similar chunk search response
+    description: SimilarityChunksSearchResponse contains the retrieved similar chunks.
   SourceFile:
     type: object
     properties:
-      originalFileUid:
+      file:
         type: string
-        title: original file unique identifier
+        description: Resource name of the original file the chunk was extracted from.
         readOnly: true
       content:
         type: string
@@ -8996,6 +9128,12 @@ definitions:
       originalFileName:
         type: string
         title: original file name
+        readOnly: true
+      originalFileUid:
+        type: string
+        description: |-
+          original file unique identifier
+          Deprecated: use file instead.
         readOnly: true
     description: The SourceFile message represents a source file in the artifact system.
   Spec:
@@ -9901,40 +10039,49 @@ definitions:
   v1alpha.Chunk:
     type: object
     properties:
-      chunkUid:
+      name:
         type: string
-        title: Unique identifier of the chunk
+        description: |-
+          The name and unique identifier of the chunk.
+          - Format: `namespaces/{namespace.id}/catalogs/{catalog.id}/chunks/{chunk.id}`.
+        readOnly: true
+      id:
+        type: string
+        description: |-
+          Chunk resource ID (used in `name` as the last segment). This field is
+          generated by the server.
+          TODO: references to chunk_uid still need to be migrated to chunk.id.
         readOnly: true
       retrievable:
         type: boolean
-        title: Chunk searchability
+        description: Chunk searchability.
         readOnly: true
       tokens:
         type: integer
         format: int64
-        title: Token count for the chunk
+        description: Token count for the chunk.
         readOnly: true
       createTime:
         type: string
         format: date-time
-        title: Chunk creation time
+        description: Chunk creation time.
         readOnly: true
-      originalFileUid:
+      file:
         type: string
-        title: Unique identifier of the original file
+        description: Resource name of the original file the chunk was extracted from.
         readOnly: true
       contentType:
-        title: Content type
+        description: Content type.
         readOnly: true
         allOf:
           - $ref: '#/definitions/ContentType'
       reference:
-        title: reference to the position of the chunk within the original file
+        description: Reference to the position of the chunk within the original file.
         readOnly: true
         allOf:
           - $ref: '#/definitions/Reference'
-      mdReference:
-        description: reference to the position of the chunk within the markdown (source) file.
+      markdownReference:
+        description: Reference to the position of the chunk within the Markdown (source) file.
         readOnly: true
         allOf:
           - $ref: '#/definitions/Reference'
@@ -9958,19 +10105,31 @@ definitions:
           format: float
         description: Vector representation of the chunk.
         readOnly: true
+      chunkUid:
+        type: string
+        description: |-
+          Unique identifier of the chunk
+          Deprecated: use id instead.
+        readOnly: true
       startPos:
         type: integer
         format: int64
         title: |-
           start position of the chunk in the source file
-          Deprecated: use reference instead
+          Deprecated: use markdown_reference instead
         readOnly: true
       endPos:
         type: integer
         format: int64
         title: |-
           end position of the chunk in the source file
-          Deprecated: use reference instead
+          Deprecated: use markdown_reference instead
+        readOnly: true
+      originalFileUid:
+        type: string
+        description: |-
+          Unique identifier of the original file.
+          Deprecated. Use file instead.
         readOnly: true
     description: |-
       Chunk represents a part of the original file, which will be used for
