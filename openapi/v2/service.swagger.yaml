@@ -273,6 +273,18 @@ paths:
           in: query
           required: false
           type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
       tags:
         - Artifact
       x-stage: alpha
@@ -6079,6 +6091,9 @@ definitions:
         type: string
         description: Message with the outcome of the processing.
         readOnly: true
+      content:
+        type: string
+        description: Text representation of the file.
       ownerUid:
         type: string
         description: UID of the file owner.
@@ -6178,12 +6193,14 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/FilePosition'
-      content:
-        type: string
-        description: |-
-          Text representation of the file.
-          TODO this field will be implemented along with the FULL view of the file
-          message.
+      view:
+        title: |-
+          View defines how the chunk is presented. The following fields are
+          only shown in the FULL view:
+          - content
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1beta.View'
     description: |-
       File represents an object ingested by a catalog, which will later be
       processed (converted to text, broken down into chunks and embedded) in order
