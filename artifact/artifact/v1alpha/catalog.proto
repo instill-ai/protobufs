@@ -1,0 +1,298 @@
+syntax = "proto3";
+
+package artifact.artifact.v1alpha;
+
+import "common/run/v1alpha/run.proto";
+// Google API
+import "google/api/field_behavior.proto";
+// Protocol Buffers Well-Known Types
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// Catalog represents a catalog.
+message Catalog {
+  // The catalog uid.
+  string catalog_uid = 1;
+  // The catalog id.
+  string catalog_id = 2;
+  // The catalog name.
+  string name = 3;
+  // The catalog description.
+  string description = 4;
+  // The creation time of the catalog.
+  string create_time = 5;
+  // The last update time of the catalog.
+  string update_time = 6;
+  // The owner/namespace of the catalog.
+  string owner_name = 7;
+  // The catalog tags.
+  repeated string tags = 8;
+  // The catalog converting pipelines.
+  repeated string converting_pipelines = 9;
+  // The catalog splitting pipelines.
+  repeated string splitting_pipelines = 10;
+  // The catalog embedding pipelines.
+  repeated string embedding_pipelines = 11;
+  // The downstream apps
+  repeated string downstream_apps = 12;
+  // The total files in catalog.
+  uint32 total_files = 13;
+  // The total tokens in catalog.
+  uint32 total_tokens = 14;
+  // The current used storage in catalog.
+  uint64 used_storage = 15;
+  // The catalog summarizing pipelines.
+  repeated string summarizing_pipelines = 16;
+}
+
+// Catalog Type. e.g. "persistent" or "ephemeral"
+enum CatalogType {
+  // UNSPECIFIED
+  CATALOG_TYPE_UNSPECIFIED = 0;
+  // PERSISTENT
+  CATALOG_TYPE_PERSISTENT = 1;
+  // EPHEMERAL
+  CATALOG_TYPE_EPHEMERAL = 2;
+}
+
+// CreateCatalogRequest represents a request to create a catalog.
+message CreateCatalogRequest {
+  // The catalog's owner(namespaces).
+  string namespace_id = 1;
+  // The catalog name.
+  string name = 2;
+  // The catalog description.
+  string description = 3;
+  // The catalog tags.
+  repeated string tags = 4;
+  // The catalog type. default is PERSISTENT
+  CatalogType type = 5;
+  // Pipelines used for converting documents (i.e., files with pdf, doc[x] or
+  // ppt[x] extension) to Markdown. The strings in the list identify the
+  // pipelines and MUST have the format `{namespaceID}/{pipelineID}@{version}`.
+  // The pipeline recipes MUST have the following variable and output fields:
+  // ```yaml variable
+  // variable:
+  //   document_input:
+  //     title: document-input
+  //     description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
+  //     type: file
+  // ```
+  // ```yaml output
+  // output:
+  //  convert_result:
+  //    title: convert-result
+  //    value: ${merge-markdown-refinement.output.results[0]}
+  // ```
+  // Other variable and output fields will be ignored.
+  //
+  // The pipelines will be executed in order until one produces a successful,
+  // non-empty result.
+  //
+  // If no pipelines are provided, a default pipeline will be used. For
+  // non-document catalog files, the conversion pipeline is deterministic (such
+  // files are typically trivial to convert and don't require a dedicated
+  // pipeline to improve the conversion performance).
+  repeated string converting_pipelines = 6;
+}
+
+// CreateCatalogResponse represents a response for creating a catalog.
+message CreateCatalogResponse {
+  // The created catalog.
+  Catalog catalog = 1;
+}
+
+// Request message for ListCatalogs(not include the ephemeral catalogs)
+message ListCatalogsRequest {
+  // User ID for which to list the catalogs
+  string namespace_id = 1;
+}
+
+// GetCatalogsResponse represents a response for getting all catalogs from users.
+message ListCatalogsResponse {
+  // The catalogs container.
+  repeated Catalog catalogs = 1;
+}
+
+// UpdateCatalogRequest represents a request to update a catalog.
+message UpdateCatalogRequest {
+  // The catalog id.
+  string catalog_id = 1;
+  // The catalog description.
+  string description = 2;
+  // The catalog tags.
+  repeated string tags = 3;
+  // The catalog owner(namespace).
+  string namespace_id = 4;
+  // Pipelines used for converting documents (i.e., files with pdf, doc[x] or
+  // ppt[x] extension) to Markdown. The strings in the list identify the
+  // pipelines and MUST have the format `{namespaceID}/{pipelineID}@{version}`.
+  // The pipeline recipes MUST have the following variable and output fields:
+  // ```yaml variable
+  // variable:
+  //   document_input:
+  //     title: document-input
+  //     description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
+  //     type: file
+  // ```
+  // ```yaml output
+  // output:
+  //  convert_result:
+  //    title: convert-result
+  //    value: ${merge-markdown-refinement.output.results[0]}
+  // ```
+  // Other variable and output fields will be ignored.
+  //
+  // The pipelines will be executed in order until one produces a successful,
+  // non-empty result.
+  //
+  // If no pipelines are provided, a default pipeline will be used. For
+  // non-document catalog files, the conversion pipeline is deterministic (such
+  // files are typically trivial to convert and don't require a dedicated
+  // pipeline to improve the conversion performance).
+  repeated string converting_pipelines = 5;
+}
+
+// UpdateCatalogResponse represents a response for updating a catalog.
+message UpdateCatalogResponse {
+  // The updated catalog.
+  Catalog catalog = 1;
+}
+
+// DeleteCatalogRequest represents a request to delete a catalog.
+message DeleteCatalogRequest {
+  // The owner's id. i.e. namespace.
+  string namespace_id = 1;
+  // The catalog id.
+  string catalog_id = 2;
+}
+
+// DeleteCatalogResponse represents a response for deleting a catalog.
+message DeleteCatalogResponse {
+  // The catalog identifier.
+  Catalog catalog = 1;
+}
+
+// CatalogRunAction describes the actions a user has over a catalog.
+enum CatalogRunAction {
+  // Unspecified.
+  CATALOG_RUN_ACTION_UNSPECIFIED = 0;
+  // Create catalog.
+  CATALOG_RUN_ACTION_CREATE = 1;
+  // Update catalog.
+  CATALOG_RUN_ACTION_UPDATE = 2;
+  // Delete catalog.
+  CATALOG_RUN_ACTION_DELETE = 3;
+  // Upload catalog file.
+  CATALOG_RUN_ACTION_CREATE_FILE = 4;
+  // Process catalog file.
+  CATALOG_RUN_ACTION_PROCESS_FILE = 5;
+  // Delete catalog file.
+  CATALOG_RUN_ACTION_DELETE_FILE = 6;
+}
+
+// CatalogRun represents a single execution of a catalog action.
+message CatalogRun {
+  // Unique identifier for each run.
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // catalog uid
+  string catalog_uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The file uids.
+  repeated string file_uids = 3 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Action of the catalog run.
+  CatalogRunAction action = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Current status of the run.
+  common.run.v1alpha.RunStatus status = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Origin of the run.
+  common.run.v1alpha.RunSource source = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Time taken to complete the run in milliseconds.
+  optional int32 total_duration = 7 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Runner ID. (User UID)
+  optional string runner_id = 8 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Namespace ID.
+  optional string namespace_id = 9 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Run request payload.
+  optional google.protobuf.Struct payload = 11 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Time when the run started execution.
+  google.protobuf.Timestamp start_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Time when the run completed.
+  optional google.protobuf.Timestamp complete_time = 15 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Error message if the run failed.
+  optional string error = 16 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Credits used of internal accounting metric.
+  optional float credit_amount = 17 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+// ListCatalogRunsResponse is the response message for ListCatalogRuns.
+message ListCatalogRunsResponse {
+  // The list of runs.
+  repeated CatalogRun catalog_runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The total number of runs matching the request.
+  int32 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The current page number.
+  int32 page = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The number of items per page.
+  int32 page_size = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListCatalogRunsRequest is the request message for ListCatalogRuns.
+message ListCatalogRunsRequest {
+  // The ID of the owner of the catalog.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The ID of the catalog for which the runs will be listed.
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The page number to retrieve.
+  int32 page = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // The maximum number of items per page to return. The default and cap values
+  // are 10 and 100, respectively.
+  int32 page_size = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+  // expression.
+  // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
+  optional string filter = 6 [(google.api.field_behavior) = OPTIONAL];
+  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
+  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  optional string order_by = 7 [(google.api.field_behavior) = OPTIONAL];
+}
