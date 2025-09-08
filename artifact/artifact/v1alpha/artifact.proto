@@ -5,6 +5,7 @@ package artifact.artifact.v1alpha;
 import "artifact/artifact/v1alpha/object.proto";
 import "common/healthcheck/v1beta/healthcheck.proto";
 import "common/run/v1alpha/run.proto";
+import "common/view/v1beta/view.proto";
 // Google API
 import "google/api/field_behavior.proto";
 // Protocol Buffers Well-Known Types
@@ -456,6 +457,8 @@ message File {
   FileProcessStatus process_status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Message with the outcome of the processing.
   string process_outcome = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Text representation of the file.
+  string content = 7 [(google.api.field_behavior) = OPTIONAL];
   // UID of the file owner.
   string owner_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
   // UID of the file creator, i.e., the authenticated user who uploaded the
@@ -513,16 +516,14 @@ message File {
   // (such files are typically trivial to convert and don't require a dedicated
   // pipeline to improve the conversion performance).
   optional string converting_pipeline = 21;
-
   // Length of the file in the specified unit type. It is defined as a
   // FilePosition, so it reflects the number of positions (the unit will depend
   // on the file type) that can be accessed in the file.
   FilePosition length = 22 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // Text representation of the file.
-  // TODO this field will be implemented along with the FULL view of the file
-  // message.
-  string content = 7 [(google.api.field_behavior) = OPTIONAL];
+  // View defines how the chunk is presented. The following fields are
+  // only shown in the FULL view:
+  // - content
+  common.view.v1beta.View view = 23 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // 6 is reserved for the retrievable field.
   reserved 6;
@@ -596,6 +597,8 @@ message ListCatalogFilesRequest {
   // Format: `order_by=create_time asc` or `order_by=update_time desc`, default
   // is `create_time asc`.
   optional string order_by = 7 [(google.api.field_behavior) = OPTIONAL];
+  // View allows clients to specify the desired view in the response.
+  optional common.view.v1beta.View view = 8 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListCatalogFilesResponse contains a paginated list of catalog files.
