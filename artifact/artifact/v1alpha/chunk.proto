@@ -166,7 +166,8 @@ message UpdateChunkResponse {
   Chunk chunk = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// Similar chunk search request
+// SimilarityChunksSearchRequest represents a request to retrieve the K most
+// similar chunks to a prompt.
 message SimilarityChunksSearchRequest {
   // ID of the namespace owning the catalog.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
@@ -176,36 +177,40 @@ message SimilarityChunksSearchRequest {
   string text_prompt = 3 [(google.api.field_behavior) = REQUIRED];
   // Top K. Default value: 5.
   uint32 top_k = 4 [(google.api.field_behavior) = OPTIONAL];
-  // 5 is reserved for file_name, deprecated by file_uid.
-  reserved 5;
-  // Content type.
+  // Content type filter.
   ContentType content_type = 6 [(google.api.field_behavior) = OPTIONAL];
-  // File type.
+  // File type filter.
   FileMediaType file_media_type = 7 [(google.api.field_behavior) = OPTIONAL];
-  // 8 is reserved for file_uid, deprecated by file_uids.
-  reserved 8;
   // File UIDs. When this field is provided, the response will return only
   // chunks that belong to the specified file UIDs.
   repeated string file_uids = 9 [(google.api.field_behavior) = OPTIONAL];
+
+  // 5 is reserved for file_name, deprecated by file_uid.
+  reserved 5;
+  // 8 is reserved for file_uid, deprecated by file_uids.
+  reserved 8;
 }
 
-// Similar chunk search response
+// SimilarityChunksSearchResponse contains the retrieved similar chunks.
 message SimilarityChunksSearchResponse {
-  // chunks
+  // A list of chunks and their distance to the original prompt.
   repeated SimilarityChunk similar_chunks = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// similarity chunks
+// SimilarityChunk contains information about a chunk retrieved in a similarity
+// search.
 message SimilarityChunk {
-  // chunk uid
+  // TODO: reference chunk by resource name.
+
+  // Chunk UID.
   string chunk_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // similarity score
+  // Similarity score (distance to the text provided in the search).
   float similarity_score = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // content
+  // Chunk content.
   string text_content = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // source file's name
+  // Filename of the file the chunk was extracted from.
   string source_file = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // chunk
+  // Chunk resource.
   Chunk chunk_metadata = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
