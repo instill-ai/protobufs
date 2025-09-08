@@ -209,23 +209,26 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The owner/namespace uid id.
+          description: ID of the catalog owner.
           in: path
           required: true
           type: string
         - name: catalogId
-          description: The catalog id.
+          description: Catalog ID.
           in: path
           required: true
           type: string
         - name: pageSize
-          description: The page size (default:10; max 100).
+          description: |-
+            The maximum number of files to return. If this parameter is unspecified,
+            at most 10 files will be returned. The cap value for this parameter is 100
+            (i.e. any value above that will be coerced to 100).
           in: query
           required: false
           type: integer
           format: int32
         - name: pageToken
-          description: The next page token(default from first file's token).
+          description: Page token. By default, the first page will be returned.
           in: query
           required: false
           type: string
@@ -261,6 +264,15 @@ paths:
             - FILE_PROCESS_STATUS_COMPLETED
             - FILE_PROCESS_STATUS_FAILED
             - FILE_PROCESS_STATUS_SUMMARIZING
+        - name: orderBy
+          description: |-
+            Order by field, with options for ordering by `create_time` or
+            `update_time`.
+            Format: `order_by=create_time asc` or `order_by=update_time desc`, default
+            is `create_time asc`.
+          in: query
+          required: false
+          type: string
       tags:
         - Artifact
       x-stage: alpha
@@ -412,19 +424,55 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: owner/namespace id (not uid)
+          description: ID of the catalog owner.
           in: path
           required: true
           type: string
         - name: catalogId
-          description: catalog id (not uid)
+          description: Catalog ID.
           in: path
           required: true
           type: string
         - name: fileUid
-          description: unique identifier of the file
+          description: Unique file identifier.
           in: query
           required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
+            The following filters are supported:
+            - `contentType`
+
+            **Examples**:
+            - List chunks with a "chunk" content type: `contentType="CONTENT_TYPE_CHUNK"`.
+          in: query
+          required: false
           type: string
       tags:
         - Artifact
@@ -964,7 +1012,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1010,7 +1058,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1057,7 +1105,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1129,7 +1177,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1260,7 +1308,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1406,7 +1454,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1832,7 +1880,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1892,7 +1940,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -1939,7 +1987,7 @@ paths:
           description: |-
             View allows clients to specify the desired model view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2024,7 +2072,7 @@ paths:
           description: |-
             View allows clients to specify the desired model view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2138,7 +2186,7 @@ paths:
           description: |-
             View allows clients to specify the desired model view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2644,7 +2692,7 @@ paths:
             View allows clients to specify the desired operation result in the
             response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2690,7 +2738,7 @@ paths:
             View allows clients to specify the desired operation result in the
             response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -2730,7 +2778,7 @@ paths:
           description: |-
             View allows clients to specify the desired model view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -4111,8 +4159,7 @@ paths:
           description: |-
             View allows clients to specify the desired resource view in the response.
 
-             - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
-            field).
+             - VIEW_BASIC: Default view.
              - VIEW_FULL: Full representation.
           in: query
           required: false
@@ -5532,17 +5579,6 @@ definitions:
       within semantic versioning.
       See the documentation of each value for potential constraints between
       `version` and `release_stage` fields.`
-  ComponentDefinition.View:
-    type: string
-    enum:
-      - VIEW_BASIC
-      - VIEW_FULL
-    description: |-
-      View defines how a component definition is presented.
-
-       - VIEW_BASIC: Default view, only includes basic information (removes the `spec`
-      field).
-       - VIEW_FULL: Full representation.
   ComponentEvent:
     type: object
     properties:
@@ -5738,7 +5774,7 @@ definitions:
           - oAuthAccessDetails
         readOnly: true
         allOf:
-          - $ref: '#/definitions/pipeline.v1beta.View'
+          - $ref: '#/definitions/v1beta.View'
       createTime:
         type: string
         format: date-time
@@ -5767,9 +5803,9 @@ definitions:
     description: |-
       ContentType describes the type of a chunk content.
 
-       - CONTENT_TYPE_CHUNK: Chunk.
-       - CONTENT_TYPE_SUMMARY: Summary.
-       - CONTENT_TYPE_AUGMENTED: Augmented.
+       - CONTENT_TYPE_CHUNK: Chunks represent a part of the original file.
+       - CONTENT_TYPE_SUMMARY: Summary of the original file.
+       - CONTENT_TYPE_AUGMENTED: Original chunk content enhanced with additional information.
   CreateCatalogBody:
     type: object
     properties:
@@ -6025,72 +6061,67 @@ definitions:
     properties:
       fileUid:
         type: string
-        title: file uid
+        description: Unique identifier of the file.
         readOnly: true
       name:
         type: string
-        title: file name
+        description: Filename. Note that this field isn't unique.
       type:
-        title: file type
+        description: File type, inferred from the extension in the filename.
         allOf:
           - $ref: '#/definitions/FileType'
       processStatus:
-        title: file process status
+        description: Processing status of the file.
         readOnly: true
         allOf:
           - $ref: '#/definitions/FileProcessStatus'
       processOutcome:
         type: string
-        title: file process message
+        description: Message with the outcome of the processing.
         readOnly: true
-      retrievable:
-        type: boolean
-        title: retrievable(this is reserved for future use)
-        readOnly: true
-      content:
-        type: string
-        title: content(this is reserved for future use)
       ownerUid:
         type: string
-        title: owner/namespace uid
+        description: UID of the file owner.
         readOnly: true
       creatorUid:
         type: string
-        title: creator uid from authn token
+        description: |-
+          UID of the file creator, i.e., the authenticated user who uploaded the
+          file.
         readOnly: true
       catalogUid:
         type: string
-        title: catalog uid
+        description: UID of the catalog to which the file belongs.
         readOnly: true
       createTime:
         type: string
         format: date-time
-        title: create time
+        description: Creation timestamp.
         readOnly: true
       updateTime:
         type: string
         format: date-time
-        title: update time
+        description: Last update timestamp.
         readOnly: true
       deleteTime:
         type: string
         format: date-time
-        title: delete time
+        description: Deletion timestamp.
         readOnly: true
       size:
         type: string
         format: int64
-        title: file size in bytes
+        description: File size in bytes.
         readOnly: true
       totalChunks:
         type: integer
         format: int32
-        title: total chunks
+        description: Total number of chunks.
         readOnly: true
       totalTokens:
         type: integer
         format: int32
-        title: total tokens
+        description: Total number of tokens.
         readOnly: true
       externalMetadata:
         type: object
@@ -6098,15 +6129,16 @@ definitions:
       objectUid:
         type: string
         description: |-
-          objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
-          then no need the base64 encoding for the file content.
+          Object UID in blob storage. This will be present when the file is first
+          uploaded as a blob, then added to the catalog by reference (instead of
+          explicitly passing the base64-encoded file content).
       summary:
         type: string
-        title: summary of the file
+        description: Summary of the file.
         readOnly: true
       downloadUrl:
         type: string
-        title: download url of the file
+        description: Download URL of the file.
         readOnly: true
       convertingPipeline:
         type: string
@@ -6138,7 +6170,24 @@ definitions:
           For non-document catalog files, the conversion pipeline is deterministic
           (such files are typically trivial to convert and don't require a dedicated
           pipeline to improve the conversion performance).
-    title: file
+      length:
+        description: |-
+          Length of the file in the specified unit type. It is defined as a
+          FilePosition, so it reflects the number of positions (the unit will depend
+          on the file type) that can be accessed in the file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FilePosition'
+      content:
+        type: string
+        description: |-
+          Text representation of the file.
+          TODO this field will be implemented along with the FULL view of the file
+          message.
+    description: |-
+      File represents an object ingested by a catalog, which will later be
+      processed (converted to text, broken down into chunks and embedded) in order
+      to be used for retrieval and question answering.
   FileMediaType:
     type: string
     enum:
@@ -6185,6 +6234,31 @@ definitions:
         allOf:
           - $ref: '#/definitions/FileProcessStatus'
     description: FileMetadata contains information about the file.
+  FilePosition:
+    type: object
+    properties:
+      unit:
+        title: Unit of measurement for the position
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Unit'
+      coordinates:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: |-
+          Position coordinates as an array
+          For 1D: [position]
+          For 2D: [x, y]
+          For 3D: [x, y, z], etc.
+        readOnly: true
+    title: |-
+      FilePosition represents a position within a file using a specific unit.
+      The position can be multi-dimensional based on the unit type:
+      - 1 element for 1D positions (characters, pages, time)
+      - 2 elements for 2D positions (pixels: [x, y])
+      - N elements for N-dimensional positions
   FileProcessStatus:
     type: string
     enum:
@@ -6246,7 +6320,9 @@ definitions:
       - FILE_TYPE_XLSX
       - FILE_TYPE_CSV
     description: |-
-      - FILE_TYPE_TEXT: text
+      FileType determines the type of a file, based on its extension.
+
+       - FILE_TYPE_TEXT: text
        - FILE_TYPE_PDF: PDF
        - FILE_TYPE_MARKDOWN: MARKDOWN
        - FILE_TYPE_PNG: PNG(not supported yet)
@@ -6260,7 +6336,6 @@ definitions:
        - FILE_TYPE_XLS: XLS
        - FILE_TYPE_XLSX: XLSX
        - FILE_TYPE_CSV: CSV
-    title: file type
   FruitCosts:
     type: object
     properties:
@@ -6329,6 +6404,9 @@ definitions:
     description: |-
       GetFileCatalogResponse contains the processing outputs of a file in a
       catalog.
+
+      TODO GetFileCatalog should be deprecated. GetCatalogFile with a FULL view
+       (to be implemented) parameter should be used instead.
   GetFileCatalogResponse.Chunk:
     type: object
     properties:
@@ -6688,7 +6766,7 @@ definitions:
           - oAuthConfig
         readOnly: true
         allOf:
-          - $ref: '#/definitions/pipeline.v1beta.View'
+          - $ref: '#/definitions/v1beta.View'
     description: |-
       Integration contains the parameters to create a connection between
       components and 3rd party apps.
@@ -6765,23 +6843,23 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/File'
-        description: The list of files.
+        description: A list of files matching the request parameters.
       totalSize:
         type: integer
         format: int32
-        description: The total number of files.
+        description: Total number of files.
       pageSize:
         type: integer
         format: int32
-        description: The requested page size.
+        description: Requested page size.
       nextPageToken:
         type: string
-        title: next page token
+        description: Next page token.
       filter:
-        description: The filter.
+        description: The filter applied to the list of files.
         allOf:
           - $ref: '#/definitions/ListCatalogFilesFilter'
-    title: list files response
+    description: ListCatalogFilesResponse contains a paginated list of catalog files.
   ListCatalogRunsResponse:
     type: object
     properties:
@@ -6826,9 +6904,18 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/v1alpha.Chunk'
-        title: repeated chunks
+        description: A list of chunks matching the request parameters.
         readOnly: true
-    description: The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: ListChunksResponse contains a paginated list of chunks.
   ListComponentDefinitionsResponse:
     type: object
     properties:
@@ -8561,6 +8648,20 @@ definitions:
           $ref: '#/definitions/SimilarityChunk'
         title: chunks
     title: QuestionAnsweringResponse
+  Reference:
+    type: object
+    properties:
+      start:
+        title: Start position of the chunk within the file
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FilePosition'
+      end:
+        title: End position of the chunk within the file
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FilePosition'
+    description: Reference represents the position of a chunk within its source file.
   Region:
     type: object
     properties:
@@ -9375,6 +9476,20 @@ definitions:
   UndeployUserModelAdminResponse:
     type: object
     title: UndeployUserModelAdminResponse represents a response for a undeployed model
+  Unit:
+    type: string
+    enum:
+      - UNIT_CHARACTER
+      - UNIT_PAGE
+      - UNIT_TIME_MS
+      - UNIT_PIXEL
+    description: |-
+      Unit describes the unit of measurement for a position within a file.
+
+       - UNIT_CHARACTER: Character positions (for Markdown and other text files).
+       - UNIT_PAGE: Page positions (for documents).
+       - UNIT_TIME_MS: Time positions in milliseconds (for audio/video files).
+       - UNIT_PIXEL: Pixel positions (for images and other 2D content).
   UpdateCatalogBody:
     type: object
     properties:
@@ -9721,18 +9836,6 @@ definitions:
         description: Defines whether the resource can be modified.
         readOnly: true
     description: Permission defines how a resource can be used.
-  mgmt.v1beta.View:
-    type: string
-    enum:
-      - VIEW_BASIC
-      - VIEW_FULL
-    description: |-
-      View defines how a resource is presented. It can be used as a parameter in a
-      method request to allow clients to select the amount of information they
-      want in the response.
-
-       - VIEW_BASIC: Default view, only includes basic information.
-       - VIEW_FULL: Full representation.
   pipeline.v1beta.Permission:
     type: object
     properties:
@@ -9746,19 +9849,6 @@ definitions:
         type: boolean
         description: Defines whether the pipeline can be released.
     description: Permission defines how a pipeline can be used.
-  pipeline.v1beta.View:
-    type: string
-    enum:
-      - VIEW_BASIC
-      - VIEW_FULL
-    description: |-
-      View defines how a resource is presented. Most resources can share this view
-      definition, the particular meaning of each value should be defined in the
-      resource itself. Certain resources might have their own View definition if
-      they need to implement more than 2 (basic / full) views.
-
-       - VIEW_BASIC: Default view.
-       - VIEW_FULL: Full representation.
   rpc.Status:
     type: object
     properties:
@@ -9796,42 +9886,78 @@ definitions:
     properties:
       chunkUid:
         type: string
-        title: unique identifier of the chunk
+        title: Unique identifier of the chunk
         readOnly: true
       retrievable:
         type: boolean
-        title: whether the chunk is retrievable
-        readOnly: true
-      startPos:
-        type: integer
-        format: int64
-        title: start position of the chunk in the source file
-        readOnly: true
-      endPos:
-        type: integer
-        format: int64
-        title: end position of the chunk in the source file
+        title: Chunk searchability
         readOnly: true
       tokens:
         type: integer
         format: int64
-        title: tokens of the chunk
+        title: Token count for the chunk
         readOnly: true
       createTime:
         type: string
         format: date-time
-        title: creation time of the chunk
+        title: Chunk creation time
         readOnly: true
       originalFileUid:
         type: string
-        title: original file unique identifier
+        title: Unique identifier of the original file
         readOnly: true
       contentType:
-        title: content type
+        title: Content type
         readOnly: true
         allOf:
           - $ref: '#/definitions/ContentType'
-    description: The Chunk message represents a chunk of data in the artifact system.
+      reference:
+        title: reference to the position of the chunk within the original file
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Reference'
+      mdReference:
+        description: reference to the position of the chunk within the markdown (source) file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Reference'
+      view:
+        title: |-
+          View defines how the chunk is presented. The following fields are
+          only shown in the FULL view:
+          - content
+          - embedding
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/v1beta.View'
+      content:
+        type: string
+        description: String representation of the chunk.
+        readOnly: true
+      embedding:
+        type: array
+        items:
+          type: number
+          format: float
+        description: Vector representation of the chunk.
+        readOnly: true
+      startPos:
+        type: integer
+        format: int64
+        title: |-
+          start position of the chunk in the source file
+          Deprecated: use reference instead
+        readOnly: true
+      endPos:
+        type: integer
+        format: int64
+        title: |-
+          end position of the chunk in the source file
+          Deprecated: use reference instead
+        readOnly: true
+    description: |-
+      Chunk represents a part of the original file, which will be used for
+      embedding and, later, retrieval.
   v1alpha.Permission:
     type: object
     properties:
@@ -9881,16 +10007,6 @@ definitions:
       resource for this model instance.
        - STATE_SCALING_DOWN: Scaling is the transition state when the system is releasing compute
       resource for this model instance.
-  v1alpha.View:
-    type: string
-    enum:
-      - VIEW_BASIC
-      - VIEW_FULL
-    description: |-
-      View defines how a model definition is presented.
-
-       - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
-       - VIEW_FULL: Full representation.
   v1beta.User:
     type: object
     properties:
@@ -9936,6 +10052,19 @@ definitions:
     description: |-
       User describes an individual that interacts with Instill AI. It doesn't
       contain any private information about the user.
+  v1beta.View:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+    description: |-
+      View defines how a resource is presented. Most resources can share this view
+      definition, the particular meaning of each value should be defined in the
+      resource itself. Certain resources might have their own View definition if
+      they need to implement more than 2 (basic / full) views.
+
+       - VIEW_BASIC: Default view.
+       - VIEW_FULL: Full representation.
 securityDefinitions:
   Bearer:
     type: apiKey
