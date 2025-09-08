@@ -2,12 +2,13 @@ syntax = "proto3";
 
 package artifact.artifact.v1alpha;
 
+import "common/view/v1beta/view.proto";
+import "artifact/artifact/v1alpha/artifact.proto";
+
 // Protocol Buffers Well-Known Types
 import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
 
-// Common definitions
-import "common/view/v1beta/view.proto";
 
 // FileMediaType describes the type of a catalog file.
 enum FileMediaType {
@@ -35,43 +36,17 @@ enum ContentType {
   CONTENT_TYPE_AUGMENTED = 3;
 }
 
-// ReferenceType describes the type of position reference in a file.
-enum ReferenceType {
-  // Unspecified.
-  REFERENCE_TYPE_UNSPECIFIED = 0;
-  // Character positions (for Markdown and other text files).
-  REFERENCE_TYPE_CHARACTER = 1;
-  // Page positions (for documents).
-  REFERENCE_TYPE_PAGE = 2;
-  // Time positions in milliseconds (for audio/video files).
-  REFERENCE_TYPE_TIME_MS = 3;
-  // Pixel positions (for images and other 2D content).
-  REFERENCE_TYPE_PIXEL = 4;
-}
-
-// Reference represents the position of a chunk within its source file.
-// The position arrays can have different dimensions based on the reference type:
-// - 1 element for 1D references (characters, pages, time)
-// - 2 elements for 2D references (pixels: [x, y])
-// - N elements for N-dimensional references
-message Reference {
-  // type of reference (characters, pages, milliseconds, or pixels)
-  ReferenceType type = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // start position coordinates as an array
-  // For 1D: [position]
-  // For 2D: [x, y]
-  // For 3D: [x, y, z], etc.
-  repeated uint32 start_position = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // end position coordinates as an array
-  // For 1D: [position]
-  // For 2D: [x, y]
-  // For 3D: [x, y, z], etc.
-  repeated uint32 end_position = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // Chunk represents a part of the original file, which will be used for
 // embedding and, later, retrieval.
 message Chunk {
+  // Reference represents the position of a chunk within its source file.
+  message Reference {
+    // Start position of the chunk within the file
+    FilePosition start = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // End position of the chunk within the file
+    FilePosition end = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
   // Unique identifier of the chunk
   string chunk_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Chunk searchability

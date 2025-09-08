@@ -5,8 +5,10 @@ package artifact.artifact.v1alpha;
 import "artifact/artifact/v1alpha/object.proto";
 import "common/healthcheck/v1beta/healthcheck.proto";
 import "common/run/v1alpha/run.proto";
+
 // Google API
 import "google/api/field_behavior.proto";
+
 // Protocol Buffers Well-Known Types
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
@@ -379,7 +381,7 @@ enum FileProcessStatus {
   FILE_PROCESS_STATUS_SUMMARIZING = 8;
 }
 
-// file type
+// FileType determines the type of a file, based on its extension.
 enum FileType {
   // unspecified
   FILE_TYPE_UNSPECIFIED = 0;
@@ -413,48 +415,77 @@ enum FileType {
   FILE_TYPE_CSV = 14;
 }
 
-// file
+// FilePosition represents a position within a file using a specific unit.
+// The position can be multi-dimensional based on the unit type:
+// - 1 element for 1D positions (characters, pages, time)
+// - 2 elements for 2D positions (pixels: [x, y])
+// - N elements for N-dimensional positions
+message FilePosition {
+  // Unit describes the unit of measurement for a position within a file.
+  enum Unit {
+    // Unspecified.
+    UNIT_UNSPECIFIED = 0;
+    // Character positions (for Markdown and other text files).
+    UNIT_CHARACTER = 1;
+    // Page positions (for documents).
+    UNIT_PAGE = 2;
+    // Time positions in milliseconds (for audio/video files).
+    UNIT_TIME_MS = 3;
+    // Pixel positions (for images and other 2D content).
+    UNIT_PIXEL = 4;
+  }
+
+  // Unit of measurement for the position
+  Unit unit = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Position coordinates as an array
+  // For 1D: [position]
+  // For 2D: [x, y]
+  // For 3D: [x, y, z], etc.
+  repeated uint32 coordinates = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// File represents an object ingested by a catalog, which will later be
+// processed (converted to text, broken down into chunks and embedded) in order
+// to be used for retrieval and question answering.
 message File {
-  // file uid
+  // Unique identifier of the file.
   string file_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // file name
+  // Filename. Note that this field isn't unique.
   string name = 2 [(google.api.field_behavior) = OPTIONAL];
-  // file type
+  // File type, inferred from the extension in the filename.
   FileType type = 3 [(google.api.field_behavior) = OPTIONAL];
-  // file process status
+  // Processing status of the file.
   FileProcessStatus process_status = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // file process message
+  // Message with the outcome of the processing.
   string process_outcome = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // retrievable(this is reserved for future use)
-  bool retrievable = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // content(this is reserved for future use)
-  string content = 7 [(google.api.field_behavior) = OPTIONAL];
-  // owner/namespace uid
+  // UID of the file owner.
   string owner_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // creator uid from authn token
+  // UID of the file creator, i.e., the authenticated user who uploaded the
+  // file.
   string creator_uid = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // catalog uid
+  // UID of the catalog to which the file belongs.
   string catalog_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // create time
+  // Creation timestamp.
   google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // update time
+  // Last update timestamp.
   google.protobuf.Timestamp update_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // delete time
+  // Deletion timestamp.
   google.protobuf.Timestamp delete_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // file size in bytes
+  // File size in bytes.
   int64 size = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // total chunks
+  // Total number of chunks.
   int32 total_chunks = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // total tokens
+  // Total number of tokens.
   int32 total_tokens = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Custom metadata provided by the user during file upload
   optional google.protobuf.Struct external_metadata = 17 [(google.api.field_behavior) = OPTIONAL];
-  // objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
-  // then no need the base64 encoding for the file content.
+  // Object UID in blob storage. This will be present when the file is first
+  // uploaded as a blob, then added to the catalog by reference (instead of
+  // explicitly passing the base64-encoded file content).
   string object_uid = 18 [(google.api.field_behavior) = OPTIONAL];
-  // summary of the file
+  // Summary of the file.
   string summary = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // download url of the file
+  // Download URL of the file.
   string download_url = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Pipeline used for converting the file to Markdown if the file is a
   // document (i.e., a file with pdf, doc[x] or ppt[x] extension). The value
@@ -484,6 +515,19 @@ message File {
   // (such files are typically trivial to convert and don't require a dedicated
   // pipeline to improve the conversion performance).
   optional string converting_pipeline = 21;
+
+  // Length of the file in the specified unit type. It is defined as a
+  // FilePosition, so it reflects the number of positions (the unit will depend
+  // on the file type) that can be accessed in the file.
+  FilePosition length = 22 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Text representation of the file.
+  // TODO this field will be implemented along with the FULL view of the file
+  // message.
+  string content = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // 6 is reserved for the retrievable field.
+  reserved 6;
 }
 
 // upload file request
