@@ -6138,6 +6138,14 @@ definitions:
           For non-document catalog files, the conversion pipeline is deterministic
           (such files are typically trivial to convert and don't require a dedicated
           pipeline to improve the conversion performance).
+      length:
+        description: |-
+          Length of the file in the specified unit type. It is defined as a
+          FilePosition, so it reflects the number of positions (the unit will depend
+          on the file type) that can be accessed in the file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FilePosition'
     title: file
   FileMediaType:
     type: string
@@ -6185,6 +6193,31 @@ definitions:
         allOf:
           - $ref: '#/definitions/FileProcessStatus'
     description: FileMetadata contains information about the file.
+  FilePosition:
+    type: object
+    properties:
+      unit:
+        title: Unit of measurement for the position
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Unit'
+      coordinates:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: |-
+          Position coordinates as an array
+          For 1D: [position]
+          For 2D: [x, y]
+          For 3D: [x, y, z], etc.
+        readOnly: true
+    title: |-
+      FilePosition represents a position within a file using a specific unit.
+      The position can be multi-dimensional based on the unit type:
+      - 1 element for 1D positions (characters, pages, time)
+      - 2 elements for 2D positions (pixels: [x, y])
+      - N elements for N-dimensional positions
   FileProcessStatus:
     type: string
     enum:
@@ -8561,6 +8594,20 @@ definitions:
           $ref: '#/definitions/SimilarityChunk'
         title: chunks
     title: QuestionAnsweringResponse
+  Reference:
+    type: object
+    properties:
+      start:
+        description: Start position of the chunk within the file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FilePosition'
+      end:
+        description: End position of the chunk within the file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/FilePosition'
+    description: Reference represents the position of a chunk within its source file.
   Region:
     type: object
     properties:
@@ -9375,6 +9422,20 @@ definitions:
   UndeployUserModelAdminResponse:
     type: object
     title: UndeployUserModelAdminResponse represents a response for a undeployed model
+  Unit:
+    type: string
+    enum:
+      - UNIT_CHARACTER
+      - UNIT_PAGE
+      - UNIT_TIME_MS
+      - UNIT_PIXEL
+    description: |-
+      Unit describes the unit of measurement for a position within a file.
+
+       - UNIT_CHARACTER: Character positions (for Markdown and other text files).
+       - UNIT_PAGE: Page positions (for documents).
+       - UNIT_TIME_MS: Time positions in milliseconds (for audio/video files).
+       - UNIT_PIXEL: Pixel positions (for images and other 2D content).
   UpdateCatalogBody:
     type: object
     properties:
@@ -9802,16 +9863,6 @@ definitions:
         type: boolean
         title: whether the chunk is retrievable
         readOnly: true
-      startPos:
-        type: integer
-        format: int64
-        title: start position of the chunk in the source file
-        readOnly: true
-      endPos:
-        type: integer
-        format: int64
-        title: end position of the chunk in the source file
-        readOnly: true
       tokens:
         type: integer
         format: int64
@@ -9831,6 +9882,30 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/ContentType'
+      reference:
+        description: Reference to the position of the chunk within the original file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Reference'
+      markdownReference:
+        description: Reference to the position of the chunk within the Markdown (source) file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Reference'
+      startPos:
+        type: integer
+        format: int64
+        title: |-
+          start position of the chunk in the source file
+          Deprecated: use markdown_reference instead
+        readOnly: true
+      endPos:
+        type: integer
+        format: int64
+        title: |-
+          end position of the chunk in the source file
+          Deprecated: use markdown_reference instead
+        readOnly: true
     description: The Chunk message represents a chunk of data in the artifact system.
   v1alpha.Permission:
     type: object

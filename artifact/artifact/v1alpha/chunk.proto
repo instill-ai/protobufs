@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package artifact.artifact.v1alpha;
 
+import "artifact/artifact/v1alpha/artifact.proto";
 // Protocol Buffers Well-Known Types
 import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
@@ -34,14 +35,18 @@ enum ContentType {
 
 // The Chunk message represents a chunk of data in the artifact system.
 message Chunk {
+  // Reference represents the position of a chunk within its source file.
+  message Reference {
+    // Start position of the chunk within the file.
+    FilePosition start = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+    // End position of the chunk within the file.
+    FilePosition end = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
   // unique identifier of the chunk
   string chunk_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // whether the chunk is retrievable
   bool retrievable = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // start position of the chunk in the source file
-  uint32 start_pos = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // end position of the chunk in the source file
-  uint32 end_pos = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   // tokens of the chunk
   uint32 tokens = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
   // creation time of the chunk
@@ -50,6 +55,23 @@ message Chunk {
   string original_file_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
   // content type
   ContentType content_type = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Reference to the position of the chunk within the original file.
+  Reference reference = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Reference to the position of the chunk within the Markdown (source) file.
+  Reference markdown_reference = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // start position of the chunk in the source file
+  // Deprecated: use markdown_reference instead
+  uint32 start_pos = 4 [
+    deprecated = true,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+  // end position of the chunk in the source file
+  // Deprecated: use markdown_reference instead
+  uint32 end_pos = 5 [
+    deprecated = true,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
 }
 
 // The ListChunksRequest message represents a request to list chunks in the artifact system.
