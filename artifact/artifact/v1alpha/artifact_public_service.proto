@@ -4,10 +4,10 @@ package artifact.artifact.v1alpha;
 
 // Artifact definitions
 import "artifact/artifact/v1alpha/artifact.proto";
+import "artifact/artifact/v1alpha/catalog.proto";
 import "artifact/artifact/v1alpha/chunk.proto";
-import "artifact/artifact/v1alpha/file_catalog.proto";
+import "artifact/artifact/v1alpha/file.proto";
 import "artifact/artifact/v1alpha/object.proto";
-import "artifact/artifact/v1alpha/qa.proto";
 // Google API
 import "google/api/annotations.proto";
 import "google/api/visibility.proto";
@@ -43,10 +43,38 @@ service ArtifactPublicService {
     option (google.api.method_visibility).restriction = "INTERNAL";
   }
 
+  // Create a new catalog
+  //
+  // Creates a catalog under the parenthood of a namespace.
+  rpc CreateCatalog(CreateCatalogRequest) returns (CreateCatalogResponse) {
+    option (google.api.http) = {
+      // TODO when clients stop using CreateNamespaceCatalog, update the path
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs/create"
+      body: "catalog"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Artifact"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
   // Create a catalog
   //
-  // Creates a catalog.
-  rpc CreateCatalog(CreateCatalogRequest) returns (CreateCatalogResponse) {
+  // Creates a catalog. This method is deprecated and CreateCatalog
+  // should be used instead.
+  // TODO:
+  // 1. Deploy CreateCatalog.
+  // 2. Update clients (HTTP and gRPC) to CreateCatalog.
+  // 3. Delete CreateNamespaceCatalog and update CreateCatalog's HTTP path,
+  //    mapping it temporarily to the one clients are currently using.
+  // 4. Update HTTP clients to RESTful path.
+  // 5. Remove temporary HTTP path mapping.
+  rpc CreateNamespaceCatalog(CreateNamespaceCatalogRequest) returns (CreateNamespaceCatalogResponse) {
+    option deprecated = true;
+
     option (google.api.http) = {
       post: "/v1alpha/namespaces/{namespace_id}/catalogs"
       body: "*"
@@ -274,6 +302,7 @@ service ArtifactPublicService {
   //
   // Updates a catalog chunk.
   rpc UpdateChunk(UpdateChunkRequest) returns (UpdateChunkResponse) {
+    // TODO the path should be accessed by name.
     option (google.api.http) = {
       post: "/v1alpha/chunks/{chunk_uid}"
       body: "*"
@@ -353,20 +382,6 @@ service ArtifactPublicService {
     //   - name: GetConversionOutputsForCatalogFile
     //   - path: v1alpha/files/{file_uid}/conversion-outputs
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // List Catalog Runs
-  //
-  // Returns a paginated list of catalog runs.
-  rpc ListCatalogRuns(ListCatalogRunsRequest) returns (ListCatalogRunsResponse) {
-    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Artifact"
       extensions: {
