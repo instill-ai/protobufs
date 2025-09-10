@@ -6140,12 +6140,12 @@ definitions:
           pipeline to improve the conversion performance).
       length:
         description: |-
-          Length of the file in the specified unit type. It is defined as a
-          FilePosition, so it reflects the number of positions (the unit will depend
-          on the file type) that can be accessed in the file.
+          Length of the file in the specified unit type. It is defined as the number
+          of positions (the unit will depend on the file type) that can be accessed
+          in the file.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/FilePosition'
+          - $ref: '#/definitions/Position'
     title: file
   FileMediaType:
     type: string
@@ -6193,31 +6193,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/FileProcessStatus'
     description: FileMetadata contains information about the file.
-  FilePosition:
-    type: object
-    properties:
-      unit:
-        title: Unit of measurement for the position
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Unit'
-      coordinates:
-        type: array
-        items:
-          type: integer
-          format: int64
-        description: |-
-          Position coordinates as an array
-          For 1D: [position]
-          For 2D: [x, y]
-          For 3D: [x, y, z], etc.
-        readOnly: true
-    title: |-
-      FilePosition represents a position within a file using a specific unit.
-      The position can be multi-dimensional based on the unit type:
-      - 1 element for 1D positions (characters, pages, time)
-      - 2 elements for 2D positions (pixels: [x, y])
-      - N elements for N-dimensional positions
   FileProcessStatus:
     type: string
     enum:
@@ -8541,6 +8516,24 @@ definitions:
       PipelineTriggerChartRecord represents a timeline of pipeline triggers. It
       contains a collection of (timestamp, count) pairs that represent the total
       pipeline triggers in a given time bucket.
+  Position:
+    type: object
+    properties:
+      unit:
+        description: Unit of measurement for the position.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Unit'
+      coordinates:
+        type: array
+        items:
+          type: integer
+          format: int64
+        description: Position value.
+        readOnly: true
+    description: |-
+      Position represents a position within a file using a specific unit. The
+      number of dimensions of the position value depends on the unit type.
   ProcessCatalogFilesRequest:
     type: object
     properties:
@@ -8601,13 +8594,13 @@ definitions:
         description: Start position of the chunk within the file.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/FilePosition'
+          - $ref: '#/definitions/Position'
       end:
         description: End position of the chunk within the file.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/FilePosition'
-    description: Reference represents the position of a chunk within its source file.
+          - $ref: '#/definitions/Position'
+    description: Reference represents the position of a chunk within a file.
   Region:
     type: object
     properties:
@@ -9430,7 +9423,7 @@ definitions:
       - UNIT_TIME_MS
       - UNIT_PIXEL
     description: |-
-      Unit describes the unit of measurement for a position within a file.
+      Unit of measurement for a position within a file.
 
        - UNIT_CHARACTER: Character positions (for Markdown and other text files).
        - UNIT_PAGE: Page positions (for documents).
