@@ -413,37 +413,32 @@ enum FileType {
   FILE_TYPE_CSV = 14;
 }
 
-// FilePosition represents a position within a file using a specific unit.
-// The position can be multi-dimensional based on the unit type:
-// - 1 element for 1D positions (characters, pages, time)
-// - 2 elements for 2D positions (pixels: [x, y])
-// - N elements for N-dimensional positions
-message FilePosition {
-  // Unit describes the unit of measurement for a position within a file.
-  enum Unit {
-    // Unspecified.
-    UNIT_UNSPECIFIED = 0;
-    // Character positions (for Markdown and other text files).
-    UNIT_CHARACTER = 1;
-    // Page positions (for documents).
-    UNIT_PAGE = 2;
-    // Time positions in milliseconds (for audio/video files).
-    UNIT_TIME_MS = 3;
-    // Pixel positions (for images and other 2D content).
-    UNIT_PIXEL = 4;
-  }
-
-  // Unit of measurement for the position
-  Unit unit = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Position coordinates as an array
-  // For 1D: [position]
-  // For 2D: [x, y]
-  // For 3D: [x, y, z], etc.
-  repeated uint32 coordinates = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-}
-
 // file
 message File {
+  // Position represents a position within a file using a specific unit. The
+  // number of dimensions of the position value depends on the unit type.
+  message Position {
+    // Unit of measurement for a position within a file.
+    enum Unit {
+      // Unspecified.
+      UNIT_UNSPECIFIED = 0;
+      // Character positions (for Markdown and other text files).
+      UNIT_CHARACTER = 1;
+      // Page positions (for documents).
+      UNIT_PAGE = 2;
+      // Time positions in milliseconds (for audio/video files).
+      UNIT_TIME_MS = 3;
+      // Pixel positions (for images and other 2D content).
+      UNIT_PIXEL = 4;
+    }
+
+    // Unit of measurement for the position.
+    Unit unit = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // Position value.
+    repeated uint32 coordinates = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
   // file uid
   string file_uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // file name
@@ -513,10 +508,10 @@ message File {
   // (such files are typically trivial to convert and don't require a dedicated
   // pipeline to improve the conversion performance).
   optional string converting_pipeline = 21;
-  // Length of the file in the specified unit type. It is defined as a
-  // FilePosition, so it reflects the number of positions (the unit will depend
-  // on the file type) that can be accessed in the file.
-  FilePosition length = 22 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Length of the file in the specified unit type. It is defined as the number
+  // of positions (the unit will depend on the file type) that can be accessed
+  // in the file.
+  Position length = 22 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // upload file request
