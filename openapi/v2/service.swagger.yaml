@@ -876,6 +876,47 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}/tags:
+    put:
+      summary: Update catalog file tags
+      description: Updates the tags associated with a catalog file.
+      operationId: ArtifactPublicService_UpdateCatalogFileTags
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateCatalogFileTagsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: ID of the namespace owning the catalog.
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: ID of the catalog.
+          in: path
+          required: true
+          type: string
+        - name: fileUid
+          description: Unique identifier of the file.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpdateCatalogFileTagsBody'
+      tags:
+        - Artifact
+      x-stage: alpha
   /v1beta/user:
     get:
       summary: Get the authenticated user
@@ -6149,6 +6190,11 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Position'
+      tags:
+        type: array
+        items:
+          type: string
+        title: Array of tags associated with the file
     title: file
   FileMediaType:
     type: string
@@ -8883,6 +8929,13 @@ definitions:
         description: |-
           File UIDs. When this field is provided, the response will return only
           chunks that belong to the specified file UIDs.
+      tags:
+        type: array
+        items:
+          type: string
+        description: |-
+          Tags to filter by. When multiple tags are provided, OR logic is applied.
+          Note: File UID filter takes precedence over tags, as tags apply to files.
     title: Similar chunk search request
     required:
       - textPrompt
@@ -9478,6 +9531,26 @@ definitions:
           files are typically trivial to convert and don't require a dedicated
           pipeline to improve the conversion performance).
     description: UpdateCatalogRequest represents a request to update a catalog.
+  UpdateCatalogFileTagsBody:
+    type: object
+    properties:
+      tags:
+        type: array
+        items:
+          type: string
+        description: Array of tags to associate with the file.
+    title: Update catalog file tags request
+    required:
+      - tags
+  UpdateCatalogFileTagsResponse:
+    type: object
+    properties:
+      file:
+        description: Updated file with tags.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/File'
+    title: Update catalog file tags response
   UpdateCatalogResponse:
     type: object
     properties:
