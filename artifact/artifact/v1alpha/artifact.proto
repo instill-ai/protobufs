@@ -367,10 +367,10 @@ enum FileProcessStatus {
   FILE_PROCESS_STATUS_UNSPECIFIED = 0;
   // NOTSTARTED
   FILE_PROCESS_STATUS_NOTSTARTED = 1;
-  // file is waiting for embedding process
-  FILE_PROCESS_STATUS_WAITING = 2;
-  // file is converting
-  FILE_PROCESS_STATUS_CONVERTING = 3;
+  // file is waiting for embedding process (deprecated - sequential architecture)
+  FILE_PROCESS_STATUS_WAITING = 2 [deprecated = true];
+  // file is converting (deprecated - sequential architecture)
+  FILE_PROCESS_STATUS_CONVERTING = 3 [deprecated = true];
   // file is chunking
   FILE_PROCESS_STATUS_CHUNKING = 4;
   // file is embedding
@@ -379,28 +379,30 @@ enum FileProcessStatus {
   FILE_PROCESS_STATUS_COMPLETED = 6;
   // failed
   FILE_PROCESS_STATUS_FAILED = 7;
-  // file is summarizing
-  FILE_PROCESS_STATUS_SUMMARIZING = 8;
+  // file is summarizing (deprecated - sequential architecture)
+  FILE_PROCESS_STATUS_SUMMARIZING = 8 [deprecated = true];
+  // file is being processed (parallel architecture: conversion + summarization)
+  FILE_PROCESS_STATUS_PROCESSING = 9;
 }
 
 // file type
 enum FileType {
   // unspecified
   FILE_TYPE_UNSPECIFIED = 0;
+
+  // Text-based document types
   // text
   FILE_TYPE_TEXT = 1;
   // PDF
   FILE_TYPE_PDF = 2;
-  //MARKDOWN
+  // MARKDOWN
   FILE_TYPE_MARKDOWN = 3;
-  // PNG(not supported yet)
-  FILE_TYPE_PNG = 4;
-  // JPEG(not supported yet)
-  FILE_TYPE_JPEG = 5;
-  // JPG(not supported yet)
-  FILE_TYPE_JPG = 6;
   // HTML
   FILE_TYPE_HTML = 7;
+  // CSV
+  FILE_TYPE_CSV = 14;
+
+  // Microsoft Office document types
   // DOCX
   FILE_TYPE_DOCX = 8;
   // DOC
@@ -413,8 +415,64 @@ enum FileType {
   FILE_TYPE_XLS = 12;
   // XLSX
   FILE_TYPE_XLSX = 13;
-  // CSV
-  FILE_TYPE_CSV = 14;
+
+  // Image types (supported by pipeline-backend/pkg/data/image.go)
+  // PNG
+  FILE_TYPE_PNG = 4;
+  // JPEG
+  FILE_TYPE_JPEG = 5;
+  // JPG
+  FILE_TYPE_JPG = 6;
+  // GIF
+  FILE_TYPE_GIF = 15;
+  // WEBP
+  FILE_TYPE_WEBP = 16;
+  // TIFF
+  FILE_TYPE_TIFF = 17;
+  // BMP
+  FILE_TYPE_BMP = 18;
+  // HEIC
+  FILE_TYPE_HEIC = 19;
+  // HEIF
+  FILE_TYPE_HEIF = 20;
+  // AVIF
+  FILE_TYPE_AVIF = 21;
+
+  // Audio types (supported by pipeline-backend/pkg/data/audio.go)
+  // MP3
+  FILE_TYPE_MP3 = 22;
+  // WAV
+  FILE_TYPE_WAV = 23;
+  // AAC
+  FILE_TYPE_AAC = 24;
+  // OGG
+  FILE_TYPE_OGG = 25;
+  // FLAC
+  FILE_TYPE_FLAC = 26;
+  // M4A
+  FILE_TYPE_M4A = 27;
+  // WMA
+  FILE_TYPE_WMA = 28;
+  // AIFF
+  FILE_TYPE_AIFF = 29;
+
+  // Video types (supported by pipeline-backend/pkg/data/video.go)
+  // MP4
+  FILE_TYPE_MP4 = 30;
+  // AVI
+  FILE_TYPE_AVI = 31;
+  // MOV
+  FILE_TYPE_MOV = 32;
+  // WEBM (video)
+  FILE_TYPE_WEBM_VIDEO = 33;
+  // MKV
+  FILE_TYPE_MKV = 34;
+  // FLV
+  FILE_TYPE_FLV = 35;
+  // WMV
+  FILE_TYPE_WMV = 36;
+  // MPEG
+  FILE_TYPE_MPEG = 37;
 }
 
 // file
