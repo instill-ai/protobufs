@@ -242,13 +242,14 @@ paths:
             Processing status of the files.
 
              - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
-             - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process
-             - FILE_PROCESS_STATUS_CONVERTING: file is converting
+             - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process (deprecated - sequential architecture)
+             - FILE_PROCESS_STATUS_CONVERTING: file is converting (deprecated - sequential architecture)
              - FILE_PROCESS_STATUS_CHUNKING: file is chunking
              - FILE_PROCESS_STATUS_EMBEDDING: file is embedding
              - FILE_PROCESS_STATUS_COMPLETED: completed
              - FILE_PROCESS_STATUS_FAILED: failed
-             - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing
+             - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing (deprecated - sequential architecture)
+             - FILE_PROCESS_STATUS_PROCESSING: file is being processed (parallel architecture: conversion + summarization)
           in: query
           required: false
           type: string
@@ -261,6 +262,7 @@ paths:
             - FILE_PROCESS_STATUS_COMPLETED
             - FILE_PROCESS_STATUS_FAILED
             - FILE_PROCESS_STATUS_SUMMARIZING
+            - FILE_PROCESS_STATUS_PROCESSING
       tags:
         - Artifact
       x-stage: alpha
@@ -6253,15 +6255,17 @@ definitions:
       - FILE_PROCESS_STATUS_COMPLETED
       - FILE_PROCESS_STATUS_FAILED
       - FILE_PROCESS_STATUS_SUMMARIZING
+      - FILE_PROCESS_STATUS_PROCESSING
     description: |-
       - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
-       - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process
-       - FILE_PROCESS_STATUS_CONVERTING: file is converting
+       - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process (deprecated - sequential architecture)
+       - FILE_PROCESS_STATUS_CONVERTING: file is converting (deprecated - sequential architecture)
        - FILE_PROCESS_STATUS_CHUNKING: file is chunking
        - FILE_PROCESS_STATUS_EMBEDDING: file is embedding
        - FILE_PROCESS_STATUS_COMPLETED: completed
        - FILE_PROCESS_STATUS_FAILED: failed
-       - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing
+       - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing (deprecated - sequential architecture)
+       - FILE_PROCESS_STATUS_PROCESSING: file is being processed (parallel architecture: conversion + summarization)
     title: file embedding process status
   FileReference:
     type: object
@@ -6291,32 +6295,83 @@ definitions:
       - FILE_TYPE_TEXT
       - FILE_TYPE_PDF
       - FILE_TYPE_MARKDOWN
-      - FILE_TYPE_PNG
-      - FILE_TYPE_JPEG
-      - FILE_TYPE_JPG
       - FILE_TYPE_HTML
+      - FILE_TYPE_CSV
       - FILE_TYPE_DOCX
       - FILE_TYPE_DOC
       - FILE_TYPE_PPT
       - FILE_TYPE_PPTX
       - FILE_TYPE_XLS
       - FILE_TYPE_XLSX
-      - FILE_TYPE_CSV
+      - FILE_TYPE_PNG
+      - FILE_TYPE_JPEG
+      - FILE_TYPE_JPG
+      - FILE_TYPE_GIF
+      - FILE_TYPE_WEBP
+      - FILE_TYPE_TIFF
+      - FILE_TYPE_BMP
+      - FILE_TYPE_HEIC
+      - FILE_TYPE_HEIF
+      - FILE_TYPE_AVIF
+      - FILE_TYPE_MP3
+      - FILE_TYPE_WAV
+      - FILE_TYPE_AAC
+      - FILE_TYPE_OGG
+      - FILE_TYPE_FLAC
+      - FILE_TYPE_M4A
+      - FILE_TYPE_WMA
+      - FILE_TYPE_AIFF
+      - FILE_TYPE_MP4
+      - FILE_TYPE_AVI
+      - FILE_TYPE_MOV
+      - FILE_TYPE_WEBM_VIDEO
+      - FILE_TYPE_MKV
+      - FILE_TYPE_FLV
+      - FILE_TYPE_WMV
+      - FILE_TYPE_MPEG
     description: |-
-      - FILE_TYPE_TEXT: text
+      - FILE_TYPE_TEXT: Text-based document types
+      text
        - FILE_TYPE_PDF: PDF
        - FILE_TYPE_MARKDOWN: MARKDOWN
-       - FILE_TYPE_PNG: PNG(not supported yet)
-       - FILE_TYPE_JPEG: JPEG(not supported yet)
-       - FILE_TYPE_JPG: JPG(not supported yet)
        - FILE_TYPE_HTML: HTML
-       - FILE_TYPE_DOCX: DOCX
+       - FILE_TYPE_CSV: CSV
+       - FILE_TYPE_DOCX: Microsoft Office document types
+      DOCX
        - FILE_TYPE_DOC: DOC
        - FILE_TYPE_PPT: PPT
        - FILE_TYPE_PPTX: PPTX
        - FILE_TYPE_XLS: XLS
        - FILE_TYPE_XLSX: XLSX
-       - FILE_TYPE_CSV: CSV
+       - FILE_TYPE_PNG: Image types (supported by pipeline-backend/pkg/data/image.go)
+      PNG
+       - FILE_TYPE_JPEG: JPEG
+       - FILE_TYPE_JPG: JPG
+       - FILE_TYPE_GIF: GIF
+       - FILE_TYPE_WEBP: WEBP
+       - FILE_TYPE_TIFF: TIFF
+       - FILE_TYPE_BMP: BMP
+       - FILE_TYPE_HEIC: HEIC
+       - FILE_TYPE_HEIF: HEIF
+       - FILE_TYPE_AVIF: AVIF
+       - FILE_TYPE_MP3: Audio types (supported by pipeline-backend/pkg/data/audio.go)
+      MP3
+       - FILE_TYPE_WAV: WAV
+       - FILE_TYPE_AAC: AAC
+       - FILE_TYPE_OGG: OGG
+       - FILE_TYPE_FLAC: FLAC
+       - FILE_TYPE_M4A: M4A
+       - FILE_TYPE_WMA: WMA
+       - FILE_TYPE_AIFF: AIFF
+       - FILE_TYPE_MP4: Video types (supported by pipeline-backend/pkg/data/video.go)
+      MP4
+       - FILE_TYPE_AVI: AVI
+       - FILE_TYPE_MOV: MOV
+       - FILE_TYPE_WEBM_VIDEO: WEBM (video)
+       - FILE_TYPE_MKV: MKV
+       - FILE_TYPE_FLV: FLV
+       - FILE_TYPE_WMV: WMV
+       - FILE_TYPE_MPEG: MPEG
     title: file type
   FruitCosts:
     type: object
