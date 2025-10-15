@@ -195,6 +195,14 @@ message UpdateObjectResponse {
 
 // Catalog represents a catalog.
 message Catalog {
+  // EmbeddingConfig defines the embedding configuration for a catalog
+  message EmbeddingConfig {
+    // The AI model family used for embeddings (e.g., "gemini", "openai")
+    string model_family = 1;
+    // The dimensionality of the embedding vectors
+    uint32 dimensionality = 2;
+  }
+
   // The catalog uid.
   string catalog_uid = 1;
   // The catalog id.
@@ -212,11 +220,14 @@ message Catalog {
   // The catalog tags.
   repeated string tags = 8;
   // The catalog converting pipelines.
-  repeated string converting_pipelines = 9;
+  // Deprecated: Conversion is now handled by AI providers.
+  repeated string converting_pipelines = 9 [deprecated = true];
   // The catalog splitting pipelines.
-  repeated string splitting_pipelines = 10;
+  // Deprecated: Chunking is now handled internally.
+  repeated string splitting_pipelines = 10 [deprecated = true];
   // The catalog embedding pipelines.
-  repeated string embedding_pipelines = 11;
+  // Deprecated: Use embedding_config instead.
+  repeated string embedding_pipelines = 11 [deprecated = true];
   // The downstream apps
   repeated string downstream_apps = 12;
   // The total files in catalog.
@@ -226,7 +237,10 @@ message Catalog {
   // The current used storage in catalog.
   uint64 used_storage = 15;
   // The catalog summarizing pipelines.
-  repeated string summarizing_pipelines = 16;
+  // Deprecated: Summarization is now handled by AI providers.
+  repeated string summarizing_pipelines = 16 [deprecated = true];
+  // The embedding configuration for the catalog.
+  EmbeddingConfig embedding_config = 17;
 }
 
 // Catalog Type. e.g. "persistent" or "ephemeral"
