@@ -21,20 +21,20 @@ enum FileMediaType {
   FILE_MEDIA_TYPE_VIDEO = 4;
 }
 
-// ContentType describes the type of a chunk content.
-enum ContentType {
-  // Unspecified.
-  CONTENT_TYPE_UNSPECIFIED = 0;
-  // Chunk.
-  CONTENT_TYPE_CHUNK = 1;
-  // Summary.
-  CONTENT_TYPE_SUMMARY = 2;
-  // Augmented.
-  CONTENT_TYPE_AUGMENTED = 3;
-}
-
 // The Chunk message represents a chunk of data in the artifact system.
 message Chunk {
+  // Type describes the type of a chunk content.
+  enum Type {
+    // Unspecified.
+    TYPE_UNSPECIFIED = 0;
+    // Content.
+    TYPE_CONTENT = 1;
+    // Summary.
+    TYPE_SUMMARY = 2;
+    // Augmented.
+    TYPE_AUGMENTED = 3;
+  }
+
   // Reference represents the position of a chunk within a file.
   message Reference {
     // Start position of the chunk within the file.
@@ -53,8 +53,8 @@ message Chunk {
   google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // original file unique identifier
   string original_file_uid = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // content type
-  ContentType content_type = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // chunk type
+  Type type = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Reference to the position of the chunk within the original file.
   Reference reference = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Reference to the position of the chunk within the Markdown (source) file.
@@ -178,8 +178,8 @@ message SimilarityChunksSearchRequest {
   uint32 top_k = 4 [(google.api.field_behavior) = OPTIONAL];
   // 5 is reserved for file_name, deprecated by file_uid.
   reserved 5;
-  // Content type.
-  ContentType content_type = 6 [(google.api.field_behavior) = OPTIONAL];
+  // Chunk type.
+  Chunk.Type type = 6 [(google.api.field_behavior) = OPTIONAL];
   // File type.
   FileMediaType file_media_type = 7 [(google.api.field_behavior) = OPTIONAL];
   // 8 is reserved for file_uid, deprecated by file_uids.
