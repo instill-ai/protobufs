@@ -122,6 +122,68 @@ message DeleteRepositoryTagRequest {
 // DeleteRepositoryTagResponse represent an empty response.
 message DeleteRepositoryTagResponse {}
 
+// Admin-only repository tag operations
+
+// ListRepositoryTagsAdminRequest represents a request to list repository tags (admin only).
+message ListRepositoryTagsAdminRequest {
+  // The maximum number of tags to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The repository holding the different versions of a given content.
+  // - Format: `repositories/{repository.id}`.
+  // - Example: `repositories/flaming-wombat/llama-2-7b`.
+  string parent = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ListRepositoryTagsAdminResponse contains a list of repository tags (admin only).
+message ListRepositoryTagsAdminResponse {
+  // A list of repository tags.
+  repeated RepositoryTag tags = 1;
+  // Total number of tags.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // The requested page offset.
+  int32 page = 4;
+}
+
+// GetRepositoryTagAdminRequest represents a request to get repository tag details (admin only).
+message GetRepositoryTagAdminRequest {
+  // The name of the tag, defined by its parent repository and ID.
+  // - Format: `repositories/{repository.id}/tags/{tag.id}`.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetRepositoryTagAdminResponse contains the requested tag (admin only).
+message GetRepositoryTagAdminResponse {
+  // The requested tag.
+  RepositoryTag tag = 1;
+}
+
+// CreateRepositoryTagAdminRequest represents a request to create a repository tag (admin only).
+message CreateRepositoryTagAdminRequest {
+  // The tag information.
+  RepositoryTag tag = 1;
+}
+
+// CreateRepositoryTagAdminResponse contains the created tag (admin only).
+message CreateRepositoryTagAdminResponse {
+  // The created tag.
+  RepositoryTag tag = 1;
+}
+
+// DeleteRepositoryTagAdminRequest represents a request to delete a repository tag (admin only).
+message DeleteRepositoryTagAdminRequest {
+  // The name of the tag, defined by its parent repository and ID.
+  // - Format: `repositories/{repository.id}/tags/{tag.id}`.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteRepositoryTagAdminResponse is an empty response (admin only).
+message DeleteRepositoryTagAdminResponse {}
+
 // ObjectUploadURL
 message ObjectURL {
   // The unique identifier of the ObjectURL
@@ -193,6 +255,55 @@ message UpdateObjectResponse {
   Object object = 1;
 }
 
+// Admin-only object operations
+
+// GetObjectAdminRequest represents a request to get an object (admin only).
+message GetObjectAdminRequest {
+  // object uid
+  string uid = 1;
+}
+
+// GetObjectAdminResponse contains the requested object (admin only).
+message GetObjectAdminResponse {
+  // object
+  Object object = 1;
+}
+
+// GetObjectURLAdminRequest represents a request to get an object URL (admin only).
+message GetObjectURLAdminRequest {
+  // object url uid
+  string uid = 1;
+  // encoded url path. artifact first use uid to get object url,
+  // if not exist, then use encoded url path to get object url
+  optional string encoded_url_path = 2;
+}
+
+// GetObjectURLAdminResponse contains the requested object URL (admin only).
+message GetObjectURLAdminResponse {
+  // object url
+  ObjectURL object_url = 1;
+}
+
+// UpdateObjectAdminRequest represents a request to update an object (admin only).
+message UpdateObjectAdminRequest {
+  // object uid
+  string uid = 1;
+  // size
+  optional int64 size = 2;
+  // type
+  optional string type = 3;
+  // is upload
+  optional bool is_uploaded = 4;
+  // last modified time
+  optional google.protobuf.Timestamp last_modified_time = 5;
+}
+
+// UpdateObjectAdminResponse contains the updated object (admin only).
+message UpdateObjectAdminResponse {
+  // object
+  Object object = 1;
+}
+
 // Catalog represents a catalog.
 message Catalog {
   // EmbeddingConfig defines the embedding configuration for a catalog
@@ -241,6 +352,9 @@ message Catalog {
   repeated string summarizing_pipelines = 16 [deprecated = true];
   // The embedding configuration for the catalog.
   EmbeddingConfig embedding_config = 17;
+  // The UID of the active Milvus collection for this catalog.
+  // This supports collection versioning for embedding dimension changes.
+  string active_collection_uid = 18;
 }
 
 // Catalog Type. e.g. "persistent" or "ephemeral"
@@ -627,12 +741,30 @@ message UploadCatalogFileResponse {
 
 // delete file request
 message DeleteCatalogFileRequest {
+  // The namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The catalog id.
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
   // The file uid.
-  string file_uid = 1 [(google.api.field_behavior) = REQUIRED];
+  string file_uid = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 // delete file response
 message DeleteCatalogFileResponse {
+  // The file uid.
+  string file_uid = 1;
+}
+
+// Admin-only file operations
+
+// DeleteCatalogFileAdminRequest represents a request to delete a file (admin only).
+message DeleteCatalogFileAdminRequest {
+  // The file uid.
+  string file_uid = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteCatalogFileAdminResponse represents a response for deleting a file (admin only).
+message DeleteCatalogFileAdminResponse {
   // The file uid.
   string file_uid = 1;
 }

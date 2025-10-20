@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package artifact.artifact.v1alpha;
+
+// Artifact definitions
+import "artifact/artifact/v1alpha/artifact.proto";
+
+// CatalogUpdateStatus messages
+message CatalogUpdateStatus {
+  // UID of the catalog
+  string catalog_uid = 1;
+  // Status of the catalog update
+  string status = 2;
+  // Workflow ID of the catalog update
+  string workflow_id = 3;
+  // Started at time of the catalog update
+  string started_at = 4;
+  // Completed at time of the catalog update
+  string completed_at = 5;
+  // Number of files processed
+  int32 files_processed = 6;
+  // Total number of files to process
+  int32 total_files = 7;
+}
+
+// Admin-only rollback operations
+
+// RollbackAdminRequest (admin only)
+message RollbackAdminRequest {
+  // Format: users/{user}/catalogs/{catalog}
+  string name = 1;
+}
+
+// RollbackAdminResponse (admin only)
+message RollbackAdminResponse {
+  // The rolled-back catalog
+  Catalog catalog = 1;
+  // Status message
+  string message = 2;
+}
+
+// PurgeRollbackAdminRequest (admin only)
+message PurgeRollbackAdminRequest {
+  // Format: users/{user}/catalogs/{catalog}
+  string name = 1;
+}
+
+// PurgeRollbackAdminResponse (admin only)
+message PurgeRollbackAdminResponse {
+  // Whether the purge was successful
+  bool success = 1;
+  // UID of the purged catalog
+  string purged_catalog_uid = 2;
+  // Number of files deleted
+  int32 deleted_files = 3;
+  // Status message
+  string message = 4;
+}
+
+// SetRollbackRetentionAdminRequest (admin only)
+message SetRollbackRetentionAdminRequest {
+  // TimeUnit specifies the unit of time for retention duration
+  enum TimeUnit {
+    // Unspecified
+    TIME_UNIT_UNSPECIFIED = 0;
+    // Seconds
+    TIME_UNIT_SECOND = 1;
+    // Minutes
+    TIME_UNIT_MINUTE = 2;
+    // Hours
+    TIME_UNIT_HOUR = 3;
+    // Days
+    TIME_UNIT_DAY = 4;
+  }
+
+  // Format: users/{user}/catalogs/{catalog}
+  string name = 1;
+  // Duration value (e.g., 5, 30, 24, 7)
+  int32 duration = 2;
+  // Time unit (second, minute, hour, day)
+  TimeUnit time_unit = 3;
+}
+
+// SetRollbackRetentionAdminResponse (admin only)
+message SetRollbackRetentionAdminResponse {
+  // Previous retention until date
+  string previous_retention_until = 1;
+  // New retention until date
+  string new_retention_until = 2;
+  // Total retention duration in seconds
+  int64 total_retention_seconds = 3;
+}
+
+// GetKnowledgeBaseUpdateStatusAdminRequest (admin only)
+message GetKnowledgeBaseUpdateStatusAdminRequest {
+  // Empty - gets current system update status
+}
+
+// GetKnowledgeBaseUpdateStatusAdminResponse (admin only)
+message GetKnowledgeBaseUpdateStatusAdminResponse {
+  // Whether update is in progress
+  bool update_in_progress = 1;
+  // List of catalog update statuses
+  repeated CatalogUpdateStatus catalog_statuses = 2;
+  // Status message
+  string message = 3;
+}
+
+// ExecuteKnowledgeBaseUpdateAdminRequest (admin only)
+message ExecuteKnowledgeBaseUpdateAdminRequest {
+  // Optional: Specific catalog IDs to update. If empty, updates all eligible catalogs.
+  repeated string catalog_ids = 1;
+
+  // Optional: System profile name containing configuration to apply.
+  // If specified, uses config from system table where profile=<this value>
+  // If not specified, KBs keep their current config (useful for reprocessing).
+  optional string system_profile = 2;
+
+  // Optional: Tags to filter which catalogs to update (OR logic - match any tag).
+  repeated string tags = 3;
+}
+
+// ExecuteKnowledgeBaseUpdateAdminResponse (admin only)
+message ExecuteKnowledgeBaseUpdateAdminResponse {
+  // Whether the workflow started successfully
+  bool started = 1;
+  // Human-readable status message explaining the result
+  string message = 2;
+  // List of catalog update statuses (populated when update already in progress)
+  repeated CatalogUpdateStatus catalog_statuses = 3;
+}
