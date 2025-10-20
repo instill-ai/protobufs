@@ -302,63 +302,6 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/catalogs/files:
-    delete:
-      summary: Delete a file
-      description: Deletes a file.
-      operationId: ArtifactPublicService_DeleteCatalogFile
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteCatalogFileResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: fileUid
-          description: The file uid.
-          in: query
-          required: true
-          type: string
-      tags:
-        - Artifact
-      x-stage: alpha
-  /v1alpha/catalogs/files/processAsync:
-    post:
-      summary: Process catalog files
-      description: Processes catalog files.
-      operationId: ArtifactPublicService_ProcessCatalogFiles
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ProcessCatalogFilesResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/ProcessCatalogFilesRequest'
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
-      tags:
-        - Artifact
-      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}:
     get:
       summary: Get catalog file
@@ -391,6 +334,72 @@ paths:
           description: The file uid.
           in: path
           required: true
+          type: string
+      tags:
+        - Artifact
+      x-stage: alpha
+    delete:
+      summary: Delete a file
+      description: Deletes a file.
+      operationId: ArtifactPublicService_DeleteCatalogFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeleteCatalogFileResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The namespace id.
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: The catalog id.
+          in: path
+          required: true
+          type: string
+        - name: fileUid
+          description: The file uid.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Artifact
+      x-stage: alpha
+  /v1alpha/catalogs/files/processAsync:
+    post:
+      summary: Process catalog files
+      description: Processes catalog files.
+      operationId: ArtifactPublicService_ProcessCatalogFiles
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ProcessCatalogFilesResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProcessCatalogFilesRequest'
+        - name: Instill-Requester-Uid
+          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
+          in: header
+          required: false
           type: string
       tags:
         - Artifact
@@ -601,49 +610,6 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/SimilarityChunksSearchBody'
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
-          type: string
-      tags:
-        - Artifact
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/ask:
-    post:
-      summary: Answer a question
-      description: |-
-        Provides the response to the prompted question, returning contextual
-        information like the chunks used to build the answer.
-      operationId: ArtifactPublicService_QuestionAnswering
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/QuestionAnsweringResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: ID of the namespace owning the catalog.
-          in: path
-          required: true
-          type: string
-        - name: catalogId
-          description: ID of the catalog.
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/QuestionAnsweringBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -5139,6 +5105,11 @@ definitions:
         description: The embedding configuration for the catalog.
         allOf:
           - $ref: '#/definitions/EmbeddingConfig'
+      activeCollectionUid:
+        type: string
+        description: |-
+          The UID of the active Milvus collection for this catalog.
+          This supports collection versioning for embedding dimension changes.
     description: Catalog represents a catalog.
   CatalogRun:
     type: object
@@ -5236,6 +5207,33 @@ definitions:
       - CATALOG_TYPE_PERSISTENT: PERSISTENT
        - CATALOG_TYPE_EPHEMERAL: EPHEMERAL
     title: Catalog Type. e.g. "persistent" or "ephemeral"
+  CatalogUpdateStatus:
+    type: object
+    properties:
+      catalogUid:
+        type: string
+        title: UID of the catalog
+      status:
+        type: string
+        title: Status of the catalog update
+      workflowId:
+        type: string
+        title: Workflow ID of the catalog update
+      startedAt:
+        type: string
+        title: Started at time of the catalog update
+      completedAt:
+        type: string
+        title: Completed at time of the catalog update
+      filesProcessed:
+        type: integer
+        format: int32
+        title: Number of files processed
+      totalFiles:
+        type: integer
+        format: int32
+        title: Total number of files to process
+    title: CatalogUpdateStatus messages
   CheckNamespaceAdminResponse:
     type: object
     properties:
@@ -5905,14 +5903,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: CreateOrganizationResponse contains the created organization.
-  CreateRepositoryTagResponse:
+  CreateRepositoryTagAdminResponse:
     type: object
     properties:
       tag:
         description: The created tag.
         allOf:
           - $ref: '#/definitions/RepositoryTag'
-    description: CreateRepositoryTagResponse contains the created tag.
+    description: CreateRepositoryTagAdminResponse contains the created tag (admin only).
   CreateTokenResponse:
     type: object
     properties:
@@ -5936,6 +5934,13 @@ definitions:
     description: |-
       DataSpecification describes the JSON schema of component input and output.
       Note: This message will be renamed to TaskSpecifications in the future.
+  DeleteCatalogFileAdminResponse:
+    type: object
+    properties:
+      fileUid:
+        type: string
+        description: The file uid.
+    description: DeleteCatalogFileAdminResponse represents a response for deleting a file (admin only).
   DeleteCatalogFileResponse:
     type: object
     properties:
@@ -5975,9 +5980,19 @@ definitions:
   DeleteOrganizationResponse:
     type: object
     description: DeleteOrganizationResponse is an empty response.
-  DeleteRepositoryTagResponse:
+  DeleteRepositoryTagAdminResponse:
     type: object
-    description: DeleteRepositoryTagResponse represent an empty response.
+    description: DeleteRepositoryTagAdminResponse is an empty response (admin only).
+  DeleteSystemProfileAdminResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        title: Whether the deletion was successful
+      message:
+        type: string
+        title: Status message
+    title: DeleteSystemProfileAdminResponse (admin only)
   DeleteTokenResponse:
     type: object
     description: DeleteTokenResponse is an empty response.
@@ -6054,6 +6069,22 @@ definitions:
         description: JSON schema describing the component event examples.
         readOnly: true
     description: EventSpecification describes the JSON schema of component event setup and examples.
+  ExecuteKnowledgeBaseUpdateAdminResponse:
+    type: object
+    properties:
+      started:
+        type: boolean
+        title: Whether the workflow started successfully
+      message:
+        type: string
+        title: Human-readable status message explaining the result
+      catalogStatuses:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/CatalogUpdateStatus'
+        title: List of catalog update statuses (populated when update already in progress)
+    title: ExecuteKnowledgeBaseUpdateAdminResponse (admin only)
   File:
     type: object
     properties:
@@ -6389,15 +6420,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/File'
     description: GetCatalogFileResponse represents a response for getting a catalog file.
-  GetChatFileResponse:
+  GetChatFileAdminResponse:
     type: object
     properties:
       markdown:
         type: string
         format: byte
         title: converted markdown content
-    description: GetChatFileResponse ...
-  GetFileAsMarkdownResponse:
+    title: GetChatFileAdminResponse (admin only, deprecated)
+  GetFileAsMarkdownAdminResponse:
     type: object
     properties:
       markdown:
@@ -6405,8 +6436,8 @@ definitions:
         description: The Markdown representation of a file.
         readOnly: true
     description: |-
-      GetFileAsMarkdownResponse contains a blob with the Markdown representation
-      of a file.
+      GetFileAsMarkdownAdminResponse contains a blob with the Markdown representation
+      of a file (admin only).
   GetFileCatalogResponse:
     type: object
     properties:
@@ -6499,6 +6530,22 @@ definitions:
         allOf:
           - $ref: '#/definitions/Integration'
     description: GetIntegrationResponse contains the requested integration.
+  GetKnowledgeBaseUpdateStatusAdminResponse:
+    type: object
+    properties:
+      updateInProgress:
+        type: boolean
+        title: Whether update is in progress
+      catalogStatuses:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/CatalogUpdateStatus'
+        title: List of catalog update statuses
+      message:
+        type: string
+        title: Status message
+    title: GetKnowledgeBaseUpdateStatusAdminResponse (admin only)
   GetModelDefinitionResponse:
     type: object
     properties:
@@ -6584,6 +6631,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Secret'
     description: GetNamespaceSecretResponse contains the requested secret.
+  GetObjectAdminResponse:
+    type: object
+    properties:
+      object:
+        title: object
+        allOf:
+          - $ref: '#/definitions/Object'
+    description: GetObjectAdminResponse contains the requested object (admin only).
   GetObjectDownloadURLResponse:
     type: object
     properties:
@@ -6599,22 +6654,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Object'
     title: GetObjectDownloadURLResponse
-  GetObjectResponse:
-    type: object
-    properties:
-      object:
-        title: object
-        allOf:
-          - $ref: '#/definitions/Object'
-    title: GetObjectResponse
-  GetObjectURLResponse:
+  GetObjectURLAdminResponse:
     type: object
     properties:
       objectUrl:
         title: object url
         allOf:
           - $ref: '#/definitions/ObjectURL'
-    title: GetObjectURLResponse
+    description: GetObjectURLAdminResponse contains the requested object URL (admin only).
   GetObjectUploadURLResponse:
     type: object
     properties:
@@ -6665,14 +6712,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: GetOrganizationResponse contains the requested organization.
-  GetRepositoryTagResponse:
+  GetRepositoryTagAdminResponse:
     type: object
     properties:
       tag:
-        description: The created tag.
+        description: The requested tag.
         allOf:
           - $ref: '#/definitions/RepositoryTag'
-    description: GetRepositoryTagResponse contains the created tag.
+    description: GetRepositoryTagAdminResponse contains the requested tag (admin only).
   GetSourceFileResponse:
     type: object
     properties:
@@ -6682,6 +6729,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/SourceFile'
     title: get source file response
+  GetSystemProfileAdminResponse:
+    type: object
+    properties:
+      systemProfile:
+        title: The requested system profile
+        allOf:
+          - $ref: '#/definitions/SystemProfile'
+    title: GetSystemProfileAdminResponse (admin only)
   GetTokenResponse:
     type: object
     properties:
@@ -7451,7 +7506,7 @@ definitions:
         description: Total number of pipelines.
         readOnly: true
     description: ListPipelinesResponse contains a list of pipelines.
-  ListRepositoryTagsResponse:
+  ListRepositoryTagsAdminResponse:
     type: object
     properties:
       tags:
@@ -7472,7 +7527,17 @@ definitions:
         type: integer
         format: int32
         description: The requested page offset.
-    description: ListRepositoryTagsResponse contains a list of container image tags.
+    description: ListRepositoryTagsAdminResponse contains a list of repository tags (admin only).
+  ListSystemProfilesAdminResponse:
+    type: object
+    properties:
+      systemProfiles:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/SystemProfile'
+        title: List of all system profiles
+    title: ListSystemProfilesAdminResponse (admin only)
   ListTokensResponse:
     type: object
     properties:
@@ -8652,38 +8717,23 @@ definitions:
           $ref: '#/definitions/File'
         description: The file uid.
     title: Process Catalog File Response
-  QuestionAnsweringBody:
+  PurgeRollbackAdminResponse:
     type: object
     properties:
-      question:
+      success:
+        type: boolean
+        title: Whether the purge was successful
+      purgedCatalogUid:
         type: string
-        description: Text prompt with the question.
-      topK:
+        title: UID of the purged catalog
+      deletedFiles:
         type: integer
         format: int32
-        description: 'Top K. Default value: 5.'
-      fileUids:
-        type: array
-        items:
-          type: string
-        description: |-
-          File UIDs. When this field is provided, the response will only use the
-          specified files to build the answer. The UIDs must be UUID-formatted
-          strings.
-    title: QuestionAnsweringRequest
-  QuestionAnsweringResponse:
-    type: object
-    properties:
-      answer:
+        title: Number of files deleted
+      message:
         type: string
-        title: answer to the question
-      similarChunks:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/SimilarityChunk'
-        title: chunks
-    title: QuestionAnsweringResponse
+        title: Status message
+    title: PurgeRollbackAdminResponse (admin only)
   Reference:
     type: object
     properties:
@@ -8787,6 +8837,17 @@ definitions:
 
        - ROLE_VIEWER: Viewers can see the resource properties.
        - ROLE_EXECUTOR: Executors can execute the resource (e.g. trigger a pipeline).
+  RollbackAdminResponse:
+    type: object
+    properties:
+      catalog:
+        title: The rolled-back catalog
+        allOf:
+          - $ref: '#/definitions/Catalog'
+      message:
+        type: string
+        title: Status message
+    title: RollbackAdminResponse (admin only)
   RunSource:
     type: string
     enum:
@@ -8859,6 +8920,20 @@ definitions:
         type: string
         title: Description
     description: API secrets allow users to make requests to the Instill AI API.
+  SetRollbackRetentionAdminResponse:
+    type: object
+    properties:
+      previousRetentionUntil:
+        type: string
+        title: Previous retention until date
+      newRetentionUntil:
+        type: string
+        title: New retention until date
+      totalRetentionSeconds:
+        type: string
+        format: int64
+        title: Total retention duration in seconds
+    title: SetRollbackRetentionAdminResponse (admin only)
   ShareCode:
     type: object
     properties:
@@ -9038,6 +9113,23 @@ definitions:
           The key represents the event, and the value is the corresponding event_specification.
         readOnly: true
     description: Spec represents a specification data model.
+  SystemProfile:
+    type: object
+    properties:
+      profile:
+        type: string
+        title: Profile name (e.g., "default", "enterprise", "free")
+      config:
+        type: object
+        title: Complete system configuration as structured JSON
+      description:
+        type: string
+        title: Description of this profile
+      updatedAt:
+        type: string
+        format: date-time
+        title: Last update time
+    title: SystemProfile represents a system-wide configuration profile
   Task:
     type: string
     enum:
@@ -9102,6 +9194,19 @@ definitions:
         description: Last update timestamp for the text.
         readOnly: true
     description: Text contains the text representation of the file.
+  TimeUnit:
+    type: string
+    enum:
+      - TIME_UNIT_SECOND
+      - TIME_UNIT_MINUTE
+      - TIME_UNIT_HOUR
+      - TIME_UNIT_DAY
+    description: |-
+      - TIME_UNIT_SECOND: Seconds
+       - TIME_UNIT_MINUTE: Minutes
+       - TIME_UNIT_HOUR: Hours
+       - TIME_UNIT_DAY: Days
+    title: TimeUnit specifies the unit of time for retention duration
   Trace:
     type: object
     properties:
@@ -9658,14 +9763,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Secret'
     description: UpdateNamespaceSecretResponse contains the updated secret.
-  UpdateObjectResponse:
+  UpdateObjectAdminResponse:
     type: object
     properties:
       object:
         title: object
         allOf:
           - $ref: '#/definitions/Object'
-    title: UpdateObjectResponse
+    description: UpdateObjectAdminResponse contains the updated object (admin only).
   UpdateOrganizationMembershipResponse:
     type: object
     properties:
@@ -9684,6 +9789,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: UpdateOrganizationResponse contains the updated organization.
+  UpdateSystemProfileAdminResponse:
+    type: object
+    properties:
+      systemProfile:
+        title: The updated system profile
+        allOf:
+          - $ref: '#/definitions/SystemProfile'
+    title: UpdateSystemProfileAdminResponse (admin only)
   UpdateUserMembershipResponse:
     type: object
     properties:

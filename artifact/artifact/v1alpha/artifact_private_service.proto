@@ -4,19 +4,21 @@ package artifact.artifact.v1alpha;
 
 import "artifact/artifact/v1alpha/artifact.proto";
 import "artifact/artifact/v1alpha/file_catalog.proto";
+import "artifact/artifact/v1alpha/system_profile.proto";
+import "artifact/artifact/v1alpha/update.proto";
 
 // ArtifactPrivateService exposes the private endpoints that allow clients to
 // manage artifacts.
 service ArtifactPrivateService {
-  // List the tags in a repository.
+  // List the tags in a repository (admin only)
   //
   // Returns a portion of the versions that the specified repository holds.
-  rpc ListRepositoryTags(ListRepositoryTagsRequest) returns (ListRepositoryTagsResponse);
+  rpc ListRepositoryTagsAdmin(ListRepositoryTagsAdminRequest) returns (ListRepositoryTagsAdminResponse);
 
-  // Get details of repository tag.
-  rpc GetRepositoryTag(GetRepositoryTagRequest) returns (GetRepositoryTagResponse);
+  // Get details of repository tag (admin only)
+  rpc GetRepositoryTagAdmin(GetRepositoryTagAdminRequest) returns (GetRepositoryTagAdminResponse);
 
-  // Create a new repository tag.
+  // Create a new repository tag (admin only)
   //
   // Adds a tag to a given repository. Note that this operation is only
   // intended to register the information of an *already created* tag. This
@@ -24,31 +26,67 @@ service ArtifactPrivateService {
   // the [PUT Manifest](https://distribution.github.io/distribution/#put-manifest) has
   // succeeded. The distribution registry won't hold data such as the push time
   // or the tag digest, so `artifact-backend` will hold this information locally.
-  rpc CreateRepositoryTag(CreateRepositoryTagRequest) returns (CreateRepositoryTagResponse);
+  rpc CreateRepositoryTagAdmin(CreateRepositoryTagAdminRequest) returns (CreateRepositoryTagAdminResponse);
 
-  // Delete a repository tag.
-  rpc DeleteRepositoryTag(DeleteRepositoryTagRequest) returns (DeleteRepositoryTagResponse);
+  // Delete a repository tag (admin only)
+  rpc DeleteRepositoryTagAdmin(DeleteRepositoryTagAdminRequest) returns (DeleteRepositoryTagAdminResponse);
 
-  // Get Object
-  rpc GetObject(GetObjectRequest) returns (GetObjectResponse);
+  // Get Object (admin only)
+  rpc GetObjectAdmin(GetObjectAdminRequest) returns (GetObjectAdminResponse);
 
-  // Get Object URL
-  rpc GetObjectURL(GetObjectURLRequest) returns (GetObjectURLResponse);
+  // Get Object URL (admin only)
+  rpc GetObjectURLAdmin(GetObjectURLAdminRequest) returns (GetObjectURLAdminResponse);
 
-  // Update Object
-  rpc UpdateObject(UpdateObjectRequest) returns (UpdateObjectResponse);
+  // Update Object (admin only)
+  rpc UpdateObjectAdmin(UpdateObjectAdminRequest) returns (UpdateObjectAdminResponse);
 
-  // Get file as Markdown
+  // Get file as Markdown (admin only)
   //
   // Returns the Markdown representation of a file.
-  rpc GetFileAsMarkdown(GetFileAsMarkdownRequest) returns (GetFileAsMarkdownResponse);
+  rpc GetFileAsMarkdownAdmin(GetFileAsMarkdownAdminRequest) returns (GetFileAsMarkdownAdminResponse);
 
-  // Get file as Markdown (deprecated)
+  // Get file as Markdown (deprecated, admin only)
   //
   // Returns the contents of a file conversion to Markdown as a binary blob.
   // This method is deprecated as it identifies the file by namespace and
   // filename instead of UID, which isn't a unique identifier anymore.
-  rpc GetChatFile(GetChatFileRequest) returns (GetChatFileResponse) {
+  rpc GetChatFileAdmin(GetChatFileAdminRequest) returns (GetChatFileAdminResponse) {
     option deprecated = true;
   }
+
+  // Delete a catalog file (admin only)
+  //
+  // Deletes a file from a catalog. This is the private endpoint for internal operations.
+  rpc DeleteCatalogFileAdmin(DeleteCatalogFileAdminRequest) returns (DeleteCatalogFileAdminResponse);
+
+  // Knowledge Base Update Admin APIs
+
+  // Rollback a specific catalog to previous version (admin only)
+  rpc RollbackAdmin(RollbackAdminRequest) returns (RollbackAdminResponse);
+
+  // Purge rollback immediately (admin only)
+  rpc PurgeRollbackAdmin(PurgeRollbackAdminRequest) returns (PurgeRollbackAdminResponse);
+
+  // Set rollback retention period (admin only)
+  rpc SetRollbackRetentionAdmin(SetRollbackRetentionAdminRequest) returns (SetRollbackRetentionAdminResponse);
+
+  // Execute knowledge base update (admin only)
+  rpc ExecuteKnowledgeBaseUpdateAdmin(ExecuteKnowledgeBaseUpdateAdminRequest) returns (ExecuteKnowledgeBaseUpdateAdminResponse);
+
+  // Get knowledge base update status (admin only)
+  rpc GetKnowledgeBaseUpdateStatusAdmin(GetKnowledgeBaseUpdateStatusAdminRequest) returns (GetKnowledgeBaseUpdateStatusAdminResponse);
+
+  // System Profile Management Admin APIs
+
+  // Get a system configuration profile (admin only)
+  rpc GetSystemProfileAdmin(GetSystemProfileAdminRequest) returns (GetSystemProfileAdminResponse);
+
+  // Update (create or update) a system configuration profile (admin only)
+  rpc UpdateSystemProfileAdmin(UpdateSystemProfileAdminRequest) returns (UpdateSystemProfileAdminResponse);
+
+  // List all system configuration profiles (admin only)
+  rpc ListSystemProfilesAdmin(ListSystemProfilesAdminRequest) returns (ListSystemProfilesAdminResponse);
+
+  // Delete a system configuration profile (admin only)
+  rpc DeleteSystemProfileAdmin(DeleteSystemProfileAdminRequest) returns (DeleteSystemProfileAdminResponse);
 }
