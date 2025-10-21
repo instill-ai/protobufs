@@ -56,10 +56,26 @@ service ArtifactPrivateService {
 
   // Delete a catalog file (admin only)
   //
-  // Deletes a file from a catalog. This is the private endpoint for internal operations.
+  // Deletes a file from a catalog using only the file UID. Unlike the public
+  // DeleteCatalogFile endpoint which requires namespace and catalog IDs, this
+  // admin endpoint automatically looks up the file's catalog and owner to
+  // perform the deletion. Primarily used for integration testing and internal
+  // operations where the caller has a file UID but not the full resource path.
+  // Authentication metadata is injected automatically based on the file owner.
   rpc DeleteCatalogFileAdmin(DeleteCatalogFileAdminRequest) returns (DeleteCatalogFileAdminResponse);
 
   // Knowledge Base Update Admin APIs
+
+  // Execute knowledge base update (admin only)
+  rpc ExecuteKnowledgeBaseUpdateAdmin(ExecuteKnowledgeBaseUpdateAdminRequest) returns (ExecuteKnowledgeBaseUpdateAdminResponse);
+
+  // Abort knowledge base update (admin only)
+  //
+  // Cancels ongoing update workflows and cleans up staging KB resources
+  // (both finished and unfinished). Can abort specific catalogs by ID or
+  // all currently updating catalogs if no IDs provided. Sets catalog status
+  // to 'aborted'.
+  rpc AbortKnowledgeBaseUpdateAdmin(AbortKnowledgeBaseUpdateAdminRequest) returns (AbortKnowledgeBaseUpdateAdminResponse);
 
   // Rollback a specific catalog to previous version (admin only)
   rpc RollbackAdmin(RollbackAdminRequest) returns (RollbackAdminResponse);
@@ -69,9 +85,6 @@ service ArtifactPrivateService {
 
   // Set rollback retention period (admin only)
   rpc SetRollbackRetentionAdmin(SetRollbackRetentionAdminRequest) returns (SetRollbackRetentionAdminResponse);
-
-  // Execute knowledge base update (admin only)
-  rpc ExecuteKnowledgeBaseUpdateAdmin(ExecuteKnowledgeBaseUpdateAdminRequest) returns (ExecuteKnowledgeBaseUpdateAdminResponse);
 
   // Get knowledge base update status (admin only)
   rpc GetKnowledgeBaseUpdateStatusAdmin(GetKnowledgeBaseUpdateStatusAdminRequest) returns (GetKnowledgeBaseUpdateStatusAdminResponse);
