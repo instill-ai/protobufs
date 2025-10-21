@@ -4749,12 +4749,12 @@ definitions:
       message:
         type: string
         title: Human-readable status message explaining the result
-      catalogStatuses:
+      details:
         type: array
         items:
           type: object
-          $ref: '#/definitions/CatalogUpdateStatus'
-        title: List of catalog update statuses that were aborted
+          $ref: '#/definitions/KnowledgeBaseUpdateDetails'
+        title: List of knowledge base update details that were aborted
     title: AbortKnowledgeBaseUpdateAdminResponse (admin only)
   Any:
     type: object
@@ -5223,33 +5223,6 @@ definitions:
       - CATALOG_TYPE_PERSISTENT: PERSISTENT
        - CATALOG_TYPE_EPHEMERAL: EPHEMERAL
     title: Catalog Type. e.g. "persistent" or "ephemeral"
-  CatalogUpdateStatus:
-    type: object
-    properties:
-      catalogUid:
-        type: string
-        title: UID of the catalog
-      status:
-        type: string
-        title: Status of the catalog update
-      workflowId:
-        type: string
-        title: Workflow ID of the catalog update
-      startedAt:
-        type: string
-        title: Started at time of the catalog update
-      completedAt:
-        type: string
-        title: Completed at time of the catalog update
-      filesProcessed:
-        type: integer
-        format: int32
-        title: Number of files processed
-      totalFiles:
-        type: integer
-        format: int32
-        title: Total number of files to process
-    title: CatalogUpdateStatus messages
   CheckNamespaceAdminResponse:
     type: object
     properties:
@@ -6094,12 +6067,12 @@ definitions:
       message:
         type: string
         title: Human-readable status message explaining the result
-      catalogStatuses:
+      details:
         type: array
         items:
           type: object
-          $ref: '#/definitions/CatalogUpdateStatus'
-        title: List of catalog update statuses (populated when update already in progress)
+          $ref: '#/definitions/KnowledgeBaseUpdateDetails'
+        title: List of knowledge base update details (populated when update already in progress)
     title: ExecuteKnowledgeBaseUpdateAdminResponse (admin only)
   File:
     type: object
@@ -6552,12 +6525,12 @@ definitions:
       updateInProgress:
         type: boolean
         title: Whether update is in progress
-      catalogStatuses:
+      details:
         type: array
         items:
           type: object
-          $ref: '#/definitions/CatalogUpdateStatus'
-        title: List of catalog update statuses
+          $ref: '#/definitions/KnowledgeBaseUpdateDetails'
+        title: List of knowledge base update details
       message:
         type: string
         title: Status message
@@ -6886,6 +6859,65 @@ definitions:
     description: |-
       InviteOrganizationMembersResponse represents a response to a request to invite
       members to an organization.
+  KnowledgeBaseUpdateDetails:
+    type: object
+    properties:
+      catalogUid:
+        type: string
+        title: UID of the catalog
+      status:
+        title: Status of the catalog update
+        allOf:
+          - $ref: '#/definitions/KnowledgeBaseUpdateStatus'
+      workflowId:
+        type: string
+        title: Workflow ID of the catalog update
+      startedAt:
+        type: string
+        title: Started at time of the catalog update
+      completedAt:
+        type: string
+        title: Completed at time of the catalog update
+      filesProcessed:
+        type: integer
+        format: int32
+        title: Number of files processed
+      totalFiles:
+        type: integer
+        format: int32
+        title: Total number of files to process
+    title: KnowledgeBaseUpdateDetails provides detailed information about a knowledge base update
+  KnowledgeBaseUpdateStatus:
+    type: string
+    enum:
+      - KNOWLEDGE_BASE_UPDATE_STATUS_NONE
+      - KNOWLEDGE_BASE_UPDATE_STATUS_UPDATING
+      - KNOWLEDGE_BASE_UPDATE_STATUS_SYNCING
+      - KNOWLEDGE_BASE_UPDATE_STATUS_VALIDATING
+      - KNOWLEDGE_BASE_UPDATE_STATUS_SWAPPING
+      - KNOWLEDGE_BASE_UPDATE_STATUS_COMPLETED
+      - KNOWLEDGE_BASE_UPDATE_STATUS_FAILED
+      - KNOWLEDGE_BASE_UPDATE_STATUS_ROLLED_BACK
+      - KNOWLEDGE_BASE_UPDATE_STATUS_ABORTED
+    description: |-
+      - KNOWLEDGE_BASE_UPDATE_STATUS_NONE: KNOWLEDGE_BASE_UPDATE_STATUS_NONE - KB has never been updated (default state for new KBs)
+       - KNOWLEDGE_BASE_UPDATE_STATUS_UPDATING: KNOWLEDGE_BASE_UPDATE_STATUS_UPDATING - Phase 1-2: Preparing and reprocessing
+      The staging KB is being created and populated by reprocessing all files with new configuration
+       - KNOWLEDGE_BASE_UPDATE_STATUS_SYNCING: KNOWLEDGE_BASE_UPDATE_STATUS_SYNCING - Phase 3: Synchronization
+      Locking KB and waiting for all dual-processed files to complete
+       - KNOWLEDGE_BASE_UPDATE_STATUS_VALIDATING: KNOWLEDGE_BASE_UPDATE_STATUS_VALIDATING - Phase 4: Validation
+      Validating data integrity (file counts, embeddings, chunks)
+       - KNOWLEDGE_BASE_UPDATE_STATUS_SWAPPING: KNOWLEDGE_BASE_UPDATE_STATUS_SWAPPING - Phase 5: Atomic Swap
+      Performing atomic pointer swap of collections and metadata
+       - KNOWLEDGE_BASE_UPDATE_STATUS_COMPLETED: KNOWLEDGE_BASE_UPDATE_STATUS_COMPLETED - Phase 6: Cleanup/Retention
+      Update completed successfully, rollback KB retained for configured period
+       - KNOWLEDGE_BASE_UPDATE_STATUS_FAILED: KNOWLEDGE_BASE_UPDATE_STATUS_FAILED - Update failed at some point
+      Production KB remains unchanged and can be used normally
+       - KNOWLEDGE_BASE_UPDATE_STATUS_ROLLED_BACK: KNOWLEDGE_BASE_UPDATE_STATUS_ROLLED_BACK - Update was rolled back
+      Previous version has been restored from the rollback KB
+       - KNOWLEDGE_BASE_UPDATE_STATUS_ABORTED: KNOWLEDGE_BASE_UPDATE_STATUS_ABORTED - Update was manually aborted
+      Production KB remains unchanged and can be updated again
+    title: KnowledgeBaseUpdateStatus represents the various states of a Knowledge Base update lifecycle
   Link:
     type: object
     properties:

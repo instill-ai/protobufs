@@ -5,12 +5,53 @@ package artifact.artifact.v1alpha;
 // Artifact definitions
 import "artifact/artifact/v1alpha/artifact.proto";
 
-// CatalogUpdateStatus messages
-message CatalogUpdateStatus {
+// KnowledgeBaseUpdateStatus represents the various states of a Knowledge Base update lifecycle
+enum KnowledgeBaseUpdateStatus {
+  // KNOWLEDGE_BASE_UPDATE_STATUS_UNSPECIFIED - Invalid/unknown state
+  KNOWLEDGE_BASE_UPDATE_STATUS_UNSPECIFIED = 0;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_NONE - KB has never been updated (default state for new KBs)
+  KNOWLEDGE_BASE_UPDATE_STATUS_NONE = 1;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_UPDATING - Phase 1-2: Preparing and reprocessing
+  // The staging KB is being created and populated by reprocessing all files with new configuration
+  KNOWLEDGE_BASE_UPDATE_STATUS_UPDATING = 2;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_SYNCING - Phase 3: Synchronization
+  // Locking KB and waiting for all dual-processed files to complete
+  KNOWLEDGE_BASE_UPDATE_STATUS_SYNCING = 3;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_VALIDATING - Phase 4: Validation
+  // Validating data integrity (file counts, embeddings, chunks)
+  KNOWLEDGE_BASE_UPDATE_STATUS_VALIDATING = 4;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_SWAPPING - Phase 5: Atomic Swap
+  // Performing atomic pointer swap of collections and metadata
+  KNOWLEDGE_BASE_UPDATE_STATUS_SWAPPING = 5;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_COMPLETED - Phase 6: Cleanup/Retention
+  // Update completed successfully, rollback KB retained for configured period
+  KNOWLEDGE_BASE_UPDATE_STATUS_COMPLETED = 6;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_FAILED - Update failed at some point
+  // Production KB remains unchanged and can be used normally
+  KNOWLEDGE_BASE_UPDATE_STATUS_FAILED = 7;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_ROLLED_BACK - Update was rolled back
+  // Previous version has been restored from the rollback KB
+  KNOWLEDGE_BASE_UPDATE_STATUS_ROLLED_BACK = 8;
+
+  // KNOWLEDGE_BASE_UPDATE_STATUS_ABORTED - Update was manually aborted
+  // Production KB remains unchanged and can be updated again
+  KNOWLEDGE_BASE_UPDATE_STATUS_ABORTED = 9;
+}
+
+// KnowledgeBaseUpdateDetails provides detailed information about a knowledge base update
+message KnowledgeBaseUpdateDetails {
   // UID of the catalog
   string catalog_uid = 1;
   // Status of the catalog update
-  string status = 2;
+  KnowledgeBaseUpdateStatus status = 2;
   // Workflow ID of the catalog update
   string workflow_id = 3;
   // Started at time of the catalog update
@@ -100,8 +141,8 @@ message GetKnowledgeBaseUpdateStatusAdminRequest {
 message GetKnowledgeBaseUpdateStatusAdminResponse {
   // Whether update is in progress
   bool update_in_progress = 1;
-  // List of catalog update statuses
-  repeated CatalogUpdateStatus catalog_statuses = 2;
+  // List of knowledge base update details
+  repeated KnowledgeBaseUpdateDetails details = 2;
   // Status message
   string message = 3;
 }
@@ -126,8 +167,8 @@ message ExecuteKnowledgeBaseUpdateAdminResponse {
   bool started = 1;
   // Human-readable status message explaining the result
   string message = 2;
-  // List of catalog update statuses (populated when update already in progress)
-  repeated CatalogUpdateStatus catalog_statuses = 3;
+  // List of knowledge base update details (populated when update already in progress)
+  repeated KnowledgeBaseUpdateDetails details = 3;
 }
 
 // AbortKnowledgeBaseUpdateAdminRequest (admin only)
@@ -142,6 +183,6 @@ message AbortKnowledgeBaseUpdateAdminResponse {
   bool success = 1;
   // Human-readable status message explaining the result
   string message = 2;
-  // List of catalog update statuses that were aborted
-  repeated CatalogUpdateStatus catalog_statuses = 3;
+  // List of knowledge base update details that were aborted
+  repeated KnowledgeBaseUpdateDetails details = 3;
 }
