@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package artifact.artifact.v1alpha;
+
+// Google API
+import "google/api/field_behavior.proto";
+// Protocol Buffers Well-Known Types
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// System Management Messages
+
+// System represents a system configuration for Knowledge Base System.
+// The system defines how knowledge bases are created and configured based on
+// the RAG system settings, including:
+// - AI model family (e.g., "openai", "gemini")
+// - RAG algorithms and methods
+// - Embedding vector dimensionality
+// - Chunking strategies
+// - Other system-wide configurations
+//
+// Systems are global resources managed by administrators to provide
+// consistent configurations across knowledge bases.
+message System {
+  // The resource name of the system.
+  // - Format: `systems/{system.id}`.
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // System UUID.
+  string uid = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // System resource ID (used in `name` as the last segment). This conforms
+  // to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+  // first character a letter, the last a letter or a number, and a 63
+  // character maximum.
+  // Examples: "default", "openai", "gemini"
+  string id = 3 [(google.api.field_behavior) = IMMUTABLE];
+
+  // Complete system configuration as structured JSON.
+  // Contains nested configuration for RAG system components:
+  // - rag.embedding.model_family: AI model family name
+  // - rag.embedding.dimensionality: Vector embedding dimensions
+  // - Additional RAG-related settings
+  google.protobuf.Struct config = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Description of this system.
+  optional string description = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Indicates if this is the default system configuration used when creating
+  // new knowledge bases. Only one system can be default at a time.
+  bool is_default = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // System creation time.
+  google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // System update time.
+  google.protobuf.Timestamp update_time = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // System delete time.
+  optional google.protobuf.Timestamp delete_time = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// GetSystemAdminRequest (admin only)
+message GetSystemAdminRequest {
+  // System ID, defaults to "openai" if not specified
+  string id = 1;
+}
+
+// GetSystemAdminResponse (admin only)
+message GetSystemAdminResponse {
+  // The requested system
+  System system = 1;
+}
+
+// CreateSystemAdminRequest (admin only)
+message CreateSystemAdminRequest {
+  // The system to create
+  System system = 1;
+}
+
+// CreateSystemAdminResponse (admin only)
+message CreateSystemAdminResponse {
+  // The created system
+  System system = 1;
+}
+
+// UpdateSystemAdminRequest (admin only)
+message UpdateSystemAdminRequest {
+  // The system fields to update.
+  System system = 1;
+
+  // The update mask specifies the subset of fields that should be modified.
+  // Fields specified in the mask are relative to the system (e.g., `config`, `description`).
+  //
+  // For more information about field masks, see:
+  // https://google.aip.dev/161
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UpdateSystemAdminResponse (admin only)
+message UpdateSystemAdminResponse {
+  // The updated system
+  System system = 1;
+}
+
+// ListSystemsAdminRequest (admin only)
+message ListSystemsAdminRequest {
+  // Empty - lists all systems
+}
+
+// ListSystemsAdminResponse (admin only)
+message ListSystemsAdminResponse {
+  // List of all systems
+  repeated System systems = 1;
+}
+
+// DeleteSystemAdminRequest (admin only)
+message DeleteSystemAdminRequest {
+  // System ID to delete (cannot delete "openai" system)
+  string id = 1;
+}
+
+// DeleteSystemAdminResponse (admin only)
+message DeleteSystemAdminResponse {
+  // Whether the deletion was successful
+  bool success = 1;
+  // Status message
+  string message = 2;
+}
+
+// RenameSystemAdminRequest (admin only)
+// Renames an existing system configuration (changes its ID)
+message RenameSystemAdminRequest {
+  // Current system ID
+  string system_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The new system ID. This will transform the resource name into `systems/{new_system_id}`.
+  // The ID must conform to RFC-1034 (lowercase letters, numbers, hyphens, underscores).
+  string new_system_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// RenameSystemAdminResponse (admin only)
+message RenameSystemAdminResponse {
+  // The renamed system resource
+  System system = 1;
+}
+
+// SetDefaultSystemAdminRequest (admin only)
+// Sets a system as the default. This will unset any currently default system.
+message SetDefaultSystemAdminRequest {
+  // System ID to set as default
+  string id = 1;
+}
+
+// SetDefaultSystemAdminResponse (admin only)
+message SetDefaultSystemAdminResponse {
+  // The updated system that is now the default
+  System system = 1;
+}
+
+// GetDefaultSystemAdminRequest (admin only)
+// Retrieves the current default system configuration
+message GetDefaultSystemAdminRequest {}
+
+// GetDefaultSystemAdminResponse (admin only)
+message GetDefaultSystemAdminResponse {
+  // The current default system
+  System system = 1;
+}
