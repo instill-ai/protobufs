@@ -5829,6 +5829,19 @@ definitions:
           non-document catalog files, the conversion pipeline is deterministic (such
           files are typically trivial to convert and don't require a dedicated
           pipeline to improve the conversion performance).
+      systemId:
+        type: string
+        description: |-
+          Available systems: "openai", "gemini", or custom systems defined in the system table.
+          If not specified, defaults to "openai" system.
+        title: |-
+          System ID to use for this catalog.
+          References a system configuration in the system table that defines how the knowledge base
+          will be created based on the system's RAG configurations including:
+          - AI model family (e.g., "openai", "gemini")
+          - Embedding vector dimensionality (e.g., 1536 for OpenAI, 3072 for Gemini)
+          - Chunking method
+          - Other RAG-related settings
     description: CreateCatalogRequest represents a request to create a catalog.
   CreateCatalogResponse:
     type: object
@@ -5900,6 +5913,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/RepositoryTag'
     description: CreateRepositoryTagAdminResponse contains the created tag (admin only).
+  CreateSystemAdminResponse:
+    type: object
+    properties:
+      system:
+        title: The created system
+        allOf:
+          - $ref: '#/definitions/System'
+    title: CreateSystemAdminResponse (admin only)
   CreateTokenResponse:
     type: object
     properties:
@@ -5972,7 +5993,7 @@ definitions:
   DeleteRepositoryTagAdminResponse:
     type: object
     description: DeleteRepositoryTagAdminResponse is an empty response (admin only).
-  DeleteSystemProfileAdminResponse:
+  DeleteSystemAdminResponse:
     type: object
     properties:
       success:
@@ -5981,7 +6002,7 @@ definitions:
       message:
         type: string
         title: Status message
-    title: DeleteSystemProfileAdminResponse (admin only)
+    title: DeleteSystemAdminResponse (admin only)
   DeleteTokenResponse:
     type: object
     description: DeleteTokenResponse is an empty response.
@@ -6417,6 +6438,14 @@ definitions:
         format: byte
         title: converted markdown content
     title: GetChatFileAdminResponse (admin only, deprecated)
+  GetDefaultSystemAdminResponse:
+    type: object
+    properties:
+      system:
+        title: The current default system
+        allOf:
+          - $ref: '#/definitions/System'
+    title: GetDefaultSystemAdminResponse (admin only)
   GetFileAsMarkdownAdminResponse:
     type: object
     properties:
@@ -6718,14 +6747,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/SourceFile'
     title: get source file response
-  GetSystemProfileAdminResponse:
+  GetSystemAdminResponse:
     type: object
     properties:
-      systemProfile:
-        title: The requested system profile
+      system:
+        title: The requested system
         allOf:
-          - $ref: '#/definitions/SystemProfile'
-    title: GetSystemProfileAdminResponse (admin only)
+          - $ref: '#/definitions/System'
+    title: GetSystemAdminResponse (admin only)
   GetTokenResponse:
     type: object
     properties:
@@ -6886,6 +6915,30 @@ definitions:
         type: integer
         format: int32
         title: Total number of files to process
+      errorMessage:
+        type: string
+        title: |-
+          Error message explaining why the update failed
+          Populated ONLY when status is KNOWLEDGE_BASE_UPDATE_STATUS_FAILED
+          Empty for all other statuses (NONE, UPDATING, SYNCING, VALIDATING, SWAPPING, COMPLETED, ROLLED_BACK, ABORTED)
+      currentSystemId:
+        type: string
+        title: |-
+          Current system ID (e.g., "openai", "gemini")
+          The system configuration currently active in the production KB
+          - For UPDATING: The system being updated to (from staging KB - will become current after swap)
+          - For COMPLETED/FAILED/ROLLED_BACK/ABORTED/NONE: The current production system ID
+          Always reflects the KB's current state
+      previousSystemId:
+        type: string
+        title: |-
+          Previous system ID before the update (e.g., "openai", "gemini")
+          Captured at update start for historical audit trail
+          - For UPDATING: The system before update started
+          - For COMPLETED: The system before successful update (what was replaced)
+          - For FAILED/ABORTED: The system before failed attempt (same as current, since update didn't complete)
+          - For ROLLED_BACK: The system that was rolled back FROM (before rollback)
+          - For NONE: Empty (never been updated)
     title: KnowledgeBaseUpdateDetails provides detailed information about a knowledge base update
   KnowledgeBaseUpdateStatus:
     type: string
@@ -7576,16 +7629,16 @@ definitions:
         format: int32
         description: The requested page offset.
     description: ListRepositoryTagsAdminResponse contains a list of repository tags (admin only).
-  ListSystemProfilesAdminResponse:
+  ListSystemsAdminResponse:
     type: object
     properties:
-      systemProfiles:
+      systems:
         type: array
         items:
           type: object
-          $ref: '#/definitions/SystemProfile'
-        title: List of all system profiles
-    title: ListSystemProfilesAdminResponse (admin only)
+          $ref: '#/definitions/System'
+        title: List of all systems
+    title: ListSystemsAdminResponse (admin only)
   ListTokensResponse:
     type: object
     properties:
@@ -8853,6 +8906,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Pipeline'
     description: RenameNamespacePipelineResponse contains a renamed pipeline.
+  RenameSystemAdminResponse:
+    type: object
+    properties:
+      system:
+        title: The renamed system resource
+        allOf:
+          - $ref: '#/definitions/System'
+    title: RenameSystemAdminResponse (admin only)
   RepositoryTag:
     type: object
     properties:
@@ -8968,6 +9029,14 @@ definitions:
         type: string
         title: Description
     description: API secrets allow users to make requests to the Instill AI API.
+  SetDefaultSystemAdminResponse:
+    type: object
+    properties:
+      system:
+        title: The updated system that is now the default
+        allOf:
+          - $ref: '#/definitions/System'
+    title: SetDefaultSystemAdminResponse (admin only)
   SetRollbackRetentionAdminResponse:
     type: object
     properties:
@@ -9161,23 +9230,73 @@ definitions:
           The key represents the event, and the value is the corresponding event_specification.
         readOnly: true
     description: Spec represents a specification data model.
-  SystemProfile:
+  System:
     type: object
     properties:
-      profile:
+      name:
         type: string
-        title: Profile name (e.g., "default", "enterprise", "free")
+        description: |-
+          The resource name of the system.
+          - Format: `systems/{system.id}`.
+        readOnly: true
+      uid:
+        type: string
+        description: System UUID.
+        readOnly: true
+      id:
+        type: string
+        title: |-
+          System resource ID (used in `name` as the last segment). This conforms
+          to RFC-1034, which restricts to letters, numbers, and hyphen, with the
+          first character a letter, the last a letter or a number, and a 63
+          character maximum.
+          Examples: "default", "openai", "gemini"
       config:
         type: object
-        title: Complete system configuration as structured JSON
+        title: |-
+          Complete system configuration as structured JSON.
+          Contains nested configuration for RAG system components:
+          - rag.embedding.model_family: AI model family name
+          - rag.embedding.dimensionality: Vector embedding dimensions
+          - Additional RAG-related settings
       description:
         type: string
-        title: Description of this profile
-      updatedAt:
+        description: Description of this system.
+      isDefault:
+        type: boolean
+        description: |-
+          Indicates if this is the default system configuration used when creating
+          new knowledge bases. Only one system can be default at a time.
+        readOnly: true
+      createTime:
         type: string
         format: date-time
-        title: Last update time
-    title: SystemProfile represents a system-wide configuration profile
+        description: System creation time.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: System update time.
+        readOnly: true
+      deleteTime:
+        type: string
+        format: date-time
+        description: System delete time.
+        readOnly: true
+    description: |-
+      Systems are global resources managed by administrators to provide
+      consistent configurations across knowledge bases.
+    title: |-
+      System represents a system configuration for Knowledge Base System.
+      The system defines how knowledge bases are created and configured based on
+      the RAG system settings, including:
+      - AI model family (e.g., "openai", "gemini")
+      - RAG algorithms and methods
+      - Embedding vector dimensionality
+      - Chunking strategies
+      - Other system-wide configurations
+    required:
+      - config
   Task:
     type: string
     enum:
@@ -9837,14 +9956,14 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: UpdateOrganizationResponse contains the updated organization.
-  UpdateSystemProfileAdminResponse:
+  UpdateSystemAdminResponse:
     type: object
     properties:
-      systemProfile:
-        title: The updated system profile
+      system:
+        title: The updated system
         allOf:
-          - $ref: '#/definitions/SystemProfile'
-    title: UpdateSystemProfileAdminResponse (admin only)
+          - $ref: '#/definitions/System'
+    title: UpdateSystemAdminResponse (admin only)
   UpdateUserMembershipResponse:
     type: object
     properties:
