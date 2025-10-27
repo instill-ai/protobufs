@@ -4,8 +4,9 @@ package artifact.artifact.v1alpha;
 
 // Artifact definitions
 import "artifact/artifact/v1alpha/artifact.proto";
+import "artifact/artifact/v1alpha/catalog.proto";
 import "artifact/artifact/v1alpha/chunk.proto";
-import "artifact/artifact/v1alpha/file_catalog.proto";
+import "artifact/artifact/v1alpha/file.proto";
 import "artifact/artifact/v1alpha/object.proto";
 // Google API
 import "google/api/annotations.proto";
@@ -50,6 +51,20 @@ service ArtifactPublicService {
       post: "/v1alpha/namespaces/{namespace_id}/catalogs"
       body: "*"
     };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Artifact"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Get a catalog
+  //
+  // Returns the details of a catalog.
+  rpc GetCatalog(GetCatalogRequest) returns (GetCatalogResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Artifact"
       extensions: {
@@ -106,10 +121,55 @@ service ArtifactPublicService {
 
   // Create a file
   //
-  // Creates a file.
-  rpc UploadCatalogFile(UploadCatalogFileRequest) returns (UploadCatalogFileResponse) {
+  // Uploads and converts a file to a catalog.
+  rpc CreateFile(CreateFileRequest) returns (CreateFileResponse) {
     option (google.api.http) = {
       post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files"
+      body: "file"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Artifact"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Get a file
+  //
+  // Returns the details of a file.
+  rpc GetFile(GetFileRequest) returns (GetFileResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/{file_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Artifact"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // List files
+  //
+  // Returns a paginated list of files.
+  rpc ListFiles(ListFilesRequest) returns (ListFilesResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Artifact"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
+  // Update a file
+  //
+  // Updates a file.
+  rpc UpdateFile(UpdateFileRequest) returns (UpdateFileResponse) {
+    option (google.api.http) = {
+      patch: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/{file_id}"
       body: "file"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -124,8 +184,8 @@ service ArtifactPublicService {
   // Delete a file
   //
   // Deletes a file.
-  rpc DeleteCatalogFile(DeleteCatalogFileRequest) returns (DeleteCatalogFileResponse) {
-    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/{file_uid}"};
+  rpc DeleteFile(DeleteFileRequest) returns (DeleteFileResponse) {
+    option (google.api.http) = {delete: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/{file_id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Artifact"
       extensions: {
@@ -135,38 +195,11 @@ service ArtifactPublicService {
     };
   }
 
-  // Process catalog files
+  // Get a chunk
   //
-  // Processes catalog files.
-  rpc ProcessCatalogFiles(ProcessCatalogFilesRequest) returns (ProcessCatalogFilesResponse) {
-    option (google.api.http) = {
-      post: "/v1alpha/catalogs/files/processAsync"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-      parameters: {
-        headers: {
-          name: "Instill-Requester-Uid"
-          description:
-            "Indicates the authenticated namespace is making the "
-            "request on behalf of another entity, typically an "
-            "organization they belong to"
-          type: STRING
-        }
-      }
-    };
-  }
-
-  // List catalog files
-  //
-  // Returns a paginated list of catalog files.
-  rpc ListCatalogFiles(ListCatalogFilesRequest) returns (ListCatalogFilesResponse) {
-    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files"};
+  // Returns the details of a chunk.
+  rpc GetChunk(GetChunkRequest) returns (GetChunkResponse) {
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/{file_id}/chunks/{chunk_id}"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Artifact"
       extensions: {
@@ -176,28 +209,11 @@ service ArtifactPublicService {
     };
   }
 
-  // Get catalog file
+  // List chunks
   //
-  // Gets the file of a catalog.
-  rpc GetCatalogFile(GetCatalogFileRequest) returns (GetCatalogFileResponse) {
-    option (google.api.http) = {get:
-        "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/"
-        "{file_uid}"
-};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // List catalog chunks
-  //
-  // Returns a paginated list of catalog chunks.
+  // Returns a paginated list of chunks.
   rpc ListChunks(ListChunksRequest) returns (ListChunksResponse) {
-    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/chunks"};
+    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/{file_id}/chunks"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Artifact"
       extensions: {
@@ -207,60 +223,12 @@ service ArtifactPublicService {
     };
   }
 
-  // Get catalog single-source-of-truth file
+  // Update a chunk
   //
-  // Gets the single-source-of-truth file of a catalog.
-  rpc GetSourceFile(GetSourceFileRequest) returns (GetSourceFileResponse) {
-    option (google.api.http) = {get:
-        "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/"
-        "{file_uid}/source"
-};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // Get summary from a catalog file
-  //
-  // Gets summary from a catalog file
-  rpc GetFileSummary(GetFileSummaryRequest) returns (GetFileSummaryResponse) {
-    option (google.api.http) = {get:
-        "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/"
-        "{file_uid}/summary"
-};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // Search single-source-of-truth files
-  //
-  // Searches the single-source-of-truth files of a catalog.
-  rpc SearchSourceFiles(SearchSourceFilesRequest) returns (SearchSourceFilesResponse) {
-    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/source-files"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "beta"}
-      }
-    };
-  }
-
-  // Update catalog chunk
-  //
-  // Updates a catalog chunk.
+  // Updates a chunk.
   rpc UpdateChunk(UpdateChunkRequest) returns (UpdateChunkResponse) {
     option (google.api.http) = {
-      post: "/v1alpha/chunks/{chunk_uid}"
+      patch: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/chunks/{chunk_id}"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -272,14 +240,12 @@ service ArtifactPublicService {
     };
   }
 
-  // Retrieve similar chunks
+  // Search chunks
   //
   // Returns the top-K most similar chunks to a text prompt.
-  rpc SimilarityChunksSearch(SimilarityChunksSearchRequest) returns (SimilarityChunksSearchResponse) {
+  rpc SearchChunks(SearchChunksRequest) returns (SearchChunksResponse) {
     option (google.api.http) = {
-      post:
-        "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/chunks/"
-        "retrieve"
+      post: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/searchChunks"
       body: "*"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
@@ -297,24 +263,6 @@ service ArtifactPublicService {
             "organization they belong to"
           type: STRING
         }
-      }
-    };
-  }
-
-  // Get the catalog file.
-  //
-  // Returns a view of the file within the catalog, with the text and chunks it
-  // generated after being processed.
-  rpc GetFileCatalog(GetFileCatalogRequest) returns (GetFileCatalogResponse) {
-    // TODO use a more meaningful method name and path, e.g.:
-    //   - name: GetConversionOutputsForCatalogFile
-    //   - path: v1alpha/files/{file_uid}/conversion-outputs
-    option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
       }
     };
   }
@@ -352,42 +300,6 @@ service ArtifactPublicService {
   // Returns the download URL of an object.
   rpc GetObjectDownloadURL(GetObjectDownloadURLRequest) returns (GetObjectDownloadURLResponse) {
     option (google.api.http) = {get: "/v1alpha/namespaces/{namespace_id}/object-download-url"};
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // Move file to another catalog
-  //
-  // Moves a file to another catalog.
-  rpc MoveFileToCatalog(MoveFileToCatalogRequest) returns (MoveFileToCatalogResponse) {
-    option (google.api.http) = {
-      post:
-        "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/"
-        "files:move"
-      body: "*"
-    };
-    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
-      tags: "Artifact"
-      extensions: {
-        key: "x-stage"
-        value: {string_value: "alpha"}
-      }
-    };
-  }
-
-  // Update catalog file tags
-  //
-  // Updates the tags associated with a catalog file.
-  rpc UpdateCatalogFileTags(UpdateCatalogFileTagsRequest) returns (UpdateCatalogFileTagsResponse) {
-    option (google.api.http) = {
-      put: "/v1alpha/namespaces/{namespace_id}/catalogs/{catalog_id}/files/{file_uid}/tags"
-      body: "*"
-    };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Artifact"
       extensions: {

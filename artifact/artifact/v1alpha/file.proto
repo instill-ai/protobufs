@@ -1,0 +1,415 @@
+syntax = "proto3";
+
+package artifact.artifact.v1alpha;
+
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+// file embedding process status
+enum FileProcessStatus {
+  // UNSPECIFIED
+  FILE_PROCESS_STATUS_UNSPECIFIED = 0;
+  // NOTSTARTED
+  FILE_PROCESS_STATUS_NOTSTARTED = 1;
+  // file is being processed (parallel architecture: conversion + summarization)
+  FILE_PROCESS_STATUS_PROCESSING = 2;
+  // file is chunking
+  FILE_PROCESS_STATUS_CHUNKING = 3;
+  // file is embedding
+  FILE_PROCESS_STATUS_EMBEDDING = 4;
+  // completed
+  FILE_PROCESS_STATUS_COMPLETED = 5;
+  // failed
+  FILE_PROCESS_STATUS_FAILED = 6;
+}
+
+// converted file type
+enum ConvertedFileType {
+  // unspecified
+  CONVERTED_FILE_TYPE_UNSPECIFIED = 0;
+  // content
+  CONVERTED_FILE_TYPE_CONTENT = 1;
+  // summary
+  CONVERTED_FILE_TYPE_SUMMARY = 2;
+  // document (standardized to PDF)
+  CONVERTED_FILE_TYPE_DOCUMENT = 3;
+  // image (standardized to PNG)
+  CONVERTED_FILE_TYPE_IMAGE = 4;
+  // audio (standardized to OGG)
+  CONVERTED_FILE_TYPE_AUDIO = 5;
+  // video (standardized to MP4)
+  CONVERTED_FILE_TYPE_VIDEO = 6;
+}
+
+// File represents a file in a catalog.
+message File {
+  option (google.api.resource) = {pattern: "namespaces/{namespace}/catalogs/{catalog}/files/{file}"};
+
+  // View defines how a file is presented.
+  enum View {
+    // Unspecified, equivalent to BASIC.
+    VIEW_UNSPECIFIED = 0;
+    // Default view, only includes basic metadata.
+    VIEW_BASIC = 1;
+    // Full representation with all metadata.
+    VIEW_FULL = 2;
+    // Returns MinIO pre-signed URL to converted summary content.
+    VIEW_SUMMARY = 3;
+    // Returns MinIO pre-signed URL to converted markdown content.
+    VIEW_CONTENT = 4;
+    // Returns MinIO pre-signed URL to standardized file:
+    // - Documents → PDF
+    // - Images → PNG
+    // - Audio → OGG
+    // - Video → MP4
+    VIEW_STANDARD_FILE_TYPE = 5;
+    // Returns MinIO pre-signed URL to the original uploaded file.
+    VIEW_ORIGINAL_FILE_TYPE = 6;
+    // Returns Gemini cache resource name.
+    VIEW_CACHE = 7;
+  }
+
+  // Supported file types by the pipeline-backend.
+  enum Type {
+    // unspecified
+    TYPE_UNSPECIFIED = 0;
+
+    // Text-based document types
+    // text
+    TYPE_TEXT = 1;
+    // PDF
+    TYPE_PDF = 2;
+    // MARKDOWN
+    TYPE_MARKDOWN = 3;
+    // HTML
+    TYPE_HTML = 7;
+    // CSV
+    TYPE_CSV = 14;
+
+    // Microsoft Office document types
+    // DOCX
+    TYPE_DOCX = 8;
+    // DOC
+    TYPE_DOC = 9;
+    // PPT
+    TYPE_PPT = 10;
+    // PPTX
+    TYPE_PPTX = 11;
+    // XLS
+    TYPE_XLS = 12;
+    // XLSX
+    TYPE_XLSX = 13;
+
+    // Image types (supported by pipeline-backend/pkg/data/image.go)
+    // PNG
+    TYPE_PNG = 4;
+    // JPEG
+    TYPE_JPEG = 5;
+    // JPG
+    TYPE_JPG = 6;
+    // GIF
+    TYPE_GIF = 15;
+    // WEBP
+    TYPE_WEBP = 16;
+    // TIFF
+    TYPE_TIFF = 17;
+    // BMP
+    TYPE_BMP = 18;
+    // HEIC
+    TYPE_HEIC = 19;
+    // HEIF
+    TYPE_HEIF = 20;
+    // AVIF
+    TYPE_AVIF = 21;
+
+    // Audio types (supported by pipeline-backend/pkg/data/audio.go)
+    // MP3
+    TYPE_MP3 = 22;
+    // WAV
+    TYPE_WAV = 23;
+    // AAC
+    TYPE_AAC = 24;
+    // OGG
+    TYPE_OGG = 25;
+    // FLAC
+    TYPE_FLAC = 26;
+    // M4A
+    TYPE_M4A = 27;
+    // WMA
+    TYPE_WMA = 28;
+    // AIFF
+    TYPE_AIFF = 29;
+
+    // Video types (supported by pipeline-backend/pkg/data/video.go)
+    // MP4
+    TYPE_MP4 = 30;
+    // AVI
+    TYPE_AVI = 31;
+    // MOV
+    TYPE_MOV = 32;
+    // WEBM (video)
+    TYPE_WEBM_VIDEO = 33;
+    // MKV
+    TYPE_MKV = 34;
+    // FLV
+    TYPE_FLV = 35;
+    // WMV
+    TYPE_WMV = 36;
+    // MPEG
+    TYPE_MPEG = 37;
+  }
+
+  // FileMediaType describes the media category of a catalog file.
+  enum FileMediaType {
+    // Unspecified.
+    FILE_MEDIA_TYPE_UNSPECIFIED = 0;
+    // Document.
+    FILE_MEDIA_TYPE_DOCUMENT = 1;
+    // Image.
+    FILE_MEDIA_TYPE_IMAGE = 2;
+    // Audio.
+    FILE_MEDIA_TYPE_AUDIO = 3;
+    // Video.
+    FILE_MEDIA_TYPE_VIDEO = 4;
+  }
+
+  // Position within a file, as coordinates in a a specific unit. The
+  // number of dimensions of the coordinate depends on the unit type.
+  message Position {
+    // Unit of measurement for a position within a file.
+    enum Unit {
+      // Unspecified.
+      UNIT_UNSPECIFIED = 0;
+      // Character positions (for Markdown and other text files).
+      UNIT_CHARACTER = 1;
+      // Page positions (for documents). For pages, positions are 1-indexed
+      // (e.g., page 4 of 4) to align with document visualization standards.
+      UNIT_PAGE = 2;
+      // Time positions in milliseconds (for audio/video files).
+      UNIT_TIME_MS = 3;
+      // Pixel positions (for images and other 2D content).
+      UNIT_PIXEL = 4;
+    }
+
+    // Unit of measurement for the position.
+    Unit unit = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+    // Position value.
+    repeated uint32 coordinates = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
+  // The file uid (internal UUID, also used as id).
+  string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The file id (same as uid).
+  string id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The resource name of the file.
+  // Format: `namespaces/{namespace}/catalogs/{catalog}/files/{file}`.
+  string name = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The filename provided by the user.
+  string filename = 4 [(google.api.field_behavior) = OPTIONAL];
+  // file type
+  Type type = 5 [(google.api.field_behavior) = OPTIONAL];
+  // file process status
+  FileProcessStatus process_status = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // file process message
+  string process_outcome = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // retrievable(this is reserved for future use)
+  bool retrievable = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // content(this is reserved for future use)
+  string content = 9 [(google.api.field_behavior) = OPTIONAL];
+  // owner/namespace uid
+  string owner_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // creator uid from authn token
+  string creator_uid = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // catalog uid
+  string catalog_uid = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // create time
+  google.protobuf.Timestamp create_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // update time
+  google.protobuf.Timestamp update_time = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // delete time
+  google.protobuf.Timestamp delete_time = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // file size in bytes
+  int64 size = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // total chunks
+  int32 total_chunks = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // total tokens
+  int32 total_tokens = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Custom metadata provided by the user during file upload
+  optional google.protobuf.Struct external_metadata = 19 [(google.api.field_behavior) = OPTIONAL];
+  // objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
+  // then no need the base64 encoding for the file content.
+  string object_uid = 20 [(google.api.field_behavior) = OPTIONAL];
+  // Summary of the file.
+  // Deprecated: Use GetFile with VIEW_SUMMARY to retrieve file summaries.
+  // This field now returns an empty string as summaries are stored separately in MinIO.
+  string summary = 21 [
+    deprecated = true,
+    (google.api.field_behavior) = OUTPUT_ONLY
+  ];
+  // download url of the file
+  string download_url = 22 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Pipeline used for converting the file to Markdown if the file is a
+  // document (i.e., a file with pdf, doc[x] or ppt[x] extension). The value
+  // identifies the pipeline release and and MUST have the format
+  // `{namespaceID}/{pipelineID}@{version}`.
+  // The pipeline recipe MUST have the following variable and output fields:
+  // ```yaml variable
+  // variable:
+  //   document_input:
+  //     title: document-input
+  //     description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
+  //     type: file
+  // ```
+  // The `convert_result` output should be a list of strings, one per page.
+  // ```yaml output
+  // output:
+  //  convert_result:
+  //    title: convert-result
+  //    value: ${merge-markdown-refinement.output.results[0]}
+  // ```
+  // Other variable and output fields will be ignored.
+  //
+  // The pipeline will be executed first, falling back to the catalog's
+  // conversion pipelines if the conversion doesn't yield a non-empty result
+  // (see the catalog creation endpoint documentation).
+  //
+  // For non-document catalog files, the conversion pipeline is deterministic
+  // (such files are typically trivial to convert and don't require a dedicated
+  // pipeline to improve the conversion performance).
+  optional string converting_pipeline = 23 [(google.api.field_behavior) = OPTIONAL];
+  // Length of the file in the specified unit type. It is defined as the number
+  // of positions (the unit will depend on the file type) that can be accessed
+  // in the file.
+  Position length = 24 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Array of tags associated with the file
+  repeated string tags = 25 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// CreateFileRequest represents a request to create a file.
+message CreateFileRequest {
+  // owner/namespace id
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // catalog id
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // file
+  File file = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// CreateFileResponse represents a response for creating a file.
+message CreateFileResponse {
+  // file
+  File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// DeleteFileRequest represents a request to delete a file.
+message DeleteFileRequest {
+  // The namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The catalog id.
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The file id.
+  string file_id = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteFileResponse represents a response for deleting a file.
+message DeleteFileResponse {
+  // The file id.
+  string file_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Admin-only file operations
+
+// DeleteFileAdminRequest represents a request to delete a file (admin only).
+message DeleteFileAdminRequest {
+  // The file id.
+  string file_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteFileAdminResponse represents a response for deleting a file (admin only).
+message DeleteFileAdminResponse {
+  // The file id.
+  string file_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListFilesRequest represents a request to list files.
+message ListFilesRequest {
+  // The owner/namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The catalog id.
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The page size (default:10; max 100).
+  optional int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+  // The next page token(default from first file's token).
+  optional string page_token = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
+  // - `id="<uuid>"` or `uid="<uuid>"` - Filter by specific file ID/UID (supports multiple IDs separated by OR)
+  // - `process_status="FILE_PROCESS_STATUS_COMPLETED"` - Filter by processing status
+  //
+  // **Examples**:
+  // - List specific files: `id="uuid1" OR id="uuid2"`
+  // - List completed files: `process_status="FILE_PROCESS_STATUS_COMPLETED"`
+  optional string filter = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListFilesResponse represents a response for listing files.
+message ListFilesResponse {
+  // The list of files.
+  repeated File files = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The total number of files.
+  int32 total_size = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The requested page size.
+  int32 page_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // next page token
+  string next_page_token = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// GetFileRequest represents a request to get a file.
+message GetFileRequest {
+  // The namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The catalog id.
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The file id.
+  string file_id = 3 [(google.api.field_behavior) = REQUIRED];
+  // View allows clients to specify the desired file view in the response.
+  optional File.View view = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// GetFileResponse represents a response for getting a file.
+message GetFileResponse {
+  // The file metadata (always included).
+  File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Derived resource URI based on view:
+  // - VIEW_SUMMARY/CONTENT/STANDARD_FILE_TYPE/ORIGINAL_FILE_TYPE: MinIO pre-signed URL to content
+  // - VIEW_CACHE: Gemini cache resource name
+  // Only populated for VIEW_SUMMARY, VIEW_CONTENT, VIEW_STANDARD_FILE_TYPE, VIEW_ORIGINAL_FILE_TYPE, and VIEW_CACHE.
+  optional string derived_resource_uri = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// UpdateFileRequest represents a request to update a file.
+// Deprecated: Use UpdateFile with field_mask to update file properties including tags.
+message UpdateFileRequest {
+  // Namespace ID.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // Catalog ID.
+  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // File ID.
+  string file_id = 3 [(google.api.field_behavior) = REQUIRED];
+  // The file fields that will replace the existing ones.
+  File file = 4 [(google.api.field_behavior) = OPTIONAL];
+  // The update mask specifies the subset of fields that should be modified.
+  //
+  // For more information about this field, see
+  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
+  google.protobuf.FieldMask update_mask = 5 [(google.api.field_behavior) = REQUIRED];
+}
+
+// UpdateFileResponse represents a response for updating a file.
+message UpdateFileResponse {
+  // Updated file.
+  File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}

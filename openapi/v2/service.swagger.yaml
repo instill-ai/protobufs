@@ -54,6 +54,32 @@ paths:
           in: path
           required: true
           type: string
+        - name: pageSize
+          description: |-
+            The maximum number of catalogs to return. If this parameter is unspecified,
+            at most 10 catalogs will be returned. The cap value for this parameter
+            is 100 (i.e. any value above that will be coerced to 100).
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
+            - `id="<catalog_id>"` or `uid="<uuid>"` - Filter by specific catalog ID/UID
+            - `q="<text>"` - Fuzzy search on catalog ID and description
+
+            **Examples**:
+            - Filter by ID: `id="my-catalog"`
+            - Search catalogs: `q="my-catalog"`
+          in: query
+          required: false
+          type: string
       tags:
         - Artifact
       x-stage: alpha
@@ -89,16 +115,14 @@ paths:
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}:
     get:
-      summary: Get the catalog file.
-      description: |-
-        Returns a view of the file within the catalog, with the text and chunks it
-        generated after being processed.
-      operationId: ArtifactPublicService_GetFileCatalog
+      summary: Get a catalog
+      description: Returns the details of a catalog.
+      operationId: ArtifactPublicService_GetCatalog
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetFileCatalogResponse'
+            $ref: '#/definitions/GetCatalogResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -115,11 +139,6 @@ paths:
         - name: catalogId
           description: Catalog ID.
           in: path
-          required: true
-          type: string
-        - name: fileUid
-          description: File UID.
-          in: query
           required: true
           type: string
       tags:
@@ -173,12 +192,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The catalog owner(namespace).
+          description: Namespace ID.
           in: path
           required: true
           type: string
         - name: catalogId
-          description: The catalog id.
+          description: Catalog ID.
           in: path
           required: true
           type: string
@@ -192,14 +211,14 @@ paths:
       x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files:
     get:
-      summary: List catalog files
-      description: Returns a paginated list of catalog files.
-      operationId: ArtifactPublicService_ListCatalogFiles
+      summary: List files
+      description: Returns a paginated list of files.
+      operationId: ArtifactPublicService_ListFiles
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListCatalogFilesResponse'
+            $ref: '#/definitions/ListFilesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -209,7 +228,7 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The owner/namespace uid id.
+          description: The owner/namespace id.
           in: path
           required: true
           type: string
@@ -229,52 +248,30 @@ paths:
           in: query
           required: false
           type: string
-        - name: filter.fileUids
-          description: File UIDs.
-          in: query
-          required: false
-          type: array
-          items:
-            type: string
-          collectionFormat: multi
-        - name: filter.processStatus
+        - name: filter
           description: |-
-            Processing status of the files.
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
+            - `id="<uuid>"` or `uid="<uuid>"` - Filter by specific file ID/UID (supports multiple IDs separated by OR)
+            - `process_status="FILE_PROCESS_STATUS_COMPLETED"` - Filter by processing status
 
-             - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
-             - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process (deprecated - sequential architecture)
-             - FILE_PROCESS_STATUS_CONVERTING: file is converting (deprecated - sequential architecture)
-             - FILE_PROCESS_STATUS_CHUNKING: file is chunking
-             - FILE_PROCESS_STATUS_EMBEDDING: file is embedding
-             - FILE_PROCESS_STATUS_COMPLETED: completed
-             - FILE_PROCESS_STATUS_FAILED: failed
-             - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing (deprecated - sequential architecture)
-             - FILE_PROCESS_STATUS_PROCESSING: file is being processed (parallel architecture: conversion + summarization)
+            **Examples**:
+            - List specific files: `id="uuid1" OR id="uuid2"`
+            - List completed files: `process_status="FILE_PROCESS_STATUS_COMPLETED"`
           in: query
           required: false
           type: string
-          enum:
-            - FILE_PROCESS_STATUS_NOTSTARTED
-            - FILE_PROCESS_STATUS_WAITING
-            - FILE_PROCESS_STATUS_CONVERTING
-            - FILE_PROCESS_STATUS_CHUNKING
-            - FILE_PROCESS_STATUS_EMBEDDING
-            - FILE_PROCESS_STATUS_COMPLETED
-            - FILE_PROCESS_STATUS_FAILED
-            - FILE_PROCESS_STATUS_SUMMARIZING
-            - FILE_PROCESS_STATUS_PROCESSING
       tags:
         - Artifact
       x-stage: alpha
     post:
       summary: Create a file
-      description: Creates a file.
-      operationId: ArtifactPublicService_UploadCatalogFile
+      description: Uploads and converts a file to a catalog.
+      operationId: ArtifactPublicService_CreateFile
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/UploadCatalogFileResponse'
+            $ref: '#/definitions/CreateFileResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -284,7 +281,7 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: owner/namespace uid
+          description: owner/namespace id
           in: path
           required: true
           type: string
@@ -302,16 +299,16 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}:
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileId}:
     get:
-      summary: Get catalog file
-      description: Gets the file of a catalog.
-      operationId: ArtifactPublicService_GetCatalogFile
+      summary: Get a file
+      description: Returns the details of a file.
+      operationId: ArtifactPublicService_GetFile
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetCatalogFileResponse'
+            $ref: '#/definitions/GetFileResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -330,23 +327,49 @@ paths:
           in: path
           required: true
           type: string
-        - name: fileUid
-          description: The file uid.
+        - name: fileId
+          description: The file id.
           in: path
           required: true
           type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired file view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic metadata.
+             - VIEW_FULL: Full representation with all metadata.
+             - VIEW_SUMMARY: Returns MinIO pre-signed URL to converted summary content.
+             - VIEW_CONTENT: Returns MinIO pre-signed URL to converted markdown content.
+             - VIEW_STANDARD_FILE_TYPE: Returns MinIO pre-signed URL to standardized file:
+            - Documents → PDF
+            - Images → PNG
+            - Audio → OGG
+            - Video → MP4
+             - VIEW_ORIGINAL_FILE_TYPE: Returns MinIO pre-signed URL to the original uploaded file.
+             - VIEW_CACHE: Returns Gemini cache resource name.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_SUMMARY
+            - VIEW_CONTENT
+            - VIEW_STANDARD_FILE_TYPE
+            - VIEW_ORIGINAL_FILE_TYPE
+            - VIEW_CACHE
       tags:
         - Artifact
       x-stage: alpha
     delete:
       summary: Delete a file
       description: Deletes a file.
-      operationId: ArtifactPublicService_DeleteCatalogFile
+      operationId: ArtifactPublicService_DeleteFile
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/DeleteCatalogFileResponse'
+            $ref: '#/definitions/DeleteFileResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -365,24 +388,23 @@ paths:
           in: path
           required: true
           type: string
-        - name: fileUid
-          description: The file uid.
+        - name: fileId
+          description: The file id.
           in: path
           required: true
           type: string
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/catalogs/files/processAsync:
-    post:
-      summary: Process catalog files
-      description: Processes catalog files.
-      operationId: ArtifactPublicService_ProcessCatalogFiles
+    patch:
+      summary: Update a file
+      description: Updates a file.
+      operationId: ArtifactPublicService_UpdateFile
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ProcessCatalogFilesResponse'
+            $ref: '#/definitions/UpdateFileResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -391,23 +413,75 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: body
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: Catalog ID.
+          in: path
+          required: true
+          type: string
+        - name: fileId
+          description: File ID.
+          in: path
+          required: true
+          type: string
+        - name: file
+          description: The file fields that will replace the existing ones.
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ProcessCatalogFilesRequest'
-        - name: Instill-Requester-Uid
-          description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
-          in: header
-          required: false
+            $ref: '#/definitions/File'
+      tags:
+        - Artifact
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileId}/chunks/{chunkId}:
+    get:
+      summary: Get a chunk
+      description: Returns the details of a chunk.
+      operationId: ArtifactPublicService_GetChunk
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetChunkResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: Catalog ID.
+          in: path
+          required: true
+          type: string
+        - name: fileId
+          description: File ID.
+          in: path
+          required: true
+          type: string
+        - name: chunkId
+          description: Chunk ID.
+          in: path
+          required: true
           type: string
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks:
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileId}/chunks:
     get:
-      summary: List catalog chunks
-      description: Returns a paginated list of catalog chunks.
+      summary: List chunks
+      description: Returns a paginated list of chunks.
       operationId: ArtifactPublicService_ListChunks
       responses:
         "200":
@@ -423,42 +497,6 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: owner/namespace id (not uid)
-          in: path
-          required: true
-          type: string
-        - name: catalogId
-          description: catalog id (not uid)
-          in: path
-          required: true
-          type: string
-        - name: fileUid
-          description: unique identifier of the file
-          in: query
-          required: true
-          type: string
-      tags:
-        - Artifact
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}/source:
-    get:
-      summary: Get catalog single-source-of-truth file
-      description: Gets the single-source-of-truth file of a catalog.
-      operationId: ArtifactPublicService_GetSourceFile
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetSourceFileResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
           description: owner/namespace id
           in: path
           required: true
@@ -468,88 +506,46 @@ paths:
           in: path
           required: true
           type: string
-        - name: fileUid
-          description: unique identifier of the original uploaded file
+        - name: fileId
+          description: file id
           in: path
           required: true
           type: string
-      tags:
-        - Artifact
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}/summary:
-    get:
-      summary: Get summary from a catalog file
-      description: Gets summary from a catalog file
-      operationId: ArtifactPublicService_GetFileSummary
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetFileSummaryResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: owner/namespace id
-          in: path
-          required: true
-          type: string
-        - name: catalogId
-          description: catalog id
-          in: path
-          required: true
-          type: string
-        - name: fileUid
-          description: unique identifier of the original uploaded file
-          in: path
-          required: true
-          type: string
-      tags:
-        - Artifact
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/source-files:
-    get:
-      summary: Search single-source-of-truth files
-      description: Searches the single-source-of-truth files of a catalog.
-      operationId: ArtifactPublicService_SearchSourceFiles
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/SearchSourceFilesResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: owner/namespace id
-          in: path
-          required: true
-          type: string
-        - name: fileUids
-          description: search file uid
+        - name: pageSize
+          description: |-
+            The maximum number of chunks to return. If this parameter is unspecified,
+            at most 100 chunks will be returned. The cap value for this parameter
+            is 1000 (i.e. any value above that will be coerced to 1000).
           in: query
-          required: true
-          type: array
-          items:
-            type: string
-          collectionFormat: multi
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
+            - `id="<uuid>"` or `uid="<uuid>"` - Filter by specific chunk ID/UID
+            - `chunk_type="CHUNK_TYPE_TEXT"` - Filter by chunk type
+            - `retrievable=true` - Filter by retrievable status
+
+            **Examples**:
+            - List specific chunks: `id="uuid1" OR id="uuid2"`
+            - List text chunks: `chunk_type="CHUNK_TYPE_TEXT"`
+            - List retrievable chunks: `retrievable=true`
+          in: query
+          required: false
+          type: string
       tags:
         - Artifact
-      x-stage: beta
-  /v1alpha/chunks/{chunkUid}:
-    post:
-      summary: Update catalog chunk
-      description: Updates a catalog chunk.
+      x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks/{chunkId}:
+    patch:
+      summary: Update a chunk
+      description: Updates a chunk.
       operationId: ArtifactPublicService_UpdateChunk
       responses:
         "200":
@@ -564,8 +560,18 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: chunkUid
-          description: chunk uid
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: catalogId
+          description: Catalog ID.
+          in: path
+          required: true
+          type: string
+        - name: chunkId
+          description: Chunk ID.
           in: path
           required: true
           type: string
@@ -577,16 +583,16 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks/retrieve:
+  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/searchChunks:
     post:
-      summary: Retrieve similar chunks
+      summary: Search chunks
       description: Returns the top-K most similar chunks to a text prompt.
-      operationId: ArtifactPublicService_SimilarityChunksSearch
+      operationId: ArtifactPublicService_SearchChunks
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/SimilarityChunksSearchResponse'
+            $ref: '#/definitions/SearchChunksResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -609,7 +615,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/SimilarityChunksSearchBody'
+            $ref: '#/definitions/SearchChunksBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -771,83 +777,6 @@ paths:
           required: false
           type: integer
           format: int32
-      tags:
-        - Artifact
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files:move:
-    post:
-      summary: Move file to another catalog
-      description: Moves a file to another catalog.
-      operationId: ArtifactPublicService_MoveFileToCatalog
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/MoveFileToCatalogResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: namespace id
-          in: path
-          required: true
-          type: string
-        - name: catalogId
-          description: catalog id
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/MoveFileToCatalogBody'
-      tags:
-        - Artifact
-      x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileUid}/tags:
-    put:
-      summary: Update catalog file tags
-      description: Updates the tags associated with a catalog file.
-      operationId: ArtifactPublicService_UpdateCatalogFileTags
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateCatalogFileTagsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: ID of the namespace owning the catalog.
-          in: path
-          required: true
-          type: string
-        - name: catalogId
-          description: ID of the catalog.
-          in: path
-          required: true
-          type: string
-        - name: fileUid
-          description: Unique identifier of the file.
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UpdateCatalogFileTagsBody'
       tags:
         - Artifact
       x-stage: alpha
@@ -5046,27 +4975,36 @@ definitions:
   Catalog:
     type: object
     properties:
-      catalogUid:
+      uid:
         type: string
-        description: The catalog uid.
-      catalogId:
+        description: The catalog uid (internal UUID).
+        readOnly: true
+      id:
         type: string
-        description: The catalog id.
+        description: The catalog id (user-provided or system-generated).
       name:
         type: string
-        description: The catalog name.
+        description: |-
+          The resource name of the catalog.
+          Format: `namespaces/{namespace}/catalogs/{catalog}`.
+        readOnly: true
       description:
         type: string
         description: The catalog description.
       createTime:
         type: string
+        format: date-time
         description: The creation time of the catalog.
+        readOnly: true
       updateTime:
         type: string
+        format: date-time
         description: The last update time of the catalog.
+        readOnly: true
       ownerName:
         type: string
         description: The owner/namespace of the catalog.
+        readOnly: true
       tags:
         type: array
         items:
@@ -5098,18 +5036,22 @@ definitions:
         items:
           type: string
         title: The downstream apps
+        readOnly: true
       totalFiles:
         type: integer
         format: int64
         description: The total files in catalog.
+        readOnly: true
       totalTokens:
         type: integer
         format: int64
         description: The total tokens in catalog.
+        readOnly: true
       usedStorage:
         type: string
         format: uint64
         description: The current used storage in catalog.
+        readOnly: true
       summarizingPipelines:
         type: array
         items:
@@ -5126,6 +5068,7 @@ definitions:
         description: |-
           The UID of the active Milvus collection for this catalog.
           This supports collection versioning for embedding dimension changes.
+        readOnly: true
     description: Catalog represents a catalog.
   CatalogRun:
     type: object
@@ -5328,6 +5271,71 @@ definitions:
        - NAMESPACE_USER: Namespace belongs to a user.
        - NAMESPACE_ORGANIZATION: Namespace belongs to an organization.
        - NAMESPACE_RESERVED: Reserved.
+  Chunk:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: The chunk uid (internal UUID, also used as id).
+        readOnly: true
+      id:
+        type: string
+        description: The chunk id (same as uid).
+        readOnly: true
+      name:
+        type: string
+        description: |-
+          The resource name of the chunk.
+          Format: `namespaces/{namespace}/catalogs/{catalog}/files/{file}/chunks/{chunk}`.
+        readOnly: true
+      retrievable:
+        type: boolean
+        title: whether the chunk is retrievable
+        readOnly: true
+      tokens:
+        type: integer
+        format: int64
+        title: tokens of the chunk
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        title: creation time of the chunk
+        readOnly: true
+      originalFileId:
+        type: string
+        title: original file unique identifier
+        readOnly: true
+      type:
+        title: chunk type
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Chunk.Type'
+      reference:
+        description: Reference to the position of the chunk within the original file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Reference'
+      markdownReference:
+        description: Reference to the position of the chunk within the Markdown (source) file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Reference'
+      startPos:
+        type: integer
+        format: int64
+        title: |-
+          start position of the chunk in the source file
+          Deprecated: use markdown_reference instead
+        readOnly: true
+      endPos:
+        type: integer
+        format: int64
+        title: |-
+          end position of the chunk in the source file
+          Deprecated: use markdown_reference instead
+        readOnly: true
+    description: The Chunk message represents a chunk of data in the artifact system.
   Chunk.Type:
     type: string
     enum:
@@ -5340,20 +5348,6 @@ definitions:
        - TYPE_CONTENT: Content.
        - TYPE_SUMMARY: Summary.
        - TYPE_AUGMENTED: Augmented.
-  ChunkType:
-    type: string
-    enum:
-      - CHUNK_TYPE_TEXT
-      - CHUNK_TYPE_IMAGE
-      - CHUNK_TYPE_AUDIO
-      - CHUNK_TYPE_VIDEO
-    description: |-
-      ChunkType contains the different types of a chunk.
-
-       - CHUNK_TYPE_TEXT: Text.
-       - CHUNK_TYPE_IMAGE: Image.
-       - CHUNK_TYPE_AUDIO: Audio.
-       - CHUNK_TYPE_VIDEO: Video.
   CloneNamespacePipelineBody:
     type: object
     properties:
@@ -5781,9 +5775,9 @@ definitions:
   CreateCatalogBody:
     type: object
     properties:
-      name:
+      id:
         type: string
-        description: The catalog name.
+        description: The catalog id (user-provided or auto-generated).
       description:
         type: string
         description: The catalog description.
@@ -5848,9 +5842,19 @@ definitions:
     properties:
       catalog:
         description: The created catalog.
+        readOnly: true
         allOf:
           - $ref: '#/definitions/Catalog'
     description: CreateCatalogResponse represents a response for creating a catalog.
+  CreateFileResponse:
+    type: object
+    properties:
+      file:
+        title: file
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/File'
+    description: CreateFileResponse represents a response for creating a file.
   CreateNamespaceConnectionResponse:
     type: object
     properties:
@@ -5905,14 +5909,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: CreateOrganizationResponse contains the created organization.
-  CreateRepositoryTagAdminResponse:
-    type: object
-    properties:
-      tag:
-        description: The created tag.
-        allOf:
-          - $ref: '#/definitions/RepositoryTag'
-    description: CreateRepositoryTagAdminResponse contains the created tag (admin only).
   CreateSystemAdminResponse:
     type: object
     properties:
@@ -5944,28 +5940,31 @@ definitions:
     description: |-
       DataSpecification describes the JSON schema of component input and output.
       Note: This message will be renamed to TaskSpecifications in the future.
-  DeleteCatalogFileAdminResponse:
-    type: object
-    properties:
-      fileUid:
-        type: string
-        description: The file uid.
-    description: DeleteCatalogFileAdminResponse represents a response for deleting a file (admin only).
-  DeleteCatalogFileResponse:
-    type: object
-    properties:
-      fileUid:
-        type: string
-        description: The file uid.
-    title: delete file response
   DeleteCatalogResponse:
     type: object
     properties:
       catalog:
         description: The catalog identifier.
+        readOnly: true
         allOf:
           - $ref: '#/definitions/Catalog'
     description: DeleteCatalogResponse represents a response for deleting a catalog.
+  DeleteFileAdminResponse:
+    type: object
+    properties:
+      fileId:
+        type: string
+        description: The file id.
+        readOnly: true
+    description: DeleteFileAdminResponse represents a response for deleting a file (admin only).
+  DeleteFileResponse:
+    type: object
+    properties:
+      fileId:
+        type: string
+        description: The file id.
+        readOnly: true
+    description: DeleteFileResponse represents a response for deleting a file.
   DeleteNamespaceConnectionResponse:
     type: object
     description: DeleteNamespaceConnectionResponse is an empty response.
@@ -5990,9 +5989,6 @@ definitions:
   DeleteOrganizationResponse:
     type: object
     description: DeleteOrganizationResponse is an empty response.
-  DeleteRepositoryTagAdminResponse:
-    type: object
-    description: DeleteRepositoryTagAdminResponse is an empty response (admin only).
   DeleteSystemAdminResponse:
     type: object
     properties:
@@ -6098,13 +6094,23 @@ definitions:
   File:
     type: object
     properties:
-      fileUid:
+      uid:
         type: string
-        title: file uid
+        description: The file uid (internal UUID, also used as id).
+        readOnly: true
+      id:
+        type: string
+        description: The file id (same as uid).
         readOnly: true
       name:
         type: string
-        title: file name
+        description: |-
+          The resource name of the file.
+          Format: `namespaces/{namespace}/catalogs/{catalog}/files/{file}`.
+        readOnly: true
+      filename:
+        type: string
+        description: The filename provided by the user.
       type:
         title: file type
         allOf:
@@ -6179,7 +6185,7 @@ definitions:
         type: string
         description: |-
           Summary of the file.
-          Deprecated: Use the GetFileSummary API endpoint to retrieve file summaries.
+          Deprecated: Use GetFile with VIEW_SUMMARY to retrieve file summaries.
           This field now returns an empty string as summaries are stored separately in MinIO.
         readOnly: true
       downloadUrl:
@@ -6316,6 +6322,30 @@ definitions:
        - TYPE_FLV: FLV
        - TYPE_WMV: WMV
        - TYPE_MPEG: MPEG
+  File.View:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+      - VIEW_SUMMARY
+      - VIEW_CONTENT
+      - VIEW_STANDARD_FILE_TYPE
+      - VIEW_ORIGINAL_FILE_TYPE
+      - VIEW_CACHE
+    description: |-
+      View defines how a file is presented.
+
+       - VIEW_BASIC: Default view, only includes basic metadata.
+       - VIEW_FULL: Full representation with all metadata.
+       - VIEW_SUMMARY: Returns MinIO pre-signed URL to converted summary content.
+       - VIEW_CONTENT: Returns MinIO pre-signed URL to converted markdown content.
+       - VIEW_STANDARD_FILE_TYPE: Returns MinIO pre-signed URL to standardized file:
+      - Documents → PDF
+      - Images → PNG
+      - Audio → OGG
+      - Video → MP4
+       - VIEW_ORIGINAL_FILE_TYPE: Returns MinIO pre-signed URL to the original uploaded file.
+       - VIEW_CACHE: Returns Gemini cache resource name.
   FileMediaType:
     type: string
     enum:
@@ -6324,66 +6354,28 @@ definitions:
       - FILE_MEDIA_TYPE_AUDIO
       - FILE_MEDIA_TYPE_VIDEO
     description: |-
-      FileMediaType describes the type of a catalog file.
+      FileMediaType describes the media category of a catalog file.
 
        - FILE_MEDIA_TYPE_DOCUMENT: Document.
        - FILE_MEDIA_TYPE_IMAGE: Image.
        - FILE_MEDIA_TYPE_AUDIO: Audio.
        - FILE_MEDIA_TYPE_VIDEO: Video.
-  FileMetadata:
-    type: object
-    properties:
-      uid:
-        type: string
-        description: File UID.
-        readOnly: true
-      filename:
-        type: string
-        title: Filename
-        readOnly: true
-      fileType:
-        description: File Type.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/File.Type'
-      size:
-        type: string
-        format: int64
-        description: Size.
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        title: Creation timestamp
-        readOnly: true
-      processStatus:
-        description: Processing status of the file.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/FileProcessStatus'
-    description: FileMetadata contains information about the file.
   FileProcessStatus:
     type: string
     enum:
       - FILE_PROCESS_STATUS_NOTSTARTED
-      - FILE_PROCESS_STATUS_WAITING
-      - FILE_PROCESS_STATUS_CONVERTING
+      - FILE_PROCESS_STATUS_PROCESSING
       - FILE_PROCESS_STATUS_CHUNKING
       - FILE_PROCESS_STATUS_EMBEDDING
       - FILE_PROCESS_STATUS_COMPLETED
       - FILE_PROCESS_STATUS_FAILED
-      - FILE_PROCESS_STATUS_SUMMARIZING
-      - FILE_PROCESS_STATUS_PROCESSING
     description: |-
       - FILE_PROCESS_STATUS_NOTSTARTED: NOTSTARTED
-       - FILE_PROCESS_STATUS_WAITING: file is waiting for embedding process (deprecated - sequential architecture)
-       - FILE_PROCESS_STATUS_CONVERTING: file is converting (deprecated - sequential architecture)
+       - FILE_PROCESS_STATUS_PROCESSING: file is being processed (parallel architecture: conversion + summarization)
        - FILE_PROCESS_STATUS_CHUNKING: file is chunking
        - FILE_PROCESS_STATUS_EMBEDDING: file is embedding
        - FILE_PROCESS_STATUS_COMPLETED: completed
        - FILE_PROCESS_STATUS_FAILED: failed
-       - FILE_PROCESS_STATUS_SUMMARIZING: file is summarizing (deprecated - sequential architecture)
-       - FILE_PROCESS_STATUS_PROCESSING: file is being processed (parallel architecture: conversion + summarization)
     title: file embedding process status
   FileReference:
     type: object
@@ -6422,22 +6414,24 @@ definitions:
         allOf:
           - $ref: '#/definitions/AuthenticatedUser'
     description: GetAuthenticatedUserResponse contains the requested authenticated user.
-  GetCatalogFileResponse:
+  GetCatalogResponse:
     type: object
     properties:
-      file:
-        description: The file.
+      catalog:
+        description: The catalog resource.
+        readOnly: true
         allOf:
-          - $ref: '#/definitions/File'
-    description: GetCatalogFileResponse represents a response for getting a catalog file.
-  GetChatFileAdminResponse:
+          - $ref: '#/definitions/Catalog'
+    description: GetCatalogResponse represents a response for getting a catalog.
+  GetChunkResponse:
     type: object
     properties:
-      markdown:
-        type: string
-        format: byte
-        title: converted markdown content
-    title: GetChatFileAdminResponse (admin only, deprecated)
+      chunk:
+        description: The chunk resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Chunk'
+    description: GetChunkResponse represents a response for getting a chunk.
   GetDefaultSystemAdminResponse:
     type: object
     properties:
@@ -6446,99 +6440,23 @@ definitions:
         allOf:
           - $ref: '#/definitions/System'
     title: GetDefaultSystemAdminResponse (admin only)
-  GetFileAsMarkdownAdminResponse:
+  GetFileResponse:
     type: object
     properties:
-      markdown:
-        type: string
-        description: The Markdown representation of a file.
-        readOnly: true
-    description: |-
-      GetFileAsMarkdownAdminResponse contains a blob with the Markdown representation
-      of a file (admin only).
-  GetFileCatalogResponse:
-    type: object
-    properties:
-      originalData:
-        type: string
-        description: Base-64 representation of the original file contents.
-        readOnly: true
-      fileMetadata:
-        description: File metadata.
+      file:
+        description: The file metadata (always included).
         readOnly: true
         allOf:
-          - $ref: '#/definitions/FileMetadata'
-      text:
-        description: Converted text.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Text'
-      chunks:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/GetFileCatalogResponse.Chunk'
-        description: Chunks.
-        readOnly: true
-    description: |-
-      GetFileCatalogResponse contains the processing outputs of a file in a
-      catalog.
-  GetFileCatalogResponse.Chunk:
-    type: object
-    properties:
-      uid:
+          - $ref: '#/definitions/File'
+      derivedResourceUri:
         type: string
-        description: Chunk UID.
+        description: |-
+          Derived resource URI based on view:
+          - VIEW_SUMMARY/CONTENT/STANDARD_FILE_TYPE/ORIGINAL_FILE_TYPE: MinIO pre-signed URL to content
+          - VIEW_CACHE: Gemini cache resource name
+          Only populated for VIEW_SUMMARY, VIEW_CONTENT, VIEW_STANDARD_FILE_TYPE, VIEW_ORIGINAL_FILE_TYPE, and VIEW_CACHE.
         readOnly: true
-      type:
-        description: 'Chunk type. I.e: text, image, audio, video.'
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/ChunkType'
-      startPosition:
-        type: integer
-        format: int32
-        description: Start position in the text.
-        readOnly: true
-      endPosition:
-        type: integer
-        format: int32
-        description: End position in the text.
-        readOnly: true
-      content:
-        type: string
-        description: Content.
-        readOnly: true
-      tokenCount:
-        type: integer
-        format: int32
-        description: Token count in the chunk.
-        readOnly: true
-      embedding:
-        type: array
-        items:
-          type: number
-          format: float
-        description: Chunk embedding.
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        description: Creation time of the chunk.
-        readOnly: true
-      retrievable:
-        type: boolean
-        description: Retrievability of the chunk.
-        readOnly: true
-    description: Chunk is a delimited part of the converted text.
-  GetFileSummaryResponse:
-    type: object
-    properties:
-      summary:
-        type: string
-        title: summary of the file
-        readOnly: true
-    title: get file summary response
+    description: GetFileResponse represents a response for getting a file.
   GetIntegrationResponse:
     type: object
     properties:
@@ -6730,23 +6648,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     description: GetOrganizationResponse contains the requested organization.
-  GetRepositoryTagAdminResponse:
-    type: object
-    properties:
-      tag:
-        description: The requested tag.
-        allOf:
-          - $ref: '#/definitions/RepositoryTag'
-    description: GetRepositoryTagAdminResponse contains the requested tag (admin only).
-  GetSourceFileResponse:
-    type: object
-    properties:
-      sourceFile:
-        title: source file(either original file or converted file)
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/SourceFile'
-    title: get source file response
   GetSystemAdminResponse:
     type: object
     properties:
@@ -7003,46 +6904,6 @@ definitions:
     description: |-
       ListAvailableRegionsResponse contains a list of available
       regions and hardware types a model can be deployed on.
-  ListCatalogFilesFilter:
-    type: object
-    properties:
-      fileUids:
-        type: array
-        items:
-          type: string
-        description: File UIDs.
-      processStatus:
-        description: Processing status of the files.
-        allOf:
-          - $ref: '#/definitions/FileProcessStatus'
-    description: |-
-      ListCatalogFilesFilter contains a set of properties to filter a catalog file
-      list by.
-  ListCatalogFilesResponse:
-    type: object
-    properties:
-      files:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/File'
-        description: The list of files.
-      totalSize:
-        type: integer
-        format: int32
-        description: The total number of files.
-      pageSize:
-        type: integer
-        format: int32
-        description: The requested page size.
-      nextPageToken:
-        type: string
-        title: next page token
-      filter:
-        description: The filter.
-        allOf:
-          - $ref: '#/definitions/ListCatalogFilesFilter'
-    title: list files response
   ListCatalogRunsResponse:
     type: object
     properties:
@@ -7078,6 +6939,16 @@ definitions:
           type: object
           $ref: '#/definitions/Catalog'
         description: The catalogs container.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of catalogs.
+        readOnly: true
     description: GetCatalogsResponse represents a response for getting all catalogs from users.
   ListChunksResponse:
     type: object
@@ -7086,10 +6957,10 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/v1alpha.Chunk'
+          $ref: '#/definitions/Chunk'
         title: repeated chunks
         readOnly: true
-    description: The ListChunksResponse message represents a response containing a list of chunks in the artifact system.
+    description: ListChunksResponse represents a response containing a list of chunks in the artifact system.
   ListComponentDefinitionsResponse:
     type: object
     properties:
@@ -7138,6 +7009,31 @@ definitions:
         description: The number of items per page.
         readOnly: true
     description: ListComponentRunsResponse is the response message for ListComponentRuns.
+  ListFilesResponse:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/File'
+        description: The list of files.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: The total number of files.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+        readOnly: true
+      nextPageToken:
+        type: string
+        title: next page token
+        readOnly: true
+    description: ListFilesResponse represents a response for listing files.
   ListIntegrationsResponse:
     type: object
     properties:
@@ -7607,28 +7503,6 @@ definitions:
         description: Total number of pipelines.
         readOnly: true
     description: ListPipelinesResponse contains a list of pipelines.
-  ListRepositoryTagsAdminResponse:
-    type: object
-    properties:
-      tags:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/RepositoryTag'
-        description: A list of repository tags.
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of tags.
-      pageSize:
-        type: integer
-        format: int32
-        description: The requested page size.
-      page:
-        type: integer
-        format: int32
-        description: The requested page offset.
-    description: ListRepositoryTagsAdminResponse contains a list of repository tags (admin only).
   ListSystemsAdminResponse:
     type: object
     properties:
@@ -8125,26 +7999,6 @@ definitions:
         description: Version update time, i.e. timestamp of the last push.
         readOnly: true
     description: ModelVersion contains information about the version of a model.
-  MoveFileToCatalogBody:
-    type: object
-    properties:
-      fileUid:
-        type: string
-        description: The file uid.
-      toCatalogId:
-        type: string
-        description: The target catalog id.
-    description: MoveFileToCatalogRequest represents a request to move a file to another catalog.
-    required:
-      - fileUid
-      - toCatalogId
-  MoveFileToCatalogResponse:
-    type: object
-    properties:
-      fileUid:
-        type: string
-        description: The file uid.
-    description: MoveFileToCatalogResponse represents a response for moving a file to another catalog.
   NullValue:
     type: string
     description: |-
@@ -8797,27 +8651,6 @@ definitions:
     description: |-
       Position within a file, as coordinates in a a specific unit. The
       number of dimensions of the coordinate depends on the unit type.
-  ProcessCatalogFilesRequest:
-    type: object
-    properties:
-      fileUids:
-        type: array
-        items:
-          type: string
-        description: The file uid.
-    title: Process Catalog File Request
-    required:
-      - fileUids
-  ProcessCatalogFilesResponse:
-    type: object
-    properties:
-      files:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/File'
-        description: The file uid.
-    title: Process Catalog File Response
   PurgeRollbackAdminResponse:
     type: object
     properties:
@@ -8914,28 +8747,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/System'
     title: RenameSystemAdminResponse (admin only)
-  RepositoryTag:
-    type: object
-    properties:
-      name:
-        type: string
-        description: |-
-          The name of the tag, defined by its parent repository and ID.
-          - Format: `repositories/{repository.id}/tags/{tag.id}`.
-      id:
-        type: string
-        description: The tag identifier.
-      digest:
-        type: string
-        description: Unique identifier, computed from the manifest the tag refers to.
-      updateTime:
-        type: string
-        format: date-time
-        description: Tag update time, i.e. timestamp of the last push.
-        readOnly: true
-    description: |-
-      RepositoryTag contains information about the version of some content in a
-      repository.
   Role:
     type: string
     enum:
@@ -8981,17 +8792,52 @@ definitions:
        - RUN_STATUS_COMPLETED: Run succeeded.
        - RUN_STATUS_FAILED: Run failed.
        - RUN_STATUS_QUEUED: Run is waiting to be executed.
-  SearchSourceFilesResponse:
+  SearchChunksBody:
     type: object
     properties:
-      sourceFiles:
+      textPrompt:
+        type: string
+        description: Text prompt to look for similarities.
+      topK:
+        type: integer
+        format: int64
+        description: 'Top K. Default value: 5.'
+      type:
+        description: Chunk type.
+        allOf:
+          - $ref: '#/definitions/Chunk.Type'
+      fileMediaType:
+        description: File media type.
+        allOf:
+          - $ref: '#/definitions/FileMediaType'
+      fileIds:
+        type: array
+        items:
+          type: string
+        description: |-
+          File IDs. When this field is provided, the response will return only
+          chunks that belong to the specified file IDs.
+      tags:
+        type: array
+        items:
+          type: string
+        description: |-
+          Tags to filter by. When multiple tags are provided, OR logic is applied.
+          Note: File ID filter takes precedence over tags, as tags apply to files.
+    description: SearchChunksRequest represents a request to search for similar chunks.
+    required:
+      - textPrompt
+  SearchChunksResponse:
+    type: object
+    properties:
+      similarChunks:
         type: array
         items:
           type: object
-          $ref: '#/definitions/SourceFile'
-        title: source files
+          $ref: '#/definitions/SimilarityChunk'
+        title: chunks
         readOnly: true
-    title: search source file response
+    description: SearchChunksResponse represents a response for searching similar chunks.
   Secret:
     type: object
     properties:
@@ -9110,9 +8956,9 @@ definitions:
   SimilarityChunk:
     type: object
     properties:
-      chunkUid:
+      chunkId:
         type: string
-        title: chunk uid
+        title: chunk id
         readOnly: true
       similarityScore:
         type: number
@@ -9128,83 +8974,11 @@ definitions:
         title: source file's name
         readOnly: true
       chunkMetadata:
-        title: chunk
+        title: chunk metadata
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1alpha.Chunk'
-    title: similarity chunks
-  SimilarityChunksSearchBody:
-    type: object
-    properties:
-      textPrompt:
-        type: string
-        description: Text prompt to look for similarities.
-      topK:
-        type: integer
-        format: int64
-        description: 'Top K. Default value: 5.'
-      type:
-        description: Chunk type.
-        allOf:
-          - $ref: '#/definitions/Chunk.Type'
-      fileMediaType:
-        description: File type.
-        allOf:
-          - $ref: '#/definitions/FileMediaType'
-      fileUids:
-        type: array
-        items:
-          type: string
-        description: |-
-          File UIDs. When this field is provided, the response will return only
-          chunks that belong to the specified file UIDs.
-      tags:
-        type: array
-        items:
-          type: string
-        description: |-
-          Tags to filter by. When multiple tags are provided, OR logic is applied.
-          Note: File UID filter takes precedence over tags, as tags apply to files.
-    title: Similar chunk search request
-    required:
-      - textPrompt
-  SimilarityChunksSearchResponse:
-    type: object
-    properties:
-      similarChunks:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/SimilarityChunk'
-        title: chunks
-        readOnly: true
-    title: Similar chunk search response
-  SourceFile:
-    type: object
-    properties:
-      originalFileUid:
-        type: string
-        title: original file unique identifier
-        readOnly: true
-      content:
-        type: string
-        title: content
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        title: creation time of the source file
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        title: update time of the source file
-        readOnly: true
-      originalFileName:
-        type: string
-        title: original file name
-        readOnly: true
-    description: The SourceFile message represents a source file in the artifact system.
+          - $ref: '#/definitions/Chunk'
+    description: SimilarityChunk represents a chunk with similarity score.
   Spec:
     type: object
     properties:
@@ -9332,35 +9106,6 @@ definitions:
   TestNamespaceConnectionResponse:
     type: object
     description: TestNamespaceConnectionResponse is an empty response.
-  Text:
-    type: object
-    properties:
-      pipelines:
-        type: array
-        items:
-          type: string
-        description: Pipelines used to process the file.
-        readOnly: true
-      content:
-        type: string
-        description: Text representation of the file.
-        readOnly: true
-      chunkCount:
-        type: integer
-        format: int32
-        description: Chunk count in the text.
-        readOnly: true
-      tokenCount:
-        type: integer
-        format: int32
-        title: Token count in the text
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: Last update timestamp for the text.
-        readOnly: true
-    description: Text contains the text representation of the file.
   TimeUnit:
     type: string
     enum:
@@ -9798,73 +9543,27 @@ definitions:
   UpdateCatalogBody:
     type: object
     properties:
-      description:
-        type: string
-        description: The catalog description.
-      tags:
-        type: array
-        items:
-          type: string
-        description: The catalog tags.
-      convertingPipelines:
-        type: array
-        items:
-          type: string
-        description: |-
-          Pipelines used for converting page-based documents (i.e., files with pdf,
-          doc[x] or ppt[x] extension) to Markdown. The strings in the list identify
-          the pipelines and MUST have the format
-          `{namespaceID}/{pipelineID}@{version}`. The pipeline recipes MUST have the
-          following variable and output fields:
-          ```yaml variable
-          variable:
-            document_input:
-              title: document-input
-              description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
-              type: file
-          ```
-          The `convert_result` output should be a list of strings, one per page.
-          ```yaml output
-          output:
-           convert_result:
-             title: convert-result
-             value: ${merge-markdown-refinement.output.results[0]}
-          ```
-          Other variable and output fields will be ignored.
-
-          The pipelines will be executed in order until one produces a successful,
-          non-empty result.
-
-          If no pipelines are provided, a default pipeline will be used. For
-          non-document catalog files, the conversion pipeline is deterministic (such
-          files are typically trivial to convert and don't require a dedicated
-          pipeline to improve the conversion performance).
-    description: UpdateCatalogRequest represents a request to update a catalog.
-  UpdateCatalogFileTagsBody:
-    type: object
-    properties:
-      tags:
-        type: array
-        items:
-          type: string
-        description: Array of tags to associate with the file.
-    title: Update catalog file tags request
-    required:
-      - tags
-  UpdateCatalogFileTagsResponse:
-    type: object
-    properties:
-      file:
-        description: Updated file with tags.
-        readOnly: true
+      catalog:
+        description: The catalog fields that will replace the existing ones.
         allOf:
-          - $ref: '#/definitions/File'
-    title: Update catalog file tags response
+          - $ref: '#/definitions/Catalog'
+      updateMask:
+        type: string
+        description: |-
+          The update mask specifies the subset of fields that should be modified.
+
+          For more information about this field, see
+          https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
+    description: UpdateCatalogRequest represents a request to update a catalog.
+    required:
+      - catalog
+      - updateMask
   UpdateCatalogResponse:
     type: object
     properties:
       catalog:
         description: The updated catalog.
+        readOnly: true
         allOf:
           - $ref: '#/definitions/Catalog'
     description: UpdateCatalogResponse represents a response for updating a catalog.
@@ -9874,7 +9573,7 @@ definitions:
       retrievable:
         type: boolean
         title: whether the chunk is retrievable
-    title: Create chunk response
+    description: UpdateChunkRequest represents a request to update a chunk.
     required:
       - retrievable
   UpdateChunkResponse:
@@ -9884,8 +9583,17 @@ definitions:
         title: chunk
         readOnly: true
         allOf:
-          - $ref: '#/definitions/v1alpha.Chunk'
-    title: update chunk response
+          - $ref: '#/definitions/Chunk'
+    description: UpdateChunkResponse represents a response for updating a chunk.
+  UpdateFileResponse:
+    type: object
+    properties:
+      file:
+        description: Updated file.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/File'
+    description: UpdateFileResponse represents a response for updating a file.
   UpdateNamespaceConnectionResponse:
     type: object
     properties:
@@ -9973,14 +9681,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/UserMembership'
     description: UpdateUserMembershipResponse contains the updated membership.
-  UploadCatalogFileResponse:
-    type: object
-    properties:
-      file:
-        title: file
-        allOf:
-          - $ref: '#/definitions/File'
-    title: upload file response
   UserDefinedResponse:
     type: object
     properties:
@@ -10241,61 +9941,6 @@ definitions:
 
       You can find out more about this error model and how to work with it in the
       [API Design Guide](https://cloud.google.com/apis/design/errors).
-  v1alpha.Chunk:
-    type: object
-    properties:
-      chunkUid:
-        type: string
-        title: unique identifier of the chunk
-        readOnly: true
-      retrievable:
-        type: boolean
-        title: whether the chunk is retrievable
-        readOnly: true
-      tokens:
-        type: integer
-        format: int64
-        title: tokens of the chunk
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        title: creation time of the chunk
-        readOnly: true
-      originalFileUid:
-        type: string
-        title: original file unique identifier
-        readOnly: true
-      type:
-        title: chunk type
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Chunk.Type'
-      reference:
-        description: Reference to the position of the chunk within the original file.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Reference'
-      markdownReference:
-        description: Reference to the position of the chunk within the Markdown (source) file.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Reference'
-      startPos:
-        type: integer
-        format: int64
-        title: |-
-          start position of the chunk in the source file
-          Deprecated: use markdown_reference instead
-        readOnly: true
-      endPos:
-        type: integer
-        format: int64
-        title: |-
-          end position of the chunk in the source file
-          Deprecated: use markdown_reference instead
-        readOnly: true
-    description: The Chunk message represents a chunk of data in the artifact system.
   v1alpha.Permission:
     type: object
     properties:
