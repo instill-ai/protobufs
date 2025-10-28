@@ -2,35 +2,14 @@ syntax = "proto3";
 
 package artifact.artifact.v1alpha;
 
-import "artifact/artifact/v1alpha/artifact.proto";
-import "artifact/artifact/v1alpha/file_catalog.proto";
+import "artifact/artifact/v1alpha/file.proto";
+import "artifact/artifact/v1alpha/object.proto";
 import "artifact/artifact/v1alpha/system.proto";
 import "artifact/artifact/v1alpha/update.proto";
 
 // ArtifactPrivateService exposes the private endpoints that allow clients to
 // manage artifacts.
 service ArtifactPrivateService {
-  // List the tags in a repository (admin only)
-  //
-  // Returns a portion of the versions that the specified repository holds.
-  rpc ListRepositoryTagsAdmin(ListRepositoryTagsAdminRequest) returns (ListRepositoryTagsAdminResponse);
-
-  // Get details of repository tag (admin only)
-  rpc GetRepositoryTagAdmin(GetRepositoryTagAdminRequest) returns (GetRepositoryTagAdminResponse);
-
-  // Create a new repository tag (admin only)
-  //
-  // Adds a tag to a given repository. Note that this operation is only
-  // intended to register the information of an *already created* tag. This
-  // method should be called as part of the content push operation, right after
-  // the [PUT Manifest](https://distribution.github.io/distribution/#put-manifest) has
-  // succeeded. The distribution registry won't hold data such as the push time
-  // or the tag digest, so `artifact-backend` will hold this information locally.
-  rpc CreateRepositoryTagAdmin(CreateRepositoryTagAdminRequest) returns (CreateRepositoryTagAdminResponse);
-
-  // Delete a repository tag (admin only)
-  rpc DeleteRepositoryTagAdmin(DeleteRepositoryTagAdminRequest) returns (DeleteRepositoryTagAdminResponse);
-
   // Get Object (admin only)
   rpc GetObjectAdmin(GetObjectAdminRequest) returns (GetObjectAdminResponse);
 
@@ -40,29 +19,18 @@ service ArtifactPrivateService {
   // Update Object (admin only)
   rpc UpdateObjectAdmin(UpdateObjectAdminRequest) returns (UpdateObjectAdminResponse);
 
-  // Get file as Markdown (admin only)
-  //
-  // Returns the Markdown representation of a file.
-  rpc GetFileAsMarkdownAdmin(GetFileAsMarkdownAdminRequest) returns (GetFileAsMarkdownAdminResponse);
-
-  // Get file as Markdown (deprecated, admin only)
-  //
-  // Returns the contents of a file conversion to Markdown as a binary blob.
-  // This method is deprecated as it identifies the file by namespace and
-  // filename instead of UID, which isn't a unique identifier anymore.
-  rpc GetChatFileAdmin(GetChatFileAdminRequest) returns (GetChatFileAdminResponse) {
-    option deprecated = true;
-  }
+  // GetFileAsMarkdownAdmin and GetChatFileAdmin have been removed.
+  // Use GetFile with VIEW_CONTENT instead to get the converted markdown via pre-signed URL.
 
   // Delete a catalog file (admin only)
   //
-  // Deletes a file from a catalog using only the file UID. Unlike the public
-  // DeleteCatalogFile endpoint which requires namespace and catalog IDs, this
+  // Deletes a file from a catalog using only the file ID. Unlike the public
+  // DeleteFile endpoint which requires namespace and catalog IDs, this
   // admin endpoint automatically looks up the file's catalog and owner to
   // perform the deletion. Primarily used for integration testing and internal
-  // operations where the caller has a file UID but not the full resource path.
+  // operations where the caller has a file ID but not the full resource path.
   // Authentication metadata is injected automatically based on the file owner.
-  rpc DeleteCatalogFileAdmin(DeleteCatalogFileAdminRequest) returns (DeleteCatalogFileAdminResponse);
+  rpc DeleteFileAdmin(DeleteFileAdminRequest) returns (DeleteFileAdminResponse);
 
   // Knowledge Base Update Admin APIs
 
