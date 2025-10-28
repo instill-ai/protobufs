@@ -9,11 +9,11 @@ import "google/api/resource.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
-// Catalog represents a catalog.
-message Catalog {
-  option (google.api.resource) = {pattern: "namespaces/{namespace}/catalogs/{catalog}"};
+// KnowledgeBase represents a knowledge base.
+message KnowledgeBase {
+  option (google.api.resource) = {pattern: "namespaces/{namespace}/knowledge-bases/{knowledge_base}"};
 
-  // EmbeddingConfig defines the embedding configuration for a catalog
+  // EmbeddingConfig defines the embedding configuration for a knowledge base
   message EmbeddingConfig {
     // The AI model family used for embeddings (e.g., "gemini", "openai")
     string model_family = 1;
@@ -21,36 +21,36 @@ message Catalog {
     uint32 dimensionality = 2;
   }
 
-  // The catalog uid (internal UUID).
+  // The knowledge base uid (internal UUID).
   string uid = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The catalog id (user-provided or system-generated).
+  // The knowledge base id (user-provided or system-generated).
   string id = 2 [(google.api.field_behavior) = IMMUTABLE];
-  // The resource name of the catalog.
-  // Format: `namespaces/{namespace}/catalogs/{catalog}`.
+  // The resource name of the knowledge base.
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`.
   string name = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The catalog description.
+  // The knowledge base description.
   string description = 4 [(google.api.field_behavior) = OPTIONAL];
-  // The creation time of the catalog.
+  // The creation time of the knowledge base.
   google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The last update time of the catalog.
+  // The last update time of the knowledge base.
   google.protobuf.Timestamp update_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The owner/namespace of the catalog.
+  // The owner/namespace of the knowledge base.
   string owner_name = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The catalog tags.
+  // The knowledge base tags.
   repeated string tags = 8 [(google.api.field_behavior) = OPTIONAL];
-  // The catalog converting pipelines.
+  // The knowledge base converting pipelines.
   // Deprecated: Conversion is now handled by AI providers.
   repeated string converting_pipelines = 9 [
     deprecated = true,
     (google.api.field_behavior) = OPTIONAL
   ];
-  // The catalog splitting pipelines.
+  // The knowledge base splitting pipelines.
   // Deprecated: Chunking is now handled internally.
   repeated string splitting_pipelines = 10 [
     deprecated = true,
     (google.api.field_behavior) = OPTIONAL
   ];
-  // The catalog embedding pipelines.
+  // The knowledge base embedding pipelines.
   // Deprecated: Use embedding_config instead.
   repeated string embedding_pipelines = 11 [
     deprecated = true,
@@ -58,47 +58,47 @@ message Catalog {
   ];
   // The downstream apps
   repeated string downstream_apps = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The total files in catalog.
+  // The total files in knowledge base.
   uint32 total_files = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The total tokens in catalog.
+  // The total tokens in knowledge base.
   uint32 total_tokens = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The current used storage in catalog.
+  // The current used storage in knowledge base.
   uint64 used_storage = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // The catalog summarizing pipelines.
+  // The knowledge base summarizing pipelines.
   // Deprecated: Summarization is now handled by AI providers.
   repeated string summarizing_pipelines = 16 [
     deprecated = true,
     (google.api.field_behavior) = OPTIONAL
   ];
-  // The embedding configuration for the catalog.
+  // The embedding configuration for the knowledge base.
   EmbeddingConfig embedding_config = 17 [(google.api.field_behavior) = OPTIONAL];
-  // The UID of the active Milvus collection for this catalog.
+  // The UID of the active Milvus collection for this knowledge base.
   // This supports collection versioning for embedding dimension changes.
   string active_collection_uid = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// Catalog Type. e.g. "persistent" or "ephemeral"
-enum CatalogType {
+// Knowledge Base Type. e.g. "persistent" or "ephemeral"
+enum KnowledgeBaseType {
   // UNSPECIFIED
-  CATALOG_TYPE_UNSPECIFIED = 0;
+  KNOWLEDGE_BASE_TYPE_UNSPECIFIED = 0;
   // PERSISTENT
-  CATALOG_TYPE_PERSISTENT = 1;
+  KNOWLEDGE_BASE_TYPE_PERSISTENT = 1;
   // EPHEMERAL
-  CATALOG_TYPE_EPHEMERAL = 2;
+  KNOWLEDGE_BASE_TYPE_EPHEMERAL = 2;
 }
 
-// CreateCatalogRequest represents a request to create a catalog.
-message CreateCatalogRequest {
-  // The catalog's owner(namespaces).
+// CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+message CreateKnowledgeBaseRequest {
+  // The knowledge base's owner(namespaces).
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The catalog id (user-provided or auto-generated).
+  // The knowledge base id (user-provided or auto-generated).
   string id = 2 [(google.api.field_behavior) = OPTIONAL];
-  // The catalog description.
+  // The knowledge base description.
   string description = 3 [(google.api.field_behavior) = OPTIONAL];
-  // The catalog tags.
+  // The knowledge base tags.
   repeated string tags = 4 [(google.api.field_behavior) = OPTIONAL];
-  // The catalog type. default is PERSISTENT
-  CatalogType type = 5 [(google.api.field_behavior) = OPTIONAL];
+  // The knowledge base type. default is PERSISTENT
+  KnowledgeBaseType type = 5 [(google.api.field_behavior) = OPTIONAL];
   // Pipelines used for converting page-based documents (i.e., files with pdf,
   // doc[x] or ppt[x] extension) to Markdown. The strings in the list identify
   // the pipelines and MUST have the format
@@ -124,12 +124,12 @@ message CreateCatalogRequest {
   // non-empty result.
   //
   // If no pipelines are provided, a default pipeline will be used. For
-  // non-document catalog files, the conversion pipeline is deterministic (such
+  // non-document knowledge base files, the conversion pipeline is deterministic (such
   // files are typically trivial to convert and don't require a dedicated
   // pipeline to improve the conversion performance).
   repeated string converting_pipelines = 6 [(google.api.field_behavior) = OPTIONAL];
 
-  // System ID to use for this catalog.
+  // System ID to use for this knowledge base.
   // References a system configuration in the system table that defines how the knowledge base
   // will be created based on the system's RAG configurations including:
   // - AI model family (e.g., "openai", "gemini")
@@ -142,64 +142,64 @@ message CreateCatalogRequest {
   optional string system_id = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// CreateCatalogResponse represents a response for creating a catalog.
-message CreateCatalogResponse {
-  // The created catalog.
-  Catalog catalog = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+// CreateKnowledgeBaseResponse represents a response for creating a knowledge base.
+message CreateKnowledgeBaseResponse {
+  // The created knowledge base.
+  KnowledgeBase knowledge_base = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// GetCatalogRequest represents a request to get a catalog.
-message GetCatalogRequest {
+// GetKnowledgeBaseRequest represents a request to get a knowledge base.
+message GetKnowledgeBaseRequest {
   // Namespace ID.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Catalog ID.
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // Knowledge Base ID.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// GetCatalogResponse represents a response for getting a catalog.
-message GetCatalogResponse {
-  // The catalog resource.
-  Catalog catalog = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+// GetKnowledgeBaseResponse represents a response for getting a knowledge base.
+message GetKnowledgeBaseResponse {
+  // The knowledge base resource.
+  KnowledgeBase knowledge_base = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// Request message for ListCatalogs(not include the ephemeral catalogs)
-message ListCatalogsRequest {
-  // User ID for which to list the catalogs
+// Request message for ListKnowledgeBases(not include the ephemeral knowledge bases)
+message ListKnowledgeBasesRequest {
+  // User ID for which to list the knowledge bases
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The maximum number of catalogs to return. If this parameter is unspecified,
-  // at most 10 catalogs will be returned. The cap value for this parameter
+  // The maximum number of knowledge bases to return. If this parameter is unspecified,
+  // at most 10 knowledge bases will be returned. The cap value for this parameter
   // is 100 (i.e. any value above that will be coerced to 100).
   optional int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
   // Page token.
   optional string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
   // Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
-  // - `id="<catalog_id>"` or `uid="<uuid>"` - Filter by specific catalog ID/UID
-  // - `q="<text>"` - Fuzzy search on catalog ID and description
+  // - `id="<knowledge_base_id>"` or `uid="<uuid>"` - Filter by specific knowledge base ID/UID
+  // - `q="<text>"` - Fuzzy search on knowledge base ID and description
   //
   // **Examples**:
-  // - Filter by ID: `id="my-catalog"`
-  // - Search catalogs: `q="my-catalog"`
+  // - Filter by ID: `id="my-knowledge-base"`
+  // - Search knowledge bases: `q="my-knowledge-base"`
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// GetCatalogsResponse represents a response for getting all catalogs from users.
-message ListCatalogsResponse {
-  // The catalogs container.
-  repeated Catalog catalogs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+// ListKnowledgeBasesResponse represents a response for getting all knowledge bases from users.
+message ListKnowledgeBasesResponse {
+  // The knowledge bases container.
+  repeated KnowledgeBase knowledge_bases = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Next page token.
   string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Total number of catalogs.
+  // Total number of knowledge bases.
   int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// UpdateCatalogRequest represents a request to update a catalog.
-message UpdateCatalogRequest {
+// UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
+message UpdateKnowledgeBaseRequest {
   // Namespace ID.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Catalog ID.
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
-  // The catalog fields that will replace the existing ones.
-  Catalog catalog = 3 [(google.api.field_behavior) = REQUIRED];
+  // Knowledge Base ID.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The knowledge base fields that will replace the existing ones.
+  KnowledgeBase knowledge_base = 3 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
   //
   // For more information about this field, see
@@ -207,22 +207,22 @@ message UpdateCatalogRequest {
   google.protobuf.FieldMask update_mask = 4 [(google.api.field_behavior) = REQUIRED];
 }
 
-// UpdateCatalogResponse represents a response for updating a catalog.
-message UpdateCatalogResponse {
-  // The updated catalog.
-  Catalog catalog = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+// UpdateKnowledgeBaseResponse represents a response for updating a knowledge base.
+message UpdateKnowledgeBaseResponse {
+  // The updated knowledge base.
+  KnowledgeBase knowledge_base = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// DeleteCatalogRequest represents a request to delete a catalog.
-message DeleteCatalogRequest {
+// DeleteKnowledgeBaseRequest represents a request to delete a knowledge base.
+message DeleteKnowledgeBaseRequest {
   // The owner's id. i.e. namespace.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The catalog id.
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The knowledge base id.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// DeleteCatalogResponse represents a response for deleting a catalog.
-message DeleteCatalogResponse {
-  // The catalog identifier.
-  Catalog catalog = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+// DeleteKnowledgeBaseResponse represents a response for deleting a knowledge base.
+message DeleteKnowledgeBaseResponse {
+  // The knowledge base identifier.
+  KnowledgeBase knowledge_base = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

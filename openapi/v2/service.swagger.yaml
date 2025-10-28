@@ -31,16 +31,16 @@ consumes:
 produces:
   - application/json
 paths:
-  /v1alpha/namespaces/{namespaceId}/catalogs:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases:
     get:
-      summary: Get all catalogs info
-      description: Returns a paginated list of catalogs.
-      operationId: ArtifactPublicService_ListCatalogs
+      summary: Get all knowledge bases info
+      description: Returns a paginated list of knowledge bases.
+      operationId: ArtifactPublicService_ListKnowledgeBases
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListCatalogsResponse'
+            $ref: '#/definitions/ListKnowledgeBasesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -50,14 +50,14 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: User ID for which to list the catalogs
+          description: User ID for which to list the knowledge bases
           in: path
           required: true
           type: string
         - name: pageSize
           description: |-
-            The maximum number of catalogs to return. If this parameter is unspecified,
-            at most 10 catalogs will be returned. The cap value for this parameter
+            The maximum number of knowledge bases to return. If this parameter is unspecified,
+            at most 10 knowledge bases will be returned. The cap value for this parameter
             is 100 (i.e. any value above that will be coerced to 100).
           in: query
           required: false
@@ -71,12 +71,12 @@ paths:
         - name: filter
           description: |-
             Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter expression.
-            - `id="<catalog_id>"` or `uid="<uuid>"` - Filter by specific catalog ID/UID
-            - `q="<text>"` - Fuzzy search on catalog ID and description
+            - `id="<knowledge_base_id>"` or `uid="<uuid>"` - Filter by specific knowledge base ID/UID
+            - `q="<text>"` - Fuzzy search on knowledge base ID and description
 
             **Examples**:
-            - Filter by ID: `id="my-catalog"`
-            - Search catalogs: `q="my-catalog"`
+            - Filter by ID: `id="my-knowledge-base"`
+            - Search knowledge bases: `q="my-knowledge-base"`
           in: query
           required: false
           type: string
@@ -84,14 +84,14 @@ paths:
         - Artifact
       x-stage: alpha
     post:
-      summary: Create a catalog
-      description: Creates a catalog.
-      operationId: ArtifactPublicService_CreateCatalog
+      summary: Create a knowledge base
+      description: Creates a knowledge base.
+      operationId: ArtifactPublicService_CreateKnowledgeBase
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/CreateCatalogResponse'
+            $ref: '#/definitions/CreateKnowledgeBaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -101,7 +101,7 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The catalog's owner(namespaces).
+          description: The knowledge base's owner(namespaces).
           in: path
           required: true
           type: string
@@ -109,20 +109,20 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CreateCatalogBody'
+            $ref: '#/definitions/CreateKnowledgeBaseBody'
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}:
     get:
-      summary: Get a catalog
-      description: Returns the details of a catalog.
-      operationId: ArtifactPublicService_GetCatalog
+      summary: Get a knowledge base
+      description: Returns the details of a knowledge base.
+      operationId: ArtifactPublicService_GetKnowledgeBase
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetCatalogResponse'
+            $ref: '#/definitions/GetKnowledgeBaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -136,8 +136,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: Catalog ID.
+        - name: knowledgeBaseId
+          description: Knowledge Base ID.
           in: path
           required: true
           type: string
@@ -145,14 +145,14 @@ paths:
         - Artifact
       x-stage: alpha
     delete:
-      summary: Delete a catalog
-      description: Deletes a catalog.
-      operationId: ArtifactPublicService_DeleteCatalog
+      summary: Delete a knowledge base
+      description: Deletes a knowledge base.
+      operationId: ArtifactPublicService_DeleteKnowledgeBase
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/DeleteCatalogResponse'
+            $ref: '#/definitions/DeleteKnowledgeBaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -166,8 +166,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: The catalog id.
+        - name: knowledgeBaseId
+          description: The knowledge base id.
           in: path
           required: true
           type: string
@@ -175,14 +175,14 @@ paths:
         - Artifact
       x-stage: alpha
     put:
-      summary: Update a catalog info
-      description: Updates the information of a catalog.
-      operationId: ArtifactPublicService_UpdateCatalog
+      summary: Update a knowledge base info
+      description: Updates the information of a knowledge base.
+      operationId: ArtifactPublicService_UpdateKnowledgeBase
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/UpdateCatalogResponse'
+            $ref: '#/definitions/UpdateKnowledgeBaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -196,8 +196,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: Catalog ID.
+        - name: knowledgeBaseId
+          description: Knowledge Base ID.
           in: path
           required: true
           type: string
@@ -205,11 +205,11 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/UpdateCatalogBody'
+            $ref: '#/definitions/UpdateKnowledgeBaseBody'
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/files:
     get:
       summary: List files
       description: Returns a paginated list of files.
@@ -232,8 +232,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: The catalog id.
+        - name: knowledgeBaseId
+          description: The knowledge base id.
           in: path
           required: true
           type: string
@@ -265,7 +265,7 @@ paths:
       x-stage: alpha
     post:
       summary: Create a file
-      description: Uploads and converts a file to a catalog.
+      description: Uploads and converts a file to a knowledge base.
       operationId: ArtifactPublicService_CreateFile
       responses:
         "200":
@@ -285,8 +285,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: catalog id
+        - name: knowledgeBaseId
+          description: knowledge base id
           in: path
           required: true
           type: string
@@ -299,7 +299,7 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileId}:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/files/{fileId}:
     get:
       summary: Get a file
       description: Returns the details of a file.
@@ -322,8 +322,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: The catalog id.
+        - name: knowledgeBaseId
+          description: The knowledge base id.
           in: path
           required: true
           type: string
@@ -383,8 +383,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: The catalog id.
+        - name: knowledgeBaseId
+          description: The knowledge base id.
           in: path
           required: true
           type: string
@@ -418,8 +418,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: Catalog ID.
+        - name: knowledgeBaseId
+          description: Knowledge Base ID.
           in: path
           required: true
           type: string
@@ -437,7 +437,7 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileId}/chunks/{chunkId}:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/files/{fileId}/chunks/{chunkId}:
     get:
       summary: Get a chunk
       description: Returns the details of a chunk.
@@ -460,8 +460,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: Catalog ID.
+        - name: knowledgeBaseId
+          description: Knowledge Base ID.
           in: path
           required: true
           type: string
@@ -478,7 +478,7 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/files/{fileId}/chunks:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/files/{fileId}/chunks:
     get:
       summary: List chunks
       description: Returns a paginated list of chunks.
@@ -501,8 +501,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: catalog id
+        - name: knowledgeBaseId
+          description: knowledge base id
           in: path
           required: true
           type: string
@@ -542,7 +542,7 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/chunks/{chunkId}:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/chunks/{chunkId}:
     patch:
       summary: Update a chunk
       description: Updates a chunk.
@@ -565,8 +565,8 @@ paths:
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: Catalog ID.
+        - name: knowledgeBaseId
+          description: Knowledge Base ID.
           in: path
           required: true
           type: string
@@ -583,7 +583,7 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/searchChunks:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/searchChunks:
     post:
       summary: Search chunks
       description: Returns the top-K most similar chunks to a text prompt.
@@ -602,12 +602,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: ID of the namespace owning the catalog.
+          description: ID of the namespace owning the knowledge base.
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: ID of the catalog.
+        - name: knowledgeBaseId
+          description: ID of the knowledge base.
           in: path
           required: true
           type: string
@@ -624,16 +624,16 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/catalogs/{catalogId}/runs:
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/runs:
     get:
-      summary: List Catalog Runs
-      description: Returns a paginated list of catalog runs.
-      operationId: ArtifactPublicService_ListCatalogRuns
+      summary: List Knowledge Base Runs
+      description: Returns a paginated list of knowledge base runs.
+      operationId: ArtifactPublicService_ListKnowledgeBaseRuns
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListCatalogRunsResponse'
+            $ref: '#/definitions/ListKnowledgeBaseRunsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -643,12 +643,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The ID of the owner of the catalog.
+          description: The ID of the owner of the knowledge base.
           in: path
           required: true
           type: string
-        - name: catalogId
-          description: The ID of the catalog for which the runs will be listed.
+        - name: knowledgeBaseId
+          description: The ID of the knowledge base for which the runs will be listed.
           in: path
           required: true
           type: string
@@ -4972,200 +4972,6 @@ definitions:
           type: object
         description: Model inference outputs.
     title: CallResponse represents a response for model inference
-  Catalog:
-    type: object
-    properties:
-      uid:
-        type: string
-        description: The catalog uid (internal UUID).
-        readOnly: true
-      id:
-        type: string
-        description: The catalog id (user-provided or system-generated).
-      name:
-        type: string
-        description: |-
-          The resource name of the catalog.
-          Format: `namespaces/{namespace}/catalogs/{catalog}`.
-        readOnly: true
-      description:
-        type: string
-        description: The catalog description.
-      createTime:
-        type: string
-        format: date-time
-        description: The creation time of the catalog.
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: The last update time of the catalog.
-        readOnly: true
-      ownerName:
-        type: string
-        description: The owner/namespace of the catalog.
-        readOnly: true
-      tags:
-        type: array
-        items:
-          type: string
-        description: The catalog tags.
-      convertingPipelines:
-        type: array
-        items:
-          type: string
-        description: |-
-          The catalog converting pipelines.
-          Deprecated: Conversion is now handled by AI providers.
-      splittingPipelines:
-        type: array
-        items:
-          type: string
-        description: |-
-          The catalog splitting pipelines.
-          Deprecated: Chunking is now handled internally.
-      embeddingPipelines:
-        type: array
-        items:
-          type: string
-        description: |-
-          The catalog embedding pipelines.
-          Deprecated: Use embedding_config instead.
-      downstreamApps:
-        type: array
-        items:
-          type: string
-        title: The downstream apps
-        readOnly: true
-      totalFiles:
-        type: integer
-        format: int64
-        description: The total files in catalog.
-        readOnly: true
-      totalTokens:
-        type: integer
-        format: int64
-        description: The total tokens in catalog.
-        readOnly: true
-      usedStorage:
-        type: string
-        format: uint64
-        description: The current used storage in catalog.
-        readOnly: true
-      summarizingPipelines:
-        type: array
-        items:
-          type: string
-        description: |-
-          The catalog summarizing pipelines.
-          Deprecated: Summarization is now handled by AI providers.
-      embeddingConfig:
-        description: The embedding configuration for the catalog.
-        allOf:
-          - $ref: '#/definitions/EmbeddingConfig'
-      activeCollectionUid:
-        type: string
-        description: |-
-          The UID of the active Milvus collection for this catalog.
-          This supports collection versioning for embedding dimension changes.
-        readOnly: true
-    description: Catalog represents a catalog.
-  CatalogRun:
-    type: object
-    properties:
-      uid:
-        type: string
-        description: Unique identifier for each run.
-        readOnly: true
-      catalogUid:
-        type: string
-        title: catalog uid
-        readOnly: true
-      fileUids:
-        type: array
-        items:
-          type: string
-        description: The file uids.
-        readOnly: true
-      action:
-        description: Action of the catalog run.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/CatalogRunAction'
-      status:
-        description: Current status of the run.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/RunStatus'
-      source:
-        description: Origin of the run.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/RunSource'
-      totalDuration:
-        type: integer
-        format: int32
-        description: Time taken to complete the run in milliseconds.
-        readOnly: true
-      runnerId:
-        type: string
-        title: Runner ID. (User UID)
-        readOnly: true
-      namespaceId:
-        type: string
-        description: Namespace ID.
-        readOnly: true
-      payload:
-        type: object
-        description: Run request payload.
-        readOnly: true
-      startTime:
-        type: string
-        format: date-time
-        description: Time when the run started execution.
-        readOnly: true
-      completeTime:
-        type: string
-        format: date-time
-        description: Time when the run completed.
-        readOnly: true
-      error:
-        type: string
-        description: Error message if the run failed.
-        readOnly: true
-      creditAmount:
-        type: number
-        format: float
-        description: Credits used of internal accounting metric.
-        readOnly: true
-    description: CatalogRun represents a single execution of a catalog action.
-  CatalogRunAction:
-    type: string
-    enum:
-      - CATALOG_RUN_ACTION_CREATE
-      - CATALOG_RUN_ACTION_UPDATE
-      - CATALOG_RUN_ACTION_DELETE
-      - CATALOG_RUN_ACTION_CREATE_FILE
-      - CATALOG_RUN_ACTION_PROCESS_FILE
-      - CATALOG_RUN_ACTION_DELETE_FILE
-    description: |-
-      CatalogRunAction describes the actions a user has over a catalog.
-
-       - CATALOG_RUN_ACTION_CREATE: Create catalog.
-       - CATALOG_RUN_ACTION_UPDATE: Update catalog.
-       - CATALOG_RUN_ACTION_DELETE: Delete catalog.
-       - CATALOG_RUN_ACTION_CREATE_FILE: Upload catalog file.
-       - CATALOG_RUN_ACTION_PROCESS_FILE: Process catalog file.
-       - CATALOG_RUN_ACTION_DELETE_FILE: Delete catalog file.
-  CatalogType:
-    type: string
-    enum:
-      - CATALOG_TYPE_PERSISTENT
-      - CATALOG_TYPE_EPHEMERAL
-    description: |-
-      - CATALOG_TYPE_PERSISTENT: PERSISTENT
-       - CATALOG_TYPE_EPHEMERAL: EPHEMERAL
-    title: Catalog Type. e.g. "persistent" or "ephemeral"
   CheckNamespaceAdminResponse:
     type: object
     properties:
@@ -5286,7 +5092,7 @@ definitions:
         type: string
         description: |-
           The resource name of the chunk.
-          Format: `namespaces/{namespace}/catalogs/{catalog}/files/{file}/chunks/{chunk}`.
+          Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}/chunks/{chunk}`.
         readOnly: true
       retrievable:
         type: boolean
@@ -5772,24 +5578,33 @@ definitions:
       - integrationId
       - method
       - setup
-  CreateCatalogBody:
+  CreateFileResponse:
+    type: object
+    properties:
+      file:
+        title: file
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/File'
+    description: CreateFileResponse represents a response for creating a file.
+  CreateKnowledgeBaseBody:
     type: object
     properties:
       id:
         type: string
-        description: The catalog id (user-provided or auto-generated).
+        description: The knowledge base id (user-provided or auto-generated).
       description:
         type: string
-        description: The catalog description.
+        description: The knowledge base description.
       tags:
         type: array
         items:
           type: string
-        description: The catalog tags.
+        description: The knowledge base tags.
       type:
-        title: The catalog type. default is PERSISTENT
+        title: The knowledge base type. default is PERSISTENT
         allOf:
-          - $ref: '#/definitions/CatalogType'
+          - $ref: '#/definitions/KnowledgeBaseType'
       convertingPipelines:
         type: array
         items:
@@ -5820,7 +5635,7 @@ definitions:
           non-empty result.
 
           If no pipelines are provided, a default pipeline will be used. For
-          non-document catalog files, the conversion pipeline is deterministic (such
+          non-document knowledge base files, the conversion pipeline is deterministic (such
           files are typically trivial to convert and don't require a dedicated
           pipeline to improve the conversion performance).
       systemId:
@@ -5829,32 +5644,23 @@ definitions:
           Available systems: "openai", "gemini", or custom systems defined in the system table.
           If not specified, defaults to "openai" system.
         title: |-
-          System ID to use for this catalog.
+          System ID to use for this knowledge base.
           References a system configuration in the system table that defines how the knowledge base
           will be created based on the system's RAG configurations including:
           - AI model family (e.g., "openai", "gemini")
           - Embedding vector dimensionality (e.g., 1536 for OpenAI, 3072 for Gemini)
           - Chunking method
           - Other RAG-related settings
-    description: CreateCatalogRequest represents a request to create a catalog.
-  CreateCatalogResponse:
+    description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+  CreateKnowledgeBaseResponse:
     type: object
     properties:
-      catalog:
-        description: The created catalog.
+      knowledgeBase:
+        description: The created knowledge base.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/Catalog'
-    description: CreateCatalogResponse represents a response for creating a catalog.
-  CreateFileResponse:
-    type: object
-    properties:
-      file:
-        title: file
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/File'
-    description: CreateFileResponse represents a response for creating a file.
+          - $ref: '#/definitions/KnowledgeBase'
+    description: CreateKnowledgeBaseResponse represents a response for creating a knowledge base.
   CreateNamespaceConnectionResponse:
     type: object
     properties:
@@ -5940,15 +5746,6 @@ definitions:
     description: |-
       DataSpecification describes the JSON schema of component input and output.
       Note: This message will be renamed to TaskSpecifications in the future.
-  DeleteCatalogResponse:
-    type: object
-    properties:
-      catalog:
-        description: The catalog identifier.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Catalog'
-    description: DeleteCatalogResponse represents a response for deleting a catalog.
   DeleteFileAdminResponse:
     type: object
     properties:
@@ -5965,6 +5762,15 @@ definitions:
         description: The file id.
         readOnly: true
     description: DeleteFileResponse represents a response for deleting a file.
+  DeleteKnowledgeBaseResponse:
+    type: object
+    properties:
+      knowledgeBase:
+        description: The knowledge base identifier.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/KnowledgeBase'
+    description: DeleteKnowledgeBaseResponse represents a response for deleting a knowledge base.
   DeleteNamespaceConnectionResponse:
     type: object
     description: DeleteNamespaceConnectionResponse is an empty response.
@@ -6026,7 +5832,7 @@ definitions:
         type: integer
         format: int64
         title: The dimensionality of the embedding vectors
-    title: EmbeddingConfig defines the embedding configuration for a catalog
+    title: EmbeddingConfig defines the embedding configuration for a knowledge base
   Endpoints:
     type: object
     properties:
@@ -6106,7 +5912,7 @@ definitions:
         type: string
         description: |-
           The resource name of the file.
-          Format: `namespaces/{namespace}/catalogs/{catalog}/files/{file}`.
+          Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`.
         readOnly: true
       filename:
         type: string
@@ -6139,9 +5945,9 @@ definitions:
         type: string
         title: creator uid from authn token
         readOnly: true
-      catalogUid:
+      knowledgeBaseUid:
         type: string
-        title: catalog uid
+        title: knowledge base uid
         readOnly: true
       createTime:
         type: string
@@ -6216,11 +6022,11 @@ definitions:
           ```
           Other variable and output fields will be ignored.
 
-          The pipeline will be executed first, falling back to the catalog's
+          The pipeline will be executed first, falling back to the knowledge base's
           conversion pipelines if the conversion doesn't yield a non-empty result
-          (see the catalog creation endpoint documentation).
+          (see the knowledge base creation endpoint documentation).
 
-          For non-document catalog files, the conversion pipeline is deterministic
+          For non-document knowledge base files, the conversion pipeline is deterministic
           (such files are typically trivial to convert and don't require a dedicated
           pipeline to improve the conversion performance).
       length:
@@ -6236,7 +6042,7 @@ definitions:
         items:
           type: string
         title: Array of tags associated with the file
-    description: File represents a file in a catalog.
+    description: File represents a file in a knowledge base.
   File.Type:
     type: string
     enum:
@@ -6354,7 +6160,7 @@ definitions:
       - FILE_MEDIA_TYPE_AUDIO
       - FILE_MEDIA_TYPE_VIDEO
     description: |-
-      FileMediaType describes the media category of a catalog file.
+      FileMediaType describes the media category of a knowledge base file.
 
        - FILE_MEDIA_TYPE_DOCUMENT: Document.
        - FILE_MEDIA_TYPE_IMAGE: Image.
@@ -6414,15 +6220,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/AuthenticatedUser'
     description: GetAuthenticatedUserResponse contains the requested authenticated user.
-  GetCatalogResponse:
-    type: object
-    properties:
-      catalog:
-        description: The catalog resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Catalog'
-    description: GetCatalogResponse represents a response for getting a catalog.
   GetChunkResponse:
     type: object
     properties:
@@ -6466,6 +6263,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/Integration'
     description: GetIntegrationResponse contains the requested integration.
+  GetKnowledgeBaseResponse:
+    type: object
+    properties:
+      knowledgeBase:
+        description: The knowledge base resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/KnowledgeBase'
+    description: GetKnowledgeBaseResponse represents a response for getting a knowledge base.
   GetKnowledgeBaseUpdateStatusAdminResponse:
     type: object
     properties:
@@ -6789,25 +6595,219 @@ definitions:
     description: |-
       InviteOrganizationMembersResponse represents a response to a request to invite
       members to an organization.
+  KnowledgeBase:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: The knowledge base uid (internal UUID).
+        readOnly: true
+      id:
+        type: string
+        description: The knowledge base id (user-provided or system-generated).
+      name:
+        type: string
+        description: |-
+          The resource name of the knowledge base.
+          Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`.
+        readOnly: true
+      description:
+        type: string
+        description: The knowledge base description.
+      createTime:
+        type: string
+        format: date-time
+        description: The creation time of the knowledge base.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: The last update time of the knowledge base.
+        readOnly: true
+      ownerName:
+        type: string
+        description: The owner/namespace of the knowledge base.
+        readOnly: true
+      tags:
+        type: array
+        items:
+          type: string
+        description: The knowledge base tags.
+      convertingPipelines:
+        type: array
+        items:
+          type: string
+        description: |-
+          The knowledge base converting pipelines.
+          Deprecated: Conversion is now handled by AI providers.
+      splittingPipelines:
+        type: array
+        items:
+          type: string
+        description: |-
+          The knowledge base splitting pipelines.
+          Deprecated: Chunking is now handled internally.
+      embeddingPipelines:
+        type: array
+        items:
+          type: string
+        description: |-
+          The knowledge base embedding pipelines.
+          Deprecated: Use embedding_config instead.
+      downstreamApps:
+        type: array
+        items:
+          type: string
+        title: The downstream apps
+        readOnly: true
+      totalFiles:
+        type: integer
+        format: int64
+        description: The total files in knowledge base.
+        readOnly: true
+      totalTokens:
+        type: integer
+        format: int64
+        description: The total tokens in knowledge base.
+        readOnly: true
+      usedStorage:
+        type: string
+        format: uint64
+        description: The current used storage in knowledge base.
+        readOnly: true
+      summarizingPipelines:
+        type: array
+        items:
+          type: string
+        description: |-
+          The knowledge base summarizing pipelines.
+          Deprecated: Summarization is now handled by AI providers.
+      embeddingConfig:
+        description: The embedding configuration for the knowledge base.
+        allOf:
+          - $ref: '#/definitions/EmbeddingConfig'
+      activeCollectionUid:
+        type: string
+        description: |-
+          The UID of the active Milvus collection for this knowledge base.
+          This supports collection versioning for embedding dimension changes.
+        readOnly: true
+    description: KnowledgeBase represents a knowledge base.
+  KnowledgeBaseRun:
+    type: object
+    properties:
+      uid:
+        type: string
+        description: Unique identifier for each run.
+        readOnly: true
+      knowledgeBaseUid:
+        type: string
+        title: knowledge base uid
+        readOnly: true
+      fileUids:
+        type: array
+        items:
+          type: string
+        description: The file uids.
+        readOnly: true
+      action:
+        description: Action of the knowledge base run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/KnowledgeBaseRunAction'
+      status:
+        description: Current status of the run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/RunStatus'
+      source:
+        description: Origin of the run.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/RunSource'
+      totalDuration:
+        type: integer
+        format: int32
+        description: Time taken to complete the run in milliseconds.
+        readOnly: true
+      runnerId:
+        type: string
+        title: Runner ID. (User UID)
+        readOnly: true
+      namespaceId:
+        type: string
+        description: Namespace ID.
+        readOnly: true
+      payload:
+        type: object
+        description: Run request payload.
+        readOnly: true
+      startTime:
+        type: string
+        format: date-time
+        description: Time when the run started execution.
+        readOnly: true
+      completeTime:
+        type: string
+        format: date-time
+        description: Time when the run completed.
+        readOnly: true
+      error:
+        type: string
+        description: Error message if the run failed.
+        readOnly: true
+      creditAmount:
+        type: number
+        format: float
+        description: Credits used of internal accounting metric.
+        readOnly: true
+    description: KnowledgeBaseRun represents a single execution of a knowledge base action.
+  KnowledgeBaseRunAction:
+    type: string
+    enum:
+      - KNOWLEDGE_BASE_RUN_ACTION_CREATE
+      - KNOWLEDGE_BASE_RUN_ACTION_UPDATE
+      - KNOWLEDGE_BASE_RUN_ACTION_DELETE
+      - KNOWLEDGE_BASE_RUN_ACTION_CREATE_FILE
+      - KNOWLEDGE_BASE_RUN_ACTION_PROCESS_FILE
+      - KNOWLEDGE_BASE_RUN_ACTION_DELETE_FILE
+    description: |-
+      KnowledgeBaseRunAction describes the actions a user has over a knowledge base.
+
+       - KNOWLEDGE_BASE_RUN_ACTION_CREATE: Create knowledge base.
+       - KNOWLEDGE_BASE_RUN_ACTION_UPDATE: Update knowledge base.
+       - KNOWLEDGE_BASE_RUN_ACTION_DELETE: Delete knowledge base.
+       - KNOWLEDGE_BASE_RUN_ACTION_CREATE_FILE: Upload knowledge base file.
+       - KNOWLEDGE_BASE_RUN_ACTION_PROCESS_FILE: Process knowledge base file.
+       - KNOWLEDGE_BASE_RUN_ACTION_DELETE_FILE: Delete knowledge base file.
+  KnowledgeBaseType:
+    type: string
+    enum:
+      - KNOWLEDGE_BASE_TYPE_PERSISTENT
+      - KNOWLEDGE_BASE_TYPE_EPHEMERAL
+    description: |-
+      - KNOWLEDGE_BASE_TYPE_PERSISTENT: PERSISTENT
+       - KNOWLEDGE_BASE_TYPE_EPHEMERAL: EPHEMERAL
+    title: Knowledge Base Type. e.g. "persistent" or "ephemeral"
   KnowledgeBaseUpdateDetails:
     type: object
     properties:
-      catalogUid:
+      knowledgeBaseUid:
         type: string
-        title: UID of the catalog
+        title: UID of the knowledge base
       status:
-        title: Status of the catalog update
+        title: Status of the knowledge base update
         allOf:
           - $ref: '#/definitions/KnowledgeBaseUpdateStatus'
       workflowId:
         type: string
-        title: Workflow ID of the catalog update
+        title: Workflow ID of the knowledge base update
       startedAt:
         type: string
-        title: Started at time of the catalog update
+        title: Started at time of the knowledge base update
       completedAt:
         type: string
-        title: Completed at time of the catalog update
+        title: Completed at time of the knowledge base update
       filesProcessed:
         type: integer
         format: int32
@@ -6904,52 +6904,6 @@ definitions:
     description: |-
       ListAvailableRegionsResponse contains a list of available
       regions and hardware types a model can be deployed on.
-  ListCatalogRunsResponse:
-    type: object
-    properties:
-      catalogRuns:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/CatalogRun'
-        description: The list of runs.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: The total number of runs matching the request.
-        readOnly: true
-      page:
-        type: integer
-        format: int32
-        description: The current page number.
-        readOnly: true
-      pageSize:
-        type: integer
-        format: int32
-        description: The number of items per page.
-        readOnly: true
-    description: ListCatalogRunsResponse is the response message for ListCatalogRuns.
-  ListCatalogsResponse:
-    type: object
-    properties:
-      catalogs:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Catalog'
-        description: The catalogs container.
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page token.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of catalogs.
-        readOnly: true
-    description: GetCatalogsResponse represents a response for getting all catalogs from users.
   ListChunksResponse:
     type: object
     properties:
@@ -7054,6 +7008,52 @@ definitions:
         description: Total number of items.
         readOnly: true
     description: ListIntegrationsResponse contains a paginated list of integrations.
+  ListKnowledgeBaseRunsResponse:
+    type: object
+    properties:
+      knowledgeBaseRuns:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/KnowledgeBaseRun'
+        description: The list of runs.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: The total number of runs matching the request.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The current page number.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The number of items per page.
+        readOnly: true
+    description: ListKnowledgeBaseRunsResponse is the response message for ListKnowledgeBaseRuns.
+  ListKnowledgeBasesResponse:
+    type: object
+    properties:
+      knowledgeBases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/KnowledgeBase'
+        description: The knowledge bases container.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of knowledge bases.
+        readOnly: true
+    description: ListKnowledgeBasesResponse represents a response for getting all knowledge bases from users.
   ListModelDefinitionsResponse:
     type: object
     properties:
@@ -8657,9 +8657,9 @@ definitions:
       success:
         type: boolean
         title: Whether the purge was successful
-      purgedCatalogUid:
+      purgedKnowledgeBaseUid:
         type: string
-        title: UID of the purged catalog
+        title: UID of the purged knowledge base
       deletedFiles:
         type: integer
         format: int32
@@ -8760,10 +8760,10 @@ definitions:
   RollbackAdminResponse:
     type: object
     properties:
-      catalog:
-        title: The rolled-back catalog
+      knowledgeBase:
+        title: The rolled-back knowledge base
         allOf:
-          - $ref: '#/definitions/Catalog'
+          - $ref: '#/definitions/KnowledgeBase'
       message:
         type: string
         title: Status message
@@ -9540,33 +9540,6 @@ definitions:
       (e.g., page 4 of 4) to align with document visualization standards.
        - UNIT_TIME_MS: Time positions in milliseconds (for audio/video files).
        - UNIT_PIXEL: Pixel positions (for images and other 2D content).
-  UpdateCatalogBody:
-    type: object
-    properties:
-      catalog:
-        description: The catalog fields that will replace the existing ones.
-        allOf:
-          - $ref: '#/definitions/Catalog'
-      updateMask:
-        type: string
-        description: |-
-          The update mask specifies the subset of fields that should be modified.
-
-          For more information about this field, see
-          https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
-    description: UpdateCatalogRequest represents a request to update a catalog.
-    required:
-      - catalog
-      - updateMask
-  UpdateCatalogResponse:
-    type: object
-    properties:
-      catalog:
-        description: The updated catalog.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Catalog'
-    description: UpdateCatalogResponse represents a response for updating a catalog.
   UpdateChunkBody:
     type: object
     properties:
@@ -9594,6 +9567,33 @@ definitions:
         allOf:
           - $ref: '#/definitions/File'
     description: UpdateFileResponse represents a response for updating a file.
+  UpdateKnowledgeBaseBody:
+    type: object
+    properties:
+      knowledgeBase:
+        description: The knowledge base fields that will replace the existing ones.
+        allOf:
+          - $ref: '#/definitions/KnowledgeBase'
+      updateMask:
+        type: string
+        description: |-
+          The update mask specifies the subset of fields that should be modified.
+
+          For more information about this field, see
+          https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
+    description: UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
+    required:
+      - knowledgeBase
+      - updateMask
+  UpdateKnowledgeBaseResponse:
+    type: object
+    properties:
+      knowledgeBase:
+        description: The updated knowledge base.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/KnowledgeBase'
+    description: UpdateKnowledgeBaseResponse represents a response for updating a knowledge base.
   UpdateNamespaceConnectionResponse:
     type: object
     properties:

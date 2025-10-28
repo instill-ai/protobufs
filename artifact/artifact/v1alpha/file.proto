@@ -44,9 +44,9 @@ enum ConvertedFileType {
   CONVERTED_FILE_TYPE_VIDEO = 6;
 }
 
-// File represents a file in a catalog.
+// File represents a file in a knowledge base.
 message File {
-  option (google.api.resource) = {pattern: "namespaces/{namespace}/catalogs/{catalog}/files/{file}"};
+  option (google.api.resource) = {pattern: "namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}"};
 
   // View defines how a file is presented.
   enum View {
@@ -162,7 +162,7 @@ message File {
     TYPE_MPEG = 37;
   }
 
-  // FileMediaType describes the media category of a catalog file.
+  // FileMediaType describes the media category of a knowledge base file.
   enum FileMediaType {
     // Unspecified.
     FILE_MEDIA_TYPE_UNSPECIFIED = 0;
@@ -206,7 +206,7 @@ message File {
   // The file id (same as uid).
   string id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The resource name of the file.
-  // Format: `namespaces/{namespace}/catalogs/{catalog}/files/{file}`.
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`.
   string name = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The filename provided by the user.
   string filename = 4 [(google.api.field_behavior) = OPTIONAL];
@@ -224,8 +224,8 @@ message File {
   string owner_uid = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
   // creator uid from authn token
   string creator_uid = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // catalog uid
-  string catalog_uid = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // knowledge base uid
+  string knowledge_base_uid = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
   // create time
   google.protobuf.Timestamp create_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
   // update time
@@ -273,11 +273,11 @@ message File {
   // ```
   // Other variable and output fields will be ignored.
   //
-  // The pipeline will be executed first, falling back to the catalog's
+  // The pipeline will be executed first, falling back to the knowledge base's
   // conversion pipelines if the conversion doesn't yield a non-empty result
-  // (see the catalog creation endpoint documentation).
+  // (see the knowledge base creation endpoint documentation).
   //
-  // For non-document catalog files, the conversion pipeline is deterministic
+  // For non-document knowledge base files, the conversion pipeline is deterministic
   // (such files are typically trivial to convert and don't require a dedicated
   // pipeline to improve the conversion performance).
   optional string converting_pipeline = 23 [(google.api.field_behavior) = OPTIONAL];
@@ -293,8 +293,8 @@ message File {
 message CreateFileRequest {
   // owner/namespace id
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // catalog id
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // knowledge base id
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
   // file
   File file = 3 [(google.api.field_behavior) = OPTIONAL];
 }
@@ -309,8 +309,8 @@ message CreateFileResponse {
 message DeleteFileRequest {
   // The namespace id.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The catalog id.
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The knowledge base id.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
   // The file id.
   string file_id = 3 [(google.api.field_behavior) = REQUIRED];
 }
@@ -339,8 +339,8 @@ message DeleteFileAdminResponse {
 message ListFilesRequest {
   // The owner/namespace id.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The catalog id.
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The knowledge base id.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
   // The page size (default:10; max 100).
   optional int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
   // The next page token(default from first file's token).
@@ -371,8 +371,8 @@ message ListFilesResponse {
 message GetFileRequest {
   // The namespace id.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // The catalog id.
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The knowledge base id.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
   // The file id.
   string file_id = 3 [(google.api.field_behavior) = REQUIRED];
   // View allows clients to specify the desired file view in the response.
@@ -395,8 +395,8 @@ message GetFileResponse {
 message UpdateFileRequest {
   // Namespace ID.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
-  // Catalog ID.
-  string catalog_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // Knowledge Base ID.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
   // File ID.
   string file_id = 3 [(google.api.field_behavior) = REQUIRED];
   // The file fields that will replace the existing ones.
