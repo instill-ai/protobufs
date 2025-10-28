@@ -3,7 +3,7 @@ syntax = "proto3";
 package artifact.artifact.v1alpha;
 
 // Artifact definitions
-import "artifact/artifact/v1alpha/catalog.proto";
+import "artifact/artifact/v1alpha/knowledge_base.proto";
 
 // KnowledgeBaseUpdateStatus represents the various states of a Knowledge Base update lifecycle
 enum KnowledgeBaseUpdateStatus {
@@ -48,15 +48,15 @@ enum KnowledgeBaseUpdateStatus {
 
 // KnowledgeBaseUpdateDetails provides detailed information about a knowledge base update
 message KnowledgeBaseUpdateDetails {
-  // UID of the catalog
-  string catalog_uid = 1;
-  // Status of the catalog update
+  // UID of the knowledge base
+  string knowledge_base_uid = 1;
+  // Status of the knowledge base update
   KnowledgeBaseUpdateStatus status = 2;
-  // Workflow ID of the catalog update
+  // Workflow ID of the knowledge base update
   string workflow_id = 3;
-  // Started at time of the catalog update
+  // Started at time of the knowledge base update
   string started_at = 4;
-  // Completed at time of the catalog update
+  // Completed at time of the knowledge base update
   string completed_at = 5;
   // Number of files processed
   int32 files_processed = 6;
@@ -86,21 +86,21 @@ message KnowledgeBaseUpdateDetails {
 
 // RollbackAdminRequest (admin only)
 message RollbackAdminRequest {
-  // Format: users/{user}/catalogs/{catalog}
+  // Format: users/{user}/knowledge-bases/{knowledge_base}
   string name = 1;
 }
 
 // RollbackAdminResponse (admin only)
 message RollbackAdminResponse {
-  // The rolled-back catalog
-  Catalog catalog = 1;
+  // The rolled-back knowledge base
+  KnowledgeBase knowledge_base = 1;
   // Status message
   string message = 2;
 }
 
 // PurgeRollbackAdminRequest (admin only)
 message PurgeRollbackAdminRequest {
-  // Format: users/{user}/catalogs/{catalog}
+  // Format: users/{user}/knowledge-bases/{knowledge_base}
   string name = 1;
 }
 
@@ -108,8 +108,8 @@ message PurgeRollbackAdminRequest {
 message PurgeRollbackAdminResponse {
   // Whether the purge was successful
   bool success = 1;
-  // UID of the purged catalog
-  string purged_catalog_uid = 2;
+  // UID of the purged knowledge base
+  string purged_knowledge_base_uid = 2;
   // Number of files deleted
   int32 deleted_files = 3;
   // Status message
@@ -132,7 +132,7 @@ message SetRollbackRetentionAdminRequest {
     TIME_UNIT_DAY = 4;
   }
 
-  // Format: users/{user}/catalogs/{catalog}
+  // Format: users/{user}/knowledge-bases/{knowledge_base}
   string name = 1;
   // Duration value (e.g., 5, 30, 24, 7)
   int32 duration = 2;
@@ -167,15 +167,15 @@ message GetKnowledgeBaseUpdateStatusAdminResponse {
 
 // ExecuteKnowledgeBaseUpdateAdminRequest (admin only)
 message ExecuteKnowledgeBaseUpdateAdminRequest {
-  // Optional: Specific catalog IDs to update. If empty, updates all eligible catalogs.
-  repeated string catalog_ids = 1;
+  // Optional: Specific knowledge base IDs to update. If empty, updates all eligible knowledge bases.
+  repeated string knowledge_base_ids = 1;
 
   // Optional: System ID containing configuration to apply.
   // If specified, uses config from system table where id=<this value>
   // If not specified, KBs keep their current config (useful for reprocessing).
   optional string system_id = 2;
 
-  // Optional: Tags to filter which catalogs to update (OR logic - match any tag).
+  // Optional: Tags to filter which knowledge bases to update (OR logic - match any tag).
   repeated string tags = 3;
 }
 
@@ -191,8 +191,8 @@ message ExecuteKnowledgeBaseUpdateAdminResponse {
 
 // AbortKnowledgeBaseUpdateAdminRequest (admin only)
 message AbortKnowledgeBaseUpdateAdminRequest {
-  // Optional: Specific catalog IDs to abort. If empty, aborts all currently updating catalogs.
-  repeated string catalog_ids = 1;
+  // Optional: Specific knowledge base IDs to abort. If empty, aborts all currently updating knowledge bases.
+  repeated string knowledge_base_ids = 1;
 }
 
 // AbortKnowledgeBaseUpdateAdminResponse (admin only)
