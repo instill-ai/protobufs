@@ -1900,3 +1900,90 @@ message ListModelRunsByRequesterResponse {
   // The requested page offset.
   int32 page = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
+
+// RepositoryTag contains information about the version of some content in a
+// repository (e.g., Docker registry for model images).
+message RepositoryTag {
+  // The name of the tag, defined by its parent repository and ID.
+  // - Format: `repositories/{repository.id}/tags/{tag.id}`.
+  string name = 1 [(google.api.field_behavior) = IMMUTABLE];
+  // The tag identifier.
+  string id = 2 [(google.api.field_behavior) = IMMUTABLE];
+
+  // The Model backend will register the tag digest and timestamp when a
+  // new version is pushed. However, the registry remains the source of truth
+  // for tags, so if this information isn't found in the Model database,
+  // these fields will be empty.
+
+  // Unique identifier, computed from the manifest the tag refers to.
+  string digest = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Tag update time, i.e. timestamp of the last push.
+  google.protobuf.Timestamp update_time = 4 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = OPTIONAL
+  ];
+}
+
+// ListRepositoryTagsRequest represents a request to list the tags of a
+// repository.
+message ListRepositoryTagsRequest {
+  // The maximum number of tags to return. The default and cap values are 10
+  // and 100, respectively.
+  optional int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Page number.
+  optional int32 page = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The repository holding the different versions of a given content.
+  // - Format: `repositories/{repository.id}`.
+  // - Example: `repositories/flaming-wombat/llama-2-7b`.
+  string parent = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ListRepositoryTagsResponse contains a list of container image tags.
+message ListRepositoryTagsResponse {
+  // A list of repository tags.
+  repeated RepositoryTag tags = 1;
+  // Total number of tags.
+  int32 total_size = 2;
+  // The requested page size.
+  int32 page_size = 3;
+  // The requested page offset.
+  int32 page = 4;
+}
+
+// CreateRepositoryTagRequest represents a request to add a tag to a given
+// repository.
+message CreateRepositoryTagRequest {
+  // The tag information.
+  RepositoryTag tag = 1;
+}
+
+// CreateRepositoryTagResponse contains the created tag.
+message CreateRepositoryTagResponse {
+  // The created tag.
+  RepositoryTag tag = 1;
+}
+
+// GetRepositoryTagRequest represents a request to get a tag from a given
+// repository.
+message GetRepositoryTagRequest {
+  // The name of the tag, defined by its parent repository and ID.
+  // - Format: `repositories/{repository.id}/tags/{tag.id}`.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// GetRepositoryTagResponse contains the requested tag.
+message GetRepositoryTagResponse {
+  // The requested tag.
+  RepositoryTag tag = 1;
+}
+
+// DeleteRepositoryTagRequest represents a request to delete a tag from a given
+// repository.
+message DeleteRepositoryTagRequest {
+  // The name of the tag, defined by its parent repository and ID.
+  // - Format: `repositories/{repository.id}/tags/{tag.id}`.
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// DeleteRepositoryTagResponse represent an empty response.
+message DeleteRepositoryTagResponse {}
