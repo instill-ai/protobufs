@@ -54,19 +54,6 @@ message Chunk {
   Reference reference = 9 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Reference to the position of the chunk within the Markdown (source) file.
   Reference markdown_reference = 10 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // start position of the chunk in the source file
-  // Deprecated: use markdown_reference instead
-  uint32 start_pos = 11 [
-    deprecated = true,
-    (google.api.field_behavior) = OUTPUT_ONLY
-  ];
-  // end position of the chunk in the source file
-  // Deprecated: use markdown_reference instead
-  uint32 end_pos = 12 [
-    deprecated = true,
-    (google.api.field_behavior) = OUTPUT_ONLY
-  ];
 }
 
 // ListChunksRequest represents a request to list chunks in the artifact system.
@@ -113,11 +100,16 @@ message GetChunkRequest {
   string file_id = 3 [(google.api.field_behavior) = REQUIRED];
   // Chunk ID.
   string chunk_id = 4 [(google.api.field_behavior) = REQUIRED];
+  // Optional chunk type filter. If specified, returns a chunk of this type
+  // from the same file. If not specified, returns the chunk identified by chunk_id.
+  optional Chunk.Type chunk_type = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetChunkResponse represents a response for getting a chunk.
 message GetChunkResponse {
-  // The chunk resource.
+  // The chunk metadata, including markdown_reference for extracting content.
+  // Clients should use GetFile to fetch the full content/summary markdown,
+  // then use markdown_reference coordinates to extract the specific chunk text.
   Chunk chunk = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 

@@ -475,6 +475,21 @@ paths:
           in: path
           required: true
           type: string
+        - name: chunkType
+          description: |-
+            Optional chunk type filter. If specified, returns a chunk of this type
+            from the same file. If not specified, returns the chunk identified by chunk_id.
+
+             - TYPE_CONTENT: Content.
+             - TYPE_SUMMARY: Summary.
+             - TYPE_AUGMENTED: Augmented.
+          in: query
+          required: false
+          type: string
+          enum:
+            - TYPE_CONTENT
+            - TYPE_SUMMARY
+            - TYPE_AUGMENTED
       tags:
         - Artifact
       x-stage: alpha
@@ -5127,20 +5142,6 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Reference'
-      startPos:
-        type: integer
-        format: int64
-        title: |-
-          start position of the chunk in the source file
-          Deprecated: use markdown_reference instead
-        readOnly: true
-      endPos:
-        type: integer
-        format: int64
-        title: |-
-          end position of the chunk in the source file
-          Deprecated: use markdown_reference instead
-        readOnly: true
     description: The Chunk message represents a chunk of data in the artifact system.
   Chunk.Type:
     type: string
@@ -6235,7 +6236,10 @@ definitions:
     type: object
     properties:
       chunk:
-        description: The chunk resource.
+        description: |-
+          The chunk metadata, including markdown_reference for extracting content.
+          Clients should use GetFile to fetch the full content/summary markdown,
+          then use markdown_reference coordinates to extract the specific chunk text.
         readOnly: true
         allOf:
           - $ref: '#/definitions/Chunk'
