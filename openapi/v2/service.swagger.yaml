@@ -437,6 +437,49 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
+  /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/files/{fileId}/reprocess:
+    post:
+      summary: Reprocess a file
+      description: |-
+        Triggers reprocessing of a file with its current configuration.
+        This will regenerate embeddings, chunks, and summaries.
+      operationId: ArtifactPublicService_ReprocessFile
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ReprocessFileResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: The namespace id.
+          in: path
+          required: true
+          type: string
+        - name: knowledgeBaseId
+          description: The knowledge base id.
+          in: path
+          required: true
+          type: string
+        - name: fileId
+          description: The file id to reprocess.
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ReprocessFileBody'
+      tags:
+        - Artifact
+      x-stage: alpha
   /v1alpha/namespaces/{namespaceId}/knowledge-bases/{knowledgeBaseId}/files/{fileId}/chunks/{chunkId}:
     get:
       summary: Get a chunk
@@ -5997,8 +6040,13 @@ definitions:
       objectUid:
         type: string
         description: |-
-          objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
-          then no need the base64 encoding for the file content.
+          Object UID referencing a file already uploaded to blob storage.
+          Two upload approaches are supported:
+          1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL, then provide the object_uid here.
+             This avoids base64 encoding overhead and is preferred for large files.
+          2. Inline content: Provide base64-encoded file content in the 'content' field (field 9).
+             The system will handle the blob storage upload internally.
+          When object_uid is provided, the 'content' field is ignored.
       summary:
         type: string
         description: |-
@@ -8814,6 +8862,22 @@ definitions:
     description: |-
       RepositoryTag contains information about the version of some content in a
       repository (e.g., Docker registry for model images).
+  ReprocessFileBody:
+    type: object
+    description: ReprocessFileRequest represents a request to reprocess a file.
+  ReprocessFileResponse:
+    type: object
+    properties:
+      file:
+        description: The file being reprocessed.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/File'
+      message:
+        type: string
+        description: Status message.
+        readOnly: true
+    description: ReprocessFileResponse represents a response for reprocessing a file.
   Role:
     type: string
     enum:
