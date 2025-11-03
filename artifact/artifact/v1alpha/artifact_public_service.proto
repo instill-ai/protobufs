@@ -181,6 +181,24 @@ service ArtifactPublicService {
     };
   }
 
+  // Reprocess a file
+  //
+  // Triggers reprocessing of a file with its current configuration.
+  // This will regenerate embeddings, chunks, and summaries.
+  rpc ReprocessFile(ReprocessFileRequest) returns (ReprocessFileResponse) {
+    option (google.api.http) = {
+      post: "/v1alpha/namespaces/{namespace_id}/knowledge-bases/{knowledge_base_id}/files/{file_id}/reprocess"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Artifact"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "alpha"}
+      }
+    };
+  }
+
   // Delete a file
   //
   // Deletes a file.

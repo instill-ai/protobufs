@@ -240,8 +240,13 @@ message File {
   int32 total_tokens = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Custom metadata provided by the user during file upload
   optional google.protobuf.Struct external_metadata = 19 [(google.api.field_behavior) = OPTIONAL];
-  // objectUid in blob storage. user can upload to blob storage directly, then put objectUid here.
-  // then no need the base64 encoding for the file content.
+  // Object UID referencing a file already uploaded to blob storage.
+  // Two upload approaches are supported:
+  // 1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL, then provide the object_uid here.
+  //    This avoids base64 encoding overhead and is preferred for large files.
+  // 2. Inline content: Provide base64-encoded file content in the 'content' field (field 9).
+  //    The system will handle the blob storage upload internally.
+  // When object_uid is provided, the 'content' field is ignored.
   string object_uid = 20 [(google.api.field_behavior) = OPTIONAL];
   // Summary of the file.
   // Deprecated: Use GetFile with VIEW_SUMMARY to retrieve file summaries.
@@ -391,7 +396,6 @@ message GetFileResponse {
 }
 
 // UpdateFileRequest represents a request to update a file.
-// Deprecated: Use UpdateFile with field_mask to update file properties including tags.
 message UpdateFileRequest {
   // Namespace ID.
   string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
@@ -412,4 +416,22 @@ message UpdateFileRequest {
 message UpdateFileResponse {
   // Updated file.
   File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ReprocessFileRequest represents a request to reprocess a file.
+message ReprocessFileRequest {
+  // The namespace id.
+  string namespace_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The knowledge base id.
+  string knowledge_base_id = 2 [(google.api.field_behavior) = REQUIRED];
+  // The file id to reprocess.
+  string file_id = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// ReprocessFileResponse represents a response for reprocessing a file.
+message ReprocessFileResponse {
+  // The file being reprocessed.
+  File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Status message.
+  string message = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
