@@ -358,6 +358,23 @@ paths:
             - VIEW_STANDARD_FILE_TYPE
             - VIEW_ORIGINAL_FILE_TYPE
             - VIEW_CACHE
+        - name: storageProvider
+          description: |-
+            Storage provider specifies which storage backend to use for the file resource.
+            This field is only applicable for views that return file content:
+            VIEW_SUMMARY, VIEW_CONTENT, VIEW_STANDARD_FILE_TYPE, VIEW_ORIGINAL_FILE_TYPE.
+            - STORAGE_PROVIDER_UNSPECIFIED or STORAGE_PROVIDER_MINIO: Returns MinIO pre-signed URL (default)
+            - STORAGE_PROVIDER_GCS: Uploads file to GCS if not present (with cache check), returns GCS signed URL
+            GCS requires proper configuration in system settings.
+
+             - STORAGE_PROVIDER_MINIO: Use MinIO as the storage backend (default)
+             - STORAGE_PROVIDER_GCS: Use Google Cloud Storage as the storage backend
+          in: query
+          required: false
+          type: string
+          enum:
+            - STORAGE_PROVIDER_MINIO
+            - STORAGE_PROVIDER_GCS
       tags:
         - Artifact
       x-stage: alpha
@@ -6310,10 +6327,12 @@ definitions:
       derivedResourceUri:
         type: string
         description: |-
-          Derived resource URI based on view:
-          - VIEW_SUMMARY/CONTENT/STANDARD_FILE_TYPE/ORIGINAL_FILE_TYPE: MinIO pre-signed URL to content
-          - VIEW_CACHE: Gemini cache resource name
-          Only populated for VIEW_SUMMARY, VIEW_CONTENT, VIEW_STANDARD_FILE_TYPE, VIEW_ORIGINAL_FILE_TYPE, and VIEW_CACHE.
+          Derived resource URI based on view and storage provider:
+          - VIEW_SUMMARY/CONTENT/STANDARD_FILE_TYPE/ORIGINAL_FILE_TYPE:
+            * STORAGE_PROVIDER_MINIO (default): MinIO pre-signed URL
+            * STORAGE_PROVIDER_GCS: GCS signed URL (file uploaded to GCS if needed)
+          - VIEW_CACHE: Gemini/VertexAI cache resource name (format: cacheContent/<cacheId>)
+          Only populated for views that return file content.
         readOnly: true
     description: GetFileResponse represents a response for getting a file.
   GetIntegrationResponse:
@@ -6458,14 +6477,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Object'
     title: GetObjectDownloadURLResponse
-  GetObjectURLAdminResponse:
-    type: object
-    properties:
-      objectUrl:
-        title: object url
-        allOf:
-          - $ref: '#/definitions/ObjectURL'
-    description: GetObjectURLAdminResponse contains the requested object URL (admin only).
   GetObjectUploadURLResponse:
     type: object
     properties:
@@ -8173,44 +8184,6 @@ definitions:
         format: date-time
         title: updated time
     title: Object
-  ObjectURL:
-    type: object
-    properties:
-      uid:
-        type: string
-        title: The unique identifier of the ObjectURL
-      namespaceUid:
-        type: string
-        title: The namespace UID associated with this ObjectURL
-      objectUid:
-        type: string
-        title: The object UID associated with this ObjectURL
-      urlExpireAt:
-        type: string
-        format: date-time
-        title: The expiration time of the URL
-      minioUrlPath:
-        type: string
-        title: The MinIO URL path
-      encodedUrlPath:
-        type: string
-        title: The encoded URL path
-      type:
-        type: string
-        title: The type of URL (download or upload)
-      createTime:
-        type: string
-        format: date-time
-        title: The creation time of the ObjectURL
-      updateTime:
-        type: string
-        format: date-time
-        title: The last update time of the ObjectURL
-      deleteTime:
-        type: string
-        format: date-time
-        title: The deletion time of the ObjectURL, if applicable
-    title: ObjectUploadURL
   OnboardingStatus:
     type: string
     enum:
@@ -9134,6 +9107,15 @@ definitions:
           The key represents the event, and the value is the corresponding event_specification.
         readOnly: true
     description: Spec represents a specification data model.
+  StorageProvider:
+    type: string
+    enum:
+      - STORAGE_PROVIDER_MINIO
+      - STORAGE_PROVIDER_GCS
+    description: |-
+      - STORAGE_PROVIDER_MINIO: Use MinIO as the storage backend (default)
+       - STORAGE_PROVIDER_GCS: Use Google Cloud Storage as the storage backend
+    title: Storage provider for file resources
   System:
     type: object
     properties:
