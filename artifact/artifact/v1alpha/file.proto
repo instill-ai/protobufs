@@ -72,6 +72,16 @@ message File {
     VIEW_CACHE = 7;
   }
 
+  // Storage provider for file resources
+  enum StorageProvider {
+    // Unspecified, defaults to MinIO for backward compatibility
+    STORAGE_PROVIDER_UNSPECIFIED = 0;
+    // Use MinIO as the storage backend (default)
+    STORAGE_PROVIDER_MINIO = 1;
+    // Use Google Cloud Storage as the storage backend
+    STORAGE_PROVIDER_GCS = 2;
+  }
+
   // Supported file types
   enum Type {
     // unspecified
@@ -382,16 +392,25 @@ message GetFileRequest {
   string file_id = 3 [(google.api.field_behavior) = REQUIRED];
   // View allows clients to specify the desired file view in the response.
   optional File.View view = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Storage provider specifies which storage backend to use for the file resource.
+  // This field is only applicable for views that return file content:
+  // VIEW_SUMMARY, VIEW_CONTENT, VIEW_STANDARD_FILE_TYPE, VIEW_ORIGINAL_FILE_TYPE.
+  // - STORAGE_PROVIDER_UNSPECIFIED or STORAGE_PROVIDER_MINIO: Returns MinIO pre-signed URL (default)
+  // - STORAGE_PROVIDER_GCS: Uploads file to GCS if not present (with cache check), returns GCS signed URL
+  // GCS requires proper configuration in system settings.
+  optional File.StorageProvider storage_provider = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // GetFileResponse represents a response for getting a file.
 message GetFileResponse {
   // The file metadata (always included).
   File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Derived resource URI based on view:
-  // - VIEW_SUMMARY/CONTENT/STANDARD_FILE_TYPE/ORIGINAL_FILE_TYPE: MinIO pre-signed URL to content
-  // - VIEW_CACHE: Gemini cache resource name
-  // Only populated for VIEW_SUMMARY, VIEW_CONTENT, VIEW_STANDARD_FILE_TYPE, VIEW_ORIGINAL_FILE_TYPE, and VIEW_CACHE.
+  // Derived resource URI based on view and storage provider:
+  // - VIEW_SUMMARY/CONTENT/STANDARD_FILE_TYPE/ORIGINAL_FILE_TYPE:
+  //   * STORAGE_PROVIDER_MINIO (default): MinIO pre-signed URL
+  //   * STORAGE_PROVIDER_GCS: GCS signed URL (file uploaded to GCS if needed)
+  // - VIEW_CACHE: Gemini/VertexAI cache resource name (format: cacheContent/<cacheId>)
+  // Only populated for views that return file content.
   optional string derived_resource_uri = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
