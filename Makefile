@@ -11,6 +11,17 @@ SED_IN_PLACE := sed -i
 ifeq (${OS_NAME}, darwin)
 	SED_IN_PLACE = gsed -i
 endif
+
+# Generate Go and Python protobuf/gRPC client and server stubs in gen/go and gen/python directories
+.PHONY: gen
+gen:
+	@# Generate Go and Python protobuf/gRPC client and server stubs
+	@echo '-> Generate protobuf stubs (Go and Python)'
+	@buf generate
+	@echo '-> Post-processing Python packages'
+	@python3 scripts/generate_python_init.py
+	@echo '-> Protobuf generation complete'
+
 .PHONY: openapi
 openapi:
 	@# Generate a common OpenAPI file, representing the public interface

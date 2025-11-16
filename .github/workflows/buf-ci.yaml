@@ -89,13 +89,14 @@ jobs:
           git_commit_gpgsign: true
           git_tag_gpgsign: true
           workdir: ./protogen-python
-      - name: Generate Go/gRPC client and server stubs, and commit to protogen-python repository
+      - name: Generate Python/gRPC client and server stubs, and commit to protogen-python repository
         env:
           BUF_TOKEN: ${{ secrets.botBufToken }}
         run: |
           go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
           go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
           buf generate
+          python3 scripts/generate_python_init.py
           cwd=$(pwd) && cd gen/python && ls -d */ | xargs -I{} rm -rf $cwd/protogen-python/{} && cd $cwd
           cp -r gen/python/* protogen-python/
           cd protogen-python
