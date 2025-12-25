@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package artifact.artifact.v1alpha;
 
+// Core definitions
+import "core/mgmt/v1beta/mgmt.proto";
 // Google API
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
@@ -75,6 +77,15 @@ message KnowledgeBase {
   // The UID of the active Milvus collection for this knowledge base.
   // This supports collection versioning for embedding dimension changes.
   string active_collection_uid = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Knowledge base owner.
+  optional core.mgmt.v1beta.Owner owner = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The UID of the user who created this knowledge base.
+  // This field is optional for system-created knowledge bases (e.g., instill-agent)
+  // or legacy knowledge bases created before this field was introduced.
+  optional string creator_uid = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The user who created this knowledge base.
+  // Populated when creator_uid is present.
+  optional core.mgmt.v1beta.User creator = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Knowledge Base Type. e.g. "persistent" or "ephemeral"
