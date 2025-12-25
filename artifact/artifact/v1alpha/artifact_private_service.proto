@@ -3,6 +3,7 @@ syntax = "proto3";
 package artifact.artifact.v1alpha;
 
 import "artifact/artifact/v1alpha/file.proto";
+import "artifact/artifact/v1alpha/knowledge_base.proto";
 import "artifact/artifact/v1alpha/object.proto";
 import "artifact/artifact/v1alpha/system.proto";
 import "artifact/artifact/v1alpha/update.proto";
@@ -10,6 +11,13 @@ import "artifact/artifact/v1alpha/update.proto";
 // ArtifactPrivateService exposes the private endpoints that allow clients to
 // manage artifacts.
 service ArtifactPrivateService {
+  // Create a knowledge base without setting a creator (admin only)
+  //
+  // Creates a system-level knowledge base that has no creator. Used by internal
+  // services (e.g., agent-backend) to create shared knowledge bases like
+  // "instill-agent" that are not owned by any specific user.
+  rpc CreateKnowledgeBaseAdmin(CreateKnowledgeBaseAdminRequest) returns (CreateKnowledgeBaseAdminResponse);
+
   // Get Object (admin only)
   rpc GetObjectAdmin(GetObjectAdminRequest) returns (GetObjectAdminResponse);
 
