@@ -174,7 +174,7 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-    put:
+    patch:
       summary: Update a knowledge base info
       description: Updates the information of a knowledge base.
       operationId: ArtifactPublicService_UpdateKnowledgeBase
@@ -201,11 +201,14 @@ paths:
           in: path
           required: true
           type: string
-        - name: body
+        - name: knowledgeBase
+          description: The knowledge base fields that will replace the existing ones.
           in: body
           required: true
           schema:
-            $ref: '#/definitions/UpdateKnowledgeBaseBody'
+            $ref: '#/definitions/KnowledgeBase'
+            required:
+              - knowledgeBase
       tags:
         - Artifact
       x-stage: alpha
@@ -1287,7 +1290,7 @@ paths:
       tags:
         - Namespace
       x-stage: beta
-    put:
+    patch:
       summary: Update a user membership
       description: Accesses and updates a user membership by parent and membership IDs.
       operationId: MgmtPublicService_UpdateUserMembership
@@ -1322,15 +1325,6 @@ paths:
             $ref: '#/definitions/UserMembership'
             required:
               - membership
-        - name: updateMask
-          description: |-
-            The update mask specifies the subset of fields that should be modified.
-
-            For more information about this field, see
-            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
-          in: query
-          required: true
-          type: string
       tags:
         - Namespace
       x-stage: beta
@@ -1433,7 +1427,7 @@ paths:
       tags:
         - Namespace
       x-stage: beta
-    put:
+    patch:
       summary: Update an organization membership
       description: Updates a user membership within an organization.
       operationId: MgmtPublicService_UpdateOrganizationMembership
@@ -1468,15 +1462,6 @@ paths:
             $ref: '#/definitions/OrganizationMembership'
             required:
               - membership
-        - name: updateMask
-          description: |-
-            The update mask specifies the subset of fields that should be modified.
-
-            For more information about this field, see
-            https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
-          in: query
-          required: true
-          type: string
       tags:
         - Namespace
       x-stage: beta
@@ -9799,24 +9784,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/KnowledgeBase'
     description: UpdateKnowledgeBaseAdminResponse represents a response for updating a knowledge base.
-  UpdateKnowledgeBaseBody:
-    type: object
-    properties:
-      knowledgeBase:
-        description: The knowledge base fields that will replace the existing ones.
-        allOf:
-          - $ref: '#/definitions/KnowledgeBase'
-      updateMask:
-        type: string
-        description: |-
-          The update mask specifies the subset of fields that should be modified.
-
-          For more information about this field, see
-          https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
-    description: UpdateKnowledgeBaseRequest represents a request to update a knowledge base.
-    required:
-      - knowledgeBase
-      - updateMask
   UpdateKnowledgeBaseResponse:
     type: object
     properties:
