@@ -1010,492 +1010,6 @@ paths:
       tags:
         - Namespace
       x-stage: beta
-  /v1beta/organizations:
-    get:
-      summary: List organizations
-      description: Returns a paginated list of organizations.
-      operationId: MgmtPublicService_ListOrganizations
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListOrganizationsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: pageSize
-          description: |-
-            The maximum number of organizations to return. If this parameter is
-            unspecified, at most 10 pipelines will be returned. The cap value for this
-            parameter is 100 (i.e. any value above that will be coerced to 100).
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token.
-          in: query
-          required: false
-          type: string
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-          in: query
-          required: false
-          type: string
-      tags:
-        - Namespace
-      x-stage: beta
-    post:
-      summary: Create an organization
-      description: Creates an organization.
-      operationId: MgmtPublicService_CreateOrganization
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/CreateOrganizationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organization
-          description: The properties of the organization to be created.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Organization'
-      tags:
-        - Namespace
-      x-stage: beta
-  /v1beta/organizations/{organizationId}:
-    get:
-      summary: Get an organization
-      description: Returns the organization details by its ID.
-      operationId: MgmtPublicService_GetOrganization
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetOrganizationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - Namespace
-      x-stage: beta
-    delete:
-      summary: Delete an organization
-      description: Accesses and deletes an organization by ID.
-      operationId: MgmtPublicService_DeleteOrganization
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteOrganizationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-      tags:
-        - Namespace
-      x-stage: beta
-    patch:
-      summary: Update an organization
-      description: |-
-        Accesses and updates an organization by ID.
-
-        In REST requests, only the supplied organization fields will be taken into
-        account when updating the resource.
-      operationId: MgmtPublicService_UpdateOrganization
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateOrganizationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-        - name: organization
-          description: The organization fields that will replace the existing ones.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Organization'
-      tags:
-        - Namespace
-      x-stage: beta
-  /v1beta/users/{userId}/memberships:
-    get:
-      summary: List user memberships
-      description: Returns the memberships of a user.
-      operationId: MgmtPublicService_ListUserMemberships
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListUserMembershipsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: userId
-          description: User ID
-          in: path
-          required: true
-          type: string
-      tags:
-        - Namespace
-      x-stage: beta
-  /v1beta/users/{userId}/memberships/{organizationId}:
-    get:
-      summary: Get a user membership
-      description: |-
-        Returns the details of the relationship between a user and an
-        organization. The authenticated must match the membership parent.
-      operationId: MgmtPublicService_GetUserMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetUserMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: userId
-          description: User ID
-          in: path
-          required: true
-          type: string
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - Namespace
-      x-stage: beta
-    delete:
-      summary: Delete a user membership
-      description: Accesses and deletes a user membership by parent and membership IDs.
-      operationId: MgmtPublicService_DeleteUserMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteUserMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: userId
-          description: User ID
-          in: path
-          required: true
-          type: string
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-      tags:
-        - Namespace
-      x-stage: beta
-    patch:
-      summary: Update a user membership
-      description: Accesses and updates a user membership by parent and membership IDs.
-      operationId: MgmtPublicService_UpdateUserMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateUserMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: userId
-          description: User ID
-          in: path
-          required: true
-          type: string
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-        - name: membership
-          description: The membership fields to update.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/UserMembership'
-            required:
-              - membership
-      tags:
-        - Namespace
-      x-stage: beta
-  /v1beta/organizations/{organizationId}/memberships:
-    get:
-      summary: List organization memberships
-      description: Returns a paginated list of the user memberships in an organization.
-      operationId: MgmtPublicService_ListOrganizationMemberships
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListOrganizationMembershipsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-      tags:
-        - Namespace
-      x-stage: beta
-  /v1beta/organizations/{organizationId}/memberships/{userId}:
-    get:
-      summary: Get an organization membership
-      description: Returns the details of a user membership within an organization.
-      operationId: MgmtPublicService_GetOrganizationMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetOrganizationMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-        - name: userId
-          description: User ID
-          in: path
-          required: true
-          type: string
-        - name: view
-          description: |-
-            View allows clients to specify the desired resource view in the response.
-
-             - VIEW_BASIC: Default view, only includes basic information.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - Namespace
-      x-stage: beta
-    delete:
-      summary: Delete an organization membership
-      description: Deletes a user membership within an organization.
-      operationId: MgmtPublicService_DeleteOrganizationMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteOrganizationMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-        - name: userId
-          description: User ID
-          in: path
-          required: true
-          type: string
-      tags:
-        - Namespace
-      x-stage: beta
-    patch:
-      summary: Update an organization membership
-      description: Updates a user membership within an organization.
-      operationId: MgmtPublicService_UpdateOrganizationMembership
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateOrganizationMembershipResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: Organization ID
-          in: path
-          required: true
-          type: string
-        - name: userId
-          description: User ID
-          in: path
-          required: true
-          type: string
-        - name: membership
-          description: The membership fields to update.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/OrganizationMembership'
-            required:
-              - membership
-      tags:
-        - Namespace
-      x-stage: beta
-  /v1beta/organizations/{organizationId}/invite-members:
-    post:
-      summary: Invite members to an organization
-      description: Invites members to an organization.
-      operationId: MgmtPublicService_InviteOrganizationMembers
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/InviteOrganizationMembersResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: organizationId
-          description: The organization ID.
-          in: path
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/InviteOrganizationMembersBody'
-      tags:
-        - Namespace
-      x-stage: beta
   /v1beta/tokens:
     get:
       summary: List API tokens
@@ -5770,15 +5284,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Secret'
     description: CreateNamespaceSecretResponse contains the created secret.
-  CreateOrganizationResponse:
-    type: object
-    properties:
-      organization:
-        description: The organization resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Organization'
-    description: CreateOrganizationResponse contains the created organization.
   CreateRepositoryTagResponse:
     type: object
     properties:
@@ -5861,12 +5366,6 @@ definitions:
   DeleteNamespaceSecretResponse:
     type: object
     description: DeleteNamespaceSecretResponse is an empty response.
-  DeleteOrganizationMembershipResponse:
-    type: object
-    description: DeleteOrganizationMembershipResponse is an empty response.
-  DeleteOrganizationResponse:
-    type: object
-    description: DeleteOrganizationResponse is an empty response.
   DeleteRepositoryTagResponse:
     type: object
     description: DeleteRepositoryTagResponse represent an empty response.
@@ -5883,9 +5382,6 @@ definitions:
   DeleteTokenResponse:
     type: object
     description: DeleteTokenResponse is an empty response.
-  DeleteUserMembershipResponse:
-    type: object
-    description: DeleteUserMembershipResponse is an empty response.
   DeployNamespaceModelAdminResponse:
     type: object
     title: DeployNamespaceModelAdminResponse represents a response for a deployed model
@@ -6531,24 +6027,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Organization'
     title: GetOrganizationAdminResponse represents a response for an organization resource
-  GetOrganizationMembershipResponse:
-    type: object
-    properties:
-      membership:
-        description: The requested organization membership.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/OrganizationMembership'
-    description: GetOrganizationMembershipResponse contains the organization membership.
-  GetOrganizationResponse:
-    type: object
-    properties:
-      organization:
-        description: The organization resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Organization'
-    description: GetOrganizationResponse contains the requested organization.
   GetRepositoryTagResponse:
     type: object
     properties:
@@ -6582,15 +6060,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1beta.User'
     title: GetUserAdminResponse represents a response for a user resource
-  GetUserMembershipResponse:
-    type: object
-    properties:
-      membership:
-        description: The requested user membership.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/UserMembership'
-    description: GetUserMembershipResponse contains the user membership.
   GetUserResponse:
     type: object
     properties:
@@ -6680,24 +6149,6 @@ definitions:
     description: |-
       Integration contains the parameters to create a connection between
       components and 3rd party apps.
-  InviteOrganizationMembersBody:
-    type: object
-    properties:
-      emails:
-        type: array
-        items:
-          type: string
-        description: The members to invite.
-    description: |-
-      InviteOrganizationMembersRequest represents a request to invite members to an
-      organization.
-    required:
-      - emails
-  InviteOrganizationMembersResponse:
-    type: object
-    description: |-
-      InviteOrganizationMembersResponse represents a response to a request to invite
-      members to an organization.
   KnowledgeBase:
     type: object
     properties:
@@ -7432,19 +6883,6 @@ definitions:
         description: Total number of secret resources.
         readOnly: true
     description: ListNamespaceSecretsResponse contains a list of secrets.
-  ListOrganizationMembershipsResponse:
-    type: object
-    properties:
-      memberships:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/OrganizationMembership'
-        description: |-
-          The organization memberships, i.e., the users that belong to the
-          organization.
-        readOnly: true
-    description: ListOrganizationMembershipsResponse contains a list of memberships.
   ListOrganizationsAdminResponse:
     type: object
     properties:
@@ -7462,26 +6900,6 @@ definitions:
         format: int32
         description: Total number of organizations.
     title: ListOrganizationsAdminResponse represents a response for a list of organizations
-  ListOrganizationsResponse:
-    type: object
-    properties:
-      organizations:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Organization'
-        title: A list of organizations
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page token.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of organizations.
-        readOnly: true
-    title: ListOrganizationsResponse represents a response for a list of organizations
   ListPipelineIDsByConnectionIDResponse:
     type: object
     properties:
@@ -7680,17 +7098,6 @@ definitions:
         format: int32
         description: Total number of API token resources.
     description: ListTokensResponse contains a list of API tokens.
-  ListUserMembershipsResponse:
-    type: object
-    properties:
-      memberships:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/UserMembership'
-        description: The user memberships, i.e., the organizations the user belongs to.
-        readOnly: true
-    description: ListUserMembershipsResponse contains a list of memberships.
   ListUsersAdminResponse:
     type: object
     properties:
@@ -7769,17 +7176,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/v1beta.User'
     title: LookUpUserAdminResponse represents a response for a user resource by admin
-  MembershipState:
-    type: string
-    enum:
-      - MEMBERSHIP_STATE_ACTIVE
-      - MEMBERSHIP_STATE_PENDING
-    description: |-
-      MembershipState describes the state of a user membership to an organization.
-
-       - MEMBERSHIP_STATE_ACTIVE: Active.
-       - MEMBERSHIP_STATE_PENDING: Pending, i.e., a request has been sent to the user to join an
-      organization.
   Method:
     type: string
     enum:
@@ -8326,39 +7722,6 @@ definitions:
         format: int32
         description: The number of users in the organization.
     description: The Organization stats.
-  OrganizationMembership:
-    type: object
-    properties:
-      name:
-        type: string
-        description: |-
-          The resource name of the membership, which allows its access by
-          organization and user ID.
-          - Format: `organizations/{organization.id}/memberships/{user.id}`.
-        readOnly: true
-      role:
-        type: string
-        description: Role of the user in the organization.
-      state:
-        description: State of the membership.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/MembershipState'
-      user:
-        description: User information.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1beta.User'
-      organization:
-        description: Organization information.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Organization'
-    description: |-
-      An organization membership defines the relationship between an organization
-      and a user that is attached to it.
-    required:
-      - role
   OrganizationProfile:
     type: object
     properties:
@@ -9845,24 +9208,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Object'
     description: UpdateObjectAdminResponse contains the updated object (admin only).
-  UpdateOrganizationMembershipResponse:
-    type: object
-    properties:
-      membership:
-        description: The updated membership resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/OrganizationMembership'
-    description: UpdateOrganizationMembershipResponse contains the updated membership.
-  UpdateOrganizationResponse:
-    type: object
-    properties:
-      organization:
-        description: The organization resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Organization'
-    description: UpdateOrganizationResponse contains the updated organization.
   UpdateSystemAdminResponse:
     type: object
     properties:
@@ -9871,15 +9216,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/System'
     title: UpdateSystemAdminResponse (admin only)
-  UpdateUserMembershipResponse:
-    type: object
-    properties:
-      membership:
-        description: The updated membership resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/UserMembership'
-    description: UpdateUserMembershipResponse contains the updated membership.
   UserDefinedResponse:
     type: object
     properties:
@@ -9893,39 +9229,6 @@ definitions:
     properties:
       greeting:
         type: string
-  UserMembership:
-    type: object
-    properties:
-      name:
-        type: string
-        description: |-
-          The resource name of the membership, which allows its access by user and
-          organization ID.
-          - Format: `users/{user.id}/memberships/{organization.id}`.
-        readOnly: true
-      role:
-        type: string
-        description: Role of the user in the organization.
-        readOnly: true
-      state:
-        description: State of the membership.
-        allOf:
-          - $ref: '#/definitions/MembershipState'
-      user:
-        description: User information.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/v1beta.User'
-      organization:
-        description: Organization information.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Organization'
-    description: |-
-      A user membership defines the relationship between a user and an
-      organization they belong to.
-    required:
-      - state
   UserProfile:
     type: object
     properties:
