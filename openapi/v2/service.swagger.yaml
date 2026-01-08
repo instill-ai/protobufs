@@ -50,7 +50,7 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: User ID for which to list the knowledge bases
+          description: The ID of the namespace for which to list the knowledge bases.
           in: path
           required: true
           type: string
@@ -64,7 +64,7 @@ paths:
           type: integer
           format: int32
         - name: pageToken
-          description: Page token.
+          description: Page token for pagination.
           in: query
           required: false
           type: string
@@ -101,7 +101,7 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The knowledge base's owner(namespaces).
+          description: The ID of the namespace where the knowledge base will be created.
           in: path
           required: true
           type: string
@@ -132,12 +132,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: Namespace ID.
+          description: The ID of the namespace that owns the knowledge base.
           in: path
           required: true
           type: string
         - name: knowledgeBaseId
-          description: Knowledge Base ID.
+          description: Knowledge base ID - the resource ID of the knowledge base to fetch.
           in: path
           required: true
           type: string
@@ -162,12 +162,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: The owner's id. i.e. namespace.
+          description: The ID of the namespace that owns the knowledge base.
           in: path
           required: true
           type: string
         - name: knowledgeBaseId
-          description: The knowledge base id.
+          description: Knowledge base ID - the resource ID of the knowledge base to delete.
           in: path
           required: true
           type: string
@@ -192,12 +192,12 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: namespaceId
-          description: Namespace ID.
+          description: The ID of the namespace that owns the knowledge base.
           in: path
           required: true
           type: string
         - name: knowledgeBaseId
-          description: Knowledge Base ID.
+          description: Knowledge base ID - the resource ID of the knowledge base to update.
           in: path
           required: true
           type: string
@@ -5158,7 +5158,7 @@ definitions:
     type: object
     properties:
       knowledgeBase:
-        description: The created knowledge base.
+        description: The created knowledge base resource.
         readOnly: true
         allOf:
           - $ref: '#/definitions/KnowledgeBase'
@@ -5168,73 +5168,24 @@ definitions:
   CreateKnowledgeBaseBody:
     type: object
     properties:
-      id:
-        type: string
-        description: The knowledge base id (user-provided or auto-generated).
-      description:
-        type: string
-        description: The knowledge base description.
-      tags:
-        type: array
-        items:
-          type: string
-        description: The knowledge base tags.
-      type:
-        title: The knowledge base type. default is PERSISTENT
-        allOf:
-          - $ref: '#/definitions/KnowledgeBaseType'
-      convertingPipelines:
-        type: array
-        items:
-          type: string
-        description: |-
-          Pipelines used for converting page-based documents (i.e., files with pdf,
-          doc[x] or ppt[x] extension) to Markdown. The strings in the list identify
-          the pipelines and MUST have the format
-          `{namespaceID}/{pipelineID}@{version}`. The pipeline recipes MUST have the
-          following variable and output fields:
-          ```yaml variable
-          variable:
-            document_input:
-              title: document-input
-              description: Upload a document (PDF/DOCX/DOC/PPTX/PPT)
-              type: file
-          ```
-          The `convert_result` output should be a list of strings, one per page.
-          ```yaml output
-          output:
-           convert_result:
-             title: convert-result
-             value: ${merge-markdown-refinement.output.results[0]}
-          ```
-          Other variable and output fields will be ignored.
-
-          The pipelines will be executed in order until one produces a successful,
-          non-empty result.
-
-          If no pipelines are provided, a default pipeline will be used. For
-          non-document knowledge base files, the conversion pipeline is deterministic (such
-          files are typically trivial to convert and don't require a dedicated
-          pipeline to improve the conversion performance).
-      systemId:
-        type: string
-        description: |-
-          Available systems: "openai", "gemini", or custom systems defined in the system table.
-          If not specified, defaults to "openai" system.
+      knowledgeBase:
         title: |-
-          System ID to use for this knowledge base.
-          References a system configuration in the system table that defines how the knowledge base
-          will be created based on the system's RAG configurations including:
-          - AI model family (e.g., "openai", "gemini")
-          - Embedding vector dimensionality (e.g., 1536 for OpenAI, 3072 for Gemini)
-          - Chunking method
-          - Other RAG-related settings
-    description: CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+          The knowledge base resource to create.
+          Required fields: display_name
+          Optional fields: id (auto-generated from display_name if not provided),
+                           description, tags, type, system_id
+        allOf:
+          - $ref: '#/definitions/KnowledgeBase'
+    description: |-
+      CreateKnowledgeBaseRequest represents a request to create a knowledge base.
+      Follows the same pattern as CreateCollectionRequest.
+    required:
+      - knowledgeBase
   CreateKnowledgeBaseResponse:
     type: object
     properties:
       knowledgeBase:
-        description: The created knowledge base.
+        description: The created knowledge base resource.
         readOnly: true
         allOf:
           - $ref: '#/definitions/KnowledgeBase'
@@ -5343,7 +5294,7 @@ definitions:
     type: object
     properties:
       knowledgeBase:
-        description: The knowledge base identifier.
+        description: The deleted knowledge base resource.
         readOnly: true
         allOf:
           - $ref: '#/definitions/KnowledgeBase'
@@ -5485,29 +5436,34 @@ definitions:
           The resource name of the file.
           Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`.
         readOnly: true
-      filename:
+      displayName:
         type: string
-        description: The filename provided by the user.
+        description: |-
+          The human-readable display name (filename) provided by the user.
+          This is typically the original filename of the uploaded file.
+      description:
+        type: string
+        description: A description of the file.
       type:
-        title: file type
+        description: File type.
         allOf:
           - $ref: '#/definitions/File.Type'
       processStatus:
-        title: file process status
+        description: File process status.
         readOnly: true
         allOf:
           - $ref: '#/definitions/FileProcessStatus'
       processOutcome:
         type: string
-        title: file process message
+        description: File process outcome message.
         readOnly: true
       retrievable:
         type: boolean
-        title: retrievable(this is reserved for future use)
+        description: Retrievable flag (reserved for future use).
         readOnly: true
       content:
         type: string
-        title: content(this is reserved for future use)
+        description: Base64-encoded file content (reserved for future use).
       ownerUid:
         type: string
         description: |-
@@ -5516,7 +5472,7 @@ definitions:
         readOnly: true
       creatorUid:
         type: string
-        title: creator uid from authn token
+        description: The UID of the user who created this file.
         readOnly: true
       creator:
         description: |-
@@ -5536,41 +5492,41 @@ definitions:
           - $ref: '#/definitions/Owner'
       knowledgeBaseUid:
         type: string
-        title: knowledge base uid
+        description: The UID of the knowledge base this file belongs to.
         readOnly: true
       createTime:
         type: string
         format: date-time
-        title: create time
+        description: The timestamp when the file was created.
         readOnly: true
       updateTime:
         type: string
         format: date-time
-        title: update time
+        description: The timestamp when the file was last updated.
         readOnly: true
       deleteTime:
         type: string
         format: date-time
-        title: delete time
+        description: The timestamp when the file was deleted (soft delete).
         readOnly: true
       size:
         type: string
         format: int64
-        title: file size in bytes
+        description: File size in bytes.
         readOnly: true
       totalChunks:
         type: integer
         format: int32
-        title: total chunks
+        description: Total number of chunks created from this file.
         readOnly: true
       totalTokens:
         type: integer
         format: int32
-        title: total tokens
+        description: Total number of tokens in this file.
         readOnly: true
       externalMetadata:
         type: object
-        title: Custom metadata provided by the user during file upload
+        description: Custom metadata provided by the user during file upload.
       objectUid:
         type: string
         description: |-
@@ -5583,7 +5539,7 @@ definitions:
           When object_uid is provided, the 'content' field is ignored.
       downloadUrl:
         type: string
-        title: download url of the file
+        description: Pre-signed download URL for the file.
         readOnly: true
       convertingPipeline:
         type: string
@@ -5628,7 +5584,7 @@ definitions:
         type: array
         items:
           type: string
-        title: Array of tags associated with the file
+        description: Array of tags associated with the file.
       collectionUids:
         type: array
         items:
@@ -6158,13 +6114,18 @@ definitions:
         readOnly: true
       id:
         type: string
-        description: The knowledge base id (user-provided or system-generated).
+        description: The knowledge base id (URL slug, user-provided or system-generated).
       name:
         type: string
         description: |-
           The resource name of the knowledge base.
           Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`.
         readOnly: true
+      displayName:
+        type: string
+        description: |-
+          The human-readable display name for UI presentation.
+          If not provided, defaults to the id.
       description:
         type: string
         description: The knowledge base description.
@@ -6271,7 +6232,15 @@ definitions:
           The UID of the owner namespace (User or Organization) of this knowledge base.
           This is an immutable identifier, unlike owner_name which may change.
         readOnly: true
-    description: KnowledgeBase represents a knowledge base.
+      type:
+        description: |-
+          The knowledge base type (persistent or ephemeral).
+          Default is PERSISTENT if not specified during creation.
+        allOf:
+          - $ref: '#/definitions/KnowledgeBaseType'
+    title: |-
+      KnowledgeBase represents a knowledge base.
+      Field ordering convention: uid (1), id (2), name (3), display_name (4), description (5)
   KnowledgeBaseRun:
     type: object
     properties:
@@ -6621,18 +6590,18 @@ definitions:
         items:
           type: object
           $ref: '#/definitions/KnowledgeBase'
-        description: The knowledge bases container.
+        description: The list of knowledge bases.
         readOnly: true
       nextPageToken:
         type: string
-        description: Next page token.
+        description: Next page token for pagination.
         readOnly: true
       totalSize:
         type: integer
         format: int32
-        description: Total number of knowledge bases.
+        description: Total number of knowledge bases matching the request.
         readOnly: true
-    description: ListKnowledgeBasesResponse represents a response for getting all knowledge bases from users.
+    description: ListKnowledgeBasesResponse represents a response for listing knowledge bases.
   ListModelDefinitionsResponse:
     type: object
     properties:
@@ -9142,7 +9111,7 @@ definitions:
     type: object
     properties:
       knowledgeBase:
-        description: The updated knowledge base.
+        description: The updated knowledge base resource.
         readOnly: true
         allOf:
           - $ref: '#/definitions/KnowledgeBase'
@@ -9151,7 +9120,7 @@ definitions:
     type: object
     properties:
       knowledgeBase:
-        description: The updated knowledge base.
+        description: The updated knowledge base resource.
         readOnly: true
         allOf:
           - $ref: '#/definitions/KnowledgeBase'
