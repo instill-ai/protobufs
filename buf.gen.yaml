@@ -3,7 +3,8 @@ managed:
   enabled: true
   disable:
     - module: buf.build/googleapis/googleapis
-    - module: buf.build/grpc-ecosystem/grpc-gateway
+    # Note: grpc-gateway is NOT disabled - Python needs protoc_gen_openapiv2 generated
+    # Go code ignores the generated grpc-gateway protobufs (uses grpc-ecosystem/gateway plugin)
   override:
     - file_option: go_package_prefix
       value: github.com/instill-ai/protogen-go
@@ -12,13 +13,14 @@ inputs:
     exclude_paths:
       - openapi/
 plugins:
-  - remote: buf.build/protocolbuffers/python:v23.1
+  # Python protobuf v29.x generates code compatible with protobuf 6.x runtime
+  - remote: buf.build/protocolbuffers/python:v29.3
     out: gen/python
-  - remote: buf.build/grpc/python:v1.55.0
+  - remote: buf.build/grpc/python:v1.70.0
     out: gen/python
-  - remote: buf.build/community/nipunn1313-mypy:v3.5.0
+  - remote: buf.build/community/nipunn1313-mypy:v3.6.0
     out: gen/python
-  - remote: buf.build/community/nipunn1313-mypy-grpc:v3.5.0
+  - remote: buf.build/community/nipunn1313-mypy-grpc:v3.6.0
     out: gen/python
   - remote: buf.build/protocolbuffers/go:v1.36.6
     out: gen/go
