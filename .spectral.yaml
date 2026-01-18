@@ -17,3 +17,11 @@ rules:
   # are defined as part of the endpoint definition, so these nested types end
   # up defined but not referenced.
   oas2-unused-definition: off
+  # `grpc-gateway` generates path parameters that don't match OpenAPI spec
+  # requirements when using AIP-134 style update operations (PATCH with nested
+  # field names like `{resource.name=pattern}`) and when multiple endpoints
+  # resolve to similar path patterns. This is a known limitation:
+  # - PATCH operations generate mismatched parameter names (e.g., `knowledgeBase.name`)
+  # - Multiple GET/DELETE endpoints create equivalent paths like `/v1alpha/{name_1}`
+  # See: https://github.com/grpc-ecosystem/grpc-gateway/issues/2578
+  path-params: off
