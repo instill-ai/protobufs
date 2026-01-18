@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package usage.v1beta;
+
+// Google API
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/visibility.proto";
+import "usage/v1beta/usage.proto";
+
+// UsageService responds to incoming usage requests.
+service UsageService {
+  option (google.api.default_host) = "usage.instill-ai.com";
+
+  // Liveness method receives a LivenessRequest message and returns a
+  // LivenessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Liveness(LivenessRequest) returns (LivenessResponse) {
+    option (google.api.http) = {
+      get: "/v1beta/__liveness"
+      additional_bindings: [
+        {get: "/v1beta/health/usage"}]
+    };
+  }
+
+  // Readiness method receives a ReadinessRequest message and returns a
+  // ReadinessResponse message.
+  // See https://github.com/grpc/grpc/blob/master/doc/health-checking.md
+  rpc Readiness(ReadinessRequest) returns (ReadinessResponse) {
+    option (google.api.http) = {get: "/v1beta/__readiness"};
+  }
+
+  // CreateSession method receives a CreateSessionRequest message and returns
+  // a CreateSessionResponse message.
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/sessions"
+      body: "session"
+    };
+  }
+
+  // SendSessionReport method receives a SendSessionReportRequest message and
+  // returns a SendSessionReportResponse message.
+  rpc SendSessionReport(SendSessionReportRequest) returns (SendSessionReportResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/reports"
+      body: "report"
+    };
+  }
+
+  option (google.api.api_visibility).restriction = "INTERNAL";
+}
