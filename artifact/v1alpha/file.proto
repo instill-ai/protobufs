@@ -52,7 +52,10 @@ enum ConvertedFileType {
 // Field ordering follows AIP standard: name(1), id(2), display_name(3),
 // slug(4), aliases(5), description(6)
 message File {
-  option (google.api.resource) = {pattern: "namespaces/{namespace}/files/{file}"};
+  option (google.api.resource) = {
+    type: "api.instill.tech/File"
+    pattern: "namespaces/{namespace}/files/{file}"
+  };
 
   // View defines how a file is presented.
   enum View {
@@ -296,11 +299,12 @@ message File {
   // File owner (User or Organization).
   optional mgmt.v1beta.Owner owner = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The UID of the user who created this file.
-  string creator_uid = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Full resource name of the user who created this file.
+  // Format: `users/{user}`
+  string creator_name = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The user who created this file.
-  // Populated when creator_uid is present.
+  // Populated when creator_name is present.
   optional mgmt.v1beta.User creator = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // ===== Upload and content fields =====

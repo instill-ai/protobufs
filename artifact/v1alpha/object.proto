@@ -4,14 +4,20 @@ package artifact.v1alpha;
 
 // Google API
 import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
 // Protocol Buffers Well-Known Types
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 // Object represents a blob storage object.
 message Object {
-  // Canonical resource name (e.g., "namespaces/{namespace_id}/objects/{id}").
-  // Output only.
+  option (google.api.resource) = {
+    type: "api.instill.tech/Object"
+    pattern: "namespaces/{namespace}/objects/{object}"
+  };
+
+  // Canonical resource name.
+  // Format: `namespaces/{namespace}/objects/{object}`
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Immutable canonical resource ID (e.g., "obj-3k7m9p2w5t1").
@@ -158,11 +164,12 @@ message DeleteObjectResponse {}
 
 // Admin-only object operations
 
-// GetObjectAdminRequest represents a request to get an object by UID (admin
+// GetObjectAdminRequest represents a request to get an object by name (admin
 // only).
 message GetObjectAdminRequest {
-  // Object UID (internal UUID).
-  string object_uid = 1 [(google.api.field_behavior) = REQUIRED];
+  // Full resource name of the object.
+  // Format: `objects/{object}`
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // GetObjectAdminResponse contains the requested object (admin only).
@@ -171,11 +178,12 @@ message GetObjectAdminResponse {
   Object object = 1;
 }
 
-// UpdateObjectAdminRequest represents a request to update an object by UID
+// UpdateObjectAdminRequest represents a request to update an object by name
 // (admin only).
 message UpdateObjectAdminRequest {
-  // Object UID (internal UUID).
-  string object_uid = 1 [(google.api.field_behavior) = REQUIRED];
+  // Full resource name of the object.
+  // Format: `objects/{object}`
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
 
   // Size in bytes.
   optional int64 size = 2 [(google.api.field_behavior) = OPTIONAL];
