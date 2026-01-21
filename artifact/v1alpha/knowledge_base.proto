@@ -15,7 +15,10 @@ import "mgmt/v1beta/mgmt.proto";
 // Field ordering follows AIP standard: name(1), id(2), display_name(3),
 // slug(4), aliases(5), description(6)
 message KnowledgeBase {
-  option (google.api.resource) = {pattern: "namespaces/{namespace}/knowledge-bases/{knowledge_base}"};
+  option (google.api.resource) = {
+    type: "api.instill.tech/KnowledgeBase"
+    pattern: "namespaces/{namespace}/knowledge-bases/{knowledge_base}"
+  };
 
   // EmbeddingConfig defines the embedding configuration for a knowledge base
   message EmbeddingConfig {
@@ -97,12 +100,13 @@ message KnowledgeBase {
   // Knowledge base owner (User or Organization).
   optional mgmt.v1beta.Owner owner = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The UID of the user who created this knowledge base.
+  // Full resource name of the user who created this knowledge base.
+  // Format: `users/{user}`
   // Optional for system-created knowledge bases (e.g., instill-agent).
-  optional string creator_uid = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional string creator_name = 16 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // The user who created this knowledge base.
-  // Populated when creator_uid is present.
+  // Populated when creator_name is present.
   optional mgmt.v1beta.User creator = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // ===== Statistics =====

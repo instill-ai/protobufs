@@ -335,16 +335,17 @@ paths:
                 readOnly: true
                 allOf:
                   - $ref: '#/definitions/Owner'
-              creatorUid:
+              creatorName:
                 type: string
                 description: |-
-                  The UID of the user who created this knowledge base.
+                  Full resource name of the user who created this knowledge base.
+                  Format: `users/{user}`
                   Optional for system-created knowledge bases (e.g., instill-agent).
                 readOnly: true
               creator:
                 description: |-
                   The user who created this knowledge base.
-                  Populated when creator_uid is present.
+                  Populated when creator_name is present.
                 readOnly: true
                 allOf:
                   - $ref: '#/definitions/v1beta.User'
@@ -710,14 +711,16 @@ paths:
                 readOnly: true
                 allOf:
                   - $ref: '#/definitions/Owner'
-              creatorUid:
+              creatorName:
                 type: string
-                description: The UID of the user who created this file.
+                title: |-
+                  Full resource name of the user who created this file.
+                  Format: `users/{user}`
                 readOnly: true
               creator:
                 description: |-
                   The user who created this file.
-                  Populated when creator_uid is present.
+                  Populated when creator_name is present.
                 readOnly: true
                 allOf:
                   - $ref: '#/definitions/v1beta.User'
@@ -976,64 +979,6 @@ paths:
       tags:
         - Artifact
       x-stage: alpha
-  /v1alpha/{parent}/runs:
-    get:
-      summary: List Knowledge Base Runs
-      description: Returns a paginated list of knowledge base runs.
-      operationId: ArtifactPublicService_ListKnowledgeBaseRuns
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListKnowledgeBaseRunsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: parent
-          description: |-
-            The parent resource name.
-            Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
-          in: path
-          required: true
-          type: string
-          pattern: namespaces/[^/]+/knowledge-bases/[^/]+
-        - name: page
-          description: The page number to retrieve.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageSize
-          description: |-
-            The maximum number of items per page to return. The default and cap values
-            are 10 and 100, respectively.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression.
-            - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
-          in: query
-          required: false
-          type: string
-        - name: orderBy
-          description: |-
-            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
-          in: query
-          required: false
-          type: string
-      tags:
-        - Artifact
-      x-stage: alpha
   /v1alpha/{parent}/object-upload-url:
     get:
       summary: Get Object Upload URL
@@ -1218,8 +1163,8 @@ paths:
       parameters:
         - name: object.name
           description: |-
-            Canonical resource name (e.g., "namespaces/{namespace_id}/objects/{id}").
-            Output only.
+            Canonical resource name.
+            Format: `namespaces/{namespace}/objects/{object}`
           in: path
           required: true
           type: string
@@ -1460,7 +1405,7 @@ paths:
         - name: name
           description: |-
             The resource name of the token to delete.
-            Format: `tokens/{token}`
+            Format: `users/{user}/tokens/{token}`
           in: path
           required: true
           type: string
@@ -1486,10 +1431,18 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
+        - name: parent
+          description: |-
+            The parent resource name.
+            Format: `users/{user}`
+            If not provided, defaults to the authenticated user.
+          in: query
+          required: false
+          type: string
         - name: pageSize
           description: |-
             The maximum number of tokens to return. If this parameter is unspecified,
-            at most 10 pipelines will be returned. The cap value for this parameter is
+            at most 10 tokens will be returned. The cap value for this parameter is
             100 (i.e. any value above that will be coerced to 100).
           in: query
           required: false
@@ -1550,7 +1503,7 @@ paths:
         - name: name_1
           description: |-
             The resource name of the token.
-            Format: `tokens/{token}`
+            Format: `users/{user}/tokens/{token}`
           in: path
           required: true
           type: string
@@ -2284,9 +2237,11 @@ paths:
                 readOnly: true
                 allOf:
                   - $ref: '#/definitions/Owner'
-              creatorUid:
+              creatorName:
                 type: string
-                description: The UID of the user who created this model.
+                title: |-
+                  Full resource name of the user who created this model.
+                  Format: `users/{user}`
                 readOnly: true
               creator:
                 description: The user who created this model.
@@ -2312,7 +2267,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/rename:
+  /v1alpha/{name}/rename:
     post:
       summary: Rename a model
       description: |-
@@ -2332,16 +2287,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the model to rename.
+            Format: namespaces/{namespace}/models/{model}
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
@@ -2350,7 +2303,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/watch:
+  /v1alpha/{name}/versions/{version}/watch:
     get:
       summary: Watch the state of a model version
       description: |-
@@ -2371,16 +2324,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the model to watch.
+            Format: namespaces/{namespace}/models/{model}
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+
         - name: version
           description: Model version
           in: path
@@ -2389,7 +2340,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/watch:
+  /v1alpha/{name}/watch:
     get:
       summary: Watch the state of the latest model version
       description: |-
@@ -2410,16 +2361,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the model to watch.
+            Format: namespaces/{namespace}/models/{model}
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+
       tags:
         - Model
       x-stage: alpha
@@ -2468,7 +2417,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/trigger:
+  /v1alpha/{name}/trigger:
     post:
       summary: Trigger model inference
       description: |-
@@ -2488,21 +2437,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the model version to trigger.
+            Format: `namespaces/{namespace}/models/{model}/versions/{version}`
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
-        - name: version
-          description: Model version
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+/versions/[^/]+
         - name: body
           in: body
           required: true
@@ -2516,7 +2458,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/trigger-async:
+  /v1alpha/{name}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
       description: |-
@@ -2536,21 +2478,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the model version to trigger.
+            Format: `namespaces/{namespace}/models/{model}/versions/{version}`
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
-        - name: version
-          description: Model version
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+/versions/[^/]+
         - name: body
           in: body
           required: true
@@ -2564,7 +2499,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/trigger:
+  /v1alpha/{name_1}/trigger:
     post:
       summary: Trigger model inference
       description: |-
@@ -2584,16 +2519,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name_1
+          description: |-
+            The resource name of the model to trigger (uses latest version).
+            Format: `namespaces/{namespace}/models/{model}`
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
@@ -2607,7 +2540,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/trigger-async:
+  /v1alpha/{name_1}/triggerAsync:
     post:
       summary: Trigger model inference asynchronously
       description: |-
@@ -2627,16 +2560,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name_1
+          description: |-
+            The resource name of the model to trigger (uses latest version).
+            Format: `namespaces/{namespace}/models/{model}`
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+
         - name: body
           in: body
           required: true
@@ -2650,7 +2581,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/versions/{version}/operation:
+  /v1alpha/{name}/operation:
     get:
       summary: |-
         Get the details of the long-running operation from a namespace model
@@ -2672,21 +2603,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the model version.
+            Format: `namespaces/{namespace}/models/{model}/versions/{version}`
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
-        - name: version
-          description: Model version
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+/versions/[^/]+
         - name: view
           description: |-
             View allows clients to specify the desired operation result in the
@@ -2703,7 +2627,7 @@ paths:
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/operation:
+  /v1alpha/{name_1}/operation:
     get:
       summary: Get the details of the latest long-running operation from a namespace model
       description: |-
@@ -2723,16 +2647,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name_1
+          description: |-
+            The resource name of the model.
+            Format: `namespaces/{namespace}/models/{model}`
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+
         - name: view
           description: |-
             View allows clients to specify the desired operation result in the
@@ -2774,22 +2696,10 @@ paths:
           in: path
           required: true
           type: string
-        - name: view
-          description: |-
-            View allows clients to specify the desired model view in the response.
-
-             - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
       tags:
         - Model
       x-stage: alpha
-  /v1alpha/namespaces/{namespaceId}/models/{modelId}/runs:
+  /v1alpha/{parent}/runs:
     get:
       summary: List Model Runs
       description: |-
@@ -2812,16 +2722,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID.
+        - name: parent
+          description: |-
+            The parent model resource name.
+            Format: namespaces/{namespace}/models/{model}
           in: path
           required: true
           type: string
-        - name: modelId
-          description: Model ID.
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/models/[^/]+
         - name: pageSize
           description: |-
             The maximum number of runs to return. The default and cap values are 10
@@ -2884,6 +2792,13 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
+        - name: requester
+          description: |-
+            Requester namespace resource name.
+            Format: namespaces/{namespace}
+          in: query
+          required: true
+          type: string
         - name: pageSize
           description: |-
             The maximum number of runs to return. The default and cap values are 10
@@ -2935,11 +2850,6 @@ paths:
           required: false
           type: string
           format: date-time
-        - name: requesterId
-          description: Requester ID.
-          in: query
-          required: true
-          type: string
       tags:
         - Model
       x-stage: alpha
@@ -3375,9 +3285,11 @@ paths:
                 readOnly: true
                 allOf:
                   - $ref: '#/definitions/Owner'
-              creatorUid:
+              creatorName:
                 type: string
-                description: The UID of the user who created this pipeline.
+                title: |-
+                  Full resource name of the user who created this pipeline.
+                  Format: `users/{user}`
                 readOnly: true
               creator:
                 description: The user who created this pipeline.
@@ -3399,7 +3311,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/validate:
+  /v1beta/{name}/validate:
     post:
       summary: Validate a pipeline
       description: |-
@@ -3422,16 +3334,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the pipeline to validate.
+            Format: namespaces/{namespace}/pipelines/{pipeline}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
         - name: body
           in: body
           required: true
@@ -3440,7 +3350,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/rename:
+  /v1beta/{name}/rename:
     post:
       summary: Rename a pipeline
       description: |-
@@ -3467,16 +3377,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the pipeline to rename.
+            Format: namespaces/{namespace}/pipelines/{pipeline}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
         - name: body
           in: body
           required: true
@@ -3485,7 +3393,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/clone:
+  /v1beta/{name}/clone:
     post:
       summary: Clone a pipeline
       description: |-
@@ -3505,16 +3413,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the source pipeline to clone.
+            Format: namespaces/{namespace}/pipelines/{pipeline}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
         - name: body
           in: body
           required: true
@@ -3523,7 +3429,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger:
+  /v1beta/{name}/trigger:
     post:
       summary: Trigger a pipeline
       description: |-
@@ -3550,16 +3456,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the pipeline to trigger.
+            Format: namespaces/{namespace}/pipelines/{pipeline}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
         - name: body
           in: body
           required: true
@@ -3573,7 +3477,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-stream:
+  /v1beta/{name}/trigger-stream:
     post:
       summary: Trigger a pipeline via streaming
       description: |-
@@ -3603,16 +3507,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the pipeline to trigger.
+            Format: namespaces/{namespace}/pipelines/{pipeline}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
         - name: body
           in: body
           required: true
@@ -3626,7 +3528,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/trigger-async:
+  /v1beta/{name}/trigger-async:
     post:
       summary: Trigger a pipeline asynchronously
       description: |-
@@ -3654,16 +3556,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name
+          description: |-
+            The resource name of the pipeline to trigger.
+            Format: namespaces/{namespace}/pipelines/{pipeline}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
         - name: body
           in: body
           required: true
@@ -3888,8 +3788,8 @@ paths:
       parameters:
         - name: release.name
           description: |-
-            Field 1: The name of the release, defined by its parent and ID.
-            - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+            Field 1: The name of the release.
+            - Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`.
           in: path
           required: true
           type: string
@@ -3974,7 +3874,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/clone:
+  /v1beta/{name_1}/clone:
     post:
       summary: Clone a pipeline release
       description: |-
@@ -3994,21 +3894,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name_1
+          description: |-
+            The resource name of the pipeline release to clone.
+            Format: namespaces/{namespace}/pipelines/{pipeline}/releases/{release}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
-        - name: releaseId
-          description: Release ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: body
           in: body
           required: true
@@ -4017,7 +3910,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger:
+  /v1beta/{name_1}/trigger:
     post:
       summary: Trigger a pipeline release
       description: |-
@@ -4042,21 +3935,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name_1
+          description: |-
+            The resource name of the pipeline release to trigger.
+            Format: namespaces/{namespace}/pipelines/{pipeline}/releases/{release}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
-        - name: releaseId
-          description: Release ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: body
           in: body
           required: true
@@ -4070,7 +3956,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/releases/{releaseId}/trigger-async:
+  /v1beta/{name_1}/trigger-async:
     post:
       summary: Trigger a pipeline release asynchronously
       description: |-
@@ -4095,21 +3981,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: Namespace ID
+        - name: name_1
+          description: |-
+            The resource name of the pipeline release to trigger.
+            Format: namespaces/{namespace}/pipelines/{pipeline}/releases/{release}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: Pipeline ID
-          in: path
-          required: true
-          type: string
-        - name: releaseId
-          description: Release ID
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+/releases/[^/]+
         - name: body
           in: body
           required: true
@@ -4445,7 +4324,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/namespaces/{namespaceId}/pipelines/{pipelineId}/runs:
+  /v1beta/{parent}/runs:
     get:
       summary: List Pipeline Runs
       description: |-
@@ -4468,16 +4347,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: namespaceId
-          description: The ID of the owner of the pipeline.
+        - name: parent
+          description: |-
+            The parent pipeline resource name.
+            Format: namespaces/{namespace}/pipelines/{pipeline}
           in: path
           required: true
           type: string
-        - name: pipelineId
-          description: The ID of the pipeline for which the runs will be listed.
-          in: path
-          required: true
-          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
         - name: page
           description: The page number to retrieve.
           in: query
@@ -4515,7 +4392,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/pipeline-runs/{pipelineRunId}/component-runs:
+  /v1beta/{parent}/component-runs:
     get:
       summary: List Component Runs
       description: Returns the information of each component execution within a pipeline run.
@@ -4533,11 +4410,14 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: pipelineRunId
-          description: The unique identifier of the pipeline run to list component runs for.
+        - name: parent
+          description: |-
+            The parent pipeline run resource name.
+            Format: namespaces/{namespace}/pipelines/{pipeline}/runs/{run}
           in: path
           required: true
           type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+/runs/[^/]+
         - name: page
           description: The page number to retrieve.
           in: query
@@ -4610,6 +4490,13 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
+        - name: requester
+          description: |-
+            Requester namespace resource name.
+            Format: namespaces/{namespace}
+          in: query
+          required: true
+          type: string
         - name: page
           description: The page number to retrieve.
           in: query
@@ -4659,11 +4546,6 @@ paths:
           required: false
           type: string
           format: date-time
-        - name: requesterId
-          description: Requester ID.
-          in: query
-          required: true
-          type: string
       tags:
         - Pipeline
       x-stage: beta
@@ -4950,7 +4832,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/{name}:test:
+  /v1beta/{name}/test:
     post:
       summary: Test a connection
       description: |-
@@ -5249,22 +5131,11 @@ definitions:
   ApiToken:
     type: object
     properties:
-      lastUseTime:
-        type: string
-        format: date-time
-        description: |-
-          When users trigger a pipeline which uses an API token, the token is
-          updated with the current time. This field is used to track the last time
-          the token was used.
       name:
         type: string
-        description: |-
-          The name of the token, define by its ID.
-          - Format: `tokens/{token.id}`.
-        readOnly: true
-      uid:
-        type: string
-        description: API token UUID.
+        title: |-
+          The resource name of the token.
+          Format: users/{user}/tokens/{token}
         readOnly: true
       id:
         type: string
@@ -5302,6 +5173,14 @@ definitions:
         type: string
         description: Token type. Value is fixed to "Bearer".
         readOnly: true
+      lastUseTime:
+        type: string
+        format: date-time
+        description: |-
+          When users trigger a pipeline which uses an API token, the token is
+          updated with the current time. This field is used to track the last time
+          the token was used.
+        readOnly: true
       ttl:
         type: integer
         format: int32
@@ -5330,7 +5209,7 @@ definitions:
         type: string
         description: |-
           Field 1: Canonical resource name.
-          Format: `users/{user.id}`.
+          Format: `users/{user}`.
         readOnly: true
       id:
         type: string
@@ -5517,6 +5396,11 @@ definitions:
   CloneNamespacePipelineBody:
     type: object
     properties:
+      target:
+        type: string
+        title: |-
+          The resource name of the target pipeline.
+          Format: namespaces/{namespace}/pipelines/{pipeline}
       description:
         type: string
         description: Pipeline description.
@@ -5524,18 +5408,11 @@ definitions:
         description: Pipeline sharing information.
         allOf:
           - $ref: '#/definitions/Sharing'
-      targetNamespaceId:
-        type: string
-        description: Target Namespace ID.
-      targetPipelineId:
-        type: string
-        description: Target Pipeline ID.
     description: |-
       CloneNamespacePipelineRequest represents a request to clone a pipeline owned by a
       user.
     required:
-      - targetNamespaceId
-      - targetPipelineId
+      - target
   CloneNamespacePipelineReleaseBody:
     type: object
     properties:
@@ -5546,18 +5423,16 @@ definitions:
         description: Pipeline sharing information.
         allOf:
           - $ref: '#/definitions/Sharing'
-      targetNamespaceId:
+      target:
         type: string
-        description: Target Namespace ID.
-      targetPipelineId:
-        type: string
-        description: Target Pipeline ID.
+        title: |-
+          The target pipeline resource name.
+          Format: namespaces/{namespace}/pipelines/{pipeline}
     description: |-
       CloneNamespacePipelineReleaseRequest represents a request to clone a pipeline
       release owned by a user.
     required:
-      - targetNamespaceId
-      - targetPipelineId
+      - target
   CloneNamespacePipelineReleaseResponse:
     type: object
     description: CloneNamespacePipelineReleaseResponse contains a cloned pipeline.
@@ -5744,13 +5619,31 @@ definitions:
   ComponentRun:
     type: object
     properties:
-      pipelineRunUid:
+      name:
         type: string
-        description: Links to the parent PipelineRun.
+        title: |-
+          The resource name of the component run.
+          Format: namespaces/{namespace}/pipelines/{pipeline}/runs/{run}/components/{component}
         readOnly: true
-      componentId:
+      id:
         type: string
-        description: Unique identifier for each pipeline component.
+        description: Unique identifier for the component within the pipeline.
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        description: Time when the component run was created.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: Time when the component run was last updated.
+        readOnly: true
+      pipelineRun:
+        type: string
+        title: |-
+          Parent pipeline run resource name.
+          Full resource name: namespaces/{namespace}/pipelines/{pipeline}/runs/{run}
         readOnly: true
       status:
         description: Completion status of the component.
@@ -5810,11 +5703,7 @@ definitions:
       blobDataExpirationTime:
         type: string
         format: date-time
-        description: |-
-          Expiration time for the blob data associated with the component run (e.g.
-          input / output data). When the run is accessed after the expiration, that
-          information will be empty, but this field will allow the user identify
-          that the data isn't there because it has expired.
+        description: Expiration time for the blob data associated with the component run.
         readOnly: true
     description: ComponentRun represents the execution details of a single component within a pipeline run.
   ComponentTask:
@@ -6265,14 +6154,16 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Owner'
-      creatorUid:
+      creatorName:
         type: string
-        description: The UID of the user who created this file.
+        title: |-
+          Full resource name of the user who created this file.
+          Format: `users/{user}`
         readOnly: true
       creator:
         description: |-
           The user who created this file.
-          Populated when creator_uid is present.
+          Populated when creator_name is present.
         readOnly: true
         allOf:
           - $ref: '#/definitions/v1beta.User'
@@ -6858,16 +6749,17 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Owner'
-      creatorUid:
+      creatorName:
         type: string
         description: |-
-          The UID of the user who created this knowledge base.
+          Full resource name of the user who created this knowledge base.
+          Format: `users/{user}`
           Optional for system-created knowledge bases (e.g., instill-agent).
         readOnly: true
       creator:
         description: |-
           The user who created this knowledge base.
-          Populated when creator_uid is present.
+          Populated when creator_name is present.
         readOnly: true
         allOf:
           - $ref: '#/definitions/v1beta.User'
@@ -6898,93 +6790,6 @@ definitions:
       slug(4), aliases(5), description(6)
     required:
       - displayName
-  KnowledgeBaseRun:
-    type: object
-    properties:
-      uid:
-        type: string
-        description: Unique identifier for each run.
-        readOnly: true
-      knowledgeBaseId:
-        type: string
-        title: knowledge base id
-        readOnly: true
-      fileIds:
-        type: array
-        items:
-          type: string
-        description: The file ids.
-        readOnly: true
-      action:
-        description: Action of the knowledge base run.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/KnowledgeBaseRunAction'
-      status:
-        description: Current status of the run.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/RunStatus'
-      source:
-        description: Origin of the run.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/RunSource'
-      totalDuration:
-        type: integer
-        format: int32
-        description: Time taken to complete the run in milliseconds.
-        readOnly: true
-      runnerId:
-        type: string
-        title: Runner ID. (User UID)
-        readOnly: true
-      namespaceId:
-        type: string
-        description: Namespace ID.
-        readOnly: true
-      payload:
-        type: object
-        description: Run request payload.
-        readOnly: true
-      startTime:
-        type: string
-        format: date-time
-        description: Time when the run started execution.
-        readOnly: true
-      completeTime:
-        type: string
-        format: date-time
-        description: Time when the run completed.
-        readOnly: true
-      error:
-        type: string
-        description: Error message if the run failed.
-        readOnly: true
-      creditAmount:
-        type: number
-        format: float
-        description: Credits used of internal accounting metric.
-        readOnly: true
-    description: KnowledgeBaseRun represents a single execution of a knowledge base action.
-  KnowledgeBaseRunAction:
-    type: string
-    enum:
-      - KNOWLEDGE_BASE_RUN_ACTION_CREATE
-      - KNOWLEDGE_BASE_RUN_ACTION_UPDATE
-      - KNOWLEDGE_BASE_RUN_ACTION_DELETE
-      - KNOWLEDGE_BASE_RUN_ACTION_CREATE_FILE
-      - KNOWLEDGE_BASE_RUN_ACTION_PROCESS_FILE
-      - KNOWLEDGE_BASE_RUN_ACTION_DELETE_FILE
-    description: |-
-      KnowledgeBaseRunAction describes the actions a user has over a knowledge base.
-
-       - KNOWLEDGE_BASE_RUN_ACTION_CREATE: Create knowledge base.
-       - KNOWLEDGE_BASE_RUN_ACTION_UPDATE: Update knowledge base.
-       - KNOWLEDGE_BASE_RUN_ACTION_DELETE: Delete knowledge base.
-       - KNOWLEDGE_BASE_RUN_ACTION_CREATE_FILE: Upload knowledge base file.
-       - KNOWLEDGE_BASE_RUN_ACTION_PROCESS_FILE: Process knowledge base file.
-       - KNOWLEDGE_BASE_RUN_ACTION_DELETE_FILE: Delete knowledge base file.
   KnowledgeBaseType:
     type: string
     enum:
@@ -7125,32 +6930,6 @@ definitions:
         description: Total number of items.
         readOnly: true
     description: ListIntegrationsResponse contains a paginated list of integrations.
-  ListKnowledgeBaseRunsResponse:
-    type: object
-    properties:
-      knowledgeBaseRuns:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/KnowledgeBaseRun'
-        description: The list of runs.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: The total number of runs matching the request.
-        readOnly: true
-      page:
-        type: integer
-        format: int32
-        description: The current page number.
-        readOnly: true
-      pageSize:
-        type: integer
-        format: int32
-        description: The number of items per page.
-        readOnly: true
-    description: ListKnowledgeBaseRunsResponse is the response message for ListKnowledgeBaseRuns.
   ListKnowledgeBasesResponse:
     type: object
     properties:
@@ -7679,9 +7458,11 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Owner'
-      creatorUid:
+      creatorName:
         type: string
-        description: The UID of the user who created this model.
+        title: |-
+          Full resource name of the user who created this model.
+          Format: `users/{user}`
         readOnly: true
       creator:
         description: The user who created this model.
@@ -7697,7 +7478,8 @@ definitions:
       Model represents an AI model, i.e. a program that performs tasks as decision
       making or or pattern recognition based on its training data
       Model represents an AI/ML model.
-      Field ordering follows AIP standard: name(1), id(2), display_name(3), slug(4), aliases(5), description(6)
+      Field ordering follows AIP standard: name(1), id(2), display_name(3),
+      slug(4), aliases(5), description(6)
     required:
       - displayName
       - modelDefinition
@@ -7791,9 +7573,43 @@ definitions:
   ModelRun:
     type: object
     properties:
-      uid:
+      name:
         type: string
-        description: Model Run UUID.
+        title: |-
+          The resource name of the model run.
+          Format: namespaces/{namespace}/models/{model}/runs/{run}
+        readOnly: true
+      id:
+        type: string
+        description: Unique identifier for each run (immutable).
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        description: Model run created time.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: Model run updated time.
+        readOnly: true
+      runner:
+        type: string
+        description: |-
+          Runner who triggered the run.
+          Full resource name: users/{user}.
+        readOnly: true
+      model:
+        type: string
+        title: |-
+          The model resource name.
+          Full resource name: namespaces/{namespace}/models/{model}
+        readOnly: true
+      requester:
+        type: string
+        description: |-
+          Requester namespace.
+          Full resource name: namespaces/{namespace}.
         readOnly: true
       status:
         description: Model run status.
@@ -7815,32 +7631,14 @@ definitions:
         format: date-time
         description: Run end time.
         readOnly: true
-      runnerId:
-        type: string
-        description: |-
-          Runner ID. If current viewing requester does not have enough permission, it
-          will return null.
-        readOnly: true
       creditAmount:
         type: number
         format: float
-        description: |-
-          The amount of Instill Credit consumed by the run. This field will only be
-          present on Instill Cloud.
+        description: The amount of Instill Credit consumed by the run.
         readOnly: true
       error:
         type: string
         description: Error message occurred during model run.
-        readOnly: true
-      createTime:
-        type: string
-        format: date-time
-        description: Model run created time.
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: Model run updated time.
         readOnly: true
       version:
         type: string
@@ -7857,20 +7655,6 @@ definitions:
         items:
           type: object
         description: Model inference outputs.
-        readOnly: true
-      modelId:
-        type: string
-        description: Model ID.
-        readOnly: true
-      requesterId:
-        type: string
-        description: |-
-          Requester ID. The namespace used to trigger the run. This field might be
-          empty if the model run belongs to a deleted namespace.
-        readOnly: true
-      modelNamespaceId:
-        type: string
-        description: ID of the namespace that owns the model.
         readOnly: true
     description: ModelRun contains information about a run of models.
   ModelTriggerChartRecord:
@@ -7908,13 +7692,8 @@ definitions:
       name:
         type: string
         description: |-
-          The parent resource, i.e., the user that created the models.
-          - Format: `users/{user.id}`.
-          The resource name of the model, which allows its access by parent user
-          and ID.
-          - Format: `users/{user.id}/models/{model.id}`.
-          The name of the Version.
-          - Format: `users/{user.id}/models/{model.id}/versions/{version.id}`.
+          The resource name of the model version.
+          Format: `namespaces/{namespace}/models/{model}/versions/{version}`.
       version:
         type: string
         description: The model version identifier, which is equal to image tag.
@@ -7970,9 +7749,9 @@ definitions:
     properties:
       name:
         type: string
-        description: |-
-          Canonical resource name (e.g., "namespaces/{namespace_id}/objects/{id}").
-          Output only.
+        title: |-
+          Canonical resource name.
+          Format: `namespaces/{namespace}/objects/{object}`
         readOnly: true
       id:
         type: string
@@ -8048,7 +7827,7 @@ definitions:
         type: string
         title: |-
           Field 1: Canonical resource name.
-          Format: `organizations/{organization.id}`.
+          Format: `organizations/{organization}`.
           Example: "organizations/acme-corp"
         readOnly: true
       id:
@@ -8094,7 +7873,7 @@ definitions:
         type: string
         description: |-
           Field 9: Owner reference (the user that owns the organization).
-          Format: `users/{user.id}`.
+          Format: `users/{user}`.
         readOnly: true
       profile:
         description: Profile containing additional organization information.
@@ -8175,7 +7954,9 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Organization'
-    description: Owner is a wrapper for User and Organization, used to embed owner information in other resources.
+    description: |-
+      Owner is a wrapper for User and Organization, used to embed owner information
+      in other resources.
   PatchAuthenticatedUserResponse:
     type: object
     properties:
@@ -8303,9 +8084,11 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Owner'
-      creatorUid:
+      creatorName:
         type: string
-        description: The UID of the user who created this pipeline.
+        title: |-
+          Full resource name of the user who created this pipeline.
+          Format: `users/{user}`
         readOnly: true
       creator:
         description: The user who created this pipeline.
@@ -8376,8 +8159,8 @@ definitions:
       name:
         type: string
         description: |-
-          Field 1: The name of the release, defined by its parent and ID.
-          - Format: `{parent_type}/{parent.id}/pipelines/{pipeline.id}/releases/{release.id}`.
+          Field 1: The name of the release.
+          - Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`.
         readOnly: true
       id:
         type: string
@@ -8449,9 +8232,43 @@ definitions:
   PipelineRun:
     type: object
     properties:
-      pipelineRunUid:
+      name:
         type: string
-        description: Unique identifier for each run.
+        title: |-
+          The resource name of the pipeline run.
+          Format: namespaces/{namespace}/pipelines/{pipeline}/runs/{run}
+        readOnly: true
+      id:
+        type: string
+        description: Unique identifier for each run (immutable).
+        readOnly: true
+      createTime:
+        type: string
+        format: date-time
+        description: Time when the run was created.
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: Time when the run was last updated.
+        readOnly: true
+      runner:
+        type: string
+        description: |-
+          Runner who triggered the run.
+          Full resource name: users/{user}.
+        readOnly: true
+      pipeline:
+        type: string
+        title: |-
+          The pipeline resource name.
+          Full resource name: namespaces/{namespace}/pipelines/{pipeline}
+        readOnly: true
+      requester:
+        type: string
+        description: |-
+          Requester namespace.
+          Full resource name: namespaces/{namespace}.
         readOnly: true
       pipelineVersion:
         type: string
@@ -8471,12 +8288,6 @@ definitions:
         type: integer
         format: int32
         description: Time taken to complete the run in milliseconds.
-        readOnly: true
-      runnerId:
-        type: string
-        description: |-
-          Runner ID. The authenticated user that triggered the run. If current
-          viewing requester does not have enough permission, it will return null.
         readOnly: true
       inputs:
         type: array
@@ -8518,28 +8329,10 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/DataSpecification'
-      pipelineId:
-        type: string
-        title: The ID of the pipeline
-        readOnly: true
-      requesterId:
-        type: string
-        description: |-
-          Requester ID. The namespace used to trigger the run. This field might be
-          empty if the pipeline run belongs to a deleted namespace.
-        readOnly: true
-      pipelineNamespaceId:
-        type: string
-        description: ID of the namespace that owns the pipeline.
-        readOnly: true
       blobDataExpirationTime:
         type: string
         format: date-time
-        description: |-
-          Expiration time for the blob data associated with the pipeline run (e.g.
-          input data, recipe). When the run is accessed after the expiration, that
-          information will be empty, but this field will allow the user identify
-          that the data isn't there because it has expired.
+        description: Expiration time for the blob data associated with the pipeline run.
         readOnly: true
     description: PipelineRun represents a single execution of a pipeline.
   PipelineTriggerChartRecord:
@@ -8625,7 +8418,7 @@ definitions:
         type: string
         description: |-
           The new resource ID. This will transform the resource name into
-          `namespaces/{namespace.id}/models/{new_model_id}`.
+          `namespaces/{namespace}/models/{new_model_id}`.
     title: RenameNamespaceModelRequest represents a request to rename a model
     required:
       - newModelId
@@ -8645,7 +8438,7 @@ definitions:
         type: string
         description: |-
           The new resource ID. This will transform the resource name into
-          `namespaces/{namespace.id}/pipelines/{new_pipeline_id}`.
+          `namespaces/{namespace}/pipelines/{new_pipeline_id}`.
     description: |-
       RenameNamespacePipelineRequest represents a request to rename the name of a
       pipeline owned by a namespace.
@@ -8873,25 +8666,29 @@ definitions:
   SimilarityChunk:
     type: object
     properties:
-      chunkId:
+      chunk:
         type: string
-        title: chunk id
+        title: |-
+          Chunk resource name.
+          Full resource name: namespaces/{namespace}/files/{file}/chunks/{chunk}
         readOnly: true
       similarityScore:
         type: number
         format: float
-        title: similarity score
+        description: Similarity score.
         readOnly: true
       textContent:
         type: string
-        title: content
+        description: Content.
         readOnly: true
-      sourceFile:
+      file:
         type: string
-        title: source file's name
+        title: |-
+          Source file resource name.
+          Full resource name: namespaces/{namespace}/files/{file}
         readOnly: true
       chunkMetadata:
-        title: chunk metadata
+        description: Chunk metadata.
         readOnly: true
         allOf:
           - $ref: '#/definitions/Chunk'
@@ -9480,9 +9277,11 @@ definitions:
   ValidateTokenResponse:
     type: object
     properties:
-      userUid:
+      user:
         type: string
-        description: If token is valid, UUID of the user that owns it.
+        title: |-
+          If token is valid, full resource name of the user that owns it.
+          Format: `users/{user}`
         readOnly: true
     description: ValidateTokenResponse contains the validation of a token.
   WatchNamespaceLatestModelResponse:
@@ -9711,7 +9510,7 @@ definitions:
         type: string
         title: |-
           Field 1: Canonical resource name.
-          Format: `users/{user.id}`.
+          Format: `users/{user}`.
           Example: "users/john-doe"
         readOnly: true
       id:
