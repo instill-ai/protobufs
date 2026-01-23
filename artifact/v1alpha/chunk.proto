@@ -47,8 +47,12 @@ message Chunk {
   uint32 tokens = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
   // creation time of the chunk
   google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // original file unique identifier
-  string original_file_id = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The resource name of the original file this chunk belongs to.
+  // Format: `namespaces/{namespace}/files/{file}`
+  string original_file = 6 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
   // chunk type
   Type type = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Reference to the position of the chunk within the original file.
@@ -129,8 +133,12 @@ message SearchChunksRequest {
   // The parent resource name (namespace).
   // Format: `namespaces/{namespace}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
-  // ID of the knowledge base (optional filter).
-  string knowledge_base_id = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The knowledge base resource name to filter by (optional).
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  string knowledge_base = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
+  ];
   // Text prompt to look for similarities.
   string text_prompt = 3 [(google.api.field_behavior) = REQUIRED];
   // Top K. Default value: 5.
@@ -143,11 +151,15 @@ message SearchChunksRequest {
   File.FileMediaType file_media_type = 7 [(google.api.field_behavior) = OPTIONAL];
   // 8 is reserved for file_uid, deprecated by file_uids.
   reserved 8;
-  // File IDs. When this field is provided, the response will return only
-  // chunks that belong to the specified file IDs.
-  repeated string file_ids = 9 [(google.api.field_behavior) = OPTIONAL];
+  // File resource names to filter by. When this field is provided, the response
+  // will return only chunks that belong to the specified files.
+  // Format: `namespaces/{namespace}/files/{file}`
+  repeated string files = 9 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
   // Tags to filter by. When multiple tags are provided, OR logic is applied.
-  // Note: File ID filter takes precedence over tags, as tags apply to files.
+  // Note: File filter takes precedence over tags, as tags apply to files.
   repeated string tags = 10 [(google.api.field_behavior) = OPTIONAL];
 }
 

@@ -48,8 +48,9 @@ enum KnowledgeBaseUpdateStatus {
 
 // KnowledgeBaseUpdateDetails provides detailed information about a knowledge base update
 message KnowledgeBaseUpdateDetails {
-  // ID of the knowledge base
-  string knowledge_base_id = 1;
+  // The resource name of the knowledge base.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  string knowledge_base = 1;
   // Status of the knowledge base update
   KnowledgeBaseUpdateStatus status = 2;
   // Workflow ID of the knowledge base update
@@ -66,20 +67,22 @@ message KnowledgeBaseUpdateDetails {
   // Populated ONLY when status is KNOWLEDGE_BASE_UPDATE_STATUS_FAILED
   // Empty for all other statuses (NONE, UPDATING, SYNCING, VALIDATING, SWAPPING, COMPLETED, ROLLED_BACK, ABORTED)
   string error_message = 8;
-  // Current system ID (e.g., "openai", "gemini")
-  // The system configuration currently active in the production KB
+  // The resource name of the current system (e.g., "systems/openai", "systems/gemini").
+  // Format: `systems/{system}`
+  // The system configuration currently active in the production KB.
   // - For UPDATING: The system being updated to (from staging KB - will become current after swap)
-  // - For COMPLETED/FAILED/ROLLED_BACK/ABORTED/NONE: The current production system ID
-  // Always reflects the KB's current state
-  string current_system_id = 9;
-  // Previous system ID before the update (e.g., "openai", "gemini")
-  // Captured at update start for historical audit trail
+  // - For COMPLETED/FAILED/ROLLED_BACK/ABORTED/NONE: The current production system
+  // Always reflects the KB's current state.
+  string current_system = 9;
+  // The resource name of the previous system before the update.
+  // Format: `systems/{system}`
+  // Captured at update start for historical audit trail.
   // - For UPDATING: The system before update started
   // - For COMPLETED: The system before successful update (what was replaced)
   // - For FAILED/ABORTED: The system before failed attempt (same as current, since update didn't complete)
   // - For ROLLED_BACK: The system that was rolled back FROM (before rollback)
   // - For NONE: Empty (never been updated)
-  string previous_system_id = 10;
+  string previous_system = 10;
 }
 
 // Admin-only rollback operations
@@ -108,8 +111,9 @@ message PurgeRollbackAdminRequest {
 message PurgeRollbackAdminResponse {
   // Whether the purge was successful
   bool success = 1;
-  // ID of the purged knowledge base
-  string purged_knowledge_base_id = 2;
+  // The resource name of the purged knowledge base.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  string purged_knowledge_base = 2;
   // Number of files deleted
   int32 deleted_files = 3;
   // Status message
@@ -167,13 +171,15 @@ message GetKnowledgeBaseUpdateStatusAdminResponse {
 
 // ExecuteKnowledgeBaseUpdateAdminRequest (admin only)
 message ExecuteKnowledgeBaseUpdateAdminRequest {
-  // Optional: Specific knowledge base IDs to update. If empty, updates all eligible knowledge bases.
-  repeated string knowledge_base_ids = 1;
+  // Optional: Specific knowledge base resource names to update. If empty, updates all eligible knowledge bases.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  repeated string knowledge_bases = 1;
 
-  // Optional: System ID containing configuration to apply.
-  // If specified, uses config from system table where id=<this value>
+  // Optional: System resource name containing configuration to apply.
+  // Format: `systems/{system}`
+  // If specified, uses config from the specified system.
   // If not specified, KBs keep their current config (useful for reprocessing).
-  optional string system_id = 2;
+  optional string system = 2;
 
   // Optional: Tags to filter which knowledge bases to update (OR logic - match any tag).
   repeated string tags = 3;
@@ -191,8 +197,9 @@ message ExecuteKnowledgeBaseUpdateAdminResponse {
 
 // AbortKnowledgeBaseUpdateAdminRequest (admin only)
 message AbortKnowledgeBaseUpdateAdminRequest {
-  // Optional: Specific knowledge base IDs to abort. If empty, aborts all currently updating knowledge bases.
-  repeated string knowledge_base_ids = 1;
+  // Optional: Specific knowledge base resource names to abort. If empty, aborts all currently updating knowledge bases.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  repeated string knowledge_bases = 1;
 }
 
 // AbortKnowledgeBaseUpdateAdminResponse (admin only)
