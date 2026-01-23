@@ -73,10 +73,11 @@ message Endpoints {
 // A Pipeline is an end-to-end workflow that automates a sequence of components
 // to process data.
 //
-// For more information, see [Pipeline](https://instill-ai.dev/docs/pipeline/introduction) in
-// the official documentation.
-// Pipeline represents a data pipeline for AI/ML workflows.
-// Field ordering follows AIP standard: name(1), id(2), display_name(3), slug(4), aliases(5), description(6)
+// For more information, see
+// [Pipeline](https://instill-ai.dev/docs/pipeline/introduction) in the official
+// documentation. Pipeline represents a data pipeline for AI/ML workflows. Field
+// ordering follows AIP standard: name(1), id(2), display_name(3), slug(4),
+// aliases(5), description(6)
 message Pipeline {
   option (google.api.resource) = {
     type: "api.instill.tech/Pipeline"
@@ -261,7 +262,8 @@ message GetHubStatsResponse {
 
 // Pipeline releases contain the version control information of a pipeline.
 // This allows users to track changes in the pipeline over time.
-// Field ordering follows AIP standard: name (1), id (2), display_name (3), slug (4), aliases (5), description (6)
+// Field ordering follows AIP standard: name (1), id (2), display_name (3), slug
+// (4), aliases (5), description (6)
 message PipelineRelease {
   option (google.api.resource) = {
     type: "api.instill.tech/PipelineRelease"
@@ -271,8 +273,8 @@ message PipelineRelease {
   // Field 1: The name of the release.
   // - Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`.
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-  // Field 2: Release resource ID (used in `name` as the last segment). It must be a
-  // sematic version vX.Y.Z.
+  // Field 2: Release resource ID (used in `name` as the last segment). It must
+  // be a sematic version vX.Y.Z.
   string id = 2 [(google.api.field_behavior) = IMMUTABLE];
   // Field 3: Human-readable display name for UI.
   string display_name = 3 [(google.api.field_behavior) = OPTIONAL];
@@ -307,8 +309,8 @@ message PipelineRelease {
   Endpoints endpoints = 15 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListPipelinesRequest represents a request to list pipelines.
-message ListPipelinesRequest {
+// ListPublicPipelinesRequest represents a request to list public pipelines.
+message ListPublicPipelinesRequest {
   // The maximum number of pipelines to return. If this parameter is
   // unspecified, at most 10 pipelines will be returned. The cap value for this
   // parameter is 100 (i.e. any value above that will be coerced to 100).
@@ -327,13 +329,14 @@ message ListPipelinesRequest {
   optional bool show_deleted = 5 [(google.api.field_behavior) = OPTIONAL];
   // Limit results to pipelines with the specified visibility.
   optional Pipeline.Visibility visibility = 6 [(google.api.field_behavior) = OPTIONAL];
-  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  // Order by field, with options for ordering by `id`, `create_time` or
+  // `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+  // default is `asc`.
   optional string order_by = 7 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ListPipelinesResponse contains a list of pipelines.
-message ListPipelinesResponse {
+// ListPublicPipelinesResponse contains a list of public pipelines.
+message ListPublicPipelinesResponse {
   // A list of pipeline resources.
   repeated Pipeline pipelines = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Next page token.
@@ -342,9 +345,9 @@ message ListPipelinesResponse {
   int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListNamespacePipelinesRequest represents a request to list pipelines.
+// ListPipelinesRequest represents a request to list pipelines.
 // Follows AIP-132: https://google.aip.dev/132
-message ListNamespacePipelinesRequest {
+message ListPipelinesRequest {
   // The parent resource name.
   // Format: `namespaces/{namespace}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
@@ -366,13 +369,14 @@ message ListNamespacePipelinesRequest {
   optional bool show_deleted = 6 [(google.api.field_behavior) = OPTIONAL];
   // Limit results to pipelines with the specified visibility.
   optional Pipeline.Visibility visibility = 7 [(google.api.field_behavior) = OPTIONAL];
-  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  // Order by field, with options for ordering by `id`, `create_time` or
+  // `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+  // default is `asc`.
   optional string order_by = 8 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ListNamespacePipelinesResponse contains a list of pipelines.
-message ListNamespacePipelinesResponse {
+// ListPipelinesResponse contains a list of pipelines.
+message ListPipelinesResponse {
   // A list of pipeline resources.
   repeated Pipeline pipelines = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Next page token.
@@ -381,10 +385,9 @@ message ListNamespacePipelinesResponse {
   int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// CreateNamespacePipelineRequest represents a request from a namespace to create a
-// pipeline.
-// Follows AIP-133: https://google.aip.dev/133
-message CreateNamespacePipelineRequest {
+// CreatePipelineRequest represents a request from a namespace to
+// create a pipeline. Follows AIP-133: https://google.aip.dev/133
+message CreatePipelineRequest {
   // The parent resource name.
   // Format: `namespaces/{namespace}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
@@ -392,16 +395,16 @@ message CreateNamespacePipelineRequest {
   Pipeline pipeline = 2;
 }
 
-// CreateNamespacePipelineResponse contains the created pipeline.
-message CreateNamespacePipelineResponse {
+// CreatePipelineResponse contains the created pipeline.
+message CreatePipelineResponse {
   // The created pipeline resource.
   Pipeline pipeline = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// GetNamespacePipelineRequest represents a request to fetch the details of a
+// GetPipelineRequest represents a request to fetch the details of a
 // pipeline owned by a namespace.
 // Follows AIP-131: https://google.aip.dev/131
-message GetNamespacePipelineRequest {
+message GetPipelineRequest {
   // The resource name of the pipeline.
   // Format: `namespaces/{namespace}/pipelines/{pipeline}`
   string name = 1 [(google.api.field_behavior) = REQUIRED];
@@ -409,47 +412,42 @@ message GetNamespacePipelineRequest {
   optional Pipeline.View view = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// GetNamespacePipelineResponse contains the requested pipeline.
-message GetNamespacePipelineResponse {
+// GetPipelineResponse contains the requested pipeline.
+message GetPipelineResponse {
   // The pipeline resource.
   Pipeline pipeline = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// UpdateNamespacePipelineRequest represents a request to update a pipeline owned by
-// a namespace.
-// Follows AIP-134: https://google.aip.dev/134
-message UpdateNamespacePipelineRequest {
+// UpdatePipelineRequest represents a request to update a pipeline
+// owned by a namespace. Follows AIP-134: https://google.aip.dev/134
+message UpdatePipelineRequest {
   // The pipeline resource to update. The pipeline's `name` field identifies
   // the resource. Format: `namespaces/{namespace}/pipelines/{pipeline}`
   Pipeline pipeline = 1 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
-  //
-  // For more information about this field, see
-  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// UpdateNamespacePipelineResponse contains the updated pipeline.
-message UpdateNamespacePipelineResponse {
+// UpdatePipelineResponse contains the updated pipeline.
+message UpdatePipelineResponse {
   // The updated pipeline resource.
   Pipeline pipeline = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// DeleteNamespacePipelineRequest represents a request to delete a pipeline owned by
-// a namespace.
-// Follows AIP-135: https://google.aip.dev/135
-message DeleteNamespacePipelineRequest {
+// DeletePipelineRequest represents a request to delete a pipeline
+// owned by a namespace. Follows AIP-135: https://google.aip.dev/135
+message DeletePipelineRequest {
   // The resource name of the pipeline to delete.
   // Format: `namespaces/{namespace}/pipelines/{pipeline}`
   string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-// DeleteNamespacePipelineResponse is an empty response.
-message DeleteNamespacePipelineResponse {}
+// DeletePipelineResponse is an empty response.
+message DeletePipelineResponse {}
 
-// ValidateNamespacePipelineRequest represents a request to validate a pipeline
+// ValidatePipelineRequest represents a request to validate a pipeline
 // owned by a user.
-message ValidateNamespacePipelineRequest {
+message ValidatePipelineRequest {
   // The resource name of the pipeline to validate.
   // Format: namespaces/{namespace}/pipelines/{pipeline}
   string name = 1 [
@@ -458,17 +456,17 @@ message ValidateNamespacePipelineRequest {
   ];
 }
 
-// ValidateNamespacePipelineResponse contains a validated pipeline.
-message ValidateNamespacePipelineResponse {
+// ValidatePipelineResponse contains a validated pipeline.
+message ValidatePipelineResponse {
   // Success
   bool success = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The validated pipeline resource.
   repeated ErrPipelineValidation errors = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// RenameNamespacePipelineRequest represents a request to rename the name of a
+// RenamePipelineRequest represents a request to rename the name of a
 // pipeline owned by a namespace.
-message RenameNamespacePipelineRequest {
+message RenamePipelineRequest {
   // The resource name of the pipeline to rename.
   // Format: namespaces/{namespace}/pipelines/{pipeline}
   string name = 1 [
@@ -480,15 +478,15 @@ message RenameNamespacePipelineRequest {
   string new_pipeline_id = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// RenameNamespacePipelineResponse contains a renamed pipeline.
-message RenameNamespacePipelineResponse {
+// RenamePipelineResponse contains a renamed pipeline.
+message RenamePipelineResponse {
   // The renamed pipeline resource.
   Pipeline pipeline = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// CloneNamespacePipelineRequest represents a request to clone a pipeline owned by a
-// user.
-message CloneNamespacePipelineRequest {
+// ClonePipelineRequest represents a request to clone a pipeline owned
+// by a user.
+message ClonePipelineRequest {
   // The resource name of the source pipeline to clone.
   // Format: namespaces/{namespace}/pipelines/{pipeline}
   string name = 1 [
@@ -509,12 +507,12 @@ message CloneNamespacePipelineRequest {
   Sharing sharing = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// CloneNamespacePipelineResponse contains a cloned pipeline.
-message CloneNamespacePipelineResponse {}
+// ClonePipelineResponse contains a cloned pipeline.
+message ClonePipelineResponse {}
 
-// CloneNamespacePipelineReleaseRequest represents a request to clone a pipeline
+// ClonePipelineReleaseRequest represents a request to clone a pipeline
 // release owned by a user.
-message CloneNamespacePipelineReleaseRequest {
+message ClonePipelineReleaseRequest {
   // The resource name of the pipeline release to clone.
   // Format: namespaces/{namespace}/pipelines/{pipeline}/releases/{release}
   string name = 1 [
@@ -534,11 +532,11 @@ message CloneNamespacePipelineReleaseRequest {
   ];
 }
 
-// CloneNamespacePipelineReleaseResponse contains a cloned pipeline.
-message CloneNamespacePipelineReleaseResponse {}
+// ClonePipelineReleaseResponse contains a cloned pipeline.
+message ClonePipelineReleaseResponse {}
 
-//HandleNamespacePipelineWebhookEventRequest
-message HandleNamespacePipelineWebhookEventRequest {
+// HandlePipelineWebhookEventRequest
+message HandlePipelineWebhookEventRequest {
   // The resource name of the pipeline.
   // Format: namespaces/{namespace}/pipelines/{pipeline}
   string name = 1 [
@@ -553,14 +551,14 @@ message HandleNamespacePipelineWebhookEventRequest {
   google.protobuf.Struct data = 4;
 }
 
-//HandleNamespacePipelineWebhookEventResponse
-message HandleNamespacePipelineWebhookEventResponse {
+// HandlePipelineWebhookEventResponse
+message HandlePipelineWebhookEventResponse {
   // data
   google.protobuf.Struct data = 1;
 }
 
-//HandleNamespacePipelineReleaseWebhookEventRequest
-message HandleNamespacePipelineReleaseWebhookEventRequest {
+// HandlePipelineReleaseWebhookEventRequest
+message HandlePipelineReleaseWebhookEventRequest {
   // The resource name of the pipeline release.
   // Format: namespaces/{namespace}/pipelines/{pipeline}/releases/{release}
   string name = 1 [
@@ -575,17 +573,17 @@ message HandleNamespacePipelineReleaseWebhookEventRequest {
   google.protobuf.Struct data = 4;
 }
 
-//HandleNamespacePipelineReleaseWebhookEventResponse
-message HandleNamespacePipelineReleaseWebhookEventResponse {
+// HandlePipelineReleaseWebhookEventResponse
+message HandlePipelineReleaseWebhookEventResponse {
   // data
   google.protobuf.Struct data = 1;
 }
 
-// DispatchPipelineWebhookEventRequest represents a request to dispatch webhook events
-// for a pipeline. The request contains the webhook type and event message that
-// will be processed by the event router and dispatched to the appropriate pipeline
-// based on the webhook type and message. The event message contains the payload
-// data that will be used to trigger pipeline execution.
+// DispatchPipelineWebhookEventRequest represents a request to dispatch webhook
+// events for a pipeline. The request contains the webhook type and event
+// message that will be processed by the event router and dispatched to the
+// appropriate pipeline based on the webhook type and message. The event message
+// contains the payload data that will be used to trigger pipeline execution.
 message DispatchPipelineWebhookEventRequest {
   // Webhook Type
   string webhook_type = 1 [(google.api.field_behavior) = REQUIRED];
@@ -593,17 +591,17 @@ message DispatchPipelineWebhookEventRequest {
   google.protobuf.Struct message = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// DispatchPipelineWebhookEventResponse represents a response to dispatch webhook events
-// for a pipeline. The response contains the response message that will be sent
-// back to the webhook sender.
+// DispatchPipelineWebhookEventResponse represents a response to dispatch
+// webhook events for a pipeline. The response contains the response message
+// that will be sent back to the webhook sender.
 message DispatchPipelineWebhookEventResponse {
   // Response
   google.protobuf.Struct response = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// TriggerNamespacePipelineRequest represents a request to trigger a user-owned
+// TriggerPipelineRequest represents a request to trigger a user-owned
 // pipeline synchronously.
-message TriggerNamespacePipelineRequest {
+message TriggerPipelineRequest {
   // The resource name of the pipeline to trigger.
   // Format: namespaces/{namespace}/pipelines/{pipeline}
   string name = 1 [
@@ -616,18 +614,18 @@ message TriggerNamespacePipelineRequest {
   repeated TriggerData data = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
-// TriggerNamespacePipelineResponse contains the pipeline execution results, i.e.,
-// the multiple model inference outputs.
-message TriggerNamespacePipelineResponse {
+// TriggerPipelineResponse contains the pipeline execution results,
+// i.e., the multiple model inference outputs.
+message TriggerPipelineResponse {
   // Model inference outputs.
   repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Traces of the pipeline inference.
   TriggerMetadata metadata = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// TriggerNamespacePipelineWithStreamRequest represents a request to trigger a user-owned
-// pipeline synchronously and streams back the results.
-message TriggerNamespacePipelineWithStreamRequest {
+// TriggerPipelineWithStreamRequest represents a request to trigger a
+// user-owned pipeline synchronously and streams back the results.
+message TriggerPipelineWithStreamRequest {
   // The resource name of the pipeline to trigger.
   // Format: namespaces/{namespace}/pipelines/{pipeline}
   string name = 1 [
@@ -640,18 +638,18 @@ message TriggerNamespacePipelineWithStreamRequest {
   repeated TriggerData data = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// TriggerNamespacePipelineWithStreamResponse contains the pipeline execution results, i.e.,
-// the multiple model inference outputs.
-message TriggerNamespacePipelineWithStreamResponse {
+// TriggerPipelineWithStreamResponse contains the pipeline execution
+// results, i.e., the multiple model inference outputs.
+message TriggerPipelineWithStreamResponse {
   // Model inference outputs.
   repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Traces of the pipeline inference.
   TriggerMetadata metadata = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// TriggerNamespacePipelineRequest represents a request to trigger a user-owned
+// TriggerPipelineRequest represents a request to trigger a user-owned
 // pipeline synchronously.
-message TriggerAsyncNamespacePipelineRequest {
+message TriggerAsyncPipelineRequest {
   // The resource name of the pipeline to trigger.
   // Format: namespaces/{namespace}/pipelines/{pipeline}
   string name = 1 [
@@ -665,17 +663,16 @@ message TriggerAsyncNamespacePipelineRequest {
   repeated TriggerData data = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// TriggerAsyncNamespacePipelineResponse contains the information to access the
+// TriggerAsyncPipelineResponse contains the information to access the
 // status of an asynchronous pipeline execution.
-message TriggerAsyncNamespacePipelineResponse {
+message TriggerAsyncPipelineResponse {
   // Long-running operation information.
   google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// CreateNamespacePipelineReleaseRequest represents a request to release a version
-// in a user-owned pipeline.
-// Follows AIP-133: https://google.aip.dev/133
-message CreateNamespacePipelineReleaseRequest {
+// CreatePipelineReleaseRequest represents a request to release a
+// version in a user-owned pipeline. Follows AIP-133: https://google.aip.dev/133
+message CreatePipelineReleaseRequest {
   // The parent resource name (pipeline).
   // Format: `namespaces/{namespace}/pipelines/{pipeline}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
@@ -684,16 +681,16 @@ message CreateNamespacePipelineReleaseRequest {
   PipelineRelease release = 2;
 }
 
-// CreateNamespacePipelineReleaseResponse contains the created release.
-message CreateNamespacePipelineReleaseResponse {
+// CreatePipelineReleaseResponse contains the created release.
+message CreatePipelineReleaseResponse {
   // The created pipeline release object.
   PipelineRelease release = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListNamespacePipelineReleasesRequest represents a request to list the releases in
-// a user-owned pipeline.
-// Follows AIP-132: https://google.aip.dev/132
-message ListNamespacePipelineReleasesRequest {
+// ListPipelineReleasesRequest represents a request to list the
+// releases in a user-owned pipeline. Follows AIP-132:
+// https://google.aip.dev/132
+message ListPipelineReleasesRequest {
   // The parent resource name (pipeline).
   // Format: `namespaces/{namespace}/pipelines/{pipeline}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
@@ -714,8 +711,8 @@ message ListNamespacePipelineReleasesRequest {
   optional bool show_deleted = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ListNamespacePipelineReleasesResponse contains a list of pipeline releases.
-message ListNamespacePipelineReleasesResponse {
+// ListPipelineReleasesResponse contains a list of pipeline releases.
+message ListPipelineReleasesResponse {
   // A list of pipeline release resources.
   repeated PipelineRelease releases = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Next page token.
@@ -724,10 +721,10 @@ message ListNamespacePipelineReleasesResponse {
   int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// GetNamespacePipelineReleaseRequest represents a request to fetch the details of a
-// release in a user-owned pipeline.
-// Follows AIP-131: https://google.aip.dev/131
-message GetNamespacePipelineReleaseRequest {
+// GetPipelineReleaseRequest represents a request to fetch the details
+// of a release in a user-owned pipeline. Follows AIP-131:
+// https://google.aip.dev/131
+message GetPipelineReleaseRequest {
   // The resource name of the release.
   // Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`
   string name = 1 [(google.api.field_behavior) = REQUIRED];
@@ -736,48 +733,43 @@ message GetNamespacePipelineReleaseRequest {
   optional Pipeline.View view = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// GetNamespacePipelineReleaseResponse contains the requested pipeline release.
-message GetNamespacePipelineReleaseResponse {
+// GetPipelineReleaseResponse contains the requested pipeline release.
+message GetPipelineReleaseResponse {
   // The pipeline release resource.
   PipelineRelease release = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// UpdateNamespacePipelineReleaseRequest represents a request to update a user-owned
-// pipeline release.
-// Follows AIP-134: https://google.aip.dev/134
-message UpdateNamespacePipelineReleaseRequest {
+// UpdatePipelineReleaseRequest represents a request to update a
+// user-owned pipeline release. Follows AIP-134: https://google.aip.dev/134
+message UpdatePipelineReleaseRequest {
   // The pipeline release resource to update. The release's `name` field
   // identifies the resource.
   // Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`
   PipelineRelease release = 1 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
-  //
-  // For more information about this field, see
-  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
-// UpdateNamespacePipelineReleaseResponse contains the updated pipeline release.
-message UpdateNamespacePipelineReleaseResponse {
+// UpdatePipelineReleaseResponse contains the updated pipeline release.
+message UpdatePipelineReleaseResponse {
   // The updated pipeline release resource.
   PipelineRelease release = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// DeleteNamespacePipelineReleaseRequest represents a request to delete a release in
-// a user-owned pipeline.
-// Follows AIP-135: https://google.aip.dev/135
-message DeleteNamespacePipelineReleaseRequest {
+// DeletePipelineReleaseRequest represents a request to delete a
+// release in a user-owned pipeline. Follows AIP-135: https://google.aip.dev/135
+message DeletePipelineReleaseRequest {
   // The resource name of the release to delete.
   // Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`
   string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-// DeleteNamespacePipelineReleaseResponse is an empty response.
-message DeleteNamespacePipelineReleaseResponse {}
+// DeletePipelineReleaseResponse is an empty response.
+message DeletePipelineReleaseResponse {}
 
-// TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-// release of a user-owned pipeline.
-message TriggerNamespacePipelineReleaseRequest {
+// TriggerPipelineReleaseRequest represents a request to trigger a
+// pinned release of a user-owned pipeline.
+message TriggerPipelineReleaseRequest {
   // The resource name of the pipeline release to trigger.
   // Format: namespaces/{namespace}/pipelines/{pipeline}/releases/{release}
   string name = 1 [
@@ -791,18 +783,18 @@ message TriggerNamespacePipelineReleaseRequest {
   repeated TriggerData data = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// TriggerNamespacePipelineReleaseResponse contains the pipeline execution results,
-// i.e., the multiple model inference outputs.
-message TriggerNamespacePipelineReleaseResponse {
+// TriggerPipelineReleaseResponse contains the pipeline execution
+// results, i.e., the multiple model inference outputs.
+message TriggerPipelineReleaseResponse {
   // Model inference outputs.
   repeated google.protobuf.Struct outputs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Traces of the pipeline inference.
   TriggerMetadata metadata = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-// release of a user-owned pipeline asynchronously.
-message TriggerAsyncNamespacePipelineReleaseRequest {
+// TriggerPipelineReleaseRequest represents a request to trigger a
+// pinned release of a user-owned pipeline asynchronously.
+message TriggerAsyncPipelineReleaseRequest {
   // The resource name of the pipeline release to trigger.
   // Format: namespaces/{namespace}/pipelines/{pipeline}/releases/{release}
   string name = 1 [
@@ -817,9 +809,9 @@ message TriggerAsyncNamespacePipelineReleaseRequest {
   repeated TriggerData data = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// TriggerAsyncNamespacePipelineReleaseResponse contains the information to access
-// the status of an asynchronous pipeline execution.
-message TriggerAsyncNamespacePipelineReleaseResponse {
+// TriggerAsyncPipelineReleaseResponse contains the information to
+// access the status of an asynchronous pipeline execution.
+message TriggerAsyncPipelineReleaseResponse {
   // Long-running operation information.
   google.longrunning.Operation operation = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
@@ -981,12 +973,14 @@ message ListPipelineRunsRequest {
   // expression.
   // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
-  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  // Order by field, with options for ordering by `id`, `create_time` or
+  // `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+  // default is `asc`.
   optional string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
-// ListPipelineRunsByRequesterRequest is the request message for ListPipelineRunsByRequester.
+// ListPipelineRunsByRequesterRequest is the request message for
+// ListPipelineRunsByRequester.
 message ListPipelineRunsByRequesterRequest {
   // Requester namespace resource name.
   // Format: namespaces/{namespace}
@@ -1007,8 +1001,9 @@ message ListPipelineRunsByRequesterRequest {
   //
   // **Example**: `status="RUN_STATUS_COMPLETED"`.
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
-  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  // Order by field, with options for ordering by `id`, `create_time` or
+  // `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+  // default is `asc`.
   optional string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
   // Beginning of the time range from which the records will be fetched.
   // The default value is the beginning of the current day, in UTC.
@@ -1033,7 +1028,8 @@ message ListPipelineRunsResponse {
   int32 page_size = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListPipelineRunsByRequesterResponse is the response message for ListPipelineRunsByRequester.
+// ListPipelineRunsByRequesterResponse is the response message for
+// ListPipelineRunsByRequester.
 message ListPipelineRunsByRequesterResponse {
   // The list of pipeline runs.
   repeated PipelineRun pipeline_runs = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -1067,8 +1063,9 @@ message ListComponentRunsRequest {
   // expression.
   // - Example: `create_time>timestamp("2000-06-19T23:31:08.657Z")`.
   optional string filter = 4 [(google.api.field_behavior) = OPTIONAL];
-  // Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-  // Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+  // Order by field, with options for ordering by `id`, `create_time` or
+  // `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+  // default is `asc`.
   optional string order_by = 5 [(google.api.field_behavior) = OPTIONAL];
 
   // View allows clients to specify the desired run view in the response.
@@ -1193,15 +1190,19 @@ message PipelineRun {
   optional google.protobuf.Timestamp blob_data_expiration_time = 24 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ComponentRun represents the execution details of a single component within a pipeline run.
+// ComponentRun represents the execution details of a single component within a
+// pipeline run.
 message ComponentRun {
   option (google.api.resource) = {
     type: "api.instill.tech/ComponentRun"
-    pattern: "namespaces/{namespace}/pipelines/{pipeline}/runs/{run}/components/{component}"
+    pattern:
+      "namespaces/{namespace}/pipelines/{pipeline}/runs/{run}/"
+      "components/{component}"
   };
 
   // The resource name of the component run.
-  // Format: namespaces/{namespace}/pipelines/{pipeline}/runs/{run}/components/{component}
+  // Format:
+  // namespaces/{namespace}/pipelines/{pipeline}/runs/{run}/components/{component}
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Unique identifier for the component within the pipeline.

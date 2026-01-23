@@ -285,10 +285,15 @@ message File {
 
   // ===== Knowledge base associations =====
 
-  // Knowledge base IDs (hash-based) that this file is associated with.
+  // Knowledge base resource names that this file is associated with.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
   // A file can belong to multiple knowledge bases within the same namespace.
   // This field is populated from the file_knowledge_base junction table.
-  repeated string knowledge_base_ids = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Follows AIP-122 for resource name references.
+  repeated string knowledge_bases = 17 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
+  ];
 
   // ===== Owner and creator references =====
 
@@ -332,9 +337,14 @@ message File {
   // Length of the file in the specified unit type.
   Position length = 26 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Collection IDs (hash-based) that this file belongs to.
+  // Collection resource names that this file belongs to.
+  // Format: `namespaces/{namespace}/collections/{collection}`
   // This field is system-managed and populated from collection membership.
-  repeated string collection_ids = 27 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Follows AIP-122 for resource name references.
+  repeated string collections = 27 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "api.instill.tech/Collection"}
+  ];
 
   // Soft delete timestamp.
   google.protobuf.Timestamp delete_time = 28 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -348,10 +358,14 @@ message CreateFileRequest {
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
   // The file to create.
   File file = 2 [(google.api.field_behavior) = OPTIONAL];
-  // The knowledge base ID to associate this file with.
+  // The knowledge base resource name to associate this file with.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
   // Files can be associated with multiple KBs, this specifies the initial
-  // association.
-  string knowledge_base_id = 3 [(google.api.field_behavior) = REQUIRED];
+  // association. Follows AIP-122 for resource name references.
+  string knowledge_base = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
+  ];
 }
 
 // CreateFileResponse represents a response for creating a file.
@@ -365,28 +379,37 @@ message CreateFileResponse {
 message DeleteFileRequest {
   // The resource name of the file to delete.
   // Format: `namespaces/{namespace}/files/{file}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
 }
 
 // DeleteFileResponse represents a response for deleting a file.
 message DeleteFileResponse {
-  // The file id.
-  string file_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The resource name of the deleted file.
+  // Format: `namespaces/{namespace}/files/{file}`
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // Admin-only file operations
 
 // DeleteFileAdminRequest represents a request to delete a file (admin only).
 message DeleteFileAdminRequest {
-  // The file id.
-  string file_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The resource name of the file to delete.
+  // Format: `namespaces/{namespace}/files/{file}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
 }
 
 // DeleteFileAdminResponse represents a response for deleting a file (admin
 // only).
 message DeleteFileAdminResponse {
-  // The file id.
-  string file_id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The resource name of the deleted file.
+  // Format: `namespaces/{namespace}/files/{file}`
+  string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // ListFilesRequest represents a request to list files.
@@ -429,7 +452,10 @@ message ListFilesResponse {
 message GetFileRequest {
   // The resource name of the file to retrieve.
   // Format: `namespaces/{namespace}/files/{file}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
   // View allows clients to specify the desired file view in the response.
   optional File.View view = 2 [(google.api.field_behavior) = OPTIONAL];
   // Storage provider specifies which storage backend to use for the file
@@ -464,9 +490,6 @@ message UpdateFileRequest {
   // resource. Format: `namespaces/{namespace}/files/{file}`
   File file = 1 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
-  //
-  // For more information about this field, see
-  // https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#field-mask.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -480,7 +503,10 @@ message UpdateFileResponse {
 message ReprocessFileRequest {
   // The resource name of the file to reprocess.
   // Format: `namespaces/{namespace}/files/{file}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
 }
 
 // ReprocessFileResponse represents a response for reprocessing a file.

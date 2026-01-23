@@ -27,11 +27,13 @@ message Object {
   // Human-readable display name (user-provided filename).
   string display_name = 3 [(google.api.field_behavior) = OPTIONAL];
 
-  // Namespace ID that owns this object.
-  string namespace_id = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Resource name of the owner namespace.
+  // Format: `namespaces/{namespace}`
+  string owner_name = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // Creator's user ID.
-  string creator = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Full resource name of the user who created this object.
+  // Format: `users/{user}`
+  string creator_name = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Object creation time.
   google.protobuf.Timestamp create_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -99,7 +101,10 @@ message GetObjectUploadURLResponse {
 message GetObjectDownloadURLRequest {
   // The resource name of the object.
   // Format: `namespaces/{namespace}/objects/{object}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Object"}
+  ];
 
   // URL expiration time in days.
   // Maximum is 7 days. If set to 0, URL will not expire.
@@ -125,7 +130,10 @@ message GetObjectDownloadURLResponse {
 message GetObjectRequest {
   // The resource name of the object to retrieve.
   // Format: `namespaces/{namespace}/objects/{object}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Object"}
+  ];
 }
 
 // GetObjectResponse contains the requested object.
@@ -156,7 +164,10 @@ message UpdateObjectResponse {
 message DeleteObjectRequest {
   // The resource name of the object to delete.
   // Format: `namespaces/{namespace}/objects/{object}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Object"}
+  ];
 }
 
 // DeleteObjectResponse is an empty response for deleting an object.
@@ -167,9 +178,12 @@ message DeleteObjectResponse {}
 // GetObjectAdminRequest represents a request to get an object by name (admin
 // only).
 message GetObjectAdminRequest {
-  // Full resource name of the object.
-  // Format: `objects/{object}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  // The resource name of the object.
+  // Format: `namespaces/{namespace}/objects/{object}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Object"}
+  ];
 }
 
 // GetObjectAdminResponse contains the requested object (admin only).
@@ -181,9 +195,12 @@ message GetObjectAdminResponse {
 // UpdateObjectAdminRequest represents a request to update an object by name
 // (admin only).
 message UpdateObjectAdminRequest {
-  // Full resource name of the object.
-  // Format: `objects/{object}`
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  // The resource name of the object.
+  // Format: `namespaces/{namespace}/objects/{object}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/Object"}
+  ];
 
   // Size in bytes.
   optional int64 size = 2 [(google.api.field_behavior) = OPTIONAL];

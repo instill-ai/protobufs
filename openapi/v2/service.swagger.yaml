@@ -465,11 +465,12 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/File'
-        - name: knowledgeBaseId
+        - name: knowledgeBase
           description: |-
-            The knowledge base ID to associate this file with.
+            The knowledge base resource name to associate this file with.
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
             Files can be associated with multiple KBs, this specifies the initial
-            association.
+            association. Follows AIP-122 for resource name references.
           in: query
           required: true
           type: string
@@ -691,14 +692,16 @@ paths:
               externalMetadata:
                 type: object
                 description: Custom metadata provided by the user during file upload.
-              knowledgeBaseIds:
+              knowledgeBases:
                 type: array
                 items:
                   type: string
                 description: |-
-                  Knowledge base IDs (hash-based) that this file is associated with.
+                  Knowledge base resource names that this file is associated with.
+                  Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
                   A file can belong to multiple knowledge bases within the same namespace.
                   This field is populated from the file_knowledge_base junction table.
+                  Follows AIP-122 for resource name references.
                 readOnly: true
               ownerName:
                 type: string
@@ -753,13 +756,15 @@ paths:
                 readOnly: true
                 allOf:
                   - $ref: '#/definitions/Position'
-              collectionIds:
+              collections:
                 type: array
                 items:
                   type: string
                 description: |-
-                  Collection IDs (hash-based) that this file belongs to.
+                  Collection resource names that this file belongs to.
+                  Format: `namespaces/{namespace}/collections/{collection}`
                   This field is system-managed and populated from collection membership.
+                  Follows AIP-122 for resource name references.
                 readOnly: true
               deleteTime:
                 type: string
@@ -1118,12 +1123,12 @@ paths:
       description: |-
         Deletes a model, accesing it by its resource name, which is defined by the
         parent namespace and the ID of the model.
-      operationId: ModelPublicService_DeleteNamespaceModel
+      operationId: ModelPublicService_DeleteModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/DeleteNamespaceModelResponse'
+            $ref: '#/definitions/DeleteModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1187,13 +1192,17 @@ paths:
               displayName:
                 type: string
                 description: Human-readable display name (user-provided filename).
-              namespaceId:
+              ownerName:
                 type: string
-                description: Namespace ID that owns this object.
+                title: |-
+                  Resource name of the owner namespace.
+                  Format: `namespaces/{namespace}`
                 readOnly: true
-              creator:
+              creatorName:
                 type: string
-                description: Creator's user ID.
+                title: |-
+                  Full resource name of the user who created this object.
+                  Format: `users/{user}`
                 readOnly: true
               createTime:
                 type: string
@@ -1517,12 +1526,12 @@ paths:
         Deletes a pipeline, accesing it by its resource name, which is defined by
         the parent namespace and the ID of the pipeline. The authenticated
         namespace must be the parent of the pipeline in order to delete it.
-      operationId: PipelinePublicService_DeleteNamespacePipeline
+      operationId: PipelinePublicService_DeletePipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/DeleteNamespacePipelineResponse'
+            $ref: '#/definitions/DeletePipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1810,14 +1819,14 @@ paths:
       x-stage: alpha
   /v1alpha/models:
     get:
-      summary: List models
-      description: Returns a paginated list of models.
-      operationId: ModelPublicService_ListModels
+      summary: List public models
+      description: Returns a paginated list of public models.
+      operationId: ModelPublicService_ListPublicModels
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListModelsResponse'
+            $ref: '#/definitions/ListPublicModelsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1890,14 +1899,14 @@ paths:
       x-stage: alpha
   /v1alpha/{parent}/models:
     get:
-      summary: List namespace models
+      summary: List models
       description: Returns a paginated list of models.
-      operationId: ModelPublicService_ListNamespaceModels
+      operationId: ModelPublicService_ListModels
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListNamespaceModelsResponse'
+            $ref: '#/definitions/ListModelsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1984,12 +1993,12 @@ paths:
         created in order to respond. Instead, it will return a response with the
         necessary information to access the result and status of the creation
         operation.
-      operationId: ModelPublicService_CreateNamespaceModel
+      operationId: ModelPublicService_CreateModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/CreateNamespaceModelResponse'
+            $ref: '#/definitions/CreateModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2021,12 +2030,12 @@ paths:
       description: |-
         Returns the detail of a model, accessing it by the model ID and its parent
         namespace.
-      operationId: ModelPublicService_GetNamespaceModel
+      operationId: ModelPublicService_GetModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetNamespaceModelResponse'
+            $ref: '#/definitions/GetModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2063,12 +2072,12 @@ paths:
       description: |-
         Deletes a model version, accesing it by its resource name, which is defined
         by the parent namespace and the ID of the model, and version.
-      operationId: ModelPublicService_DeleteNamespaceModelVersion
+      operationId: ModelPublicService_DeleteModelVersion
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/DeleteNamespaceModelVersionResponse'
+            $ref: '#/definitions/DeleteModelVersionResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2097,12 +2106,12 @@ paths:
 
         In REST requests, only the supplied model fields will be taken into
         account when updating the resource.
-      operationId: ModelPublicService_UpdateNamespaceModel
+      operationId: ModelPublicService_UpdateModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/UpdateNamespaceModelResponse'
+            $ref: '#/definitions/UpdateModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2273,12 +2282,12 @@ paths:
       description: |-
         Renames a model, accesing it by its resource name, which is defined by the
         parent namespace and the ID of the model.
-      operationId: ModelPublicService_RenameNamespaceModel
+      operationId: ModelPublicService_RenameModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/RenameNamespaceModelResponse'
+            $ref: '#/definitions/RenameModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2299,7 +2308,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/RenameNamespaceModelBody'
+            $ref: '#/definitions/RenameModelBody'
       tags:
         - Model
       x-stage: alpha
@@ -2310,12 +2319,12 @@ paths:
         Returns the state of a model. The model resource allocation and scaling
         actions take some time, during which a model will be in various state. This
         endpoint allows clients to track the state.
-      operationId: ModelPublicService_WatchNamespaceModel
+      operationId: ModelPublicService_WatchModelVersion
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/WatchNamespaceModelResponse'
+            $ref: '#/definitions/WatchModelVersionResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2347,12 +2356,12 @@ paths:
         Returns the state of the latest model version. The model resource
         allocation and scaling actions take some time, during which a model will be
         in various state. This endpoint allows clients to track the state.
-      operationId: ModelPublicService_WatchNamespaceLatestModel
+      operationId: ModelPublicService_WatchModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/WatchNamespaceLatestModelResponse'
+            $ref: '#/definitions/WatchModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2378,12 +2387,12 @@ paths:
       description: |-
         Returns a paginated list of version of a model namespace that belong to the
         specified namespace. Contains model version and digest.
-      operationId: ModelPublicService_ListNamespaceModelVersions
+      operationId: ModelPublicService_ListModelVersions
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListNamespaceModelVersionsResponse'
+            $ref: '#/definitions/ListModelVersionsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2423,12 +2432,12 @@ paths:
       description: |-
         Triggers a deployed model to infer the result of a set of task or
         questions.
-      operationId: ModelPublicService_TriggerNamespaceModel
+      operationId: ModelPublicService_TriggerModelVersion
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerNamespaceModelResponse'
+            $ref: '#/definitions/TriggerModelVersionResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2449,7 +2458,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerNamespaceModelBody'
+            $ref: '#/definitions/TriggerModelVersionBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -2464,12 +2473,12 @@ paths:
       description: |-
         Triggers a deployed model to infer the result of a set of task or
         questions.
-      operationId: ModelPublicService_TriggerAsyncNamespaceModel
+      operationId: ModelPublicService_TriggerAsyncModelVersion
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespaceModelResponse'
+            $ref: '#/definitions/TriggerAsyncModelVersionResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2490,7 +2499,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespaceModelBody'
+            $ref: '#/definitions/TriggerAsyncModelVersionBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -2505,12 +2514,12 @@ paths:
       description: |-
         Triggers the latest deployed model version to infer the result of a set of
         task or questions.
-      operationId: ModelPublicService_TriggerNamespaceLatestModel
+      operationId: ModelPublicService_TriggerModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerNamespaceLatestModelResponse'
+            $ref: '#/definitions/TriggerModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2531,7 +2540,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerNamespaceLatestModelBody'
+            $ref: '#/definitions/TriggerModelBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -2546,12 +2555,12 @@ paths:
       description: |-
         Triggers the latest deployed model version to infer the result of a set of
         task or questions.
-      operationId: ModelPublicService_TriggerAsyncNamespaceLatestModel
+      operationId: ModelPublicService_TriggerAsyncModel
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespaceLatestModelResponse'
+            $ref: '#/definitions/TriggerAsyncModelResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2572,7 +2581,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespaceLatestModelBody'
+            $ref: '#/definitions/TriggerAsyncModelBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -2583,18 +2592,16 @@ paths:
       x-stage: alpha
   /v1alpha/{name}/operation:
     get:
-      summary: |-
-        Get the details of the long-running operation from a namespace model
-        with a particular version
+      summary: Get the details of the long-running operation from a model version
       description: |-
         This method allows requesters to request the status and outcome of
         long-running operations in a model, such as trigger.
-      operationId: ModelPublicService_GetNamespaceModelOperation
+      operationId: ModelPublicService_GetModelVersionOperation
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetNamespaceModelOperationResponse'
+            $ref: '#/definitions/GetModelVersionOperationResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2629,16 +2636,16 @@ paths:
       x-stage: alpha
   /v1alpha/{name_1}/operation:
     get:
-      summary: Get the details of the latest long-running operation from a namespace model
+      summary: Get the details of the latest long-running operation from a model
       description: |-
         This method allows requesters to request the status and outcome of
         long-running operations in a model, such as trigger.
-      operationId: ModelPublicService_GetNamespaceLatestModelOperation
+      operationId: ModelPublicService_GetModelOperation
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetNamespaceLatestModelOperationResponse'
+            $ref: '#/definitions/GetModelOperationResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2677,12 +2684,12 @@ paths:
       description: |-
         This method allows requesters to request the status and outcome of
         long-running operations in a model, such as trigger.
-      operationId: ModelPublicService_GetModelOperation
+      operationId: ModelPublicService_GetOperation
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetModelOperationResponse'
+            $ref: '#/definitions/v1alpha.GetOperationResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2692,7 +2699,7 @@ paths:
             $ref: '#/definitions/rpc.Status'
       parameters:
         - name: operationId
-          description: The resource name of the model, which allows its access ID.
+          description: The operation ID.
           in: path
           required: true
           type: string
@@ -2857,12 +2864,12 @@ paths:
     get:
       summary: List accessible pipelines
       description: Returns a paginated list of pipelines that are visible to the requester.
-      operationId: PipelinePublicService_ListPipelines
+      operationId: PipelinePublicService_ListPublicPipelines
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListPipelinesResponse'
+            $ref: '#/definitions/ListPublicPipelinesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2928,8 +2935,9 @@ paths:
             - VISIBILITY_PUBLIC
         - name: orderBy
           description: |-
-            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+            Order by field, with options for ordering by `id`, `create_time` or
+            `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+            default is `asc`.
           in: query
           required: false
           type: string
@@ -2940,12 +2948,12 @@ paths:
     get:
       summary: List namespace pipelines
       description: Returns a paginated list of pipelines of a namespace
-      operationId: PipelinePublicService_ListNamespacePipelines
+      operationId: PipelinePublicService_ListPipelines
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListNamespacePipelinesResponse'
+            $ref: '#/definitions/ListPipelinesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3019,8 +3027,9 @@ paths:
             - VISIBILITY_PUBLIC
         - name: orderBy
           description: |-
-            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+            Order by field, with options for ordering by `id`, `create_time` or
+            `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+            default is `asc`.
           in: query
           required: false
           type: string
@@ -3030,12 +3039,12 @@ paths:
     post:
       summary: Create a new pipeline
       description: Creates a new pipeline under a namespace.
-      operationId: PipelinePublicService_CreateNamespacePipeline
+      operationId: PipelinePublicService_CreatePipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/CreateNamespacePipelineResponse'
+            $ref: '#/definitions/CreatePipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3065,12 +3074,12 @@ paths:
     get:
       summary: Get a pipeline
       description: Returns the details of a pipeline.
-      operationId: PipelinePublicService_GetNamespacePipeline
+      operationId: PipelinePublicService_GetPipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetNamespacePipelineResponse'
+            $ref: '#/definitions/GetPipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3112,12 +3121,12 @@ paths:
 
         The authenticated namespace must be the parent of the pipeline in order to
         perform this action.
-      operationId: PipelinePublicService_DeleteNamespacePipelineRelease
+      operationId: PipelinePublicService_DeletePipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/DeleteNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/DeletePipelineReleaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3147,12 +3156,12 @@ paths:
 
         In REST requests, only the supplied pipeline fields will be taken into
         account when updating the resource.
-      operationId: PipelinePublicService_UpdateNamespacePipeline
+      operationId: PipelinePublicService_UpdatePipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/UpdateNamespacePipelineResponse'
+            $ref: '#/definitions/UpdatePipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3320,12 +3329,12 @@ paths:
 
         Validation checks the recipe of the pipeline and the status of its
         components.
-      operationId: PipelinePublicService_ValidateNamespacePipeline
+      operationId: PipelinePublicService_ValidatePipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ValidateNamespacePipelineResponse'
+            $ref: '#/definitions/ValidatePipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3346,7 +3355,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ValidateNamespacePipelineBody'
+            $ref: '#/definitions/ValidatePipelineBody'
       tags:
         - Pipeline
       x-stage: beta
@@ -3363,12 +3372,12 @@ paths:
 
         The authenticated namespace must be the parent of the pipeline in order to
         perform this action.
-      operationId: PipelinePublicService_RenameNamespacePipeline
+      operationId: PipelinePublicService_RenamePipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/RenameNamespacePipelineResponse'
+            $ref: '#/definitions/RenamePipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3389,7 +3398,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/RenameNamespacePipelineBody'
+            $ref: '#/definitions/RenamePipelineBody'
       tags:
         - Pipeline
       x-stage: beta
@@ -3399,12 +3408,12 @@ paths:
       description: |-
         Clones a pipeline owned by a namespace. The new pipeline may have a
         different parent, and this can be either a namespace or an organization.
-      operationId: PipelinePublicService_CloneNamespacePipeline
+      operationId: PipelinePublicService_ClonePipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/CloneNamespacePipelineResponse'
+            $ref: '#/definitions/ClonePipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3425,7 +3434,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CloneNamespacePipelineBody'
+            $ref: '#/definitions/ClonePipelineBody'
       tags:
         - Pipeline
       x-stage: beta
@@ -3441,13 +3450,13 @@ paths:
         namespace and ID of the pipeline.
 
         For more information, see [Run
-        NamespacePipeline](https://instill-ai.dev/docs/pipeline/run-pipeline).
-      operationId: PipelinePublicService_TriggerNamespacePipeline
+        Pipeline](https://instill-ai.dev/docs/pipeline/run-pipeline).
+      operationId: PipelinePublicService_TriggerPipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerNamespacePipelineResponse'
+            $ref: '#/definitions/TriggerPipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3468,7 +3477,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerNamespacePipelineBody'
+            $ref: '#/definitions/TriggerPipelineBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -3487,7 +3496,7 @@ paths:
 
         The pipeline is identified by its resource name, formed by the parent
         namespace and ID of the pipeline.
-      operationId: PipelinePublicService_TriggerNamespacePipelineWithStream
+      operationId: PipelinePublicService_TriggerPipelineWithStream
       responses:
         "200":
           description: A successful response.(streaming responses)
@@ -3495,10 +3504,10 @@ paths:
             type: object
             properties:
               result:
-                $ref: '#/definitions/TriggerNamespacePipelineWithStreamResponse'
+                $ref: '#/definitions/TriggerPipelineWithStreamResponse'
               error:
                 $ref: '#/definitions/rpc.Status'
-            title: Stream result of TriggerNamespacePipelineWithStreamResponse
+            title: Stream result of TriggerPipelineWithStreamResponse
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3519,7 +3528,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerNamespacePipelineWithStreamBody'
+            $ref: '#/definitions/TriggerPipelineWithStreamBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -3541,13 +3550,13 @@ paths:
         namespace and ID of the pipeline.
 
         For more information, see [Run
-        NamespacePipeline](https://instill-ai.dev/docs/pipeline/run-pipeline).
-      operationId: PipelinePublicService_TriggerAsyncNamespacePipeline
+        Pipeline](https://instill-ai.dev/docs/pipeline/run-pipeline).
+      operationId: PipelinePublicService_TriggerAsyncPipeline
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineResponse'
+            $ref: '#/definitions/TriggerAsyncPipelineResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3568,7 +3577,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineBody'
+            $ref: '#/definitions/TriggerAsyncPipelineBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -3583,12 +3592,12 @@ paths:
       description: |-
         Lists the commited versions of a pipeline, identified by its resource
         name, which is formed by the parent namespace and ID of the pipeline.
-      operationId: PipelinePublicService_ListNamespacePipelineReleases
+      operationId: PipelinePublicService_ListPipelineReleases
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListNamespacePipelineReleasesResponse'
+            $ref: '#/definitions/ListPipelineReleasesResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3657,12 +3666,12 @@ paths:
 
         The authenticated namespace must be the parent of the pipeline in order to
         perform this action.
-      operationId: PipelinePublicService_CreateNamespacePipelineRelease
+      operationId: PipelinePublicService_CreatePipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/CreateNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/CreatePipelineReleaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3694,12 +3703,12 @@ paths:
       description: |-
         Gets the details of a pipeline release, where the pipeline is identified
         by its resource name, formed by its parent namespace and ID.
-      operationId: PipelinePublicService_GetNamespacePipelineRelease
+      operationId: PipelinePublicService_GetPipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/GetPipelineReleaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3772,12 +3781,12 @@ paths:
 
         The authenticated namespace must be the parent of the pipeline in order to
         perform this action.
-      operationId: PipelinePublicService_UpdateNamespacePipelineRelease
+      operationId: PipelinePublicService_UpdatePipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/UpdateNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/UpdatePipelineReleaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3807,8 +3816,8 @@ paths:
               id:
                 type: string
                 description: |-
-                  Field 2: Release resource ID (used in `name` as the last segment). It must be a
-                  sematic version vX.Y.Z.
+                  Field 2: Release resource ID (used in `name` as the last segment). It must
+                  be a sematic version vX.Y.Z.
               displayName:
                 type: string
                 description: 'Field 3: Human-readable display name for UI.'
@@ -3880,12 +3889,12 @@ paths:
       description: |-
         Clones a pipeline release owned by a namespace. The new pipeline may have a
         different parent, and this can be either a namespace or an organization.
-      operationId: PipelinePublicService_CloneNamespacePipelineRelease
+      operationId: PipelinePublicService_ClonePipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/CloneNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/ClonePipelineReleaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3906,7 +3915,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/CloneNamespacePipelineReleaseBody'
+            $ref: '#/definitions/ClonePipelineReleaseBody'
       tags:
         - Pipeline
       x-stage: beta
@@ -3921,12 +3930,12 @@ paths:
 
         The pipeline is identified by its resource name, formed by its parent
         namespace and ID.
-      operationId: PipelinePublicService_TriggerNamespacePipelineRelease
+      operationId: PipelinePublicService_TriggerPipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/TriggerPipelineReleaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3947,7 +3956,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerNamespacePipelineReleaseBody'
+            $ref: '#/definitions/TriggerPipelineReleaseBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -3967,12 +3976,12 @@ paths:
 
         The pipeline is identified by its resource name, formed by its parent
         namespace and ID.
-      operationId: PipelinePublicService_TriggerAsyncNamespacePipelineRelease
+      operationId: PipelinePublicService_TriggerAsyncPipelineRelease
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineReleaseResponse'
+            $ref: '#/definitions/TriggerAsyncPipelineReleaseResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -3993,7 +4002,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TriggerAsyncNamespacePipelineReleaseBody'
+            $ref: '#/definitions/TriggerAsyncPipelineReleaseBody'
         - name: Instill-Requester-Uid
           description: Indicates the authenticated namespace is making the request on behalf of another entity, typically an organization they belong to
           in: header
@@ -4300,7 +4309,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetOperationResponse'
+            $ref: '#/definitions/v1beta.GetOperationResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -4379,8 +4388,9 @@ paths:
           type: string
         - name: orderBy
           description: |-
-            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+            Order by field, with options for ordering by `id`, `create_time` or
+            `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+            default is `asc`.
           in: query
           required: false
           type: string
@@ -4442,8 +4452,9 @@ paths:
           type: string
         - name: orderBy
           description: |-
-            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+            Order by field, with options for ordering by `id`, `create_time` or
+            `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+            default is `asc`.
           in: query
           required: false
           type: string
@@ -4525,8 +4536,9 @@ paths:
           type: string
         - name: orderBy
           description: |-
-            Order by field, with options for ordering by `id`, `create_time` or `update_time`.
-            Format: `order_by=id` or `order_by=create_time desc`, default is `asc`.
+            Order by field, with options for ordering by `id`, `create_time` or
+            `update_time`. Format: `order_by=id` or `order_by=create_time desc`,
+            default is `asc`.
           in: query
           required: false
           type: string
@@ -5393,7 +5405,7 @@ definitions:
        - TYPE_CONTENT: Content.
        - TYPE_SUMMARY: Summary.
        - TYPE_AUGMENTED: Augmented.
-  CloneNamespacePipelineBody:
+  ClonePipelineBody:
     type: object
     properties:
       target:
@@ -5409,11 +5421,11 @@ definitions:
         allOf:
           - $ref: '#/definitions/Sharing'
     description: |-
-      CloneNamespacePipelineRequest represents a request to clone a pipeline owned by a
-      user.
+      ClonePipelineRequest represents a request to clone a pipeline owned
+      by a user.
     required:
       - target
-  CloneNamespacePipelineReleaseBody:
+  ClonePipelineReleaseBody:
     type: object
     properties:
       description:
@@ -5429,16 +5441,16 @@ definitions:
           The target pipeline resource name.
           Format: namespaces/{namespace}/pipelines/{pipeline}
     description: |-
-      CloneNamespacePipelineReleaseRequest represents a request to clone a pipeline
+      ClonePipelineReleaseRequest represents a request to clone a pipeline
       release owned by a user.
     required:
       - target
-  CloneNamespacePipelineReleaseResponse:
+  ClonePipelineReleaseResponse:
     type: object
-    description: CloneNamespacePipelineReleaseResponse contains a cloned pipeline.
-  CloneNamespacePipelineResponse:
+    description: ClonePipelineReleaseResponse contains a cloned pipeline.
+  ClonePipelineResponse:
     type: object
-    description: CloneNamespacePipelineResponse contains a cloned pipeline.
+    description: ClonePipelineResponse contains a cloned pipeline.
   ComponentDefinition:
     type: object
     properties:
@@ -5623,7 +5635,8 @@ definitions:
         type: string
         title: |-
           The resource name of the component run.
-          Format: namespaces/{namespace}/pipelines/{pipeline}/runs/{run}/components/{component}
+          Format:
+          namespaces/{namespace}/pipelines/{pipeline}/runs/{run}/components/{component}
         readOnly: true
       id:
         type: string
@@ -5705,7 +5718,9 @@ definitions:
         format: date-time
         description: Expiration time for the blob data associated with the component run.
         readOnly: true
-    description: ComponentRun represents the execution details of a single component within a pipeline run.
+    description: |-
+      ComponentRun represents the execution details of a single component within a
+      pipeline run.
   ComponentTask:
     type: object
     properties:
@@ -5878,6 +5893,15 @@ definitions:
     description: |-
       CreateKnowledgeBaseResponse represents a response for creating a knowledge
       base.
+  CreateModelResponse:
+    type: object
+    properties:
+      model:
+        description: The created model resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Model'
+    description: CreateModelResponse contains the created model.
   CreateNamespaceConnectionResponse:
     type: object
     properties:
@@ -5887,33 +5911,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Connection'
     description: CreateNamespaceConnectionResponse contains the created connection.
-  CreateNamespaceModelResponse:
-    type: object
-    properties:
-      model:
-        description: The created model resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Model'
-    description: CreateNamespaceModelResponse contains the created model.
-  CreateNamespacePipelineReleaseResponse:
-    type: object
-    properties:
-      release:
-        description: The created pipeline release object.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/PipelineRelease'
-    description: CreateNamespacePipelineReleaseResponse contains the created release.
-  CreateNamespacePipelineResponse:
-    type: object
-    properties:
-      pipeline:
-        description: The created pipeline resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Pipeline'
-    description: CreateNamespacePipelineResponse contains the created pipeline.
   CreateNamespaceSecretResponse:
     type: object
     properties:
@@ -5923,6 +5920,24 @@ definitions:
         allOf:
           - $ref: '#/definitions/Secret'
     description: CreateNamespaceSecretResponse contains the created secret.
+  CreatePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        description: The created pipeline release object.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/PipelineRelease'
+    description: CreatePipelineReleaseResponse contains the created release.
+  CreatePipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        description: The created pipeline resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Pipeline'
+    description: CreatePipelineResponse contains the created pipeline.
   CreateTokenResponse:
     type: object
     properties:
@@ -5949,9 +5964,11 @@ definitions:
   DeleteFileResponse:
     type: object
     properties:
-      fileId:
+      name:
         type: string
-        description: The file id.
+        title: |-
+          The resource name of the deleted file.
+          Format: `namespaces/{namespace}/files/{file}`
         readOnly: true
     description: DeleteFileResponse represents a response for deleting a file.
   DeleteKnowledgeBaseResponse:
@@ -5965,27 +5982,27 @@ definitions:
     description: |-
       DeleteKnowledgeBaseResponse represents a response for deleting a knowledge
       base.
+  DeleteModelResponse:
+    type: object
+    description: DeleteModelResponse is an empty response.
+  DeleteModelVersionResponse:
+    type: object
+    description: DeleteModelVersionResponse is an empty response.
   DeleteNamespaceConnectionResponse:
     type: object
     description: DeleteNamespaceConnectionResponse is an empty response.
-  DeleteNamespaceModelResponse:
-    type: object
-    description: DeleteNamespaceModelResponse is an empty response.
-  DeleteNamespaceModelVersionResponse:
-    type: object
-    description: DeleteNamespaceModelVersionResponse is an empty response.
-  DeleteNamespacePipelineReleaseResponse:
-    type: object
-    description: DeleteNamespacePipelineReleaseResponse is an empty response.
-  DeleteNamespacePipelineResponse:
-    type: object
-    description: DeleteNamespacePipelineResponse is an empty response.
   DeleteNamespaceSecretResponse:
     type: object
     description: DeleteNamespaceSecretResponse is an empty response.
   DeleteObjectResponse:
     type: object
     description: DeleteObjectResponse is an empty response for deleting an object.
+  DeletePipelineReleaseResponse:
+    type: object
+    description: DeletePipelineReleaseResponse is an empty response.
+  DeletePipelineResponse:
+    type: object
+    description: DeletePipelineResponse is an empty response.
   DeleteTokenResponse:
     type: object
     description: DeleteTokenResponse is an empty response.
@@ -6134,14 +6151,16 @@ definitions:
       externalMetadata:
         type: object
         description: Custom metadata provided by the user during file upload.
-      knowledgeBaseIds:
+      knowledgeBases:
         type: array
         items:
           type: string
         description: |-
-          Knowledge base IDs (hash-based) that this file is associated with.
+          Knowledge base resource names that this file is associated with.
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
           A file can belong to multiple knowledge bases within the same namespace.
           This field is populated from the file_knowledge_base junction table.
+          Follows AIP-122 for resource name references.
         readOnly: true
       ownerName:
         type: string
@@ -6196,13 +6215,15 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Position'
-      collectionIds:
+      collections:
         type: array
         items:
           type: string
         description: |-
-          Collection IDs (hash-based) that this file belongs to.
+          Collection resource names that this file belongs to.
+          Format: `namespaces/{namespace}/collections/{collection}`
           This field is system-managed and populated from collection membership.
+          Follows AIP-122 for resource name references.
         readOnly: true
       deleteTime:
         type: string
@@ -6452,8 +6473,27 @@ definitions:
         allOf:
           - $ref: '#/definitions/longrunning.Operation'
     description: |-
-      GetModelOperationRequest represents a request to query a long-running
-      operation.
+      GetModelOperationResponse represents a response to query a
+      long-running operation.
+  GetModelResponse:
+    type: object
+    properties:
+      model:
+        description: The model resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Model'
+    description: GetModelResponse contains the requested model.
+  GetModelVersionOperationResponse:
+    type: object
+    properties:
+      operation:
+        description: The long-running operation.
+        allOf:
+          - $ref: '#/definitions/longrunning.Operation'
+    description: |-
+      GetModelVersionOperationResponse represents a response to query a
+      long-running operation.
   GetNamespaceConnectionResponse:
     type: object
     properties:
@@ -6463,54 +6503,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Connection'
     description: GetNamespaceConnectionResponse contains the requested connection.
-  GetNamespaceLatestModelOperationResponse:
-    type: object
-    properties:
-      operation:
-        description: The long-running operation.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/longrunning.Operation'
-    description: |-
-      GetNamespaceLatestModelOperationResponse represents a response to query a
-      long-running operation.
-  GetNamespaceModelOperationResponse:
-    type: object
-    properties:
-      operation:
-        description: The long-running operation.
-        allOf:
-          - $ref: '#/definitions/longrunning.Operation'
-    description: |-
-      GetNamespaceModelOperationResponse represents a response to query a
-      long-running operation.
-  GetNamespaceModelResponse:
-    type: object
-    properties:
-      model:
-        description: The model resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Model'
-    description: GetNamespaceModelResponse contains the requested model.
-  GetNamespacePipelineReleaseResponse:
-    type: object
-    properties:
-      release:
-        description: The pipeline release resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/PipelineRelease'
-    description: GetNamespacePipelineReleaseResponse contains the requested pipeline release.
-  GetNamespacePipelineResponse:
-    type: object
-    properties:
-      pipeline:
-        description: The pipeline resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Pipeline'
-    description: GetNamespacePipelineResponse contains the requested pipeline.
   GetNamespaceSecretResponse:
     type: object
     properties:
@@ -6557,15 +6549,24 @@ definitions:
         allOf:
           - $ref: '#/definitions/Object'
     title: GetObjectUploadURLResponse
-  GetOperationResponse:
+  GetPipelineReleaseResponse:
     type: object
     properties:
-      operation:
-        description: The long-running operation.
+      release:
+        description: The pipeline release resource.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/longrunning.Operation'
-    description: GetOperationResponse contains the long-running operation details.
+          - $ref: '#/definitions/PipelineRelease'
+    description: GetPipelineReleaseResponse contains the requested pipeline release.
+  GetPipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        description: The pipeline resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Pipeline'
+    description: GetPipelineResponse contains the requested pipeline.
   GetTokenResponse:
     type: object
     properties:
@@ -7037,6 +7038,32 @@ definitions:
     description: |-
       ListModelTriggerChartRecordsResponse contains a list of model trigger
       chart records.
+  ListModelVersionsResponse:
+    type: object
+    properties:
+      versions:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/ModelVersion'
+        description: A list of model resources.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of versions.
+        readOnly: true
+      pageSize:
+        type: integer
+        format: int32
+        description: The requested page size.
+        readOnly: true
+      page:
+        type: integer
+        format: int32
+        description: The requested page offset.
+        readOnly: true
+    description: ListModelVersionsResponse contains a list of models.
   ListModelsResponse:
     type: object
     properties:
@@ -7077,92 +7104,6 @@ definitions:
         description: Total number of items.
         readOnly: true
     description: ListNamespaceConnectionsResponse contains a paginated list of connections.
-  ListNamespaceModelVersionsResponse:
-    type: object
-    properties:
-      versions:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/ModelVersion'
-        description: A list of model resources.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of versions.
-        readOnly: true
-      pageSize:
-        type: integer
-        format: int32
-        description: The requested page size.
-        readOnly: true
-      page:
-        type: integer
-        format: int32
-        description: The requested page offset.
-        readOnly: true
-    description: ListNamespaceModelVersionsResponse contains a list of models.
-  ListNamespaceModelsResponse:
-    type: object
-    properties:
-      models:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Model'
-        description: A list of model resources.
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page token.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of models.
-        readOnly: true
-    description: ListNamespaceModelsResponse contains a list of models.
-  ListNamespacePipelineReleasesResponse:
-    type: object
-    properties:
-      releases:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/PipelineRelease'
-        description: A list of pipeline release resources.
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page token.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of pipeline releases.
-        readOnly: true
-    description: ListNamespacePipelineReleasesResponse contains a list of pipeline releases.
-  ListNamespacePipelinesResponse:
-    type: object
-    properties:
-      pipelines:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Pipeline'
-        description: A list of pipeline resources.
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page token.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of pipelines.
-        readOnly: true
-    description: ListNamespacePipelinesResponse contains a list of pipelines.
   ListNamespaceSecretsResponse:
     type: object
     properties:
@@ -7204,6 +7145,26 @@ definitions:
     description: |-
       ListPipelineIDsByConnectionIDResponse contains a paginated list of
       integrations.
+  ListPipelineReleasesResponse:
+    type: object
+    properties:
+      releases:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/PipelineRelease'
+        description: A list of pipeline release resources.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of pipeline releases.
+        readOnly: true
+    description: ListPipelineReleasesResponse contains a list of pipeline releases.
   ListPipelineRunsByRequesterResponse:
     type: object
     properties:
@@ -7229,7 +7190,9 @@ definitions:
         format: int32
         description: The number of items per page.
         readOnly: true
-    description: ListPipelineRunsByRequesterResponse is the response message for ListPipelineRunsByRequester.
+    description: |-
+      ListPipelineRunsByRequesterResponse is the response message for
+      ListPipelineRunsByRequester.
   ListPipelineRunsResponse:
     type: object
     properties:
@@ -7292,6 +7255,46 @@ definitions:
         description: Total number of pipelines.
         readOnly: true
     description: ListPipelinesResponse contains a list of pipelines.
+  ListPublicModelsResponse:
+    type: object
+    properties:
+      models:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Model'
+        description: A list of model resources.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of models.
+        readOnly: true
+    description: ListPublicModelsResponse contains a list of public models.
+  ListPublicPipelinesResponse:
+    type: object
+    properties:
+      pipelines:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/Pipeline'
+        description: A list of pipeline resources.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of pipelines.
+        readOnly: true
+    description: ListPublicPipelinesResponse contains a list of public pipelines.
   ListTokensResponse:
     type: object
     properties:
@@ -7762,13 +7765,17 @@ definitions:
       displayName:
         type: string
         description: Human-readable display name (user-provided filename).
-      namespaceId:
+      ownerName:
         type: string
-        description: Namespace ID that owns this object.
+        title: |-
+          Resource name of the owner namespace.
+          Format: `namespaces/{namespace}`
         readOnly: true
-      creator:
+      creatorName:
         type: string
-        description: Creator's user ID.
+        title: |-
+          Full resource name of the user who created this object.
+          Format: `users/{user}`
         readOnly: true
       createTime:
         type: string
@@ -8104,10 +8111,11 @@ definitions:
       A Pipeline is an end-to-end workflow that automates a sequence of components
       to process data.
 
-      For more information, see [Pipeline](https://instill-ai.dev/docs/pipeline/introduction) in
-      the official documentation.
-      Pipeline represents a data pipeline for AI/ML workflows.
-      Field ordering follows AIP standard: name(1), id(2), display_name(3), slug(4), aliases(5), description(6)
+      For more information, see
+      [Pipeline](https://instill-ai.dev/docs/pipeline/introduction) in the official
+      documentation. Pipeline represents a data pipeline for AI/ML workflows. Field
+      ordering follows AIP standard: name(1), id(2), display_name(3), slug(4),
+      aliases(5), description(6)
     required:
       - displayName
       - recipe
@@ -8165,8 +8173,8 @@ definitions:
       id:
         type: string
         description: |-
-          Field 2: Release resource ID (used in `name` as the last segment). It must be a
-          sematic version vX.Y.Z.
+          Field 2: Release resource ID (used in `name` as the last segment). It must
+          be a sematic version vX.Y.Z.
       displayName:
         type: string
         description: 'Field 3: Human-readable display name for UI.'
@@ -8228,7 +8236,8 @@ definitions:
     title: |-
       Pipeline releases contain the version control information of a pipeline.
       This allows users to track changes in the pipeline over time.
-      Field ordering follows AIP standard: name (1), id (2), display_name (3), slug (4), aliases (5), description (6)
+      Field ordering follows AIP standard: name (1), id (2), display_name (3), slug
+      (4), aliases (5), description (6)
   PipelineRun:
     type: object
     properties:
@@ -8411,7 +8420,7 @@ definitions:
     description: |-
       Region describes the supported cloud provider and regions, with
       their supported GPU respectively.
-  RenameNamespaceModelBody:
+  RenameModelBody:
     type: object
     properties:
       newModelId:
@@ -8419,10 +8428,10 @@ definitions:
         description: |-
           The new resource ID. This will transform the resource name into
           `namespaces/{namespace}/models/{new_model_id}`.
-    title: RenameNamespaceModelRequest represents a request to rename a model
+    title: RenameModelRequest represents a request to rename a model
     required:
       - newModelId
-  RenameNamespaceModelResponse:
+  RenameModelResponse:
     type: object
     properties:
       model:
@@ -8430,8 +8439,8 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Model'
-    description: RenameNamespaceModelResponse contains a renamed model.
-  RenameNamespacePipelineBody:
+    description: RenameModelResponse contains a renamed model.
+  RenamePipelineBody:
     type: object
     properties:
       newPipelineId:
@@ -8440,11 +8449,11 @@ definitions:
           The new resource ID. This will transform the resource name into
           `namespaces/{namespace}/pipelines/{new_pipeline_id}`.
     description: |-
-      RenameNamespacePipelineRequest represents a request to rename the name of a
+      RenamePipelineRequest represents a request to rename the name of a
       pipeline owned by a namespace.
     required:
       - newPipelineId
-  RenameNamespacePipelineResponse:
+  RenamePipelineResponse:
     type: object
     properties:
       pipeline:
@@ -8452,7 +8461,7 @@ definitions:
         readOnly: true
         allOf:
           - $ref: '#/definitions/Pipeline'
-    description: RenameNamespacePipelineResponse contains a renamed pipeline.
+    description: RenamePipelineResponse contains a renamed pipeline.
   ReprocessFileBody:
     type: object
     description: ReprocessFileRequest represents a request to reprocess a file.
@@ -8805,7 +8814,7 @@ definitions:
        - STATUS_COMPLETED: Successfully completed.
        - STATUS_SKIPPED: Skipped.
        - STATUS_ERROR: Aborted with error.
-  TriggerAsyncNamespaceLatestModelBody:
+  TriggerAsyncModelBody:
     type: object
     properties:
       taskInputs:
@@ -8814,11 +8823,11 @@ definitions:
           type: object
         description: Model inference inputs.
     description: |-
-      TriggerAsyncNamespaceLatestModelRequest represents a request to trigger a
+      TriggerAsyncModelRequest represents a request to trigger a
       model inference asynchronously with the latest uploaded version.
     required:
       - taskInputs
-  TriggerAsyncNamespaceLatestModelResponse:
+  TriggerAsyncModelResponse:
     type: object
     properties:
       operation:
@@ -8827,9 +8836,9 @@ definitions:
         allOf:
           - $ref: '#/definitions/longrunning.Operation'
     description: |-
-      TriggerAsyncNamespaceLatestModelResponse contains the information to access
+      TriggerAsyncModelResponse contains the information to access
       the status of an asynchronous model inference.
-  TriggerAsyncNamespaceModelBody:
+  TriggerAsyncModelVersionBody:
     type: object
     properties:
       taskInputs:
@@ -8838,11 +8847,11 @@ definitions:
           type: object
         description: Model inference inputs.
     description: |-
-      TriggerAsyncNamespaceModelRequest represents a request to trigger a model
+      TriggerAsyncModelVersionRequest represents a request to trigger a model
       inference asynchronously.
     required:
       - taskInputs
-  TriggerAsyncNamespaceModelResponse:
+  TriggerAsyncModelVersionResponse:
     type: object
     properties:
       operation:
@@ -8851,9 +8860,9 @@ definitions:
         allOf:
           - $ref: '#/definitions/longrunning.Operation'
     description: |-
-      TriggerAsyncNamespaceModelResponse contains the information to access the
+      TriggerAsyncModelVersionResponse contains the information to access the
       status of an asynchronous model inference.
-  TriggerAsyncNamespacePipelineBody:
+  TriggerAsyncPipelineBody:
     type: object
     properties:
       inputs:
@@ -8868,9 +8877,9 @@ definitions:
           $ref: '#/definitions/TriggerData'
         title: Data
     description: |-
-      TriggerNamespacePipelineRequest represents a request to trigger a user-owned
+      TriggerPipelineRequest represents a request to trigger a user-owned
       pipeline synchronously.
-  TriggerAsyncNamespacePipelineReleaseBody:
+  TriggerAsyncPipelineReleaseBody:
     type: object
     properties:
       inputs:
@@ -8885,9 +8894,9 @@ definitions:
           $ref: '#/definitions/TriggerData'
         title: Data
     description: |-
-      TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-      release of a user-owned pipeline asynchronously.
-  TriggerAsyncNamespacePipelineReleaseResponse:
+      TriggerPipelineReleaseRequest represents a request to trigger a
+      pinned release of a user-owned pipeline asynchronously.
+  TriggerAsyncPipelineReleaseResponse:
     type: object
     properties:
       operation:
@@ -8896,9 +8905,9 @@ definitions:
         allOf:
           - $ref: '#/definitions/longrunning.Operation'
     description: |-
-      TriggerAsyncNamespacePipelineReleaseResponse contains the information to access
-      the status of an asynchronous pipeline execution.
-  TriggerAsyncNamespacePipelineResponse:
+      TriggerAsyncPipelineReleaseResponse contains the information to
+      access the status of an asynchronous pipeline execution.
+  TriggerAsyncPipelineResponse:
     type: object
     properties:
       operation:
@@ -8907,7 +8916,7 @@ definitions:
         allOf:
           - $ref: '#/definitions/longrunning.Operation'
     description: |-
-      TriggerAsyncNamespacePipelineResponse contains the information to access the
+      TriggerAsyncPipelineResponse contains the information to access the
       status of an asynchronous pipeline execution.
   TriggerData:
     type: object
@@ -8956,7 +8965,7 @@ definitions:
           object containing the execution details.
         readOnly: true
     description: TriggerMetadata contains the traces of the pipeline inference.
-  TriggerNamespaceLatestModelBody:
+  TriggerModelBody:
     type: object
     properties:
       taskInputs:
@@ -8965,11 +8974,11 @@ definitions:
           type: object
         description: Model inference inputs.
     description: |-
-      TriggerNamespaceLatestModelRequest represents a request to trigger a model
+      TriggerModelRequest represents a request to trigger a model
       inference with the latest uploaded version.
     required:
       - taskInputs
-  TriggerNamespaceLatestModelResponse:
+  TriggerModelResponse:
     type: object
     properties:
       task:
@@ -8983,8 +8992,8 @@ definitions:
           type: object
         description: Model inference outputs.
         readOnly: true
-    description: TriggerNamespaceLatestModelResponse contains the model inference results.
-  TriggerNamespaceModelBody:
+    description: TriggerModelResponse contains the model inference results.
+  TriggerModelVersionBody:
     type: object
     properties:
       taskInputs:
@@ -8993,11 +9002,11 @@ definitions:
           type: object
         description: Model inference inputs.
     description: |-
-      TriggerNamespaceModelRequest represents a request to trigger a model
+      TriggerModelVersionRequest represents a request to trigger a model
       inference.
     required:
       - taskInputs
-  TriggerNamespaceModelResponse:
+  TriggerModelVersionResponse:
     type: object
     properties:
       task:
@@ -9011,8 +9020,8 @@ definitions:
           type: object
         description: Model inference outputs.
         readOnly: true
-    description: TriggerNamespaceModelResponse contains the model inference results.
-  TriggerNamespacePipelineBody:
+    description: TriggerModelVersionResponse contains the model inference results.
+  TriggerPipelineBody:
     type: object
     properties:
       inputs:
@@ -9027,12 +9036,12 @@ definitions:
           $ref: '#/definitions/TriggerData'
         title: Data
     description: |-
-      TriggerNamespacePipelineRequest represents a request to trigger a user-owned
+      TriggerPipelineRequest represents a request to trigger a user-owned
       pipeline synchronously.
     required:
       - inputs
       - data
-  TriggerNamespacePipelineReleaseBody:
+  TriggerPipelineReleaseBody:
     type: object
     properties:
       inputs:
@@ -9047,9 +9056,9 @@ definitions:
           $ref: '#/definitions/TriggerData'
         title: Data
     description: |-
-      TriggerNamespacePipelineReleaseRequest represents a request to trigger a pinned
-      release of a user-owned pipeline.
-  TriggerNamespacePipelineReleaseResponse:
+      TriggerPipelineReleaseRequest represents a request to trigger a
+      pinned release of a user-owned pipeline.
+  TriggerPipelineReleaseResponse:
     type: object
     properties:
       outputs:
@@ -9064,26 +9073,26 @@ definitions:
         allOf:
           - $ref: '#/definitions/TriggerMetadata'
     description: |-
-      TriggerNamespacePipelineReleaseResponse contains the pipeline execution results,
+      TriggerPipelineReleaseResponse contains the pipeline execution
+      results, i.e., the multiple model inference outputs.
+  TriggerPipelineResponse:
+    type: object
+    properties:
+      outputs:
+        type: array
+        items:
+          type: object
+        description: Model inference outputs.
+        readOnly: true
+      metadata:
+        description: Traces of the pipeline inference.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/TriggerMetadata'
+    description: |-
+      TriggerPipelineResponse contains the pipeline execution results,
       i.e., the multiple model inference outputs.
-  TriggerNamespacePipelineResponse:
-    type: object
-    properties:
-      outputs:
-        type: array
-        items:
-          type: object
-        description: Model inference outputs.
-        readOnly: true
-      metadata:
-        description: Traces of the pipeline inference.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/TriggerMetadata'
-    description: |-
-      TriggerNamespacePipelineResponse contains the pipeline execution results, i.e.,
-      the multiple model inference outputs.
-  TriggerNamespacePipelineWithStreamBody:
+  TriggerPipelineWithStreamBody:
     type: object
     properties:
       inputs:
@@ -9098,9 +9107,9 @@ definitions:
           $ref: '#/definitions/TriggerData'
         title: Data
     description: |-
-      TriggerNamespacePipelineWithStreamRequest represents a request to trigger a user-owned
-      pipeline synchronously and streams back the results.
-  TriggerNamespacePipelineWithStreamResponse:
+      TriggerPipelineWithStreamRequest represents a request to trigger a
+      user-owned pipeline synchronously and streams back the results.
+  TriggerPipelineWithStreamResponse:
     type: object
     properties:
       outputs:
@@ -9115,8 +9124,8 @@ definitions:
         allOf:
           - $ref: '#/definitions/TriggerMetadata'
     description: |-
-      TriggerNamespacePipelineWithStreamResponse contains the pipeline execution results, i.e.,
-      the multiple model inference outputs.
+      TriggerPipelineWithStreamResponse contains the pipeline execution
+      results, i.e., the multiple model inference outputs.
   Unit:
     type: string
     enum:
@@ -9172,6 +9181,15 @@ definitions:
     description: |-
       UpdateKnowledgeBaseResponse represents a response for updating a knowledge
       base.
+  UpdateModelResponse:
+    type: object
+    properties:
+      model:
+        description: The updated model resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Model'
+    description: UpdateModelResponse contains the updated model.
   UpdateNamespaceConnectionResponse:
     type: object
     properties:
@@ -9181,33 +9199,6 @@ definitions:
         allOf:
           - $ref: '#/definitions/Connection'
     description: UpdateNamespaceConnectionResponse contains the updated connection.
-  UpdateNamespaceModelResponse:
-    type: object
-    properties:
-      model:
-        description: The updated model resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Model'
-    description: UpdateNamespaceModelResponse contains the updated model.
-  UpdateNamespacePipelineReleaseResponse:
-    type: object
-    properties:
-      release:
-        description: The updated pipeline release resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/PipelineRelease'
-    description: UpdateNamespacePipelineReleaseResponse contains the updated pipeline release.
-  UpdateNamespacePipelineResponse:
-    type: object
-    properties:
-      pipeline:
-        description: The updated pipeline resource.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Pipeline'
-    description: UpdateNamespacePipelineResponse contains the updated pipeline.
   UpdateNamespaceSecretResponse:
     type: object
     properties:
@@ -9224,6 +9215,24 @@ definitions:
         allOf:
           - $ref: '#/definitions/Object'
     description: UpdateObjectResponse contains the updated object.
+  UpdatePipelineReleaseResponse:
+    type: object
+    properties:
+      release:
+        description: The updated pipeline release resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/PipelineRelease'
+    description: UpdatePipelineReleaseResponse contains the updated pipeline release.
+  UpdatePipelineResponse:
+    type: object
+    properties:
+      pipeline:
+        description: The updated pipeline resource.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Pipeline'
+    description: UpdatePipelineResponse contains the updated pipeline.
   UserProfile:
     type: object
     properties:
@@ -9254,12 +9263,12 @@ definitions:
     description: UserProfile describes the public data of a user.
     required:
       - displayName
-  ValidateNamespacePipelineBody:
+  ValidatePipelineBody:
     type: object
     description: |-
-      ValidateNamespacePipelineRequest represents a request to validate a pipeline
+      ValidatePipelineRequest represents a request to validate a pipeline
       owned by a user.
-  ValidateNamespacePipelineResponse:
+  ValidatePipelineResponse:
     type: object
     properties:
       success:
@@ -9273,7 +9282,7 @@ definitions:
           $ref: '#/definitions/ErrPipelineValidation'
         description: The validated pipeline resource.
         readOnly: true
-    description: ValidateNamespacePipelineResponse contains a validated pipeline.
+    description: ValidatePipelineResponse contains a validated pipeline.
   ValidateTokenResponse:
     type: object
     properties:
@@ -9284,7 +9293,7 @@ definitions:
           Format: `users/{user}`
         readOnly: true
     description: ValidateTokenResponse contains the validation of a token.
-  WatchNamespaceLatestModelResponse:
+  WatchModelResponse:
     type: object
     properties:
       state:
@@ -9297,9 +9306,9 @@ definitions:
         title: Detail description of the state
         readOnly: true
     description: |-
-      WatchNamespaceLatestModelResponse contains the state of the latest model
+      WatchModelResponse contains the state of the latest model
       version.
-  WatchNamespaceModelResponse:
+  WatchModelVersionResponse:
     type: object
     properties:
       state:
@@ -9311,7 +9320,7 @@ definitions:
         type: string
         title: Detail description of the state
         readOnly: true
-    description: WatchNamespaceModelResponse contains the state of a model.
+    description: WatchModelVersionResponse contains the state of a model.
   WebhookEndpoint:
     type: object
     properties:
@@ -9444,6 +9453,17 @@ definitions:
 
       You can find out more about this error model and how to work with it in the
       [API Design Guide](https://cloud.google.com/apis/design/errors).
+  v1alpha.GetOperationResponse:
+    type: object
+    properties:
+      operation:
+        description: The long-running operation.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/longrunning.Operation'
+    description: |-
+      GetOperationResponse represents a response to query a long-running
+      operation.
   v1alpha.Permission:
     type: object
     properties:
@@ -9503,6 +9523,15 @@ definitions:
 
        - VIEW_BASIC: Default view, only includes basic information (omits `model_spec`).
        - VIEW_FULL: Full representation.
+  v1beta.GetOperationResponse:
+    type: object
+    properties:
+      operation:
+        description: The long-running operation.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/longrunning.Operation'
+    description: GetOperationResponse contains the long-running operation details.
   v1beta.User:
     type: object
     properties:
