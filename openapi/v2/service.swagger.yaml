@@ -302,11 +302,13 @@ paths:
                   Default is PERSISTENT if not specified during creation.
                 allOf:
                   - $ref: '#/definitions/KnowledgeBaseType'
-              systemId:
+              system:
                 type: string
                 description: |-
-                  Available systems: "openai", "gemini", or custom systems defined in the
-                  system table. If not specified, defaults to the default system.
+                  The resource name of the system configuration.
+                  Format: `systems/{system}`
+                  Available systems: "systems/openai", "systems/gemini", or custom systems.
+                  If not specified, defaults to the default system.
                 title: |-
                   System ID defines how the knowledge base will be created based on the
                   system's RAG configurations including:
@@ -318,10 +320,11 @@ paths:
                 description: The embedding configuration for the knowledge base.
                 allOf:
                   - $ref: '#/definitions/EmbeddingConfig'
-              activeCollectionId:
+              activeCollection:
                 type: string
                 description: |-
-                  The ID of the active Milvus collection for this knowledge base.
+                  The resource name of the active Milvus collection for this knowledge base.
+                  Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/collections/{collection}`
                   This supports collection versioning for embedding dimension changes.
                 readOnly: true
               ownerName:
@@ -5373,9 +5376,11 @@ definitions:
         format: date-time
         title: creation time of the chunk
         readOnly: true
-      originalFileId:
+      originalFile:
         type: string
-        title: original file unique identifier
+        title: |-
+          The resource name of the original file this chunk belongs to.
+          Format: `namespaces/{namespace}/files/{file}`
         readOnly: true
       type:
         title: chunk type
@@ -6717,11 +6722,13 @@ definitions:
           Default is PERSISTENT if not specified during creation.
         allOf:
           - $ref: '#/definitions/KnowledgeBaseType'
-      systemId:
+      system:
         type: string
         description: |-
-          Available systems: "openai", "gemini", or custom systems defined in the
-          system table. If not specified, defaults to the default system.
+          The resource name of the system configuration.
+          Format: `systems/{system}`
+          Available systems: "systems/openai", "systems/gemini", or custom systems.
+          If not specified, defaults to the default system.
         title: |-
           System ID defines how the knowledge base will be created based on the
           system's RAG configurations including:
@@ -6733,10 +6740,11 @@ definitions:
         description: The embedding configuration for the knowledge base.
         allOf:
           - $ref: '#/definitions/EmbeddingConfig'
-      activeCollectionId:
+      activeCollection:
         type: string
         description: |-
-          The ID of the active Milvus collection for this knowledge base.
+          The resource name of the active Milvus collection for this knowledge base.
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/collections/{collection}`
           This supports collection versioning for embedding dimension changes.
         readOnly: true
       ownerName:
@@ -8515,9 +8523,11 @@ definitions:
   SearchChunksBody:
     type: object
     properties:
-      knowledgeBaseId:
+      knowledgeBase:
         type: string
-        description: ID of the knowledge base (optional filter).
+        title: |-
+          The knowledge base resource name to filter by (optional).
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
       textPrompt:
         type: string
         description: Text prompt to look for similarities.
@@ -8533,20 +8543,21 @@ definitions:
         description: File media type.
         allOf:
           - $ref: '#/definitions/FileMediaType'
-      fileIds:
+      files:
         type: array
         items:
           type: string
-        description: |-
-          File IDs. When this field is provided, the response will return only
-          chunks that belong to the specified file IDs.
+        title: |-
+          File resource names to filter by. When this field is provided, the response
+          will return only chunks that belong to the specified files.
+          Format: `namespaces/{namespace}/files/{file}`
       tags:
         type: array
         items:
           type: string
         description: |-
           Tags to filter by. When multiple tags are provided, OR logic is applied.
-          Note: File ID filter takes precedence over tags, as tags apply to files.
+          Note: File filter takes precedence over tags, as tags apply to files.
     description: SearchChunksRequest represents a request to search for similar chunks.
     required:
       - textPrompt
