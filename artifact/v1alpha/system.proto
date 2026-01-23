@@ -4,6 +4,7 @@ package artifact.v1alpha;
 
 // Google API
 import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
 // Protocol Buffers Well-Known Types
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
@@ -26,6 +27,10 @@ import "google/protobuf/timestamp.proto";
 // Field ordering follows AIP standard: name(1), id(2), display_name(3),
 // slug(4), aliases(5), description(6)
 message System {
+  option (google.api.resource) = {
+    type: "api.instill.tech/System"
+    pattern: "systems/{system}"
+  };
   // ===== Standard AIP fields 1-6 (ALL resources must follow this order) =====
 
   // Field 1: Canonical resource name.
@@ -80,9 +85,13 @@ message System {
 
 // GetSystemAdminRequest (admin only)
 message GetSystemAdminRequest {
-  // System ID (e.g., "sys-8f3a2k9e7c1") or slug (e.g., "openai")
+  // The resource name of the system to retrieve.
+  // Format: `systems/{system}`
   // If not specified, returns the default system.
-  string system_id = 1;
+  string name = 1 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference) = {type: "api.instill.tech/System"}
+  ];
 }
 
 // GetSystemAdminResponse (admin only)
@@ -109,11 +118,6 @@ message UpdateSystemAdminRequest {
   System system = 1;
 
   // The update mask specifies the subset of fields that should be modified.
-  // Fields specified in the mask are relative to the system (e.g., `config`,
-  // `description`).
-  //
-  // For more information about field masks, see:
-  // https://google.aip.dev/161
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
@@ -136,9 +140,13 @@ message ListSystemsAdminResponse {
 
 // DeleteSystemAdminRequest (admin only)
 message DeleteSystemAdminRequest {
-  // System ID (e.g., "sys-8f3a2k9e7c1") or slug (e.g., "openai") to delete.
+  // The resource name of the system to delete.
+  // Format: `systems/{system}`
   // The default system cannot be deleted.
-  string system_id = 1;
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/System"}
+  ];
 }
 
 // DeleteSystemAdminResponse (admin only)
@@ -154,8 +162,12 @@ message DeleteSystemAdminResponse {
 // Note: The canonical ID (sys-xxx) is immutable. Only display_name and slug
 // change.
 message RenameSystemAdminRequest {
-  // System ID (e.g., "sys-8f3a2k9e7c1") or slug (e.g., "openai") to rename.
-  string system_id = 1 [(google.api.field_behavior) = REQUIRED];
+  // The resource name of the system to rename.
+  // Format: `systems/{system}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/System"}
+  ];
 
   // The new display name. A new slug will be generated from this.
   // The old slug will be added to aliases for backward compatibility.
@@ -171,9 +183,12 @@ message RenameSystemAdminResponse {
 // SetDefaultSystemAdminRequest (admin only)
 // Sets a system as the default. This will unset any currently default system.
 message SetDefaultSystemAdminRequest {
-  // System ID (e.g., "sys-8f3a2k9e7c1") or slug (e.g., "openai") to set as
-  // default.
-  string system_id = 1;
+  // The resource name of the system to set as default.
+  // Format: `systems/{system}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/System"}
+  ];
 }
 
 // SetDefaultSystemAdminResponse (admin only)
