@@ -315,17 +315,8 @@ message File {
   // ===== Upload and content fields =====
 
   // Base64-encoded file content for inline upload.
-  // Alternative to object_uid for smaller files.
+  // Alternative to object field for smaller files.
   string content = 22 [(google.api.field_behavior) = INPUT_ONLY];
-
-  // Object UID referencing a file already uploaded to blob storage.
-  // Two upload approaches are supported:
-  // 1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL,
-  // then provide the object_uid here.
-  //    This avoids base64 encoding overhead and is preferred for large files.
-  // 2. Inline content: Provide base64-encoded file content in the 'content'
-  // field. When object_uid is provided, the 'content' field is ignored.
-  string object_uid = 23 [(google.api.field_behavior) = INPUT_ONLY];
 
   // Pre-signed download URL for the file.
   string download_url = 24 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -348,6 +339,20 @@ message File {
 
   // Soft delete timestamp.
   google.protobuf.Timestamp delete_time = 28 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Object resource name reference for blob storage upload.
+  // Format: `namespaces/{namespace}/objects/{object}`
+  // Two upload approaches are supported:
+  // 1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL,
+  //    then provide the object resource name here.
+  //    This avoids base64 encoding overhead and is preferred for large files.
+  // 2. Inline content: Provide base64-encoded file content in the 'content'
+  //    field. When object is provided, the 'content' field is ignored.
+  // Follows AIP-122 for resource name references.
+  string object = 29 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference) = {type: "api.instill.tech/Object"}
+  ];
 }
 
 // CreateFileRequest represents a request to create a file.

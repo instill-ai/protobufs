@@ -734,17 +734,7 @@ paths:
                 type: string
                 description: |-
                   Base64-encoded file content for inline upload.
-                  Alternative to object_uid for smaller files.
-              objectUid:
-                type: string
-                description: |-
-                  Object UID referencing a file already uploaded to blob storage.
-                  Two upload approaches are supported:
-                  1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL,
-                  then provide the object_uid here.
-                     This avoids base64 encoding overhead and is preferred for large files.
-                  2. Inline content: Provide base64-encoded file content in the 'content'
-                  field. When object_uid is provided, the 'content' field is ignored.
+                  Alternative to object field for smaller files.
               downloadUrl:
                 type: string
                 description: Pre-signed download URL for the file.
@@ -774,6 +764,18 @@ paths:
                 format: date-time
                 description: Soft delete timestamp.
                 readOnly: true
+              object:
+                type: string
+                description: |-
+                  Object resource name reference for blob storage upload.
+                  Format: `namespaces/{namespace}/objects/{object}`
+                  Two upload approaches are supported:
+                  1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL,
+                     then provide the object resource name here.
+                     This avoids base64 encoding overhead and is preferred for large files.
+                  2. Inline content: Provide base64-encoded file content in the 'content'
+                     field. When object is provided, the 'content' field is ignored.
+                  Follows AIP-122 for resource name references.
             title: |-
               The file resource to update. The file's `name` field identifies the
               resource. Format: `namespaces/{namespace}/files/{file}`
@@ -6197,17 +6199,7 @@ definitions:
         type: string
         description: |-
           Base64-encoded file content for inline upload.
-          Alternative to object_uid for smaller files.
-      objectUid:
-        type: string
-        description: |-
-          Object UID referencing a file already uploaded to blob storage.
-          Two upload approaches are supported:
-          1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL,
-          then provide the object_uid here.
-             This avoids base64 encoding overhead and is preferred for large files.
-          2. Inline content: Provide base64-encoded file content in the 'content'
-          field. When object_uid is provided, the 'content' field is ignored.
+          Alternative to object field for smaller files.
       downloadUrl:
         type: string
         description: Pre-signed download URL for the file.
@@ -6237,6 +6229,18 @@ definitions:
         format: date-time
         description: Soft delete timestamp.
         readOnly: true
+      object:
+        type: string
+        description: |-
+          Object resource name reference for blob storage upload.
+          Format: `namespaces/{namespace}/objects/{object}`
+          Two upload approaches are supported:
+          1. Direct upload: Upload file directly to MinIO via GetObjectUploadURL,
+             then provide the object resource name here.
+             This avoids base64 encoding overhead and is preferred for large files.
+          2. Inline content: Provide base64-encoded file content in the 'content'
+             field. When object is provided, the 'content' field is ignored.
+          Follows AIP-122 for resource name references.
     title: |-
       File represents a file in a knowledge base.
       Field ordering follows AIP standard: name(1), id(2), display_name(3),
