@@ -11,7 +11,7 @@ import "google/protobuf/timestamp.proto";
 
 // The Chunk message represents a chunk of data in the artifact system.
 message Chunk {
-  option (google.api.resource) = {pattern: "namespaces/{namespace}/files/{file}/chunks/{chunk}"};
+  option (google.api.resource) = {pattern: "namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}"};
 
   // Type describes the type of a chunk content.
   enum Type {
@@ -34,7 +34,7 @@ message Chunk {
   }
 
   // Field 1: The resource name of the chunk.
-  // Format: `namespaces/{namespace}/files/{file}/chunks/{chunk}`.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}`.
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
   // Field 2: The chunk id (unique identifier).
   string id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -48,7 +48,7 @@ message Chunk {
   // creation time of the chunk
   google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
   // The resource name of the original file this chunk belongs to.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string original_file = 6 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -65,7 +65,7 @@ message Chunk {
 // Follows AIP-132: https://google.aip.dev/132
 message ListChunksRequest {
   // The parent resource name.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
   // The maximum number of chunks to return. If this parameter is unspecified,
   // at most 100 chunks will be returned. The cap value for this parameter
@@ -97,7 +97,7 @@ message ListChunksResponse {
 // Follows AIP-131: https://google.aip.dev/131
 message GetChunkRequest {
   // The resource name of the chunk to retrieve.
-  // Format: `namespaces/{namespace}/files/{file}/chunks/{chunk}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}`
   string name = 1 [(google.api.field_behavior) = REQUIRED];
   // Optional chunk type filter. If specified, returns a chunk of this type
   // from the same file. If not specified, returns the chunk identified by name.
@@ -116,7 +116,7 @@ message GetChunkResponse {
 // Follows AIP-134: https://google.aip.dev/134
 message UpdateChunkRequest {
   // The resource name of the chunk to update.
-  // Format: `namespaces/{namespace}/files/{file}/chunks/{chunk}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}`
   string name = 1 [(google.api.field_behavior) = REQUIRED];
   // whether the chunk is retrievable
   bool retrievable = 2 [(google.api.field_behavior) = REQUIRED];
@@ -153,7 +153,7 @@ message SearchChunksRequest {
   reserved 8;
   // File resource names to filter by. When this field is provided, the response
   // will return only chunks that belong to the specified files.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   repeated string files = 9 [
     (google.api.field_behavior) = OPTIONAL,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -172,7 +172,7 @@ message SearchChunksResponse {
 // SimilarityChunk represents a chunk with similarity score.
 message SimilarityChunk {
   // Chunk resource name.
-  // Full resource name: namespaces/{namespace}/files/{file}/chunks/{chunk}
+  // Full resource name: namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}
   string chunk = 1 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.resource_reference).type = "api.instill.tech/Chunk"
@@ -185,7 +185,7 @@ message SimilarityChunk {
   string text_content = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Source file resource name.
-  // Full resource name: namespaces/{namespace}/files/{file}
+  // Full resource name: namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}
   string file = 4 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.resource_reference).type = "api.instill.tech/File"
