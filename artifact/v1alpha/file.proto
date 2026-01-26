@@ -54,7 +54,7 @@ enum ConvertedFileType {
 message File {
   option (google.api.resource) = {
     type: "api.instill.tech/File"
-    pattern: "namespaces/{namespace}/files/{file}"
+    pattern: "namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}"
   };
 
   // View defines how a file is presented.
@@ -223,7 +223,7 @@ message File {
   // ===== Standard AIP fields 1-6 (ALL resources must follow this order) =====
 
   // Field 1: Canonical resource name.
-  // Format: `namespaces/{namespace}/files/{file}`.
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`.
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
@@ -355,22 +355,14 @@ message File {
   ];
 }
 
-// CreateFileRequest represents a request to create a file.
+// CreateFileRequest represents a request to create a file in a knowledge base.
 // Follows AIP-133: https://google.aip.dev/133
 message CreateFileRequest {
-  // The parent resource name.
-  // Format: `namespaces/{namespace}`
+  // The parent resource name (knowledge base).
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
   // The file to create.
   File file = 2 [(google.api.field_behavior) = OPTIONAL];
-  // The knowledge base resource name to associate this file with.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
-  // Files can be associated with multiple KBs, this specifies the initial
-  // association. Follows AIP-122 for resource name references.
-  string knowledge_base = 3 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
-  ];
 }
 
 // CreateFileResponse represents a response for creating a file.
@@ -383,7 +375,7 @@ message CreateFileResponse {
 // Follows AIP-135: https://google.aip.dev/135
 message DeleteFileRequest {
   // The resource name of the file to delete.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -393,7 +385,7 @@ message DeleteFileRequest {
 // DeleteFileResponse represents a response for deleting a file.
 message DeleteFileResponse {
   // The resource name of the deleted file.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
@@ -402,7 +394,7 @@ message DeleteFileResponse {
 // DeleteFileAdminRequest represents a request to delete a file (admin only).
 message DeleteFileAdminRequest {
   // The resource name of the file to delete.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -413,15 +405,15 @@ message DeleteFileAdminRequest {
 // only).
 message DeleteFileAdminResponse {
   // The resource name of the deleted file.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ListFilesRequest represents a request to list files.
+// ListFilesRequest represents a request to list files in a knowledge base.
 // Follows AIP-132: https://google.aip.dev/132
 message ListFilesRequest {
-  // The parent resource name.
-  // Format: `namespaces/{namespace}`
+  // The parent resource name (knowledge base).
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
   // The page size (default:10; max 100).
   optional int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
@@ -456,7 +448,7 @@ message ListFilesResponse {
 // Follows AIP-131: https://google.aip.dev/131
 message GetFileRequest {
   // The resource name of the file to retrieve.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -492,7 +484,7 @@ message GetFileResponse {
 // Follows AIP-134: https://google.aip.dev/134
 message UpdateFileRequest {
   // The file resource to update. The file's `name` field identifies the
-  // resource. Format: `namespaces/{namespace}/files/{file}`
+  // resource. Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   File file = 1 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
@@ -507,7 +499,7 @@ message UpdateFileResponse {
 // ReprocessFileRequest represents a request to reprocess a file.
 message ReprocessFileRequest {
   // The resource name of the file to reprocess.
-  // Format: `namespaces/{namespace}/files/{file}`
+  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -529,7 +521,7 @@ message ReprocessFileResponse {
 // Follows AIP-134: https://google.aip.dev/134
 message UpdateFileAdminRequest {
   // The file resource to update. The file's `name` field identifies the
-  // resource. Format: `namespaces/{namespace}/files/{file}`
+  // resource. Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
   File file = 1 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];

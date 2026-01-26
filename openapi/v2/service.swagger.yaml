@@ -22,6 +22,10 @@ tags:
     description: AI Model orchestration
   - name: Metrics
     description: Resource usage metrics.
+  - name: Connection
+    description: Connections to 3rd party apps for use in pipelines.
+  - name: Integration
+    description: Integration definitions for creating connections.
 host: api.instill-ai.com
 schemes:
   - https
@@ -203,11 +207,11 @@ paths:
         - name: name
           description: |-
             The resource name of the chunk to update.
-            Format: `namespaces/{namespace}/files/{file}/chunks/{chunk}`
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/files/[^/]+/chunks/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+/files/[^/]+/chunks/[^/]+
         - name: body
           in: body
           required: true
@@ -385,7 +389,7 @@ paths:
   /v1alpha/{parent}/files:
     get:
       summary: List files
-      description: Returns a paginated list of files.
+      description: Returns a paginated list of files in a knowledge base.
       operationId: ArtifactPublicService_ListFiles
       responses:
         "200":
@@ -402,12 +406,12 @@ paths:
       parameters:
         - name: parent
           description: |-
-            The parent resource name.
-            Format: `namespaces/{namespace}`
+            The parent resource name (knowledge base).
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+
         - name: pageSize
           description: The page size (default:10; max 100).
           in: query
@@ -456,27 +460,18 @@ paths:
       parameters:
         - name: parent
           description: |-
-            The parent resource name.
-            Format: `namespaces/{namespace}`
+            The parent resource name (knowledge base).
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+
         - name: file
           description: The file to create.
           in: body
           required: true
           schema:
             $ref: '#/definitions/File'
-        - name: knowledgeBase
-          description: |-
-            The knowledge base resource name to associate this file with.
-            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
-            Files can be associated with multiple KBs, this specifies the initial
-            association. Follows AIP-122 for resource name references.
-          in: query
-          required: true
-          type: string
       tags:
         - Artifact
       x-stage: alpha
@@ -501,11 +496,11 @@ paths:
         - name: name_1
           description: |-
             The resource name of the file to retrieve.
-            Format: `namespaces/{namespace}/files/{file}`
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/files/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+/files/[^/]+
         - name: view
           description: |-
             View allows clients to specify the desired file view in the response.
@@ -575,11 +570,11 @@ paths:
         - name: name_1
           description: |-
             The resource name of the file to delete.
-            Format: `namespaces/{namespace}/files/{file}`
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/files/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+/files/[^/]+
       tags:
         - Artifact
       x-stage: alpha
@@ -604,15 +599,15 @@ paths:
         - name: file.name
           description: |-
             Field 1: Canonical resource name.
-            Format: `namespaces/{namespace}/files/{file}`.
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`.
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/files/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+/files/[^/]+
         - name: file
           description: |-
             The file resource to update. The file's `name` field identifies the
-            resource. Format: `namespaces/{namespace}/files/{file}`
+            resource. Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
           in: body
           required: true
           schema:
@@ -778,7 +773,7 @@ paths:
                   Follows AIP-122 for resource name references.
             title: |-
               The file resource to update. The file's `name` field identifies the
-              resource. Format: `namespaces/{namespace}/files/{file}`
+              resource. Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
             required:
               - displayName
       tags:
@@ -807,11 +802,11 @@ paths:
         - name: name
           description: |-
             The resource name of the file to reprocess.
-            Format: `namespaces/{namespace}/files/{file}`
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/files/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+/files/[^/]+
         - name: body
           in: body
           required: true
@@ -841,11 +836,11 @@ paths:
         - name: name_2
           description: |-
             The resource name of the chunk to retrieve.
-            Format: `namespaces/{namespace}/files/{file}/chunks/{chunk}`
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/files/[^/]+/chunks/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+/files/[^/]+/chunks/[^/]+
         - name: chunkType
           description: |-
             Optional chunk type filter. If specified, returns a chunk of this type
@@ -913,11 +908,11 @@ paths:
         - name: parent
           description: |-
             The parent resource name.
-            Format: `namespaces/{namespace}/files/{file}`
+            Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/files/[^/]+
+          pattern: namespaces/[^/]+/knowledgeBases/[^/]+/files/[^/]+
         - name: pageSize
           description: |-
             The maximum number of chunks to return. If this parameter is unspecified,
@@ -1526,17 +1521,14 @@ paths:
         - Namespace
       x-stage: beta
     delete:
-      summary: Delete a pipeline
-      description: |-
-        Deletes a pipeline, accesing it by its resource name, which is defined by
-        the parent namespace and the ID of the pipeline. The authenticated
-        namespace must be the parent of the pipeline in order to delete it.
-      operationId: PipelinePublicService_DeletePipeline
+      summary: Delete a connection
+      description: Deletes a connection.
+      operationId: MgmtPublicService_DeleteNamespaceConnection
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/DeletePipelineResponse'
+            $ref: '#/definitions/DeleteNamespaceConnectionResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -1547,14 +1539,14 @@ paths:
       parameters:
         - name: name_1
           description: |-
-            The resource name of the pipeline to delete.
-            Format: `namespaces/{namespace}/pipelines/{pipeline}`
+            The resource name of the connection to delete.
+            Format: `namespaces/{namespace}/connections/{connection}`
           in: path
           required: true
           type: string
-          pattern: namespaces/[^/]+/pipelines/[^/]+
+          pattern: namespaces/[^/]+/connections/[^/]+
       tags:
-        - Pipeline
+        - Connection
       x-stage: beta
   /v1beta/validate-token:
     post:
@@ -1714,6 +1706,494 @@ paths:
           format: date-time
       tags:
         - Metrics
+      x-stage: beta
+  /v1beta/{parent}/connections:
+    get:
+      summary: List namespace connections
+      description: Returns a paginated list of connections created by a namespace.
+      operationId: MgmtPublicService_ListNamespaceConnections
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListNamespaceConnectionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource name.
+            Format: `namespaces/{namespace}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression. The following filters are supported:
+            - `integrationId`
+            - `qConnection` (fuzzy search on connection ID, integration title or
+            vendor)
+
+            **Examples**:
+            - List connections where app name, vendor or connection ID match `googl`:
+            `q="googl"`.
+            - List connections where the component type is `openai` (e.g. to setup a
+            connector within a pipeline): `integrationId="openai"`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Connection
+      x-stage: beta
+    post:
+      summary: Create a connection
+      description: Creates a connection under the ownership of a namespace.
+      operationId: MgmtPublicService_CreateNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/CreateNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: parent
+          description: |-
+            The parent resource name.
+            Format: `namespaces/{namespace}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+
+        - name: connection
+          description: Properties of the connection to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Connection'
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/{name_2}:
+    get:
+      summary: Get a namespace connection
+      description: Returns the details of a connection.
+      operationId: MgmtPublicService_GetNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: name_2
+          description: |-
+            The resource name of the connection.
+            Format: `namespaces/{namespace}/connections/{connection}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/connections/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Connection
+      x-stage: beta
+    delete:
+      summary: Delete a pipeline
+      description: |-
+        Deletes a pipeline, accesing it by its resource name, which is defined by
+        the parent namespace and the ID of the pipeline. The authenticated
+        namespace must be the parent of the pipeline in order to delete it.
+      operationId: PipelinePublicService_DeletePipeline
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeletePipelineResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: name_2
+          description: |-
+            The resource name of the pipeline to delete.
+            Format: `namespaces/{namespace}/pipelines/{pipeline}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/pipelines/[^/]+
+      tags:
+        - Pipeline
+      x-stage: beta
+  /v1beta/{connection.name}:
+    patch:
+      summary: Update a connection
+      description: Updates a connection with the supplied connection fields.
+      operationId: MgmtPublicService_UpdateNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: connection.name
+          description: |-
+            Field 1: Canonical resource name.
+            Format: `namespaces/{namespace}/connections/{connection}`.
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/connections/[^/]+
+        - name: connection
+          description: |-
+            Connection object with the new properties to be updated. The connection's
+            `name` field identifies the resource.
+            Format: `namespaces/{namespace}/connections/{connection}`
+            Immutable and output-only fields will be ignored. The Setup property must
+            be updated in block (no partial update is supported).
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                title: |-
+                  Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
+                  Example: "con-8f3a2k9E7c1"
+                readOnly: true
+              displayName:
+                type: string
+                description: 'Field 3: Human-readable display name for UI.'
+              slug:
+                type: string
+                title: |-
+                  Field 4: URL-friendly slug (NO prefix).
+                  If omitted, server generates from display_name.
+                  If provided, server validates and persists it.
+                  Slug is NOT part of resource identity.
+                  Example: "my-google-drive"
+              aliases:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  Field 5: Previous slugs for backward compatibility.
+                  When display_name changes, a new slug is generated and old slugs are stored
+                  here.
+                readOnly: true
+              description:
+                type: string
+                description: 'Field 6: Optional description.'
+              createTime:
+                type: string
+                format: date-time
+                description: 'Field 7: Creation time.'
+                readOnly: true
+              updateTime:
+                type: string
+                format: date-time
+                description: 'Field 8: Last update time.'
+                readOnly: true
+              namespaceId:
+                type: string
+                description: 'Field 9: ID of the namespace owning the connection.'
+                readOnly: true
+              integrationId:
+                type: string
+                description: |-
+                  Field 10: Integration ID. It determines for which type of components can
+                  reference this connection.
+              integrationTitle:
+                type: string
+                description: |-
+                  Field 11: Integration title. This helps the console display the results
+                  grouped by integration ID without needing an extra call to fetch title by
+                  integration ID.
+                readOnly: true
+              method:
+                description: |-
+                  Field 12: Connection method. It references the setup schema provided by the
+                  integration.
+                allOf:
+                  - $ref: '#/definitions/Method'
+              setup:
+                type: object
+                description: |-
+                  Field 13: Connection details. This field is required on creation, optional
+                  on view. When viewing the connection details, the setup values will be
+                  redacted.
+              view:
+                title: |-
+                  Field 14: View defines how the connection is presented. The following
+                  fields are only shown in the FULL view:
+                  - setup
+                  - scopes
+                  - oAuthAccessDetails
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/mgmt.v1beta.View'
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  Field 15: A list of scopes that identify the resources that the connection
+                  will be able to access on the user's behalf. This is typically passed on
+                  creation when the setup has been generated through an OAuth flow with a
+                  limited set of scopes.
+              oAuthAccessDetails:
+                type: object
+                description: |-
+                  Field 16: When the connection method is METHOD_OAUTH, the access token
+                  might come with some extra information that might vary across vendors. This
+                  information is passed as connection metadata.
+              identity:
+                type: string
+                description: |-
+                  Field 17: When the connection method is METHOD_OAUTH, this field will hold
+                  the identity (e.g., email, username) with which the access token has been
+                  generated.
+            title: |-
+              Connection object with the new properties to be updated. The connection's
+              `name` field identifies the resource.
+              Format: `namespaces/{namespace}/connections/{connection}`
+              Immutable and output-only fields will be ignored. The Setup property must
+              be updated in block (no partial update is supported).
+            required:
+              - displayName
+              - integrationId
+              - method
+              - setup
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/{name}/test:
+    post:
+      summary: Test a connection
+      description: |-
+        Makes a request to the 3rd party app that the connection is configured to
+        communicate with, and checks the result of the call. If the test fails,
+        the response status and error message will provide more information about
+        the failure.
+
+        Note that this action might affect the quota or billing of the integrated
+        account in the 3rd party app.
+      operationId: MgmtPublicService_TestNamespaceConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/TestNamespaceConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: name
+          description: |-
+            The resource name of the connection to test.
+            Format: `namespaces/{namespace}/connections/{connection}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/connections/[^/]+
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/namespaces/{namespaceId}/connections/{connectionId}/referenced-pipelines:
+    get:
+      summary: List pipelines that reference a connection
+      description: |-
+        Returns a paginated list with the IDs of the pipelines that reference a
+        given connection. All the pipelines will belong to the same namespace as
+        the connection.
+      operationId: MgmtPublicService_ListPipelineIDsByConnectionID
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListPipelineIDsByConnectionIDResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: connectionId
+          description: Connection ID.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression. The following filters are supported:
+            - `q` (fuzzy search on pipeline ID)
+          in: query
+          required: false
+          type: string
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/integrations:
+    get:
+      summary: List integrations
+      description: Returns a paginated list of available integrations.
+      operationId: MgmtPublicService_ListIntegrations
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListIntegrationsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression. The following filters are supported:
+            - `qIntegration` (fuzzy search on title or vendor)
+
+            **Examples**:
+            - List integrations where app name or vendor match `googl`: `q="googl"`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Integration
+      x-stage: beta
+  /v1beta/integrations/{integrationId}:
+    get:
+      summary: Get an integration
+      description: Returns the details of an integration.
+      operationId: MgmtPublicService_GetIntegration
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetIntegrationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: integrationId
+          description: Integration ID.
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view, only includes basic information.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Integration
       x-stage: beta
   /v1alpha/model-definitions:
     get:
@@ -3075,7 +3555,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/{name_2}:
+  /v1beta/{name_3}:
     get:
       summary: Get a pipeline
       description: Returns the details of a pipeline.
@@ -3093,7 +3573,7 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: name_2
+        - name: name_3
           description: |-
             The resource name of the pipeline.
             Format: `namespaces/{namespace}/pipelines/{pipeline}`
@@ -3140,7 +3620,7 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: name_2
+        - name: name_3
           description: |-
             The resource name of the release to delete.
             Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`
@@ -3702,7 +4182,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/{name_3}:
+  /v1beta/{name_4}:
     get:
       summary: Get a pipeline release
       description: |-
@@ -3722,7 +4202,7 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: name_3
+        - name: name_4
           description: |-
             The resource name of the release.
             Format: `namespaces/{namespace}/pipelines/{pipeline}/releases/{release}`
@@ -3766,7 +4246,7 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: name_3
+        - name: name_4
           description: |-
             The resource name of the secret to delete.
             Format: `namespaces/{namespace}/secrets/{secret}`
@@ -4095,7 +4575,7 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/{name_4}:
+  /v1beta/{name_5}:
     get:
       summary: Get a secret
       description: |-
@@ -4115,7 +4595,7 @@ paths:
           schema:
             $ref: '#/definitions/rpc.Status'
       parameters:
-        - name: name_4
+        - name: name_5
           description: |-
             The resource name of the secret.
             Format: `namespaces/{namespace}/secrets/{secret}`
@@ -4123,34 +4603,6 @@ paths:
           required: true
           type: string
           pattern: namespaces/[^/]+/secrets/[^/]+
-      tags:
-        - Pipeline
-      x-stage: beta
-    delete:
-      summary: Delete a connection
-      description: Deletes a connection.
-      operationId: PipelinePublicService_DeleteNamespaceConnection
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/DeleteNamespaceConnectionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: name_4
-          description: |-
-            The resource name of the connection to delete.
-            Format: `namespaces/{namespace}/connections/{connection}`
-          in: path
-          required: true
-          type: string
-          pattern: namespaces/[^/]+/connections/[^/]+
       tags:
         - Pipeline
       x-stage: beta
@@ -4566,463 +5018,6 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
-  /v1beta/{parent}/connections:
-    get:
-      summary: List namespace connections
-      description: Returns a paginated list of connections created by a namespace.
-      operationId: PipelinePublicService_ListNamespaceConnections
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListNamespaceConnectionsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: parent
-          description: |-
-            The parent resource name.
-            Format: `namespaces/{namespace}`
-          in: path
-          required: true
-          type: string
-          pattern: namespaces/[^/]+
-        - name: pageSize
-          description: |-
-            The maximum number of items to return. The default and cap values are 10
-            and 100, respectively.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token. By default, the first page will be returned.
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression. The following filters are supported:
-            - `integrationId`
-            - `qConnection` (fuzzy search on connection ID, integration title or
-            vendor)
-
-            **Examples**:
-            - List connections where app name, vendor or connection ID match `googl`:
-            `q="googl"`.
-            - List connections where the component type is `openai` (e.g. to setup a
-            connector within a pipeline): `integrationId="openai"`.
-          in: query
-          required: false
-          type: string
-      tags:
-        - Pipeline
-      x-stage: beta
-    post:
-      summary: Create a connection
-      description: Creates a connection under the ownership of a namespace.
-      operationId: PipelinePublicService_CreateNamespaceConnection
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/CreateNamespaceConnectionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: parent
-          description: |-
-            The parent resource name.
-            Format: `namespaces/{namespace}`
-          in: path
-          required: true
-          type: string
-          pattern: namespaces/[^/]+
-        - name: connection
-          description: Properties of the connection to be created.
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/Connection'
-      tags:
-        - Pipeline
-      x-stage: beta
-  /v1beta/{name_5}:
-    get:
-      summary: Get a namespace connection
-      description: Returns the details of a connection.
-      operationId: PipelinePublicService_GetNamespaceConnection
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetNamespaceConnectionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: name_5
-          description: |-
-            The resource name of the connection.
-            Format: `namespaces/{namespace}/connections/{connection}`
-          in: path
-          required: true
-          type: string
-          pattern: namespaces/[^/]+/connections/[^/]+
-        - name: view
-          description: |-
-            View allows clients to specify the desired view in the response.
-
-             - VIEW_BASIC: Default view.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - Pipeline
-      x-stage: beta
-  /v1beta/{connection.name}:
-    patch:
-      summary: Update a connection
-      description: Updates a connection with the supplied connection fields.
-      operationId: PipelinePublicService_UpdateNamespaceConnection
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/UpdateNamespaceConnectionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: connection.name
-          description: |-
-            Field 1: Canonical resource name.
-            Format: `namespaces/{namespace}/connections/{connection}`.
-          in: path
-          required: true
-          type: string
-          pattern: namespaces/[^/]+/connections/[^/]+
-        - name: connection
-          description: |-
-            Connection object with the new properties to be updated. The connection's
-            `name` field identifies the resource.
-            Format: `namespaces/{namespace}/connections/{connection}`
-            Immutable and output-only fields will be ignored. The Setup property must
-            be updated in block (no partial update is supported).
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              id:
-                type: string
-                title: |-
-                  Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
-                  Example: "con-8f3a2k9E7c1"
-                readOnly: true
-              displayName:
-                type: string
-                description: 'Field 3: Human-readable display name for UI.'
-              slug:
-                type: string
-                title: |-
-                  Field 4: URL-friendly slug (NO prefix).
-                  If omitted, server generates from display_name.
-                  If provided, server validates and persists it.
-                  Slug is NOT part of resource identity.
-                  Example: "my-google-drive"
-              aliases:
-                type: array
-                items:
-                  type: string
-                description: |-
-                  Field 5: Previous slugs for backward compatibility.
-                  When display_name changes, a new slug is generated and old slugs are stored
-                  here.
-                readOnly: true
-              description:
-                type: string
-                description: 'Field 6: Optional description.'
-              createTime:
-                type: string
-                format: date-time
-                description: 'Field 7: Creation time.'
-                readOnly: true
-              updateTime:
-                type: string
-                format: date-time
-                description: 'Field 8: Last update time.'
-                readOnly: true
-              namespaceId:
-                type: string
-                description: 'Field 9: ID of the namespace owning the connection.'
-                readOnly: true
-              integrationId:
-                type: string
-                description: |-
-                  Field 10: Integration ID. It determines for which type of components can
-                  reference this connection.
-              integrationTitle:
-                type: string
-                description: |-
-                  Field 11: Integration title. This helps the console display the results
-                  grouped by integration ID without needing an extra call to fetch title by
-                  integration ID.
-                readOnly: true
-              method:
-                description: |-
-                  Field 12: Connection method. It references the setup schema provided by the
-                  integration.
-                allOf:
-                  - $ref: '#/definitions/Method'
-              setup:
-                type: object
-                description: |-
-                  Field 13: Connection details. This field is required on creation, optional
-                  on view. When viewing the connection details, the setup values will be
-                  redacted.
-              view:
-                title: |-
-                  Field 14: View defines how the connection is presented. The following
-                  fields are only shown in the FULL view:
-                  - setup
-                  - scopes
-                  - oAuthAccessDetails
-                readOnly: true
-                allOf:
-                  - $ref: '#/definitions/pipeline.v1beta.View'
-              scopes:
-                type: array
-                items:
-                  type: string
-                description: |-
-                  Field 15: A list of scopes that identify the resources that the connection
-                  will be able to access on the user's behalf. This is typically passed on
-                  creation when the setup has been generated through an OAuth flow with a
-                  limited set of scopes.
-              oAuthAccessDetails:
-                type: object
-                description: |-
-                  Field 16: When the connection method is METHOD_OAUTH, the access token
-                  might come with some extra information that might vary across vendors. This
-                  information is passed as connection metadata.
-              identity:
-                type: string
-                description: |-
-                  Field 17: When the connection method is METHOD_OAUTH, this field will hold
-                  the identity (e.g., email, username) with which the access token has been
-                  generated.
-            title: |-
-              Connection object with the new properties to be updated. The connection's
-              `name` field identifies the resource.
-              Format: `namespaces/{namespace}/connections/{connection}`
-              Immutable and output-only fields will be ignored. The Setup property must
-              be updated in block (no partial update is supported).
-            required:
-              - displayName
-              - integrationId
-              - method
-              - setup
-      tags:
-        - Pipeline
-      x-stage: beta
-  /v1beta/{name}/test:
-    post:
-      summary: Test a connection
-      description: |-
-        Makes a request to the 3rd party app that the connection is configured to
-        communicate with, and checks the result of the call. If the test fails,
-        the response status and error message will provide more information about
-        the failure.
-
-        Note that this action might affect the quota or billing of the integrated
-        account in the 3rd party app.
-      operationId: PipelinePublicService_TestNamespaceConnection
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/TestNamespaceConnectionResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: name
-          description: |-
-            The resource name of the connection to test.
-            Format: `namespaces/{namespace}/connections/{connection}`
-          in: path
-          required: true
-          type: string
-          pattern: namespaces/[^/]+/connections/[^/]+
-      tags:
-        - Pipeline
-      x-stage: beta
-  /v1beta/namespaces/{namespaceId}/connections/{connectionId}/referenced-pipelines:
-    get:
-      summary: List pipelines that reference a connection
-      description: |-
-        Returns a paginated list with the IDs of the pipelines that reference a
-        given connection. All the pipelines will belong to the same namespace as
-        the connection.
-      operationId: PipelinePublicService_ListPipelineIDsByConnectionID
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListPipelineIDsByConnectionIDResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: namespaceId
-          description: Namespace ID.
-          in: path
-          required: true
-          type: string
-        - name: connectionId
-          description: Connection ID.
-          in: path
-          required: true
-          type: string
-        - name: pageSize
-          description: |-
-            The maximum number of items to return. The default and cap values are 10
-            and 100, respectively.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token. By default, the first page will be returned.
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression. The following filters are supported:
-            - `q` (fuzzy search on pipeline ID)
-          in: query
-          required: false
-          type: string
-      tags:
-        - Pipeline
-      x-stage: beta
-  /v1beta/integrations:
-    get:
-      summary: List integrations
-      description: Returns a paginated list of available integrations.
-      operationId: PipelinePublicService_ListIntegrations
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/ListIntegrationsResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: pageSize
-          description: |-
-            The maximum number of items to return. The default and cap values are 10
-            and 100, respectively.
-          in: query
-          required: false
-          type: integer
-          format: int32
-        - name: pageToken
-          description: Page token. By default, the first page will be returned.
-          in: query
-          required: false
-          type: string
-        - name: filter
-          description: |-
-            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
-            expression. The following filters are supported:
-            - `qIntegration` (fuzzy search on title or vendor)
-
-            **Examples**:
-            - List integrations where app name or vendor match `googl`: `q="googl"`.
-          in: query
-          required: false
-          type: string
-      tags:
-        - Pipeline
-      x-stage: beta
-  /v1beta/integrations/{integrationId}:
-    get:
-      summary: Get an integration
-      description: Returns the details of an integration.
-      operationId: PipelinePublicService_GetIntegration
-      responses:
-        "200":
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/GetIntegrationResponse'
-        "401":
-          description: Returned when the client credentials are not valid.
-          schema: {}
-        default:
-          description: An unexpected error response.
-          schema:
-            $ref: '#/definitions/rpc.Status'
-      parameters:
-        - name: integrationId
-          description: Integration ID.
-          in: path
-          required: true
-          type: string
-        - name: view
-          description: |-
-            View allows clients to specify the desired view in the response.
-
-             - VIEW_BASIC: Default view.
-             - VIEW_FULL: Full representation.
-          in: query
-          required: false
-          type: string
-          enum:
-            - VIEW_BASIC
-            - VIEW_FULL
-      tags:
-        - Pipeline
-      x-stage: beta
 definitions:
   Any:
     type: object
@@ -5360,7 +5355,7 @@ definitions:
         type: string
         description: |-
           Field 1: The resource name of the chunk.
-          Format: `namespaces/{namespace}/files/{file}/chunks/{chunk}`.
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}`.
         readOnly: true
       id:
         type: string
@@ -5384,7 +5379,7 @@ definitions:
         type: string
         title: |-
           The resource name of the original file this chunk belongs to.
-          Format: `namespaces/{namespace}/files/{file}`
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
         readOnly: true
       type:
         title: chunk type
@@ -5849,7 +5844,7 @@ definitions:
           - oAuthAccessDetails
         readOnly: true
         allOf:
-          - $ref: '#/definitions/pipeline.v1beta.View'
+          - $ref: '#/definitions/mgmt.v1beta.View'
       scopes:
         type: array
         items:
@@ -5977,7 +5972,7 @@ definitions:
         type: string
         title: |-
           The resource name of the deleted file.
-          Format: `namespaces/{namespace}/files/{file}`
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
         readOnly: true
     description: DeleteFileResponse represents a response for deleting a file.
   DeleteKnowledgeBaseResponse:
@@ -6081,7 +6076,7 @@ definitions:
         type: string
         description: |-
           Field 1: Canonical resource name.
-          Format: `namespaces/{namespace}/files/{file}`.
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`.
         readOnly: true
       id:
         type: string
@@ -6665,7 +6660,7 @@ definitions:
           - oAuthConfig
         readOnly: true
         allOf:
-          - $ref: '#/definitions/pipeline.v1beta.View'
+          - $ref: '#/definitions/mgmt.v1beta.View'
     description: |-
       Integration contains the parameters to create a connection between
       components and 3rd party apps.
@@ -8559,7 +8554,7 @@ definitions:
         title: |-
           File resource names to filter by. When this field is provided, the response
           will return only chunks that belong to the specified files.
-          Format: `namespaces/{namespace}/files/{file}`
+          Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
       tags:
         type: array
         items:
@@ -8699,7 +8694,7 @@ definitions:
         type: string
         title: |-
           Chunk resource name.
-          Full resource name: namespaces/{namespace}/files/{file}/chunks/{chunk}
+          Full resource name: namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}/chunks/{chunk}
         readOnly: true
       similarityScore:
         type: number
@@ -8714,7 +8709,7 @@ definitions:
         type: string
         title: |-
           Source file resource name.
-          Full resource name: namespaces/{namespace}/files/{file}
+          Full resource name: namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}
         readOnly: true
       chunkMetadata:
         description: Chunk metadata.
@@ -9433,19 +9428,6 @@ definitions:
         type: boolean
         description: Defines whether the pipeline can be released.
     description: Permission defines how a pipeline can be used.
-  pipeline.v1beta.View:
-    type: string
-    enum:
-      - VIEW_BASIC
-      - VIEW_FULL
-    description: |-
-      View defines how a resource is presented. Most resources can share this view
-      definition, the particular meaning of each value should be defined in the
-      resource itself. Certain resources might have their own View definition if
-      they need to implement more than 2 (basic / full) views.
-
-       - VIEW_BASIC: Default view.
-       - VIEW_FULL: Full representation.
   rpc.Status:
     type: object
     properties:
