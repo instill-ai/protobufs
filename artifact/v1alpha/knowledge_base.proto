@@ -90,7 +90,8 @@ message KnowledgeBase {
   EmbeddingConfig embedding_config = 12 [(google.api.field_behavior) = OPTIONAL];
 
   // The resource name of the active Milvus collection for this knowledge base.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/collections/{collection}`
+  // Format:
+  // `namespaces/{namespace}/knowledgeBases/{knowledge_base}/collections/{collection}`
   // This supports collection versioning for embedding dimension changes.
   string active_collection = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 
@@ -265,6 +266,34 @@ message CreateKnowledgeBaseAdminRequest {
 message CreateKnowledgeBaseAdminResponse {
   // The created knowledge base resource.
   KnowledgeBase knowledge_base = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ListKnowledgeBasesAdminRequest represents a request to list all knowledge
+// bases in a namespace without ACL filtering (admin only).
+// Follows AIP-132: https://google.aip.dev/132
+message ListKnowledgeBasesAdminRequest {
+  // The parent resource name.
+  // Format: `namespaces/{namespace}`
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+  // The maximum number of knowledge bases to return. If this parameter is
+  // unspecified, at most 10 knowledge bases will be returned. The cap value for
+  // this parameter is 100. Any value above 100 will be coerced to 100.
+  optional int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+  // The page token, received from a previous ListKnowledgeBasesAdmin call.
+  // Provide this to retrieve the subsequent page.
+  optional string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListKnowledgeBasesAdminResponse represents a response for listing knowledge
+// bases without ACL filtering.
+message ListKnowledgeBasesAdminResponse {
+  // A list of knowledge bases.
+  repeated KnowledgeBase knowledge_bases = 1;
+  // A token that can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+  // Total number of knowledge bases.
+  int32 total_size = 3;
 }
 
 // UpdateKnowledgeBaseAdminRequest represents a request to update a knowledge

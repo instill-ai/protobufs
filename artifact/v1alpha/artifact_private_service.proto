@@ -18,16 +18,28 @@ service ArtifactPrivateService {
   // "instill-agent" that are not owned by any specific user.
   rpc CreateKnowledgeBaseAdmin(CreateKnowledgeBaseAdminRequest) returns (CreateKnowledgeBaseAdminResponse);
 
+  // List knowledge bases without ACL filtering (admin only)
+  //
+  // Lists all knowledge bases in a namespace without ACL filtering. Unlike the
+  // public ListKnowledgeBases endpoint which filters results based on user
+  // permissions, this admin endpoint returns all knowledge bases including
+  // system-created ones (e.g., those created via CreateKnowledgeBaseAdmin).
+  // Used by internal services (e.g., agent-backend) to find existing system
+  // knowledge bases.
+  rpc ListKnowledgeBasesAdmin(ListKnowledgeBasesAdminRequest) returns (ListKnowledgeBasesAdminResponse);
+
   // Update a knowledge base with system-reserved tags (admin only)
   //
-  // Updates a knowledge base allowing system-reserved tag prefixes like "instill-".
-  // Used by internal services to manage system-level knowledge base metadata.
+  // Updates a knowledge base allowing system-reserved tag prefixes like
+  // "instill-". Used by internal services to manage system-level knowledge base
+  // metadata.
   rpc UpdateKnowledgeBaseAdmin(UpdateKnowledgeBaseAdminRequest) returns (UpdateKnowledgeBaseAdminResponse);
 
   // Update a file with system-reserved tags (admin only)
   //
   // Updates a file allowing system-reserved tag prefixes like "agent:".
-  // Used by agent-backend to set collection association tags (e.g., "agent:collection:{uid}").
+  // Used by agent-backend to set collection association tags (e.g.,
+  // "agent:collection:{uid}").
   rpc UpdateFileAdmin(UpdateFileAdminRequest) returns (UpdateFileAdminResponse);
 
   // Get Object (admin only)
@@ -37,17 +49,28 @@ service ArtifactPrivateService {
   rpc UpdateObjectAdmin(UpdateObjectAdminRequest) returns (UpdateObjectAdminResponse);
 
   // GetFileAsMarkdownAdmin and GetChatFileAdmin have been removed.
-  // Use GetFile with VIEW_CONTENT instead to get the converted markdown via pre-signed URL.
+  // Use GetFile with VIEW_CONTENT instead to get the converted markdown via
+  // pre-signed URL.
 
   // Delete a knowledge base file (admin only)
   //
-  // Deletes a file from a knowledge base using only the file ID. Unlike the public
-  // DeleteFile endpoint which requires namespace and knowledge base IDs, this
-  // admin endpoint automatically looks up the file's knowledge base and owner to
-  // perform the deletion. Primarily used for integration testing and internal
-  // operations where the caller has a file ID but not the full resource path.
-  // Authentication metadata is injected automatically based on the file owner.
+  // Deletes a file from a knowledge base using only the file ID. Unlike the
+  // public DeleteFile endpoint which requires namespace and knowledge base IDs,
+  // this admin endpoint automatically looks up the file's knowledge base and
+  // owner to perform the deletion. Primarily used for integration testing and
+  // internal operations where the caller has a file ID but not the full
+  // resource path. Authentication metadata is injected automatically based on
+  // the file owner.
   rpc DeleteFileAdmin(DeleteFileAdminRequest) returns (DeleteFileAdminResponse);
+
+  // Reprocess a file (admin only)
+  //
+  // Triggers file reprocessing without ACL checks. This allows admin tools like
+  // commander to reprocess files directly by UID, bypassing OpenFGA permission
+  // validation. The file's knowledge base and owner are automatically looked
+  // up. Used for administrative operations where the caller needs to force
+  // reprocess files without authentication context.
+  rpc ReprocessFileAdmin(ReprocessFileAdminRequest) returns (ReprocessFileAdminResponse);
 
   // Knowledge Base Management Admin APIs
 
@@ -58,8 +81,8 @@ service ArtifactPrivateService {
   //
   // Cancels ongoing update workflows and cleans up staging KB resources
   // (both finished and unfinished). Can abort specific knowledge bases by ID or
-  // all currently updating knowledge bases if no IDs provided. Sets knowledge base status
-  // to 'aborted'.
+  // all currently updating knowledge bases if no IDs provided. Sets knowledge
+  // base status to 'aborted'.
   rpc AbortKnowledgeBaseUpdateAdmin(AbortKnowledgeBaseUpdateAdminRequest) returns (AbortKnowledgeBaseUpdateAdminResponse);
 
   // Rollback a specific knowledge base to previous version (admin only)
