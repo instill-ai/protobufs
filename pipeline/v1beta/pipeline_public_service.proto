@@ -7,6 +7,7 @@ import "google/api/annotations.proto";
 import "google/api/visibility.proto";
 // Pipeline definitions
 import "pipeline/v1beta/component_definition.proto";
+import "pipeline/v1beta/integration.proto";
 import "pipeline/v1beta/pipeline.proto";
 import "pipeline/v1beta/secret.proto";
 // OpenAPI definition
@@ -691,6 +692,149 @@ service PipelinePublicService {
     option (google.api.http) = {get: "/v1beta/dashboard/pipelines/runs"};
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       tags: "Pipeline"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // List integrations
+  //
+  // Returns a paginated list of available integrations.
+  rpc ListIntegrations(ListIntegrationsRequest) returns (ListIntegrationsResponse) {
+    option (google.api.http) = {get: "/v1beta/integrations"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Integration"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // Get an integration
+  //
+  // Returns the details of an integration.
+  rpc GetIntegration(GetIntegrationRequest) returns (GetIntegrationResponse) {
+    option (google.api.http) = {get: "/v1beta/integrations/{integration_id}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Integration"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // List connections
+  //
+  // Returns a paginated list of connections created by a namespace.
+  rpc ListConnections(ListConnectionsRequest) returns (ListConnectionsResponse) {
+    option (google.api.http) = {get: "/v1beta/{parent=namespaces/*}/connections"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Connection"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // Get a connection
+  //
+  // Returns the details of a connection.
+  rpc GetConnection(GetConnectionRequest) returns (GetConnectionResponse) {
+    option (google.api.http) = {get: "/v1beta/{name=namespaces/*/connections/*}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Connection"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // Create a connection
+  //
+  // Creates a connection under the ownership of a namespace.
+  rpc CreateConnection(CreateConnectionRequest) returns (CreateConnectionResponse) {
+    option (google.api.http) = {
+      post: "/v1beta/{parent=namespaces/*}/connections"
+      body: "connection"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Connection"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // Update a connection
+  //
+  // Updates a connection with the supplied connection fields.
+  rpc UpdateConnection(UpdateConnectionRequest) returns (UpdateConnectionResponse) {
+    option (google.api.http) = {
+      patch: "/v1beta/{connection.name=namespaces/*/connections/*}"
+      body: "connection"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Connection"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // Delete a connection
+  //
+  // Deletes a connection.
+  rpc DeleteConnection(DeleteConnectionRequest) returns (DeleteConnectionResponse) {
+    option (google.api.http) = {delete: "/v1beta/{name=namespaces/*/connections/*}"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Connection"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // Test a connection
+  //
+  // Makes a request to the 3rd party app that the connection is configured to
+  // communicate with, and checks the result of the call. If the test fails,
+  // the response status and error message will provide more information about
+  // the failure.
+  //
+  // Note that this action might affect the quota or billing of the integrated
+  // account in the 3rd party app.
+  rpc TestConnection(TestConnectionRequest) returns (TestConnectionResponse) {
+    option (google.api.http) = {post: "/v1beta/{name=namespaces/*/connections/*}/test"};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Connection"
+      extensions: {
+        key: "x-stage"
+        value: {string_value: "beta"}
+      }
+    };
+  }
+
+  // List pipelines that reference a connection
+  //
+  // Returns a paginated list with the IDs of the pipelines that reference a
+  // given connection. All the pipelines will belong to the same namespace as
+  // the connection.
+  rpc ListPipelineIDsByConnectionID(ListPipelineIDsByConnectionIDRequest) returns (ListPipelineIDsByConnectionIDResponse) {
+    option (google.api.http) = {get:
+        "/v1beta/namespaces/{namespace_id}/connections/{connection_id}/"
+        "referenced-pipelines"
+};
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Connection"
       extensions: {
         key: "x-stage"
         value: {string_value: "beta"}
