@@ -54,7 +54,9 @@ enum ConvertedFileType {
 message File {
   option (google.api.resource) = {
     type: "api.instill.tech/File"
-    pattern: "namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}"
+    pattern:
+      "namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/"
+      "{file}"
   };
 
   // View defines how a file is presented.
@@ -223,7 +225,8 @@ message File {
   // ===== Standard AIP fields 1-6 (ALL resources must follow this order) =====
 
   // Field 1: Canonical resource name.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`.
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`.
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
@@ -286,7 +289,7 @@ message File {
   // ===== Knowledge base associations =====
 
   // Knowledge base resource names that this file is associated with.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
   // A file can belong to multiple knowledge bases within the same namespace.
   // This field is populated from the file_knowledge_base junction table.
   // Follows AIP-122 for resource name references.
@@ -359,7 +362,7 @@ message File {
 // Follows AIP-133: https://google.aip.dev/133
 message CreateFileRequest {
   // The parent resource name (knowledge base).
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
   // The file to create.
   File file = 2 [(google.api.field_behavior) = OPTIONAL];
@@ -375,7 +378,8 @@ message CreateFileResponse {
 // Follows AIP-135: https://google.aip.dev/135
 message DeleteFileRequest {
   // The resource name of the file to delete.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -385,7 +389,8 @@ message DeleteFileRequest {
 // DeleteFileResponse represents a response for deleting a file.
 message DeleteFileResponse {
   // The resource name of the deleted file.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
@@ -394,7 +399,8 @@ message DeleteFileResponse {
 // DeleteFileAdminRequest represents a request to delete a file (admin only).
 message DeleteFileAdminRequest {
   // The resource name of the file to delete.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -405,18 +411,21 @@ message DeleteFileAdminRequest {
 // only).
 message DeleteFileAdminResponse {
   // The resource name of the deleted file.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   string name = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
-// ReprocessFileAdminRequest represents a request to reprocess a file (admin only).
-// This bypasses ACL checks and triggers the ProcessFileWorkflow directly.
+// ReprocessFileAdminRequest represents a request to reprocess a file (admin
+// only). This bypasses ACL checks and triggers the ProcessFileWorkflow
+// directly.
 message ReprocessFileAdminRequest {
   // The file UID to reprocess.
   string file_uid = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-// ReprocessFileAdminResponse represents a response for reprocessing a file (admin only).
+// ReprocessFileAdminResponse represents a response for reprocessing a file
+// (admin only).
 message ReprocessFileAdminResponse {
   // The reprocessed file.
   File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -426,7 +435,7 @@ message ReprocessFileAdminResponse {
 // Follows AIP-132: https://google.aip.dev/132
 message ListFilesRequest {
   // The parent resource name (knowledge base).
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}`
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
   // The page size (default:10; max 100).
   optional int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
@@ -461,7 +470,8 @@ message ListFilesResponse {
 // Follows AIP-131: https://google.aip.dev/131
 message GetFileRequest {
   // The resource name of the file to retrieve.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -497,7 +507,8 @@ message GetFileResponse {
 // Follows AIP-134: https://google.aip.dev/134
 message UpdateFileRequest {
   // The file resource to update. The file's `name` field identifies the
-  // resource. Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // resource. Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   File file = 1 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
@@ -512,7 +523,8 @@ message UpdateFileResponse {
 // ReprocessFileRequest represents a request to reprocess a file.
 message ReprocessFileRequest {
   // The resource name of the file to reprocess.
-  // Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "api.instill.tech/File"}
@@ -534,7 +546,8 @@ message ReprocessFileResponse {
 // Follows AIP-134: https://google.aip.dev/134
 message UpdateFileAdminRequest {
   // The file resource to update. The file's `name` field identifies the
-  // resource. Format: `namespaces/{namespace}/knowledgeBases/{knowledge_base}/files/{file}`
+  // resource. Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
   File file = 1 [(google.api.field_behavior) = REQUIRED];
   // The update mask specifies the subset of fields that should be modified.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
