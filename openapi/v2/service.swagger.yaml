@@ -1816,7 +1816,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Connection'
+            $ref: '#/definitions/mgmt.v1beta.Connection'
       tags:
         - Connection
       x-stage: beta
@@ -1990,7 +1990,7 @@ paths:
                   Field 12: Connection method. It references the setup schema provided by the
                   integration.
                 allOf:
-                  - $ref: '#/definitions/Method'
+                  - $ref: '#/definitions/mgmt.v1beta.Connection.Method'
               setup:
                 type: object
                 description: |-
@@ -2090,7 +2090,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListPipelineIDsByConnectionIDResponse'
+            $ref: '#/definitions/mgmt.v1beta.ListPipelineIDsByConnectionIDResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2137,12 +2137,12 @@ paths:
     get:
       summary: List integrations
       description: Returns a paginated list of available integrations.
-      operationId: MgmtPublicService_ListIntegrations
+      operationId: PipelinePublicService_ListIntegrations
       responses:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/ListIntegrationsResponse'
+            $ref: '#/definitions/pipeline.v1beta.ListIntegrationsResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -2187,7 +2187,7 @@ paths:
         "200":
           description: A successful response.
           schema:
-            $ref: '#/definitions/GetIntegrationResponse'
+            $ref: '#/definitions/mgmt.v1beta.GetIntegrationResponse'
         "401":
           description: Returned when the client credentials are not valid.
           schema: {}
@@ -4627,6 +4627,34 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
+    delete:
+      summary: Delete a connection
+      description: Deletes a connection.
+      operationId: PipelinePublicService_DeleteConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/DeleteConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: name_5
+          description: |-
+            The resource name of the connection to delete.
+            Format: `namespaces/{namespace}/connections/{connection}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/connections/[^/]+
+      tags:
+        - Connection
+      x-stage: beta
   /v1beta/{secret.name}:
     patch:
       summary: Update a secret
@@ -5039,6 +5067,418 @@ paths:
       tags:
         - Pipeline
       x-stage: beta
+  /v1beta/integrations/{integrationId_1}:
+    get:
+      summary: Get an integration
+      description: Returns the details of an integration.
+      operationId: PipelinePublicService_GetIntegration
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/pipeline.v1beta.GetIntegrationResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: integrationId_1
+          description: Integration ID.
+          in: path
+          required: true
+          type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Integration
+      x-stage: beta
+  /v1beta/{parent_1}/connections:
+    get:
+      summary: List connections
+      description: Returns a paginated list of connections created by a namespace.
+      operationId: PipelinePublicService_ListConnections
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/ListConnectionsResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource name.
+            Format: `namespaces/{namespace}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression. The following filters are supported:
+            - `integrationId`
+            - `qConnection` (fuzzy search on connection ID, integration title or
+            vendor)
+
+            **Examples**:
+            - List connections where app name, vendor or connection ID match `googl`:
+            `q="googl"`.
+            - List connections where the component type is `openai` (e.g. to setup a
+            connector within a pipeline): `integrationId="openai"`.
+          in: query
+          required: false
+          type: string
+      tags:
+        - Connection
+      x-stage: beta
+    post:
+      summary: Create a connection
+      description: Creates a connection under the ownership of a namespace.
+      operationId: PipelinePublicService_CreateConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/CreateConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: parent_1
+          description: |-
+            The parent resource name.
+            Format: `namespaces/{namespace}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+
+        - name: connection
+          description: Properties of the connection to be created.
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/pipeline.v1beta.Connection'
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/{name_6}:
+    get:
+      summary: Get a connection
+      description: Returns the details of a connection.
+      operationId: PipelinePublicService_GetConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/GetConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: name_6
+          description: |-
+            The resource name of the connection.
+            Format: `namespaces/{namespace}/connections/{connection}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/connections/[^/]+
+        - name: view
+          description: |-
+            View allows clients to specify the desired view in the response.
+
+             - VIEW_BASIC: Default view.
+             - VIEW_FULL: Full representation.
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/{connection.name_1}:
+    patch:
+      summary: Update a connection
+      description: Updates a connection with the supplied connection fields.
+      operationId: PipelinePublicService_UpdateConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/UpdateConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: connection.name_1
+          description: |-
+            Field 1: Canonical resource name.
+            Format: `namespaces/{namespace}/connections/{connection}`.
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/connections/[^/]+
+        - name: connection
+          description: |-
+            Connection object with the new properties to be updated. The connection's
+            `name` field identifies the resource.
+            Format: `namespaces/{namespace}/connections/{connection}`
+            Immutable and output-only fields will be ignored. The Setup property must
+            be updated in block (no partial update is supported).
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                title: |-
+                  Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
+                  Example: "con-8f3a2k9E7c1"
+                readOnly: true
+              displayName:
+                type: string
+                description: 'Field 3: Human-readable display name for UI.'
+              slug:
+                type: string
+                title: |-
+                  Field 4: URL-friendly slug (NO prefix).
+                  If omitted, server generates from display_name.
+                  If provided, server validates and persists it.
+                  Slug is NOT part of resource identity.
+                  Example: "my-google-drive"
+              aliases:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  Field 5: Previous slugs for backward compatibility.
+                  When display_name changes, a new slug is generated and old slugs are stored
+                  here.
+                readOnly: true
+              description:
+                type: string
+                description: 'Field 6: Optional description.'
+              createTime:
+                type: string
+                format: date-time
+                description: 'Field 7: Creation time.'
+                readOnly: true
+              updateTime:
+                type: string
+                format: date-time
+                description: 'Field 8: Last update time.'
+                readOnly: true
+              namespaceId:
+                type: string
+                description: 'Field 9: ID of the namespace owning the connection.'
+                readOnly: true
+              integrationId:
+                type: string
+                description: |-
+                  Field 10: Integration ID. It determines for which type of components can
+                  reference this connection.
+              integrationTitle:
+                type: string
+                description: |-
+                  Field 11: Integration title. This helps the console display the results
+                  grouped by integration ID without needing an extra call to fetch title by
+                  integration ID.
+                readOnly: true
+              method:
+                description: |-
+                  Field 12: Connection method. It references the setup schema provided by the
+                  integration.
+                allOf:
+                  - $ref: '#/definitions/pipeline.v1beta.Connection.Method'
+              setup:
+                type: object
+                description: |-
+                  Field 13: Connection details. This field is required on creation, optional
+                  on view. When viewing the connection details, the setup values will be
+                  redacted.
+              view:
+                title: |-
+                  Field 14: View defines how the connection is presented. The following
+                  fields are only shown in the FULL view:
+                  - setup
+                  - scopes
+                  - oAuthAccessDetails
+                readOnly: true
+                allOf:
+                  - $ref: '#/definitions/pipeline.v1beta.View'
+              scopes:
+                type: array
+                items:
+                  type: string
+                description: |-
+                  Field 15: A list of scopes that identify the resources that the connection
+                  will be able to access on the user's behalf. This is typically passed on
+                  creation when the setup has been generated through an OAuth flow with a
+                  limited set of scopes.
+              oAuthAccessDetails:
+                type: object
+                description: |-
+                  Field 16: When the connection method is METHOD_OAUTH, the access token
+                  might come with some extra information that might vary across vendors. This
+                  information is passed as connection metadata.
+              identity:
+                type: string
+                description: |-
+                  Field 17: When the connection method is METHOD_OAUTH, this field will hold
+                  the identity (e.g., email, username) with which the access token has been
+                  generated.
+            title: |-
+              Connection object with the new properties to be updated. The connection's
+              `name` field identifies the resource.
+              Format: `namespaces/{namespace}/connections/{connection}`
+              Immutable and output-only fields will be ignored. The Setup property must
+              be updated in block (no partial update is supported).
+            required:
+              - displayName
+              - integrationId
+              - method
+              - setup
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/{name_1}/test:
+    post:
+      summary: Test a connection
+      description: |-
+        Makes a request to the 3rd party app that the connection is configured to
+        communicate with, and checks the result of the call. If the test fails,
+        the response status and error message will provide more information about
+        the failure.
+
+        Note that this action might affect the quota or billing of the integrated
+        account in the 3rd party app.
+      operationId: PipelinePublicService_TestConnection
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/TestConnectionResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: name_1
+          description: |-
+            The resource name of the connection to test.
+            Format: `namespaces/{namespace}/connections/{connection}`
+          in: path
+          required: true
+          type: string
+          pattern: namespaces/[^/]+/connections/[^/]+
+      tags:
+        - Connection
+      x-stage: beta
+  /v1beta/namespaces/{namespaceId_1}/connections/{connectionId}/referenced-pipelines:
+    get:
+      summary: List pipelines that reference a connection
+      description: |-
+        Returns a paginated list with the IDs of the pipelines that reference a
+        given connection. All the pipelines will belong to the same namespace as
+        the connection.
+      operationId: PipelinePublicService_ListPipelineIDsByConnectionID
+      responses:
+        "200":
+          description: A successful response.
+          schema:
+            $ref: '#/definitions/pipeline.v1beta.ListPipelineIDsByConnectionIDResponse'
+        "401":
+          description: Returned when the client credentials are not valid.
+          schema: {}
+        default:
+          description: An unexpected error response.
+          schema:
+            $ref: '#/definitions/rpc.Status'
+      parameters:
+        - name: namespaceId_1
+          description: Namespace ID.
+          in: path
+          required: true
+          type: string
+        - name: connectionId
+          description: Connection ID.
+          in: path
+          required: true
+          type: string
+        - name: pageSize
+          description: |-
+            The maximum number of items to return. The default and cap values are 10
+            and 100, respectively.
+          in: query
+          required: false
+          type: integer
+          format: int32
+        - name: pageToken
+          description: Page token. By default, the first page will be returned.
+          in: query
+          required: false
+          type: string
+        - name: filter
+          description: |-
+            Filter can hold an [AIP-160](https://google.aip.dev/160)-compliant filter
+            expression. The following filters are supported:
+            - `q` (fuzzy search on pipeline ID)
+          in: query
+          required: false
+          type: string
+      tags:
+        - Connection
+      x-stage: beta
 definitions:
   Any:
     type: object
@@ -5251,8 +5691,8 @@ definitions:
           RFC-1034, which restricts to letters, numbers, and hyphen, with the first
           character a letter, the last a letter or a number, and a 63 character
           maximum.
-          Auto-generated by backend: "usr-" prefix + immutable hash (80 bits entropy, base62).
-          Example: "usr-8f3A2k9E7c1xYz"
+          Auto-generated by backend: "usr-" prefix + immutable hash (80 bits entropy,
+          base62). Example: "usr-8f3A2k9E7c1xYz"
         readOnly: true
       displayName:
         type: string
@@ -5782,124 +6222,15 @@ definitions:
        - COMPONENT_TYPE_OPERATOR: Manipulate data.
        - COMPONENT_TYPE_APPLICATION: Connect with an external application.
        - COMPONENT_TYPE_GENERIC: Generic.
-  Connection:
+  CreateConnectionResponse:
     type: object
     properties:
-      name:
-        type: string
-        description: |-
-          Field 1: Canonical resource name.
-          Format: `namespaces/{namespace}/connections/{connection}`.
-        readOnly: true
-      id:
-        type: string
-        title: |-
-          Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
-          Example: "con-8f3a2k9E7c1"
-        readOnly: true
-      displayName:
-        type: string
-        description: 'Field 3: Human-readable display name for UI.'
-      slug:
-        type: string
-        title: |-
-          Field 4: URL-friendly slug (NO prefix).
-          If omitted, server generates from display_name.
-          If provided, server validates and persists it.
-          Slug is NOT part of resource identity.
-          Example: "my-google-drive"
-      aliases:
-        type: array
-        items:
-          type: string
-        description: |-
-          Field 5: Previous slugs for backward compatibility.
-          When display_name changes, a new slug is generated and old slugs are stored
-          here.
-        readOnly: true
-      description:
-        type: string
-        description: 'Field 6: Optional description.'
-      createTime:
-        type: string
-        format: date-time
-        description: 'Field 7: Creation time.'
-        readOnly: true
-      updateTime:
-        type: string
-        format: date-time
-        description: 'Field 8: Last update time.'
-        readOnly: true
-      namespaceId:
-        type: string
-        description: 'Field 9: ID of the namespace owning the connection.'
-        readOnly: true
-      integrationId:
-        type: string
-        description: |-
-          Field 10: Integration ID. It determines for which type of components can
-          reference this connection.
-      integrationTitle:
-        type: string
-        description: |-
-          Field 11: Integration title. This helps the console display the results
-          grouped by integration ID without needing an extra call to fetch title by
-          integration ID.
-        readOnly: true
-      method:
-        description: |-
-          Field 12: Connection method. It references the setup schema provided by the
-          integration.
-        allOf:
-          - $ref: '#/definitions/Method'
-      setup:
-        type: object
-        description: |-
-          Field 13: Connection details. This field is required on creation, optional
-          on view. When viewing the connection details, the setup values will be
-          redacted.
-      view:
-        title: |-
-          Field 14: View defines how the connection is presented. The following
-          fields are only shown in the FULL view:
-          - setup
-          - scopes
-          - oAuthAccessDetails
+      connection:
+        description: The created connection.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/mgmt.v1beta.View'
-      scopes:
-        type: array
-        items:
-          type: string
-        description: |-
-          Field 15: A list of scopes that identify the resources that the connection
-          will be able to access on the user's behalf. This is typically passed on
-          creation when the setup has been generated through an OAuth flow with a
-          limited set of scopes.
-      oAuthAccessDetails:
-        type: object
-        description: |-
-          Field 16: When the connection method is METHOD_OAUTH, the access token
-          might come with some extra information that might vary across vendors. This
-          information is passed as connection metadata.
-      identity:
-        type: string
-        description: |-
-          Field 17: When the connection method is METHOD_OAUTH, this field will hold
-          the identity (e.g., email, username) with which the access token has been
-          generated.
-    title: |-
-      Connection contains the parameters to communicate with a 3rd party app. A
-      component may reference a connection in their setup. One connection may be
-      used by several components and pipelines.
-      Field ordering follows AIP standard: name(1), id(2), display_name(3),
-      slug(4), aliases(5), description(6)
-    required:
-      - displayName
-      - integrationId
-      - method
-      - setup
+          - $ref: '#/definitions/pipeline.v1beta.Connection'
+    description: CreateConnectionResponse contains the created connection.
   CreateFileResponse:
     type: object
     properties:
@@ -5936,7 +6267,7 @@ definitions:
         description: The created connection.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/Connection'
+          - $ref: '#/definitions/mgmt.v1beta.Connection'
     description: CreateNamespaceConnectionResponse contains the created connection.
   CreateNamespaceSecretResponse:
     type: object
@@ -5988,6 +6319,9 @@ definitions:
     description: |-
       DataSpecification describes the JSON schema of component input and output.
       Note: This message will be renamed to TaskSpecifications in the future.
+  DeleteConnectionResponse:
+    type: object
+    description: DeleteConnectionResponse is an empty response.
   DeleteFileResponse:
     type: object
     properties:
@@ -6449,6 +6783,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/Chunk'
     description: GetChunkResponse represents a response for getting a chunk.
+  GetConnectionResponse:
+    type: object
+    properties:
+      connection:
+        description: The requested connection.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.Connection'
+    description: GetConnectionResponse contains the requested connection.
   GetFileResponse:
     type: object
     properties:
@@ -6468,15 +6811,6 @@ definitions:
           cacheContent/<cacheId>) Only populated for views that return file content.
         readOnly: true
     description: GetFileResponse represents a response for getting a file.
-  GetIntegrationResponse:
-    type: object
-    properties:
-      integration:
-        description: The requested integration.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Integration'
-    description: GetIntegrationResponse contains the requested integration.
   GetKnowledgeBaseResponse:
     type: object
     properties:
@@ -6532,7 +6866,7 @@ definitions:
         description: The requested connection.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/Connection'
+          - $ref: '#/definitions/mgmt.v1beta.Connection'
     description: GetNamespaceConnectionResponse contains the requested connection.
   GetNamespaceSecretResponse:
     type: object
@@ -6626,69 +6960,6 @@ definitions:
         type: string
         title: Hardware name value
     description: Hardware describes the hardware title and string value that backend consumes.
-  Integration:
-    type: object
-    properties:
-      id:
-        type: string
-        description: |-
-          Field 1: Identifier of the integration, which references a component
-          definition. Components with that definition ID will be able to use the
-          connections produced by this integration.
-        readOnly: true
-      title:
-        type: string
-        description: 'Field 2: Title, reflects the app name.'
-        readOnly: true
-      description:
-        type: string
-        description: 'Field 3: Short description of the integrated app.'
-        readOnly: true
-      vendor:
-        type: string
-        description: 'Field 4: Integrated app vendor name.'
-        readOnly: true
-      icon:
-        type: string
-        description: |-
-          Field 5: Integration icon. This is a path that's relative to the root of
-          the component implementation and that allows frontend applications to pull
-          and locate the icons.
-          See the `icon` field in the `ComponentDefinition` entity for more
-          information.
-        readOnly: true
-      helpLink:
-        description: |-
-          Field 6: Reference to the vendor's documentation to expand the integration
-          details.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/Link'
-      setupSchema:
-        type: object
-        description: |-
-          Field 7: The connection setup field definitions. Each integration will
-          require different data to connect to the 3rd party app.
-        readOnly: true
-      oAuthConfig:
-        description: |-
-          Field 8: Configuration parameters required for the OAuth setup flow. This
-          field will be present only if the integration supports OAuth 2.0.
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/OAuthConfig'
-      view:
-        title: |-
-          Field 9: View defines how the integration is presented. The following
-          fields are only shown in the FULL view:
-          - setupSchema
-          - oAuthConfig
-        readOnly: true
-        allOf:
-          - $ref: '#/definitions/mgmt.v1beta.View'
-    description: |-
-      Integration contains the parameters to create a connection between
-      components and 3rd party apps.
   KnowledgeBase:
     type: object
     properties:
@@ -6835,18 +7106,6 @@ definitions:
       - KNOWLEDGE_BASE_TYPE_PERSISTENT: PERSISTENT
        - KNOWLEDGE_BASE_TYPE_EPHEMERAL: EPHEMERAL
     title: Knowledge Base Type. e.g. "persistent" or "ephemeral"
-  Link:
-    type: object
-    properties:
-      text:
-        type: string
-        description: Text contains the message to display.
-        readOnly: true
-      url:
-        type: string
-        description: URL contains the reference the link will redirect to.
-        readOnly: true
-    description: Link contains the information to display an reference to an external URL.
   ListAvailableRegionsResponse:
     type: object
     properties:
@@ -6921,6 +7180,26 @@ definitions:
         description: The number of items per page.
         readOnly: true
     description: ListComponentRunsResponse is the response message for ListComponentRuns.
+  ListConnectionsResponse:
+    type: object
+    properties:
+      connections:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/pipeline.v1beta.Connection'
+        description: A list of connections matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: ListConnectionsResponse contains a paginated list of connections.
   ListFilesResponse:
     type: object
     properties:
@@ -6946,26 +7225,6 @@ definitions:
         title: next page token
         readOnly: true
     description: ListFilesResponse represents a response for listing files.
-  ListIntegrationsResponse:
-    type: object
-    properties:
-      integrations:
-        type: array
-        items:
-          type: object
-          $ref: '#/definitions/Integration'
-        description: A list of integrations matching the request parameters.
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page token.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of items.
-        readOnly: true
-    description: ListIntegrationsResponse contains a paginated list of integrations.
   ListKnowledgeBasesResponse:
     type: object
     properties:
@@ -7126,7 +7385,7 @@ definitions:
         type: array
         items:
           type: object
-          $ref: '#/definitions/Connection'
+          $ref: '#/definitions/mgmt.v1beta.Connection'
         description: A list of connections matching the request parameters.
         readOnly: true
       nextPageToken:
@@ -7159,27 +7418,6 @@ definitions:
         description: Total number of secret resources.
         readOnly: true
     description: ListNamespaceSecretsResponse contains a list of secrets.
-  ListPipelineIDsByConnectionIDResponse:
-    type: object
-    properties:
-      pipelineIds:
-        type: array
-        items:
-          type: string
-        description: A list of pipeline IDs matching the request parameters.
-        readOnly: true
-      nextPageToken:
-        type: string
-        description: Next page token.
-        readOnly: true
-      totalSize:
-        type: integer
-        format: int32
-        description: Total number of items.
-        readOnly: true
-    description: |-
-      ListPipelineIDsByConnectionIDResponse contains a paginated list of
-      integrations.
   ListPipelineReleasesResponse:
     type: object
     properties:
@@ -7367,17 +7605,6 @@ definitions:
         description: Total number of users.
         readOnly: true
     description: ListUsersResponse contains a list of users.
-  Method:
-    type: string
-    enum:
-      - METHOD_DICTIONARY
-      - METHOD_OAUTH
-    description: |-
-      Method defines how the connection is set up.
-
-       - METHOD_DICTIONARY: Key-value collection. The user is responsible of fetching the connection
-      details from the 3rd party service.
-       - METHOD_OAUTH: Access token created via OAuth 2.0 authorization.
   Model:
     type: object
     properties:
@@ -7756,32 +7983,6 @@ definitions:
       `Value` type union.
 
       The JSON representation for `NullValue` is JSON `null`.
-  OAuthConfig:
-    type: object
-    properties:
-      authUrl:
-        type: string
-        description: |-
-          The URL of the OAuth server to initiate the authentication and
-          authorization process.
-        readOnly: true
-      accessUrl:
-        type: string
-        description: |-
-          The URL of the OAuth server to exchange the authorization code for an
-          access token.
-        readOnly: true
-      scopes:
-        type: array
-        items:
-          type: string
-        description: |-
-          A list of scopes that identify the resources that the connection will be
-          able to access on the user's behalf.
-        readOnly: true
-    description: |-
-      OAuthConfig contains the configuration parameters for fetching an access
-      token via an OAuth 2.0 flow.
   Object:
     type: object
     properties:
@@ -7890,8 +8091,8 @@ definitions:
           RFC-1034, which restricts to letters, numbers, and hyphen, with the first
           character a letter, the last a letter or a number, and a 63 character
           maximum.
-          Auto-generated by backend: "org-" prefix + immutable hash (80 bits entropy, base62).
-          Example: "org-8f3A2k9E7c1xYz"
+          Auto-generated by backend: "org-" prefix + immutable hash (80 bits entropy,
+          base62). Example: "org-8f3A2k9E7c1xYz"
         readOnly: true
       displayName:
         type: string
@@ -8829,6 +9030,9 @@ definitions:
        - TASK_CHAT: Conversational Text Generation - generate text as responses to a dialog input.
        - TASK_COMPLETION: Completion Text Generation - generate text following the input prompt.
        - TASK_CUSTOM: Custom - custom task type for free form input/output.
+  TestConnectionResponse:
+    type: object
+    description: TestConnectionResponse is an empty response.
   TestNamespaceConnectionResponse:
     type: object
     description: TestNamespaceConnectionResponse is an empty response.
@@ -9222,6 +9426,15 @@ definitions:
         allOf:
           - $ref: '#/definitions/Chunk'
     description: UpdateChunkResponse represents a response for updating a chunk.
+  UpdateConnectionResponse:
+    type: object
+    properties:
+      connection:
+        description: The created connection.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.Connection'
+    description: UpdateConnectionResponse contains the updated connection.
   UpdateFileResponse:
     type: object
     properties:
@@ -9258,7 +9471,7 @@ definitions:
         description: The created connection.
         readOnly: true
         allOf:
-          - $ref: '#/definitions/Connection'
+          - $ref: '#/definitions/mgmt.v1beta.Connection'
     description: UpdateNamespaceConnectionResponse contains the updated connection.
   UpdateNamespaceSecretResponse:
     type: object
@@ -9444,6 +9657,286 @@ definitions:
     description: |-
       This resource represents a long-running operation that is the result of a
       network API call.
+  mgmt.v1beta.Connection:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          Field 1: Canonical resource name.
+          Format: `namespaces/{namespace}/connections/{connection}`.
+        readOnly: true
+      id:
+        type: string
+        title: |-
+          Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
+          Example: "con-8f3a2k9E7c1"
+        readOnly: true
+      displayName:
+        type: string
+        description: 'Field 3: Human-readable display name for UI.'
+      slug:
+        type: string
+        title: |-
+          Field 4: URL-friendly slug (NO prefix).
+          If omitted, server generates from display_name.
+          If provided, server validates and persists it.
+          Slug is NOT part of resource identity.
+          Example: "my-google-drive"
+      aliases:
+        type: array
+        items:
+          type: string
+        description: |-
+          Field 5: Previous slugs for backward compatibility.
+          When display_name changes, a new slug is generated and old slugs are stored
+          here.
+        readOnly: true
+      description:
+        type: string
+        description: 'Field 6: Optional description.'
+      createTime:
+        type: string
+        format: date-time
+        description: 'Field 7: Creation time.'
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: 'Field 8: Last update time.'
+        readOnly: true
+      namespaceId:
+        type: string
+        description: 'Field 9: ID of the namespace owning the connection.'
+        readOnly: true
+      integrationId:
+        type: string
+        description: |-
+          Field 10: Integration ID. It determines for which type of components can
+          reference this connection.
+      integrationTitle:
+        type: string
+        description: |-
+          Field 11: Integration title. This helps the console display the results
+          grouped by integration ID without needing an extra call to fetch title by
+          integration ID.
+        readOnly: true
+      method:
+        description: |-
+          Field 12: Connection method. It references the setup schema provided by the
+          integration.
+        allOf:
+          - $ref: '#/definitions/mgmt.v1beta.Connection.Method'
+      setup:
+        type: object
+        description: |-
+          Field 13: Connection details. This field is required on creation, optional
+          on view. When viewing the connection details, the setup values will be
+          redacted.
+      view:
+        title: |-
+          Field 14: View defines how the connection is presented. The following
+          fields are only shown in the FULL view:
+          - setup
+          - scopes
+          - oAuthAccessDetails
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmt.v1beta.View'
+      scopes:
+        type: array
+        items:
+          type: string
+        description: |-
+          Field 15: A list of scopes that identify the resources that the connection
+          will be able to access on the user's behalf. This is typically passed on
+          creation when the setup has been generated through an OAuth flow with a
+          limited set of scopes.
+      oAuthAccessDetails:
+        type: object
+        description: |-
+          Field 16: When the connection method is METHOD_OAUTH, the access token
+          might come with some extra information that might vary across vendors. This
+          information is passed as connection metadata.
+      identity:
+        type: string
+        description: |-
+          Field 17: When the connection method is METHOD_OAUTH, this field will hold
+          the identity (e.g., email, username) with which the access token has been
+          generated.
+    title: |-
+      Connection contains the parameters to communicate with a 3rd party app. A
+      component may reference a connection in their setup. One connection may be
+      used by several components and pipelines.
+      Field ordering follows AIP standard: name(1), id(2), display_name(3),
+      slug(4), aliases(5), description(6)
+    required:
+      - displayName
+      - integrationId
+      - method
+      - setup
+  mgmt.v1beta.Connection.Method:
+    type: string
+    enum:
+      - METHOD_DICTIONARY
+      - METHOD_OAUTH
+    description: |-
+      Method defines how the connection is set up.
+
+       - METHOD_DICTIONARY: Key-value collection. The user is responsible of fetching the connection
+      details from the 3rd party service.
+       - METHOD_OAUTH: Access token created via OAuth 2.0 authorization.
+  mgmt.v1beta.GetIntegrationResponse:
+    type: object
+    properties:
+      integration:
+        description: The requested integration.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmt.v1beta.Integration'
+    description: GetIntegrationResponse contains the requested integration.
+  mgmt.v1beta.Integration:
+    type: object
+    properties:
+      id:
+        type: string
+        description: |-
+          Field 1: Identifier of the integration, which references a component
+          definition. Components with that definition ID will be able to use the
+          connections produced by this integration.
+        readOnly: true
+      title:
+        type: string
+        description: 'Field 2: Title, reflects the app name.'
+        readOnly: true
+      description:
+        type: string
+        description: 'Field 3: Short description of the integrated app.'
+        readOnly: true
+      vendor:
+        type: string
+        description: 'Field 4: Integrated app vendor name.'
+        readOnly: true
+      icon:
+        type: string
+        description: |-
+          Field 5: Integration icon. This is a path that's relative to the root of
+          the component implementation and that allows frontend applications to pull
+          and locate the icons.
+          See the `icon` field in the `ComponentDefinition` entity for more
+          information.
+        readOnly: true
+      helpLink:
+        description: |-
+          Field 6: Reference to the vendor's documentation to expand the integration
+          details.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmt.v1beta.Integration.Link'
+      setupSchema:
+        type: object
+        description: |-
+          Field 7: The connection setup field definitions. Each integration will
+          require different data to connect to the 3rd party app.
+        readOnly: true
+      oAuthConfig:
+        description: |-
+          Field 8: Configuration parameters required for the OAuth setup flow. This
+          field will be present only if the integration supports OAuth 2.0.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmt.v1beta.Integration.OAuthConfig'
+      view:
+        title: |-
+          Field 9: View defines how the integration is presented. The following
+          fields are only shown in the FULL view:
+          - setupSchema
+          - oAuthConfig
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/mgmt.v1beta.View'
+    description: |-
+      Integration contains the parameters to create a connection between
+      components and 3rd party apps.
+  mgmt.v1beta.Integration.Link:
+    type: object
+    properties:
+      text:
+        type: string
+        description: Text contains the message to display.
+        readOnly: true
+      url:
+        type: string
+        description: URL contains the reference the link will redirect to.
+        readOnly: true
+    description: Link contains the information to display an reference to an external URL.
+  mgmt.v1beta.Integration.OAuthConfig:
+    type: object
+    properties:
+      authUrl:
+        type: string
+        description: |-
+          The URL of the OAuth server to initiate the authentication and
+          authorization process.
+        readOnly: true
+      accessUrl:
+        type: string
+        description: |-
+          The URL of the OAuth server to exchange the authorization code for an
+          access token.
+        readOnly: true
+      scopes:
+        type: array
+        items:
+          type: string
+        description: |-
+          A list of scopes that identify the resources that the connection will be
+          able to access on the user's behalf.
+        readOnly: true
+    description: |-
+      OAuthConfig contains the configuration parameters for fetching an access
+      token via an OAuth 2.0 flow.
+  mgmt.v1beta.ListIntegrationsResponse:
+    type: object
+    properties:
+      integrations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/mgmt.v1beta.Integration'
+        description: A list of integrations matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: ListIntegrationsResponse contains a paginated list of integrations.
+  mgmt.v1beta.ListPipelineIDsByConnectionIDResponse:
+    type: object
+    properties:
+      pipelineIds:
+        type: array
+        items:
+          type: string
+        description: A list of pipeline IDs matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: |-
+      ListPipelineIDsByConnectionIDResponse contains a paginated list of
+      integrations.
   mgmt.v1beta.Permission:
     type: object
     properties:
@@ -9464,6 +9957,286 @@ definitions:
 
        - VIEW_BASIC: Default view, only includes basic information.
        - VIEW_FULL: Full representation.
+  pipeline.v1beta.Connection:
+    type: object
+    properties:
+      name:
+        type: string
+        description: |-
+          Field 1: Canonical resource name.
+          Format: `namespaces/{namespace}/connections/{connection}`.
+        readOnly: true
+      id:
+        type: string
+        title: |-
+          Field 2: Immutable canonical resource ID (80-96 bits entropy, base62).
+          Example: "con-8f3a2k9E7c1"
+        readOnly: true
+      displayName:
+        type: string
+        description: 'Field 3: Human-readable display name for UI.'
+      slug:
+        type: string
+        title: |-
+          Field 4: URL-friendly slug (NO prefix).
+          If omitted, server generates from display_name.
+          If provided, server validates and persists it.
+          Slug is NOT part of resource identity.
+          Example: "my-google-drive"
+      aliases:
+        type: array
+        items:
+          type: string
+        description: |-
+          Field 5: Previous slugs for backward compatibility.
+          When display_name changes, a new slug is generated and old slugs are stored
+          here.
+        readOnly: true
+      description:
+        type: string
+        description: 'Field 6: Optional description.'
+      createTime:
+        type: string
+        format: date-time
+        description: 'Field 7: Creation time.'
+        readOnly: true
+      updateTime:
+        type: string
+        format: date-time
+        description: 'Field 8: Last update time.'
+        readOnly: true
+      namespaceId:
+        type: string
+        description: 'Field 9: ID of the namespace owning the connection.'
+        readOnly: true
+      integrationId:
+        type: string
+        description: |-
+          Field 10: Integration ID. It determines for which type of components can
+          reference this connection.
+      integrationTitle:
+        type: string
+        description: |-
+          Field 11: Integration title. This helps the console display the results
+          grouped by integration ID without needing an extra call to fetch title by
+          integration ID.
+        readOnly: true
+      method:
+        description: |-
+          Field 12: Connection method. It references the setup schema provided by the
+          integration.
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.Connection.Method'
+      setup:
+        type: object
+        description: |-
+          Field 13: Connection details. This field is required on creation, optional
+          on view. When viewing the connection details, the setup values will be
+          redacted.
+      view:
+        title: |-
+          Field 14: View defines how the connection is presented. The following
+          fields are only shown in the FULL view:
+          - setup
+          - scopes
+          - oAuthAccessDetails
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.View'
+      scopes:
+        type: array
+        items:
+          type: string
+        description: |-
+          Field 15: A list of scopes that identify the resources that the connection
+          will be able to access on the user's behalf. This is typically passed on
+          creation when the setup has been generated through an OAuth flow with a
+          limited set of scopes.
+      oAuthAccessDetails:
+        type: object
+        description: |-
+          Field 16: When the connection method is METHOD_OAUTH, the access token
+          might come with some extra information that might vary across vendors. This
+          information is passed as connection metadata.
+      identity:
+        type: string
+        description: |-
+          Field 17: When the connection method is METHOD_OAUTH, this field will hold
+          the identity (e.g., email, username) with which the access token has been
+          generated.
+    title: |-
+      Connection contains the parameters to communicate with a 3rd party app. A
+      component may reference a connection in their setup. One connection may be
+      used by several components and pipelines.
+      Field ordering follows AIP standard: name(1), id(2), display_name(3),
+      slug(4), aliases(5), description(6)
+    required:
+      - displayName
+      - integrationId
+      - method
+      - setup
+  pipeline.v1beta.Connection.Method:
+    type: string
+    enum:
+      - METHOD_DICTIONARY
+      - METHOD_OAUTH
+    description: |-
+      Method defines how the connection is set up.
+
+       - METHOD_DICTIONARY: Key-value collection. The user is responsible of fetching the connection
+      details from the 3rd party service.
+       - METHOD_OAUTH: Access token created via OAuth 2.0 authorization.
+  pipeline.v1beta.GetIntegrationResponse:
+    type: object
+    properties:
+      integration:
+        description: The requested integration.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.Integration'
+    description: GetIntegrationResponse contains the requested integration.
+  pipeline.v1beta.Integration:
+    type: object
+    properties:
+      id:
+        type: string
+        description: |-
+          Field 1: Identifier of the integration, which references a component
+          definition. Components with that definition ID will be able to use the
+          connections produced by this integration.
+        readOnly: true
+      title:
+        type: string
+        description: 'Field 2: Title, reflects the app name.'
+        readOnly: true
+      description:
+        type: string
+        description: 'Field 3: Short description of the integrated app.'
+        readOnly: true
+      vendor:
+        type: string
+        description: 'Field 4: Integrated app vendor name.'
+        readOnly: true
+      icon:
+        type: string
+        description: |-
+          Field 5: Integration icon. This is a path that's relative to the root of
+          the component implementation and that allows frontend applications to pull
+          and locate the icons.
+          See the `icon` field in the `ComponentDefinition` entity for more
+          information.
+        readOnly: true
+      helpLink:
+        description: |-
+          Field 6: Reference to the vendor's documentation to expand the integration
+          details.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.Integration.Link'
+      setupSchema:
+        type: object
+        description: |-
+          Field 7: The connection setup field definitions. Each integration will
+          require different data to connect to the 3rd party app.
+        readOnly: true
+      oAuthConfig:
+        description: |-
+          Field 8: Configuration parameters required for the OAuth setup flow. This
+          field will be present only if the integration supports OAuth 2.0.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.Integration.OAuthConfig'
+      view:
+        title: |-
+          Field 9: View defines how the integration is presented. The following
+          fields are only shown in the FULL view:
+          - setupSchema
+          - oAuthConfig
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/pipeline.v1beta.View'
+    description: |-
+      Integration contains the parameters to create a connection between
+      components and 3rd party apps.
+  pipeline.v1beta.Integration.Link:
+    type: object
+    properties:
+      text:
+        type: string
+        description: Text contains the message to display.
+        readOnly: true
+      url:
+        type: string
+        description: URL contains the reference the link will redirect to.
+        readOnly: true
+    description: Link contains the information to display an reference to an external URL.
+  pipeline.v1beta.Integration.OAuthConfig:
+    type: object
+    properties:
+      authUrl:
+        type: string
+        description: |-
+          The URL of the OAuth server to initiate the authentication and
+          authorization process.
+        readOnly: true
+      accessUrl:
+        type: string
+        description: |-
+          The URL of the OAuth server to exchange the authorization code for an
+          access token.
+        readOnly: true
+      scopes:
+        type: array
+        items:
+          type: string
+        description: |-
+          A list of scopes that identify the resources that the connection will be
+          able to access on the user's behalf.
+        readOnly: true
+    description: |-
+      OAuthConfig contains the configuration parameters for fetching an access
+      token via an OAuth 2.0 flow.
+  pipeline.v1beta.ListIntegrationsResponse:
+    type: object
+    properties:
+      integrations:
+        type: array
+        items:
+          type: object
+          $ref: '#/definitions/pipeline.v1beta.Integration'
+        description: A list of integrations matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: ListIntegrationsResponse contains a paginated list of integrations.
+  pipeline.v1beta.ListPipelineIDsByConnectionIDResponse:
+    type: object
+    properties:
+      pipelineIds:
+        type: array
+        items:
+          type: string
+        description: A list of pipeline IDs matching the request parameters.
+        readOnly: true
+      nextPageToken:
+        type: string
+        description: Next page token.
+        readOnly: true
+      totalSize:
+        type: integer
+        format: int32
+        description: Total number of items.
+        readOnly: true
+    description: |-
+      ListPipelineIDsByConnectionIDResponse contains a paginated list of
+      integrations.
   pipeline.v1beta.Permission:
     type: object
     properties:
@@ -9477,6 +10250,19 @@ definitions:
         type: boolean
         description: Defines whether the pipeline can be released.
     description: Permission defines how a pipeline can be used.
+  pipeline.v1beta.View:
+    type: string
+    enum:
+      - VIEW_BASIC
+      - VIEW_FULL
+    description: |-
+      View defines how a resource is presented. Most resources can share this view
+      definition, the particular meaning of each value should be defined in the
+      resource itself. Certain resources might have their own View definition if
+      they need to implement more than 2 (basic / full) views.
+
+       - VIEW_BASIC: Default view.
+       - VIEW_FULL: Full representation.
   rpc.Status:
     type: object
     properties:
@@ -9605,8 +10391,8 @@ definitions:
           RFC-1034, which restricts to letters, numbers, and hyphen, with the first
           character a letter, the last a letter or a number, and a 63 character
           maximum.
-          Auto-generated by backend: "usr-" prefix + immutable hash (80 bits entropy, base62).
-          Example: "usr-8f3A2k9E7c1xYz"
+          Auto-generated by backend: "usr-" prefix + immutable hash (80 bits entropy,
+          base62). Example: "usr-8f3A2k9E7c1xYz"
         readOnly: true
       displayName:
         type: string
