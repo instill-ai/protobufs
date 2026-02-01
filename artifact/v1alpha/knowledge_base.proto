@@ -334,3 +334,46 @@ message ResetKnowledgeBaseEmbeddingsAdminResponse {
   // Number of files that will be re-embedded.
   int32 files_to_reembed = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
+
+// MoveFilesToKnowledgeBaseAdminRequest represents a request to move files from
+// source knowledge bases to a target knowledge base (admin only).
+// Adds file associations to a knowledge base (admin only).
+// Files can belong to multiple KBs (many-to-many relationship).
+message AddFilesToKnowledgeBaseAdminRequest {
+  // The resource name of the target knowledge base to add files to.
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
+  string target_knowledge_base = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
+  ];
+  // The resource names of files to add to the target knowledge base.
+  // Format: `namespaces/{namespace}/files/{file}`
+  // Files that already exist in the target KB are skipped (no duplicates).
+  repeated string files = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
+}
+
+// AddFilesToKnowledgeBaseAdminResponse represents a response for adding files.
+message AddFilesToKnowledgeBaseAdminResponse {
+  // Number of files added to the target knowledge base.
+  int32 files_added = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// DeleteKnowledgeBaseAdminRequest represents a request to delete a knowledge
+// base (admin only). This force deletes the KB even if it contains files.
+// Files are NOT deleted - they remain orphaned (no KB association).
+message DeleteKnowledgeBaseAdminRequest {
+  // The resource name of the knowledge base to delete.
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
+  ];
+}
+
+// DeleteKnowledgeBaseAdminResponse represents a response for deleting a KB.
+message DeleteKnowledgeBaseAdminResponse {
+  // Empty response on success.
+}
