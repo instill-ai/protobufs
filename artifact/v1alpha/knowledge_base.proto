@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package artifact.v1alpha;
 
+// File definitions
+import "artifact/v1alpha/file.proto";
 // Google API
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
@@ -376,4 +378,29 @@ message DeleteKnowledgeBaseAdminRequest {
 // DeleteKnowledgeBaseAdminResponse represents a response for deleting a KB.
 message DeleteKnowledgeBaseAdminResponse {
   // Empty response on success.
+}
+
+// ListFilesAdminRequest represents a request to list files in a knowledge base
+// (admin only).
+message ListFilesAdminRequest {
+  // The resource name of the knowledge base.
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
+  ];
+  // Maximum number of files to return. Default is 100.
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Page token for pagination.
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ListFilesAdminResponse represents a response for listing files (admin only).
+message ListFilesAdminResponse {
+  // The files in the knowledge base.
+  repeated File files = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Token for the next page.
+  string next_page_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Total number of files.
+  int32 total_size = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
