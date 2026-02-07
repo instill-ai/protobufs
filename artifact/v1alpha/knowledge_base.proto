@@ -381,7 +381,7 @@ message DeleteKnowledgeBaseAdminResponse {
 }
 
 // ListFilesAdminRequest represents a request to list files in a knowledge base
-// (admin only).
+// (admin only, bypasses ACL checks).
 message ListFilesAdminRequest {
   // The resource name of the knowledge base.
   // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
@@ -393,6 +393,12 @@ message ListFilesAdminRequest {
   int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
   // Page token for pagination.
   string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+  // AIP-160 filter expression. Supports the same syntax as the public ListFiles API.
+  // Examples:
+  //   - `id="file-abc123"` - filter by hash-based file ID
+  //   - `tags:"agent:collection:col-xxx"` - filter by tag
+  //   - `(id="file-a" OR id="file-b") AND tags:"mytag"` - compound filter
+  string filter = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ListFilesAdminResponse represents a response for listing files (admin only).

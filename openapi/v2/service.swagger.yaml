@@ -1184,88 +1184,11 @@ paths:
           required: true
           type: string
           pattern: namespaces/[^/]+/objects/[^/]+
-        - name: object
-          description: |-
-            The object to update. The object's `name` field identifies it.
-            Format: `namespaces/{namespace}/objects/{object}`
+        - name: body
           in: body
           required: true
           schema:
-            type: object
-            properties:
-              id:
-                type: string
-                description: |-
-                  Immutable canonical resource ID (e.g., "obj-3k7m9p2w5t1").
-                  Hash-based, unique within a namespace.
-                readOnly: true
-              displayName:
-                type: string
-                description: Human-readable display name (user-provided filename).
-              ownerName:
-                type: string
-                title: |-
-                  Resource name of the owner namespace.
-                  Format: `namespaces/{namespace}`
-                readOnly: true
-              creatorName:
-                type: string
-                title: |-
-                  Full resource name of the user who created this object.
-                  Format: `users/{user}`
-                readOnly: true
-              createTime:
-                type: string
-                format: date-time
-                description: Object creation time.
-                readOnly: true
-              updateTime:
-                type: string
-                format: date-time
-                description: Object update time.
-                readOnly: true
-              size:
-                type: string
-                format: int64
-                description: Size in bytes.
-                readOnly: true
-              contentType:
-                type: string
-                description: Content type (MIME type from Content-Type header or file extension).
-                readOnly: true
-              isUploaded:
-                type: boolean
-                description: Whether the file has been uploaded to storage.
-                readOnly: true
-              objectExpireDays:
-                type: integer
-                format: int32
-                description: |-
-                  Object expiration time in days.
-                  If set to 0, the object will not be deleted automatically.
-              lastModifiedTime:
-                type: string
-                format: date-time
-                description: Last modified time (client-provided metadata).
-              deleteTime:
-                type: string
-                format: date-time
-                description: Object delete time (for soft delete). Output only.
-                readOnly: true
-              slug:
-                type: string
-                title: |-
-                  URL-friendly slug derived from display_name.
-                  Example: "my-document-pdf"
-              aliases:
-                type: array
-                items:
-                  type: string
-                description: Previous slugs for backward compatibility when display_name changes.
-                readOnly: true
-            title: |-
-              The object to update. The object's `name` field identifies it.
-              Format: `namespaces/{namespace}/objects/{object}`
+            $ref: '#/definitions/UpdateObjectBody'
       tags:
         - Artifact
       x-stage: alpha
@@ -9481,6 +9404,93 @@ definitions:
         allOf:
           - $ref: '#/definitions/Secret'
     description: UpdateNamespaceSecretResponse contains the updated secret.
+  UpdateObjectBody:
+    type: object
+    properties:
+      object:
+        type: object
+        properties:
+          id:
+            type: string
+            description: |-
+              Immutable canonical resource ID (e.g., "obj-3k7m9p2w5t1").
+              Hash-based, unique within a namespace.
+            readOnly: true
+          displayName:
+            type: string
+            description: Human-readable display name (user-provided filename).
+          ownerName:
+            type: string
+            title: |-
+              Resource name of the owner namespace.
+              Format: `namespaces/{namespace}`
+            readOnly: true
+          creatorName:
+            type: string
+            title: |-
+              Full resource name of the user who created this object.
+              Format: `users/{user}`
+            readOnly: true
+          createTime:
+            type: string
+            format: date-time
+            description: Object creation time.
+            readOnly: true
+          updateTime:
+            type: string
+            format: date-time
+            description: Object update time.
+            readOnly: true
+          size:
+            type: string
+            format: int64
+            description: Size in bytes.
+            readOnly: true
+          contentType:
+            type: string
+            description: Content type (MIME type from Content-Type header or file extension).
+            readOnly: true
+          isUploaded:
+            type: boolean
+            description: Whether the file has been uploaded to storage.
+            readOnly: true
+          objectExpireDays:
+            type: integer
+            format: int32
+            description: |-
+              Object expiration time in days.
+              If set to 0, the object will not be deleted automatically.
+          lastModifiedTime:
+            type: string
+            format: date-time
+            description: Last modified time (client-provided metadata).
+          deleteTime:
+            type: string
+            format: date-time
+            description: Object delete time (for soft delete). Output only.
+            readOnly: true
+          slug:
+            type: string
+            title: |-
+              URL-friendly slug derived from display_name.
+              Example: "my-document-pdf"
+          aliases:
+            type: array
+            items:
+              type: string
+            description: Previous slugs for backward compatibility when display_name changes.
+            readOnly: true
+        title: |-
+          The object to update. The object's `name` field identifies it.
+          Format: `namespaces/{namespace}/objects/{object}`
+      updateMask:
+        type: string
+        description: The update mask specifies which fields to update.
+    description: |-
+      UpdateObjectRequest represents a request to update an object.
+      Follows AIP-134: resource's `name` field identifies it.
+    required:
+      - object
   UpdateObjectResponse:
     type: object
     properties:

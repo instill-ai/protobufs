@@ -126,25 +126,27 @@ service ArtifactPrivateService {
   // Reset knowledge base embeddings (admin only)
   rpc ResetKnowledgeBaseEmbeddingsAdmin(ResetKnowledgeBaseEmbeddingsAdminRequest) returns (ResetKnowledgeBaseEmbeddingsAdminResponse);
 
-  // Add files to knowledge base (admin only)
+  // List files in a knowledge base without ACL filtering (admin only)
   //
-  // Adds file associations to a target knowledge base by file UIDs.
-  // Files can belong to multiple KBs (many-to-many relationship).
-  // Files that already exist in the target KB are skipped (no duplicates).
-  rpc AddFilesToKnowledgeBaseAdmin(AddFilesToKnowledgeBaseAdminRequest) returns (AddFilesToKnowledgeBaseAdminResponse);
+  // Lists all files in a knowledge base without per-file FGA permission checks.
+  // Unlike the public ListFiles endpoint which filters results based on
+  // can_read_file permission, this admin endpoint returns all files.
+  // Supports AIP-160 filter expressions for filtering by file ID and tags.
+  // Used by internal services (e.g., agent-backend) for service-to-service
+  // file lookups where the calling service handles authorization at its own
+  // level.
+  rpc ListFilesAdmin(ListFilesAdminRequest) returns (ListFilesAdminResponse);
 
-  // Delete knowledge base (admin only)
+  // Delete a knowledge base (admin only)
   //
-  // Force deletes a knowledge base even if it contains files. The files remain
-  // in the file table but lose their KB association (orphaned). Used during
-  // KB consolidation migrations after files have been moved to another KB.
+  // Force-deletes a knowledge base and CASCADE removes file-KB associations.
+  // Used by admin consolidation operations to remove duplicate KBs after moving
+  // files.
   rpc DeleteKnowledgeBaseAdmin(DeleteKnowledgeBaseAdminRequest) returns (DeleteKnowledgeBaseAdminResponse);
 
-  // List files in a knowledge base (admin only)
+  // Add files to a knowledge base (admin only)
   //
-  // Lists all files in a knowledge base without ACL checks. Unlike the public
-  // ListKnowledgeBaseFiles endpoint which requires authentication context, this
-  // admin endpoint allows internal services to list files during migrations and
-  // administrative operations.
-  rpc ListFilesAdmin(ListFilesAdminRequest) returns (ListFilesAdminResponse);
+  // Adds file associations to a target KB by file resource names. Files can
+  // belong to multiple KBs (many-to-many relationship).
+  rpc AddFilesToKnowledgeBaseAdmin(AddFilesToKnowledgeBaseAdminRequest) returns (AddFilesToKnowledgeBaseAdminResponse);
 }
