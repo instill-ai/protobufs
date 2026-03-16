@@ -149,4 +149,14 @@ service ArtifactPrivateService {
   // Adds file associations to a target KB by file resource names. Files can
   // belong to multiple KBs (many-to-many relationship).
   rpc AddFilesToKnowledgeBaseAdmin(AddFilesToKnowledgeBaseAdminRequest) returns (AddFilesToKnowledgeBaseAdminResponse);
+
+  // Copy a file to a different knowledge base (admin only)
+  //
+  // Performs a lightweight copy of a file: copies the MinIO object, creates a
+  // new file record, and copies converted files (content markdown + summary)
+  // to the target KB. Does NOT re-run the processing pipeline (no chunking or
+  // embedding). The new file is marked as COMPLETED immediately.
+  // Used by agent-backend for DeepCopyCollection to clone published collection
+  // files without AI cost.
+  rpc CopyFileToKnowledgeBaseAdmin(CopyFileToKnowledgeBaseAdminRequest) returns (CopyFileToKnowledgeBaseAdminResponse);
 }

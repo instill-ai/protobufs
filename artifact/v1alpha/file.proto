@@ -435,6 +435,34 @@ message ReprocessFileAdminResponse {
   File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// CopyFileToKnowledgeBaseAdminRequest represents a request to copy a file to
+// a different knowledge base (admin only). This performs a lightweight copy:
+// copies the MinIO object, file record, and converted files (markdown/summary)
+// without re-running the processing pipeline (no chunking/embedding).
+// Used by agent-backend for DeepCopyCollection.
+message CopyFileToKnowledgeBaseAdminRequest {
+  // The resource name of the source file to copy.
+  // Format:
+  // `namespaces/{namespace}/knowledge-bases/{knowledge_base}/files/{file}`
+  string source_file = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/File"}
+  ];
+  // The resource name of the target knowledge base to copy the file into.
+  // Format: `namespaces/{namespace}/knowledge-bases/{knowledge_base}`
+  string target_knowledge_base = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "api.instill.tech/KnowledgeBase"}
+  ];
+}
+
+// CopyFileToKnowledgeBaseAdminResponse represents a response for copying a
+// file (admin only).
+message CopyFileToKnowledgeBaseAdminResponse {
+  // The newly created file in the target knowledge base.
+  File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // ListFilesRequest represents a request to list files in a knowledge base.
 // Follows AIP-132: https://google.aip.dev/132
 message ListFilesRequest {
