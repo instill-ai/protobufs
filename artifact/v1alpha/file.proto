@@ -9,8 +9,6 @@ import "google/api/resource.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
-// Core definitions
-import "mgmt/v1beta/mgmt.proto";
 
 // file embedding process status
 enum FileProcessStatus {
@@ -310,16 +308,15 @@ message File {
   // Example: "namespaces/usr-7k2m9p4w1n3" or "namespaces/org-3t8f5q2x6b1"
   string owner_name = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // File owner (User or Organization).
-  optional mgmt.v1beta.Owner owner = 19 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Reserved: previously embedded full Owner/User objects which leaked
+  // internal data (email, metadata, permissions) to cross-workspace callers.
+  // Replaced by denormalized display fields (32-35).
+  reserved 19, 21;
+  reserved "owner", "creator";
 
   // Full resource name of the user who created this file.
   // Format: `users/{user}`
   string creator_name = 20 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // The user who created this file.
-  // Populated when creator_name is present.
-  optional mgmt.v1beta.User creator = 21 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // ===== Upload and content fields =====
 
@@ -375,6 +372,28 @@ message File {
   // Computed at ingestion time for both inline content uploads and object
   // reference uploads.
   string content_sha256 = 31 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // ===== Denormalized display fields =====
+  // These replace the removed embedded owner/creator objects (fields 19, 21)
+  // to avoid leaking internal user data to cross-workspace callers.
+  // Same pattern as Collection (collection.proto fields 23-26).
+
+  // Human-readable display name of the owner namespace.
+  // Populated server-side to avoid an extra frontend API call.
+  // Example: "Instill AI" (for an org) or "John Doe" (for a user).
+  string owner_display_name = 32 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Avatar URL of the owner namespace.
+  // Populated server-side alongside owner_display_name.
+  optional string owner_avatar = 33 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Human-readable display name of the user who created this file.
+  // Populated server-side to avoid an extra frontend API call.
+  string creator_display_name = 34 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Avatar URL of the user who created this file.
+  // Populated server-side alongside creator_display_name.
+  optional string creator_avatar = 35 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // CreateFileRequest represents a request to create a file in a knowledge base.
