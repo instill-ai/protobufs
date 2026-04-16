@@ -811,6 +811,10 @@ paths:
                   Avatar URL of the user who created this file.
                   Populated server-side alongside creator_display_name.
                 readOnly: true
+              visibility:
+                description: Visibility of the file.
+                allOf:
+                  - $ref: '#/definitions/File.Visibility'
             title: |-
               The file resource to update. The file's `name` field identifies the
               resource. Format:
@@ -6592,6 +6596,10 @@ definitions:
           Avatar URL of the user who created this file.
           Populated server-side alongside creator_display_name.
         readOnly: true
+      visibility:
+        description: Visibility of the file.
+        allOf:
+          - $ref: '#/definitions/File.Visibility'
     title: |-
       File represents a file in a knowledge base.
       Field ordering follows AIP standard: name(1), id(2), display_name(3),
@@ -6712,6 +6720,20 @@ definitions:
        - VIEW_ORIGINAL_FILE_TYPE: Returns MinIO pre-signed URL to the original uploaded file.
        - VIEW_CACHE: Returns Gemini cache resource name.
        - VIEW_PATCH: Returns MinIO pre-signed URL to patch.md (user-submitted content patches).
+  File.Visibility:
+    type: string
+    enum:
+      - VISIBILITY_PRIVATE
+      - VISIBILITY_PUBLIC
+      - VISIBILITY_WORKSPACE
+      - VISIBILITY_LINK_SHARED
+    description: |-
+      Visibility defines who can discover and access the file.
+
+       - VISIBILITY_PRIVATE: Reserved for future: truly private (only creator + invited users).
+       - VISIBILITY_PUBLIC: Discoverable by anyone, including anonymous visitors.
+       - VISIBILITY_WORKSPACE: Org members can access via all-members grant. Default for files.
+       - VISIBILITY_LINK_SHARED: Anyone with the share link (/r/{token}) can access via capability token.
   FileMediaType:
     type: string
     enum:
