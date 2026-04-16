@@ -394,6 +394,25 @@ message File {
   // Avatar URL of the user who created this file.
   // Populated server-side alongside creator_display_name.
   optional string creator_avatar = 35 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // ===== Visibility =====
+
+  // Visibility defines who can discover and access the file.
+  enum Visibility {
+    // Unspecified, treated as WORKSPACE.
+    VISIBILITY_UNSPECIFIED = 0;
+    // Reserved for future: truly private (only creator + invited users).
+    VISIBILITY_PRIVATE = 1;
+    // Discoverable by anyone, including anonymous visitors.
+    VISIBILITY_PUBLIC = 2;
+    // Org members can access via all-members grant. Default for files.
+    VISIBILITY_WORKSPACE = 3;
+    // Anyone with the share link (/r/{token}) can access via capability token.
+    VISIBILITY_LINK_SHARED = 4;
+  }
+
+  // Visibility of the file.
+  Visibility visibility = 36 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // CreateFileRequest represents a request to create a file in a knowledge base.
