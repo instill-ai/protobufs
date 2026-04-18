@@ -442,6 +442,41 @@ paths:
           in: query
           required: false
           type: string
+        - name: view
+          description: |-
+            View allows clients to specify the desired file view in the response.
+            When set, each returned `File` carries a populated
+            `derived_resource_uri` (see `File.derived_resource_uri`), so the list
+            call subsumes the per-file `GetFile(view=…)` fan-out that the Files
+            page previously performed. Server-side the resolver fans out presign
+            work across a bounded worker pool; unset leaves `derived_resource_uri`
+            empty for every row. `thumbnail_uri` is always populated when a
+            thumbnail exists and is unaffected by this flag.
+
+             - VIEW_BASIC: Default view, only includes basic metadata.
+             - VIEW_FULL: Full representation with all metadata.
+             - VIEW_SUMMARY: Returns MinIO pre-signed URL to converted summary content.
+             - VIEW_CONTENT: Returns MinIO pre-signed URL to converted markdown content.
+             - VIEW_STANDARD_FILE_TYPE: Returns MinIO pre-signed URL to standardized file:
+            - Documents → PDF
+            - Images → PNG
+            - Audio → OGG
+            - Video → MP4
+             - VIEW_ORIGINAL_FILE_TYPE: Returns MinIO pre-signed URL to the original uploaded file.
+             - VIEW_CACHE: Returns Gemini cache resource name.
+             - VIEW_PATCH: Returns MinIO pre-signed URL to patch.md (user-submitted content patches).
+          in: query
+          required: false
+          type: string
+          enum:
+            - VIEW_BASIC
+            - VIEW_FULL
+            - VIEW_SUMMARY
+            - VIEW_CONTENT
+            - VIEW_STANDARD_FILE_TYPE
+            - VIEW_ORIGINAL_FILE_TYPE
+            - VIEW_CACHE
+            - VIEW_PATCH
       tags:
         - Artifact
       x-stage: alpha
@@ -815,6 +850,31 @@ paths:
                 description: Visibility of the file.
                 allOf:
                   - $ref: '#/definitions/File.Visibility'
+              derivedResourceUri:
+                type: string
+                description: |-
+                  Derived resource URI populated on `ListFiles` / `GetFile` responses when
+                  the caller requested an explicit `File.View` (SUMMARY, CONTENT,
+                  STANDARD_FILE_TYPE, ORIGINAL_FILE_TYPE, CACHE, PATCH). Mirrors the
+                  long-standing `GetFileResponse.derived_resource_uri` slot so
+                  list-shaped responses can carry per-row URIs without an extra per-file
+                  `GetFile` round trip. Empty when no view was requested. Subject to the
+                  short-lived MinIO/GCS presign TTL — treat as ephemeral and do not
+                  cross-cache.
+                readOnly: true
+              thumbnailUri:
+                type: string
+                description: |-
+                  Stable, cache-friendly URL to a small (~1024px WebP) thumbnail of the
+                  file, populated whenever a `CONVERTED_FILE_TYPE_THUMBNAIL` row exists
+                  for this file. Resolved through the gateway's
+                  `/v1alpha/blob-urls/{object_uid}` route so the URL itself is stable
+                  across presign rotations and CDN-cacheable. Empty for files whose
+                  thumbnail has not yet been generated (backfill workflow covers
+                  historical rows; ingest covers new ones). Clients should treat this as
+                  the preferred card-tile source and fall back to `derived_resource_uri`
+                  / mime-type icon when absent.
+                readOnly: true
             title: |-
               The file resource to update. The file's `name` field identifies the
               resource. Format:
@@ -6600,6 +6660,31 @@ definitions:
         description: Visibility of the file.
         allOf:
           - $ref: '#/definitions/File.Visibility'
+      derivedResourceUri:
+        type: string
+        description: |-
+          Derived resource URI populated on `ListFiles` / `GetFile` responses when
+          the caller requested an explicit `File.View` (SUMMARY, CONTENT,
+          STANDARD_FILE_TYPE, ORIGINAL_FILE_TYPE, CACHE, PATCH). Mirrors the
+          long-standing `GetFileResponse.derived_resource_uri` slot so
+          list-shaped responses can carry per-row URIs without an extra per-file
+          `GetFile` round trip. Empty when no view was requested. Subject to the
+          short-lived MinIO/GCS presign TTL — treat as ephemeral and do not
+          cross-cache.
+        readOnly: true
+      thumbnailUri:
+        type: string
+        description: |-
+          Stable, cache-friendly URL to a small (~1024px WebP) thumbnail of the
+          file, populated whenever a `CONVERTED_FILE_TYPE_THUMBNAIL` row exists
+          for this file. Resolved through the gateway's
+          `/v1alpha/blob-urls/{object_uid}` route so the URL itself is stable
+          across presign rotations and CDN-cacheable. Empty for files whose
+          thumbnail has not yet been generated (backfill workflow covers
+          historical rows; ingest covers new ones). Clients should treat this as
+          the preferred card-tile source and fall back to `derived_resource_uri`
+          / mime-type icon when absent.
+        readOnly: true
     title: |-
       File represents a file in a knowledge base.
       Field ordering follows AIP standard: name(1), id(2), display_name(3),
