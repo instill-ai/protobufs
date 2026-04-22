@@ -177,10 +177,33 @@ message SearchChunksRequest {
   int32 group_size = 12 [(google.api.field_behavior) = OPTIONAL];
 }
 
+// Ranker identifies which Milvus hybrid-search reranker produced the
+// scores on a `SearchChunksResponse`. The score distribution depends on
+// the reranker, and downstream consumers that apply score-based
+// thresholds MUST read this field so they can pick the correct floor
+// shape (absolute [0,1] floor for `RANKER_WEIGHTED`; rank-structural
+// `1/(k+topK)` floor for `RANKER_RRF`).
+enum Ranker {
+  // RANKER_UNSPECIFIED is the default zero value and indicates the
+  // server did not populate the field. Treat it as "unknown" — do not
+  // apply ranker-specific floor logic.
+  RANKER_UNSPECIFIED = 0;
+  // RANKER_WEIGHTED is Milvus' WeightedRanker (dense + BM25 combined
+  // with static weights); scores are normalised to [0,1].
+  RANKER_WEIGHTED = 1;
+  // RANKER_RRF is Reciprocal Rank Fusion with smoothing constant k
+  // (Milvus default 60); scores live in (0, 2/(k+1)].
+  RANKER_RRF = 2;
+}
+
 // SearchChunksResponse represents a response for searching similar chunks.
 message SearchChunksResponse {
   // chunks
   repeated SimilarityChunk similar_chunks = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The reranker that produced the scores in `similar_chunks`. Read
+  // this before applying any score threshold — see the `Ranker` enum
+  // for why.
+  Ranker ranker = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 // SimilarityChunk represents a chunk with similarity score.

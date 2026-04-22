@@ -8757,6 +8757,23 @@ definitions:
     description: |-
       Position within a file, as coordinates in a specific unit. The
       number of dimensions of the coordinate depends on the unit type.
+  Ranker:
+    type: string
+    enum:
+      - RANKER_WEIGHTED
+      - RANKER_RRF
+    description: |-
+      Ranker identifies which Milvus hybrid-search reranker produced the
+      scores on a `SearchChunksResponse`. The score distribution depends on
+      the reranker, and downstream consumers that apply score-based
+      thresholds MUST read this field so they can pick the correct floor
+      shape (absolute [0,1] floor for `RANKER_WEIGHTED`; rank-structural
+      `1/(k+topK)` floor for `RANKER_RRF`).
+
+       - RANKER_WEIGHTED: RANKER_WEIGHTED is Milvus' WeightedRanker (dense + BM25 combined
+      with static weights); scores are normalised to [0,1].
+       - RANKER_RRF: RANKER_RRF is Reciprocal Rank Fusion with smoothing constant k
+      (Milvus default 60); scores live in (0, 2/(k+1)].
   Reference:
     type: object
     properties:
@@ -8939,6 +8956,14 @@ definitions:
           $ref: '#/definitions/SimilarityChunk'
         title: chunks
         readOnly: true
+      ranker:
+        description: |-
+          The reranker that produced the scores in `similar_chunks`. Read
+          this before applying any score threshold — see the `Ranker` enum
+          for why.
+        readOnly: true
+        allOf:
+          - $ref: '#/definitions/Ranker'
     description: SearchChunksResponse represents a response for searching similar chunks.
   Secret:
     type: object
