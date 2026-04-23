@@ -410,6 +410,41 @@ message ListFilesAdminRequest {
   // forwarded to the underlying CE public handler verbatim. Unset leaves
   // `derived_resource_uri` empty for every row.
   optional File.View view = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional permission filter compiled into the SQL WHERE clause alongside
+  // pagination. When present, both the returned files and total_size reflect
+  // only rows that satisfy at least one clause (OR semantics across clauses,
+  // AND semantics within a clause). When absent, no permission narrowing is
+  // applied and the query returns all files the AIP-160 filter matches.
+  //
+  // Callers are responsible for computing the clauses (e.g. from an
+  // authorization system); the server treats them as opaque predicates.
+  repeated FilePermissionClause permission_clauses = 6 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// FilePermissionClause is a single conjunction of predicates. Within a clause,
+// every populated field must hold (AND). Across clauses in the request, the
+// semantics are OR: a file passes if it satisfies any one clause.
+//
+// Each field maps to a PostgreSQL predicate on the `file` table. Empty /
+// absent fields are ignored (not applied as a predicate).
+message FilePermissionClause {
+  // Match files whose `tags` column overlaps with the supplied set.
+  // SQL: `file.tags && $tags_overlap` (PostgreSQL array-overlap operator).
+  repeated string tags_overlap = 1;
+
+  // Match files whose primary UID is in the supplied set.
+  // SQL: `file.uid = ANY($uids_in)`.
+  repeated string uids_in = 2;
+
+  // Exclude files that have any tag matching the supplied LIKE patterns.
+  // SQL: `NOT EXISTS (SELECT 1 FROM unnest(file.tags) t WHERE t LIKE $pattern)`
+  // for each pattern.
+  repeated string tags_like_none = 3;
+
+  // Match files whose `visibility` column is in the supplied set.
+  // SQL: `file.visibility = ANY($visibility_in)`.
+  repeated string visibility_in = 4;
 }
 
 // ListFilesAdminResponse represents a response for listing files (admin only).
