@@ -72,6 +72,22 @@ service ArtifactPrivateService {
   // reprocess files without authentication context.
   rpc ReprocessFileAdmin(ReprocessFileAdminRequest) returns (ReprocessFileAdminResponse);
 
+  // Check file chunk integrity (admin only)
+  //
+  // Probes the cross-datastore consistency of a knowledge-base file's derived
+  // RAG state against its `process_status`. Specifically reports drift between
+  // the artifact-backend's PostgreSQL row (which advertises `process_status`
+  // and `total_chunks`), the chunk inventory in the `chunk` table, the vector
+  // inventory in the Milvus collection (`kb_<kb_uid>`), and the converted
+  // markdown object in MinIO (`converted-file/<file_uid>...`). Used by
+  // downstream readiness-gate consumers so dependent work is never dispatched
+  // against a `process_status = COMPLETED` file whose chunks / vectors /
+  // converted-file have silently disappeared (missing Milvus collection,
+  // deleted converted-file, manual chunk wipe, etc.). The recommended action
+  // lets the caller safely kick `ReprocessFileAdmin` and defer the dependent
+  // work.
+  rpc CheckFileChunkIntegrityAdmin(CheckFileChunkIntegrityAdminRequest) returns (CheckFileChunkIntegrityAdminResponse);
+
   // Knowledge Base Management Admin APIs
 
   // Execute knowledge base update (admin only)

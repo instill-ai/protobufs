@@ -528,6 +528,113 @@ message ReprocessFileAdminResponse {
   File file = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
+// IntegrityState classifies the cross-datastore consistency of a knowledge-base
+// file's derived RAG state (PostgreSQL chunk rows, Milvus vectors, MinIO
+// converted-file) against its declared `process_status`. Values that are NOT
+// `INTEGRITY_STATE_HEALTHY` indicate drift that the caller MUST recover from
+// before dispatching downstream work that depends on the file's chunks.
+//
+// Boundary by gRPC code (per `CheckFileChunkIntegrityAdmin` semantics):
+//   - `INTEGRITY_STATE_FILE_NOT_FOUND` is reported only when the file row is
+//     soft-deleted or never existed; in that case the RPC still returns OK
+//     with this enum value rather than `NotFound`, so the caller can read the
+//     `recommended_action` and decide whether to surface the absence to the
+//     end user or skip the gate entirely.
+//   - All other "drift" classes report `IntegrityState != HEALTHY` while the
+//     file row itself is intact.
+enum IntegrityState {
+  // Default; never returned by a successful probe.
+  INTEGRITY_STATE_UNSPECIFIED = 0;
+  // The file's `process_status` is `COMPLETED`, the chunk row count, Milvus
+  // vector count, and the file row's `total_chunks` agree, and the converted
+  // markdown object exists in MinIO. Safe to dispatch.
+  INTEGRITY_STATE_HEALTHY = 1;
+  // The file's `process_status` is anything except `COMPLETED` (e.g. still
+  // processing, failed, not started). Drift detection is not meaningful in
+  // this state — the upstream `process_status` gate handles it.
+  INTEGRITY_STATE_NOT_COMPLETED = 2;
+  // PG row says COMPLETED but the chunk inventory in the `chunk` table is
+  // empty (or non-zero but does not match the file row's `total_chunks`
+  // under strict equality). Indicates the chunks were hard-deleted or never
+  // persisted. Recoverable via `ReprocessFileAdmin`.
+  INTEGRITY_STATE_EMPTY_PG = 3;
+  // PG row says COMPLETED, chunk rows exist, but the Milvus collection for
+  // the parent knowledge base is missing entirely OR the per-file vector
+  // count in Milvus does not match the PG chunk count under strict equality.
+  // Indicates Milvus collection was dropped, never created, or partially
+  // ingested. Recoverable via `ReprocessFileAdmin`.
+  INTEGRITY_STATE_MISSING_MILVUS = 4;
+  // PG row says COMPLETED, chunks + vectors agree, but the converted-file
+  // object is missing from MinIO. The LLM's `get-file-content` tool will
+  // 404. Recoverable via `ReprocessFileAdmin`.
+  INTEGRITY_STATE_MISSING_CONVERTED_FILE = 5;
+  // The file row itself does not exist (or is soft-deleted). The caller
+  // should treat this as a tombstone; reprocess is not the right recovery.
+  INTEGRITY_STATE_FILE_NOT_FOUND = 6;
+}
+
+// RecommendedAction tells the caller what to do with the probe result. Kept
+// separate from `IntegrityState` so the caller does not have to enumerate
+// state values to decide on behavior, and so future drift classes can map to
+// the same recovery path without breaking callers.
+enum RecommendedAction {
+  // Default; never returned by a successful probe.
+  RECOMMENDED_ACTION_UNSPECIFIED = 0;
+  // No action needed. The file is healthy; safe to dispatch downstream work.
+  RECOMMENDED_ACTION_NONE = 1;
+  // The caller should kick `ReprocessFileAdmin(file_uid)` to re-derive the
+  // missing chunks / vectors / converted-file, and defer the dependent work
+  // until the file's `process_status` returns to `COMPLETED`. Idempotent —
+  // safe to send concurrently for the same file UID; `ReprocessFileAdmin`
+  // already short-circuits in-flight reprocesses.
+  RECOMMENDED_ACTION_REPROCESS_FILE = 2;
+  // The file row is gone. The caller should NOT reprocess; instead it should
+  // surface the absence to the end user (e.g. mark the dependent record as
+  // referencing a deleted file) or skip the gate entirely so downstream
+  // tools handle the missing-file at their own granularity.
+  RECOMMENDED_ACTION_SKIP_FILE_NOT_FOUND = 3;
+  // The file's `process_status` is not COMPLETED yet (still processing,
+  // failed, etc.). The caller should defer and let the upstream
+  // `process_status` gate retry once processing finishes.
+  RECOMMENDED_ACTION_DEFER_PROCESSING = 4;
+}
+
+// CheckFileChunkIntegrityAdminRequest represents a request to probe the
+// cross-datastore consistency of a knowledge-base file (admin only).
+message CheckFileChunkIntegrityAdminRequest {
+  // The file UID to probe.
+  string file_uid = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// CheckFileChunkIntegrityAdminResponse reports the integrity probe result.
+// All count fields are populated when reachable; the absence of a count is
+// reflected in `state` and is not separately signalled.
+message CheckFileChunkIntegrityAdminResponse {
+  // The drift classification.
+  IntegrityState state = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The recovery recommendation derived from `state`.
+  RecommendedAction recommended_action = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The file's current `process_status` from the `file` table at probe time.
+  // Repeating this here lets a caller short-circuit additional lookups.
+  FileProcessStatus process_status = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The `file.total_chunks` advertised on the file row. May be zero when
+  // `state = INTEGRITY_STATE_FILE_NOT_FOUND` or when chunk count tracking
+  // was not yet populated.
+  int64 total_chunks_declared = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The number of non-deleted rows in the `chunk` table for this file_uid
+  // at probe time. Always populated when the file row exists.
+  int64 chunk_rows_in_pg = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The number of vectors found in the Milvus collection (`kb_<kb_uid>`)
+  // matching this file_uid at probe time. -1 when the Milvus collection
+  // does not exist; non-negative otherwise.
+  int64 vectors_in_milvus = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // True iff the converted-file MinIO object for this file is present.
+  bool converted_file_present = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Free-form human-readable diagnostic message for ops/log purposes. Not
+  // intended for parsing by callers.
+  string message = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
 // CopyFileToKnowledgeBaseAdminRequest represents a request to copy a file to
 // a different knowledge base (admin only). This performs a lightweight copy:
 // copies the MinIO object, file record, and converted files (markdown/summary)
